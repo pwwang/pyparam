@@ -1,7 +1,8 @@
 from collections import OrderedDict
+import re
 import pytest
 import colorama
-from paramet import HelpAssembler, MAX_PAGE_WIDTH, MAX_OPT_WIDTH, \
+from param import HelpAssembler, MAX_PAGE_WIDTH, MAX_OPT_WIDTH, \
 	Param, Params, params, ParamNameError, ParamTypeError, \
 	ParamsParseError, ParamsLoadError, OPT_UNSET_VALUE, OPT_POSITIONAL_NAME
 
@@ -105,7 +106,7 @@ class TestHelpAssembler:
 		('opttype   ', '{f.BLUE}<OPTTYPE>{s.RESET_ALL}   '.format(
 			f = colorama.Fore,
 			s = colorama.Style)),
-		('', '')
+		('', '  ')
 	])
 	def test_opttype(self, msg, expt):
 		assert self.assembler.opttype(msg) == expt
@@ -137,15 +138,22 @@ class TestHelpAssembler:
 			'{s.BRIGHT}{f.CYAN}DESCRIPTION{s.RESET_ALL}:'.format(
 				f = colorama.Fore, s = colorama.Style),
 			'  some description about the program',
-			'']),
+			'', '']),
+		({'optional options': [('-h, --help, -H', '', ['Print this help information'])]}, [
+			'{s.BRIGHT}{f.CYAN}OPTIONAL OPTIONS{s.RESET_ALL}:'.format(
+				f = colorama.Fore, s = colorama.Style),
+			'{s.BRIGHT}{f.GREEN}  -h, --help, -H{s.RESET_ALL}   '
+			'     - Print this help information{s.RESET_ALL}'.format(
+				f = colorama.Fore, s = colorama.Style),
+			'', '']),
 		({'description': ['some very very very very very very very very very very very very '
 			'very very very very description about the program']}, [
 			'{s.BRIGHT}{f.CYAN}DESCRIPTION{s.RESET_ALL}:'.format(
 				f = colorama.Fore, s = colorama.Style),
 			'  some very very very very very very very very very very very very very very '
-			'very very description',
-			'  about the program',
-			'']),
+			'very very \\',
+			'  description about the program',
+			'', '']),
 		({'options': [('-nthreads', 'int', ['Number of threads to use. Default: 1'])]}, [
 			'{s.BRIGHT}{f.CYAN}OPTIONS{s.RESET_ALL}:'.format(
 				f = colorama.Fore, s = colorama.Style),
@@ -153,7 +161,7 @@ class TestHelpAssembler:
 			'{f.BLUE}<INT>{s.RESET_ALL}     - Number of threads to use. '
 			'{f.MAGENTA}Default: 1{s.RESET_ALL}{s.RESET_ALL}'.format(
 				f = colorama.Fore, s = colorama.Style),
-			'']),
+			'', '']),
 		({'options': [
 			('-nthreads', 'int', ['Number of threads to use. Default: 1']),
 			('-opt1', 'str', ['String options.', 'DEFAULT: "Hello world!"']),
@@ -173,11 +181,11 @@ class TestHelpAssembler:
 			'{s.BRIGHT}{f.GREEN}  -option, --very-very-long-option-name{s.RESET_ALL} '
 			'{f.BLUE}<INT>{s.RESET_ALL}'.format(f = colorama.Fore, s = colorama.Style),
 			'                      - Option descript without default value. '
-			'And this is a long long long long{s.RESET_ALL}'.format(
+			'And this is a long long long long \\{s.RESET_ALL}'.format(
 				f = colorama.Fore, s = colorama.Style),
 			'                        description{s.RESET_ALL}'.format(
 				f = colorama.Fore, s = colorama.Style),
-			'']),
+			'', '']),
 	])
 	def test_assemble(self, helps, expt):
 		assert self.assembler.assemble(helps) == expt
@@ -483,6 +491,17 @@ def test_param_push():
 	param.push(typename = True)
 	assert param.stacks == [('int:', []), ('int:', [])]
 
+	# push dict
+	param = Param('a')
+	param2 = Param('a.b', 1)
+	param3 = Param('a.c.x', 2)
+	param.push(param2, 'dict:')
+	assert param.stacks == [('dict:', [param2])]
+	param.push(param3, 'dict:')
+	assert param.stacks == [('dict:', [param2, param3])]
+	param.push({'a': {'c': {'y': 3}}})
+	assert param.stacks == [('dict:', [param2, param3, {'a': {'c': {'y': 3}}}])]
+
 @pytest.mark.parametrize('stacks, exptwarns, exptype, exptval', [
 	([], [], None, None),
 	([('int:', [1])], [], 'int:', 1),
@@ -520,6 +539,24 @@ def test_param_checkout(stacks, exptwarns, exptype, exptval):
 	assert param.checkout() == exptwarns
 	assert param.type == exptype
 	assert param.value == exptval
+
+@pytest.mark.parametrize('dorig, dup, expt', [
+	({}, {'a':1}, {'a':1}),
+	({'a': {'b': 2, 'c': 3}}, {'a': {'b': 1}}, {'a': {'b': 1, 'c': 3}}),
+])
+def test_param_dictupdate(dorig, dup, expt):
+	assert Param._dictUpdate(dorig, dup) == expt
+
+@pytest.mark.parametrize('param, expt', [
+	(Param('a.b.c', 1), {'b': {'c': 1}}),
+])
+def test_param_dict(param, expt):
+	assert param.dict() == expt
+
+def test_param_dict_exc():
+	with pytest.raises(ParamTypeError):
+		Param('a').dict()
+
 # endregion
 
 # region: Params
@@ -648,12 +685,58 @@ def test_params_preparse_exc():
 	  "Later value '6' was ignored for option 'a' (type='auto:')",
 	  "Later value '7' was ignored for option 'a' (type='auto:')",
 	  "Later value '8' was ignored for option 'a' (type='auto:')"]),
-	(['-a.b', '1'], {'a': {'b': 1}}, []),
+	(['-a.b', '1', '-a.c.x', '2', '-b'], {'a': {'b': 1, 'c': {'x': 2}}, 'b': True}, []),
+	(['-a:dict'], {'a': {}}, [])
 ])
 def test_params_parse_arbi(args, exptdict, exptwarns, capsys):
 	params = Params()
+	params._hbald = False
 	assert params.parse(args, True) == exptdict
 	err = capsys.readouterr().err
 	for exptwarn in exptwarns:
 		assert exptwarn in err
+
+def test_params_parse():
+	params1 = Params()
+
+def test_params_help():
+	def gethelp(ps):
+		help = re.sub(r'\x1B\[[0-?]*[ -/]*[@-~]', '', ps.help().strip())
+		return re.sub(r'\s+', ' ', help)
+	import sys
+	sys.argv = ['program']
+	params = Params()
+	#print ('-'*10, params.help(), '-'*10)
+	assert gethelp(params) == 'USAGE: program [OPTIONS] OPTIONAL OPTIONS: -h, --help, -H ' + \
+		'- Print this help information'
+
+	params.optional = 'default'
+	assert gethelp(params) == 'USAGE: program [OPTIONS] OPTIONAL OPTIONS: -optional <STR> ' + \
+		"- Default: 'default' -h, --help, -H " + \
+		'- Print this help information'
+	params.req.required = True
+	params.req2.required = True
+	params.req3 = params.req
+	params.req4 = params.req
+	params.req5 = params.req
+	params.req6 = params.req
+	params.req7 = params.req
+	params.req73333 = params.req
+	params.req722222 = params.req
+	params.req722222222 = params.req
+	params.opt = params.optional
+	params.opt2 = 1
+	print ('-'*10, params.help(), '-'*10)
+
+	params._usage = '{prog} <-this THIS> <-is IS> <-a A> <-very VERY> <-very VERY>' + \
+		' <-very VERY> <-very VERY> <-very VERY> <-very VERY> <-very VERY> <-long LONG>' + \
+		' <-usage USAGE>'
+	print ('-'*10, params.help(), '-'*10)
+
+def test_params_hashable():
+	params = Params()
+	params2 = Params()
+	params_dict = {params: 1}
+	assert list(params_dict.keys())[0] == params
+	assert list(params_dict.keys())[0] != params2
 # endregion

@@ -1,5 +1,5 @@
 [tool.poetry]
-name = "paramet"
+name = "pyparam"
 version = "0.0.1"
 description = "Powerful parameter processing."
 authors = ["pwwang <pwwang@pwwang.com>"]

@@ -4,6 +4,7 @@ parameters module for PyPPL
 import sys
 import re
 import ast
+import builtins
 import textwrap
 from os import path
 from collections import OrderedDict
@@ -63,7 +64,7 @@ OPT_BOOL_FALSES = [False, 0, 'f', 'F', 'False', 'FALSE', 'false', '0', 'N', 'n',
 
 OPT_NONES = [None, 'none', 'None']
 
-OPT_PATTERN       = r"^([a-zA-Z\?@][\w,\._-]*)?(?::([\w:]+))?(?:=(.*))?$"
+OPT_PATTERN       = r"^([a-zA-Z\?@-][\w,\._-]*)?(?::([\w:]+))?(?:=(.*))?$"
 OPT_INT_PATTERN   = r'^[+-]?\d+$'
 OPT_FLOAT_PATTERN = r'^[+-]?(?:\d*\.)?\d+(?:[Ee][+-]\d+)?$'
 OPT_NONE_PATTERN  = r'^none|None$'
@@ -155,17 +156,23 @@ class _Valuable:
 	def __contains__(self, other):
 		return other in self.value
 
-	def __hash__(self):
+	def __hash__(self): # pragma: no cover
 		"""
 		Use id as identifier for hash
 		"""
 		return id(self)
 
-	def __eq__(self, other):
+	def __eq__(self, other): # pragma: no cover
 		return self.value == other
 
 	def __ne__(self, other):
 		return not self.__eq__(other)
+
+def _textwrap(text, width = 70, **kwargs):
+	width -= 2
+	wraps = textwrap.wrap(text, width, **kwargs)
+	return [line + ' \\' if i < len(wraps) - 1 else line
+			for i, line in enumerate(wraps)]
 
 class HelpAssembler:
 	"""A helper class to help assembling the help information page."""
@@ -265,7 +272,7 @@ class HelpAssembler:
 		"""
 		trimmedmsg = msg.rstrip().upper()
 		if not trimmedmsg:
-			return msg
+			return msg + '  '
 		return '{colorstart}{msg}{colorend}'.format(
 			colorstart = self.theme['opttype'],
 			msg        = ('({})' if trimmedmsg == 'BOOL' else '<{}>').format(trimmedmsg),
@@ -311,25 +318,36 @@ class HelpAssembler:
 		"""
 
 		ret = []
+		maxoptwidth = 0
+		for helpitems in helps.values():
+			for item in helpitems:
+				if not isinstance(item, tuple):
+					continue
+				# 5 = <first 2 spaces: 2> +
+				#     <gap between name and type: 1> +
+				#     <brackts around type: 2>
+				maxoptwidth = max(maxoptwidth,
+					max(len(item[0] + item[1]) + MIN_OPT_GAP + 5
+						for item in helpitems
+						if len(item[0] + item[1]) + MIN_OPT_GAP + 5 <= MAX_OPT_WIDTH))
+
+		maxoptwidth = maxoptwidth or MAX_OPT_WIDTH
+
 		for title, helpitems in helps.items():
+
 			ret.append(self.title(title))
 			if not any(isinstance(item, tuple) for item in helpitems):
 				for item in helpitems:
-					ret.extend('  ' + self.plain(it)
-							   for it in textwrap.wrap(item, MAX_PAGE_WIDTH - 2))
+					ret.extend(self.plain(it) for it in _textwrap(
+						item, MAX_PAGE_WIDTH - 2, initial_indent = '  ', subsequent_indent = '  '))
+				ret.append('')
 				continue
 
 			helpitems = [item if isinstance(item, tuple) else ('', '', item)
 						 for item in helpitems]
-			# 5 = <first 2 spaces: 2> +
-			#     <gap between name and type: 1> +
-			#     <brackts around type: 2>
-			maxoptwidth = max(len(item[0] + item[1]) + MIN_OPT_GAP + 5
-							  for item in helpitems
-							  if len(item[0] + item[1]) + MIN_OPT_GAP + 5 <= MAX_OPT_WIDTH)
 
 			for optname, opttype, optdesc in helpitems:
-				descs = sum((textwrap.wrap(desc, MAX_PAGE_WIDTH - maxoptwidth)
+				descs = sum((_textwrap(desc, MAX_PAGE_WIDTH - maxoptwidth)
 							for desc in optdesc), [])
 				optlen = len(optname + opttype) + MIN_OPT_GAP + 5
 				if optlen > MAX_OPT_WIDTH:
@@ -345,6 +363,7 @@ class HelpAssembler:
 					ret.append(to_append)
 				if descs:
 					ret.extend(' ' * maxoptwidth + self.optdesc(desc) for desc in descs)
+			ret.append('')
 		ret.append('')
 		return ret
 
@@ -408,6 +427,15 @@ class Param(_Valuable):
 		# make sure split returns 2 elements, even if type2 == ''
 		return '%s:%s' % (type1, type2)
 
+	@staticmethod
+	def _dictUpdate(dorig, dup):
+		for key, val in dup.items():
+			if isinstance(val, dict):
+				dorig[key] = Param._dictUpdate(dorig.get(key, {}), val)
+			else:
+				dorig[key] = val
+		return dorig
+
 	# this will set to None if __eq__ is overwritten
 	def __hash__(self):
 		"""
@@ -432,7 +460,7 @@ class Param(_Valuable):
 					typename = self.type or 'auto'
 
 			typename = Param._normalizeType(typename)
-			_, type2 = typename.split(':')
+			type1, type2 = typename.split(':')
 			append = False
 			if not self.stacks:
 				append = True
@@ -440,6 +468,8 @@ class Param(_Valuable):
 				prevtype, prevalue = self.stacks[-1]
 				if typename == prevtype and type2 == 'list':
 					prevalue.append([] if value == OPT_UNSET_VALUE else [value])
+				elif typename == prevtype and type1 == 'dict':
+					prevalue.append(value)
 				else:
 					append = True
 			if append:
@@ -492,6 +522,18 @@ class Param(_Valuable):
 		elif type1 in ('bool', 'auto') and not value:
 			self._type = typename
 			self.value = True
+		elif type1 == 'dict':
+			if not value:
+				self.value = {}
+			else:
+				val0 = value.pop(0)
+				if isinstance(val0, Param):
+					val0 = val0.dict()
+				for val in value:
+					if isinstance(val, Param):
+						val = val.dict()
+					val0 = Param._dictUpdate(val0, val)
+				self.value = val0
 		else:
 			self._type = typename
 			self.value = Param._forceType(value.pop(0), typename)
@@ -517,6 +559,8 @@ class Param(_Valuable):
 			if description[-1]:
 				description[-1] += ' '
 			description[-1] += 'Default: ' + repr(self.value)
+		if len(description) == 1 and not description[0]:
+			description[0] = '[No description]'
 		self._desc = description
 
 	@property
@@ -547,7 +591,7 @@ class Param(_Valuable):
 		type1, type2 = typename.split(':')
 		try:
 			if type1 in ('int', 'float', 'str'):
-				return __builtins__[type1](value)
+				return getattr(builtins, type1)(value)
 
 			if type1 == 'bool':
 				if value in OPT_BOOL_TRUES:
@@ -612,6 +656,18 @@ class Param(_Valuable):
 			raise TypeError
 		except (ValueError, TypeError):
 			raise ParamTypeError('Unable to coerce value %r to type %r' % (value, typename))
+
+	def dict(self):
+		if '.' not in self.name:
+			raise ParamTypeError(
+				'Unable to convert param into dict without dot in name: %r' % self.name)
+		ret0 = ret = {}
+		parts = self.name.split('.')
+		for part in parts[1:-1]:
+			ret[part] = {}
+			ret = ret[part]
+		ret[parts[-1]] = self.value
+		return ret0
 
 	def __repr__(self):
 		return '<Param(name={!r},value={!r},type={!r}) @ {}>'.format(
@@ -900,6 +956,8 @@ class Params(_Hashable):
 	def parse(self, args = None, arbi = False):
 		args = sys.argv[1:] if args is None else args
 		try:
+			if not args and self._hbald:
+				raise ParamsParseError('__help__')
 			parsed, pendings = self._preParse(args)
 			warns  = ['Unrecognized value: %r' % pend for pend in pendings]
 			# check out dict options first
@@ -920,6 +978,11 @@ class Params(_Hashable):
 
 				warns.extend(param.checkout())
 
+			for hopt in self._hopts:
+				hopt = hopt[len(self._prefix):]
+				if hopt in self._params and self._params[hopt].bool():
+					raise ParamsParseError('__help__')
+
 			# apply callbacks
 			for name, param in self._params.items():
 				if not callable(param.callback):
@@ -930,7 +993,7 @@ class Params(_Hashable):
 					if 'argument' not in str(ex):
 						raise
 					ret = param.callback(param, self)
-				if ret is True or ret is None or isinstance(ret, Parameter):
+				if ret is True or ret is None or isinstance(ret, Param):
 					continue
 
 				error = 'Callback error.' if ret is False else ret
@@ -946,14 +1009,11 @@ class Params(_Hashable):
 			for warn in warns[:(MAX_WARNINGS+1)]:
 				sys.stderr.write(warn + '\n')
 			return self.asDict()
-		except ParamsParseError as ex:
-			self.help(str(ex), print_and_exit = True)
-
-	def _shouldPrintHelp(self, args):
-		if self._props['hbald'] and not args:
-			return True
-
-		return any([arg in self._props['hopts'] for arg in args])
+		except ParamsParseError as exc:
+			exc = str(exc)
+			if exc == '__help__':
+				exc = ''
+			self.help(exc, print_and_exit = True)
 
 	def help (self, error = '', print_and_exit = False):
 		"""
@@ -965,6 +1025,7 @@ class Params(_Hashable):
 		@return:
 			The help information
 		"""
+		# alias
 		revparams = {}
 		for key, val in self._params.items():
 			if not val in revparams:
@@ -972,24 +1033,28 @@ class Params(_Hashable):
 			revparams[val].append(key)
 
 		posopt = None
-		if Params.POSITIONAL in self._params:
-			posopt = self._params[Params.POSITIONAL]
-			if len(posopt.desc) == 1 and posopt.desc[0].startswith('Default: '):
-				posopt = None
+		if OPT_POSITIONAL_NAME in self._params:
+			posopt = self._params[OPT_POSITIONAL_NAME]
 
 		required_options   = []
 		optional_options   = []
 
 		for val in revparams.keys():
 			# options not suppose to show
-			if not val.show or val.name == Params.POSITIONAL:
+			if not val.show or val.name == OPT_POSITIONAL_NAME:
 				continue
+
+			# Force calculate default in description
+			val.desc = val.desc
+			valtype  = val.type or ''
+			if valtype.endswith(':'):
+				valtype = valtype[:-1]
+			if valtype == 'NoneType':
+				valtype = 'auto'
 			option = (
 				', '.join([self._props['prefix'] + k
-					for k in sorted(revparams[val], key = len)]),
-				(val.type or '').upper(),
-				val.desc
-			)
+						   for k in sorted(revparams[val], key = len)]),
+				valtype, val.desc)
 			if val.required:
 				required_options.append(option)
 			else:
@@ -1006,7 +1071,9 @@ class Params(_Hashable):
 			helpitems['description'] = self._props['desc']
 
 		if self._props['usage']:
-			helpitems['usage'] = self._props['usage']
+			helpitems['usage'] = sum((_textwrap(
+				usage, MAX_PAGE_WIDTH - (len(self._prog) - 6) * 4 - 10, subsequent_indent = '  ')
+				for usage in self._props['usage']), [])
 		else: # default usage
 			defusage = ['{prog}']
 			for optname, opttype, _ in required_options:
@@ -1021,13 +1088,20 @@ class Params(_Hashable):
 			if isinstance(posopt, Param):
 				defusage.append('POSITIONAL' if posopt.required else '[POSITIONAL]')
 
-			helpitems['usage'] = [' '.join(defusage)]
+			if len(defusage) == 1:
+				defusage.append('[OPTIONS]')
+
+			defusage = _textwrap(' '.join(defusage),
+				MAX_PAGE_WIDTH - (len(self._prog) - 6) * 4 - 10, subsequent_indent = '  ')
+			helpitems['usage'] = defusage
 
 		optional_options.append((
 			', '.join(filter(None, self._props['hopts'])),
 			'', ['Print this help information']))
-		helpitems['required options'] = required_options
-		helpitems['optional options'] = optional_options
+		if required_options:
+			helpitems['required options'] = required_options
+		if optional_options:
+			helpitems['optional options'] = optional_options
 
 		if callable(self._helpx):
 			helpitems = self._helpx(helpitems)
@@ -1037,13 +1111,13 @@ class Params(_Hashable):
 			if not isinstance(error, list):
 				error = [error]
 			ret = [self._assembler.error(err.strip()) for err in error]
-		ret += self._assembler.assemble(helpitems, self._prog)
+		ret.extend(self._assembler.assemble(helpitems))
 
 		if print_and_exit:
-			sys.stderr.write('\n'.join(ret) + '\n')
+			sys.stderr.write('\n'.join(ret))
 			sys.exit(1)
 		else:
-			return '\n'.join(ret) + '\n'
+			return '\n'.join(ret)
 
 	def loadDict (self, dict_var, show = False):
 		"""
@@ -1120,6 +1194,8 @@ class Params(_Hashable):
 		for name in self._params:
 			ret[name] = self._params[name].value
 		return ret
+
+	dict = asDict
 
 class Commands(object):
 	"""
