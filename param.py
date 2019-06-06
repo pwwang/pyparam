@@ -406,13 +406,13 @@ class Param(_Valuable):
 			typename = 'list'
 			value = list(value)
 		# dict could have a lot of subclasses
-		elif isinstance(value, dict):
+		elif isinstance(value, (Param, dict)):
 			typename = 'dict'
 		elif value != OPT_UNSET_VALUE:
 			if typename not in OPT_ALLOWED_TYPES:
 				raise ParamTypeError('Type not allowed: %r' % typename)
 		else:
-			typename = None
+			typename = 'auto'
 			value    = None
 		return value, Param._normalizeType(typename)
 
@@ -422,12 +422,17 @@ class Param(_Valuable):
 			return None
 		if not isinstance(typename, str):
 			typename = typename.__name__
-		tcolon = typename if ':' in typename else typename + ':'
-		type1, type2 = tcolon.split(':', 1)
+		type1, type2 = (typename.rstrip(':') + ':').split(':')[:2]
 		type1 = OPT_TYPE_MAPPINGS.get(type1, type1)
 		type2 = OPT_TYPE_MAPPINGS.get(type2, type2)
-		if type2 and type1 != 'list':
-			raise ParamTypeError('Subtype is only allowed for list: %r' % type2)
+		if type1 == 'reset' and type2:
+			raise ParamTypeError("Subtype not allowed for 'reset'")
+		if type1 == 'dict' and type2 and type2 != 'reset':
+			raise ParamTypeError("Only allowed subtype 'reset' for 'dict'")
+		if type2 == 'list' and type1 != 'list':
+			raise ParamTypeError("Subtype 'list' of only allow for 'list'")
+		if type2 and type1 not in ('list', 'dict'):
+			raise ParamTypeError('Subtype %r is only allowed for list and dict' % type2)
 		# make sure split returns 2 elements, even if type2 == ''
 		return '%s:%s' % (type1, type2)
 
@@ -454,76 +459,84 @@ class Param(_Valuable):
 		return self.value == other
 
 	def push(self, value = OPT_UNSET_VALUE, typename = None):
-		# if typename is set
-		if typename:
-			# push an item forcely using previous type
-			if typename is True:
-				typename = self.stacks[-1][0] if self.stacks else (self.type or 'auto')
+		"""
+		Push the value to the stack.
+		"""
+		# nothing to do, no self.type, no typename and no value
+		if typename is None and value == OPT_UNSET_VALUE and self.type == 'auto:':
+			return
 
+		# push an item forcely using previous type
+		# in case the option is give by '-a 1' without any type specification
+		# if no type specified, deduct from the value
+		# otherwise auto
+		origtype = self.stacks[-1][0] if self.stacks else self.type
+
+		if typename is True:
+			typename = origtype
+		# if typename is give, push a tuple anyway unless
+		# type1 == 'list:' and type2 != 'reset'
+		# type1 == 'dict:' and type2 != 'reset'
+		if typename:
+			# normalize type and get primary and secondary type
 			typename = Param._normalizeType(typename)
 			type1, type2 = typename.split(':')
 
-			appended = not self.stacks
-			# if not stacks, we got to append to, because we are push values anyway
-			if appended:
-				self.stacks.append((typename, [[]] if typename == 'list:list' else []))
-
-			prevtype, prevalue = self.stacks[-1]
-			if typename == prevtype and typename == 'list:list':
-				# if it is list of list, we have to append a list to prevalue anyway
-				# if list is already appended, use it
-				# because we want explicit -opt to create a new list
-				if not appended or not prevalue:
-					prevalue.append([])
-				if value != OPT_UNSET_VALUE:
-					prevalue[-1].append(value)
-			elif typename == prevtype and typename == 'list:reset':
-				# if the list is supposed to reset
-				# we are gonna start a new stack anyway
-				if not appended:
-					self.stacks.append((typename, []))
-				if value != OPT_UNSET_VALUE:
-					self.stacks[-1][-1].append(value)
-			elif typename == prevtype and type1 == 'dict':
-				if value != OPT_UNSET_VALUE:
-					prevalue.append(value)
-			elif typename == prevtype and type1 == 'list':
-				if not prevalue and len(self.stacks) == 1: # add default values
-					prevalue.extend(self.value or [])
-				if value != OPT_UNSET_VALUE:
-					prevalue.append(value)
-			elif typename == 'list:list':
-				if not appended:
-					self.stacks.append((typename, [[]]))
-				if value != OPT_UNSET_VALUE:
-					self.stacks[-1][-1][-1].append(value)
-			else:
-				if not appended:
-					self.stacks.append((typename, []))
-				if value != OPT_UNSET_VALUE:
-					self.stacks[-1][-1].append(value)
-
-		else:
-			if not self.stacks and not self.type:
-				if value == OPT_UNSET_VALUE:
-					# nothing to do, no self.type, no typename and no value
-					return
-				value, typename = Param._typeFromValue(value)
-			elif self.stacks:
-				typename = self.stacks[-1][0]
-			else:
-				typename = self.type
-
+			# no values pushed yet, push one anyway
 			if not self.stacks:
-				self.push(value, typename)
-			elif value != OPT_UNSET_VALUE:
-				# some has been pushed, then typename == self.stacks[-1][0]
-				_, type2 = typename.split(':')
-				prevalue = self.stacks[-1][1]
-				if type2 == 'list':
-					prevalue[-1].append(value)
+				# try to push [[]] if typename is 'list:list' or
+				# typename is 'reset' and self.type is list:list
+				if typename == 'list:list':
+					if origtype == typename and self.value and self.value[0]:
+						# we don't need to forceType because list:list can't be deducted from value
+						self.stacks.append((typename, self.value[:] + [[]]))
+					else:
+						self.stacks.append((typename, [[]]))
+				elif type1 == 'reset':
+					if origtype == 'list:list':
+						self.stacks.append((origtype, [[]]))
+					else:
+						self.stacks.append((origtype, []))
+				elif type2 == 'reset':
+					self.stacks.append((type1 + ':', []))
+				elif type1 == 'list':
+					if origtype == typename:
+						self.stacks.append((typename, self.value[:]))
+					else:
+						self.stacks.append((typename, []))
+				elif type1 == 'dict':
+					if origtype == typename:
+						self.stacks.append((typename, [(self.value or {}).copy()]))
+					else:
+						self.stacks.append((typename, []))
 				else:
-					prevalue.append(value)
+					self.stacks.append((typename, []))
+			elif type2 == 'reset':
+				# no warnings, reset is intended
+				self.stacks[-1] = (origtype, [])
+			elif type1 == 'reset':
+				if origtype == 'list:list':
+					# no warnings, reset is intended
+					self.stacks = [(origtype, [[]])]
+				else:
+					self.stacks = [(origtype, [])]
+			elif type2 == 'list':
+				if origtype == 'list:list':
+					self.stacks[-1][-1].append([])
+				else:
+					self.stacks.append((typename, [[]]))
+			elif type1 not in ('list', 'dict'):
+				self.stacks.append((typename, []))
+
+			# since container has been created
+			self.push(value)
+		else:
+			if not self.stacks:
+				self.push(value, typename = True)
+			elif value != OPT_UNSET_VALUE:
+				type2 = origtype.split(':')[1]
+				prevalue = self.stacks[-1][-1][-1] if type2 == 'list' else self.stacks[-1][-1]
+				prevalue.append(value)
 
 	def checkout(self):
 		if not self.stacks:
@@ -535,17 +548,12 @@ class Param(_Valuable):
 		self.stacks = []
 
 		type1, type2 = typename.split(':')
+		self._type = typename
 		if type2 == 'list':
-			self._type = typename
 			self.value = value
-		elif type2 == 'reset':
-			self._type = Param._normalizeType(type1 + ':')
-			self.value = Param._forceType(value, type1 + ':')
 		elif type1 == 'list':
-			self._type = typename
 			self.value = Param._forceType(value, typename)
 		elif type1 in ('bool', 'auto') and not value:
-			self._type = typename
 			self.value = True
 		elif type1 == 'dict':
 			if not value:
@@ -560,7 +568,6 @@ class Param(_Valuable):
 					val0 = Param._dictUpdate(val0, val)
 				self.value = val0
 		else:
-			self._type = typename
 			self.value = Param._forceType(value.pop(0), typename)
 			for val in value:
 				warns.append('Later value %r was ignored for option %r (type=%r)' % (
@@ -608,9 +615,7 @@ class Param(_Valuable):
 
 	@type.setter
 	def type(self, typename):
-		if not isinstance(typename, str):
-			typename = typename.__name__
-		self._type = Param._normalizeType(typename)
+		self.setType(typename, True)
 
 	@staticmethod
 	def _forceType(value, typename):
@@ -677,7 +682,7 @@ class Param(_Valuable):
 				if type2 == 'reset':
 					return value
 				if type2 == 'list':
-					return value if isinstance(value[0], list) else [value]
+					return value if value and isinstance(value[0], list) else [value]
 				type2 = Param._normalizeType(type2)
 				return [Param._forceType(x, type2) for x in value]
 
@@ -699,10 +704,8 @@ class Param(_Valuable):
 
 	def __repr__(self):
 		typename = self.type or ''
-		if typename.endswith(':'):
-			typename = typename[:-1]
 		return '<Param(name={!r},value={!r},type={!r}) @ {}>'.format(
-			self.name, self.value, typename, hex(id(self)))
+			self.name, self.value, typename.rstrip(':'), hex(id(self)))
 
 	def setDesc (self, desc):
 		"""
@@ -722,16 +725,18 @@ class Param(_Valuable):
 		self.required = req
 		return self
 
-	def setType (self, typename, update_value = False):
+	def setType (self, typename, update_value = True):
 		"""
 		Set the type of the parameter
 		@params:
 			`typename`: The type of the value. Default: str
 			- Note: str rather then 'str'
 		"""
-		self.type = typename
+		if not isinstance(typename, str):
+			typename = typename.__name__
+		self._type = Param._normalizeType(typename)
 		if update_value:
-			self.value = Param._forceType(self.value, self.type)
+			self.value = Param._forceType(self.value, self._type)
 		return self
 
 	def setCallback(self, callback):
@@ -1062,8 +1067,7 @@ class Params(_Hashable):
 			# Force calculate default in description
 			val.desc = val.desc
 			valtype  = val.type or ''
-			if valtype.endswith(':'):
-				valtype = valtype[:-1]
+			valtype  = valtype.rstrip(':')
 			if valtype == 'NoneType':
 				valtype = 'auto'
 			option = (

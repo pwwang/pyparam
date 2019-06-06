@@ -203,7 +203,7 @@ def test_param_init():
 		Param('*1234', 'value')
 
 	param = Param('name')
-	assert param.type is None
+	assert param.type == 'auto:'
 	assert param.value is None
 
 	param = Param('name', None)
@@ -288,7 +288,7 @@ def test_param_type():
 	assert param.type == 'str:'
 	param.type = int
 	assert param.type == 'int:'
-	assert param.value == '1'
+	assert param.value == 1
 	assert param.setType(int, update_value = True) is param
 	assert param.value == 1
 	with pytest.raises(ParamTypeError):
@@ -388,7 +388,7 @@ def test_param_baseclass():
 	({1}, [1], 'list:'),
 	({'a':1}, {'a':1}, 'dict:'),
 	(OrderedDict([('b', 2), ('a', 1)]), OrderedDict([('b', 2), ('a', 1)]), 'dict:'),
-	(OPT_UNSET_VALUE, None, None),
+	(OPT_UNSET_VALUE, None, 'auto:'),
 ])
 def test_param_typefromvalue(value, exptval, exptype):
 	assert Param._typeFromValue(value) == (exptval, exptype)
@@ -424,26 +424,36 @@ def test_param_typefromvalue(value, exptval, exptype):
 def test_param_normalizetype(typename, exptype):
 	assert Param._normalizeType(typename) == exptype
 
+@pytest.mark.parametrize('typename', [
+	'reset:a',
+	'dict:x',
+	'int:list',
+	'int:auto',
+])
+def test_param_normalizetype_exc(typename):
+	with pytest.raises(ParamTypeError):
+		Param._normalizeType(typename)
+
 def test_param_push():
 	param = Param('name')
 	param.push(1)
-	assert param.type is None
+	assert param.type == 'auto:'
 	assert param.value is None
-	assert param.stacks == [('int:', [1])]
+	assert param.stacks == [('auto:', [1])]
 	param.push(2)
-	assert param.stacks == [('int:', [1, 2])]
+	assert param.stacks == [('auto:', [1, 2])]
 	param.push(1, 'list:list')
-	assert param.stacks == [('int:', [1, 2]), ('list:list', [[1]])]
+	assert param.stacks == [('auto:', [1, 2]), ('list:list', [[1]])]
 	param.push(2)
-	assert param.stacks == [('int:', [1, 2]), ('list:list', [[1, 2]])]
+	assert param.stacks == [('auto:', [1, 2]), ('list:list', [[1, 2]])]
 	param.push(3, 'list:list')
-	assert param.stacks == [('int:', [1, 2]), ('list:list', [[1, 2], [3]])]
+	assert param.stacks == [('auto:', [1, 2]), ('list:list', [[1, 2], [3]])]
 	param.push(4)
-	assert param.stacks == [('int:', [1, 2]), ('list:list', [[1, 2], [3, 4]])]
+	assert param.stacks == [('auto:', [1, 2]), ('list:list', [[1, 2], [3, 4]])]
 	param.push('a')
-	assert param.stacks == [('int:', [1, 2]), ('list:list', [[1, 2], [3, 4, 'a']])]
+	assert param.stacks == [('auto:', [1, 2]), ('list:list', [[1, 2], [3, 4, 'a']])]
 	param.push('a', str)
-	assert param.stacks == [('int:', [1, 2]), ('list:list', [[1, 2], [3, 4, 'a']]), ('str:', ['a'])]
+	assert param.stacks == [('auto:', [1, 2]), ('list:list', [[1, 2], [3, 4, 'a']]), ('str:', ['a'])]
 
 	param = Param('a', 1)
 	param.push(2)
@@ -462,13 +472,13 @@ def test_param_push():
 	param.push(2)
 	assert param.stacks == [('list:', [1,2])]
 	param.push(3, 'list:reset')
-	assert param.stacks == [('list:', [1,2]), ('list:reset', [3])]
+	assert param.stacks == [('list:', [3])]
 	param.push(4)
-	assert param.stacks == [('list:', [1,2]), ('list:reset', [3, 4])]
+	assert param.stacks == [('list:', [3, 4])]
 	param.push(5, 'list:reset')
-	assert param.stacks == [('list:', [1,2]), ('list:reset', [3, 4]), ('list:reset', [5])]
+	assert param.stacks == [('list:', [5])]
 	param.push(6)
-	assert param.stacks == [('list:', [1,2]), ('list:reset', [3, 4]), ('list:reset', [5, 6])]
+	assert param.stacks == [('list:', [5, 6])]
 
 	# OPT_UNSET_VALUE
 	param = Param('a')
@@ -483,11 +493,11 @@ def test_param_push():
 	param.push()
 	assert param.stacks == []
 	param.push('1')
-	assert param.stacks == [('str:', ['1'])]
+	assert param.stacks == [('auto:', ['1'])]
 	param.push()
 	param.push('2')
 	param.push('3')
-	assert param.stacks == [('str:', ['1', '2', '3'])]
+	assert param.stacks == [('auto:', ['1', '2', '3'])]
 	param = Param('a', 1)
 	param.push()
 	assert param.stacks == [('int:', [])]
@@ -507,8 +517,44 @@ def test_param_push():
 	param.push({'a': {'c': {'y': 3}}})
 	assert param.stacks == [('dict:', [param2, param3, {'a': {'c': {'y': 3}}}])]
 
+	# push reset
+	param = Param('a', [1,2])
+	param.push(3)
+	assert param.stacks == [('list:', [1,2,3])]
+	param.push(typename = 'reset:')
+	assert param.stacks == [('list:', [])]
+
+	param = Param('a', [1,2])
+	param.push(3, 'reset:')
+	assert param.stacks == [('list:', [3])]
+
+	param = Param('a')
+	param.type = 'list:list'
+	param.value = [[1,2]]
+	param.push(3)
+	assert param.stacks == [('list:list', [[1,2],[3]])]
+	param.push(4, 'reset:')
+	assert param.stacks == [('list:list', [[4]])]
+
+	param = Param('a')
+	param.type = 'list:list'
+	param.value = [[1,2]]
+	param.push(4, 'reset:')
+	assert param.stacks == [('list:list', [[4]])]
+
+	param = Param('a', [1,2])
+	param.push(3, 'list:reset')
+	assert param.stacks == [('list:', [3])]
+	param.push(4)
+	assert param.stacks == [('list:', [3,4])]
+	param.push(5)
+	assert param.stacks == [('list:', [3,4,5])]
+
+
+
+
 @pytest.mark.parametrize('stacks, exptwarns, exptype, exptval', [
-	([], [], None, None),
+	([], [], 'auto:', None),
 	([('int:', [1])], [], 'int:', 1),
 	([('int:', [1, 2])],
 	 ["Later value 2 was ignored for option 'a' (type='int:')"],
@@ -527,18 +573,20 @@ def test_param_push():
 	  "Previous settings (type='list:list', value=[[1, 2], [3, 4, 'a']]) were ignored for option 'a'",
 	  "Later value 'b' was ignored for option 'a' (type='str:')"],
 	 'str:', 'a'),
-	([('list:', [1,2]), ('list:reset', [3, 4])],
+	([('list:', [1,2]), ('list:', [3, 4])],
 	 ["Previous settings (type='list:', value=[1, 2]) were ignored for option 'a'"],
 	 'list:', [3,4]),
-	([('list:', [1,2]), ('list:reset', [3, 4]), ('list:reset', [5, 6])],
+	([('list:', [1,2]), ('list:', [3, 4]), ('list:', [5, 6])],
 	 ["Previous settings (type='list:', value=[1, 2]) were ignored for option 'a'",
-	  "Previous settings (type='list:reset', value=[3, 4]) were ignored for option 'a'"],
+	  "Previous settings (type='list:', value=[3, 4]) were ignored for option 'a'"],
 	 'list:', [5,6]),
 	([('list:', [1,2,'py:3','None'])], [], 'list:', [1,2,3,None]),
 	# bool
 	([('bool:', [])], [], 'bool:', True),
 	# list:auto
 	([('list:', ['1'])], [], 'list:', [1]),
+	# param
+	([('dict:', [Param('a.b', 1)])], [], 'dict:', {'b': 1}),
 ])
 def test_param_checkout(stacks, exptwarns, exptype, exptval):
 	param = Param('a')
@@ -756,10 +804,11 @@ def test_params_parse(capsys):
 	assert params2.dict() == {'e': [1,2,3,4,5,6]}
 	# list:reset
 	params2.parse(['-e:l:r', '4', '-e', '5', '6', '-e', '7', '8'])
-	assert params2.dict() == {'e': [7, 8]}
-	capsyserr = capsys.readouterr().err
-	assert "Previous settings (type='list:reset', value=['4']) were ignored for option 'e'" in capsyserr
-	assert "Previous settings (type='list:reset', value=['5', '6']) were ignored for option 'e'" in capsyserr
+	assert params2.dict() == {'e': [4, 5, 6, 7, 8]}
+
+	# reset
+	params2.parse(['-e:r', '4', '-e', '5', '6', '-e', '7', '8'])
+	assert params2.dict() == {'e': [4, 5, 6, 7, 8]}
 
 	# list of list
 	params3 = Params()
@@ -767,6 +816,12 @@ def test_params_parse(capsys):
 	params3.f.type = 'list:list'
 	params3.parse(['-f', '1', '2', '-f', '3', '4'])
 	assert params3.dict() == {'f': [['1', '2'], ['3', '4']]}
+
+	# reset dict
+	params4 = Params()
+	params4.g = {'a': 1}
+	params4.parse(['-g.b', '2'])
+	assert params4.dict() == {'g': {'a':1, 'b':2}}
 
 def test_params_help(capsys):
 	import sys
@@ -858,7 +913,8 @@ def test_params_loadfile(tmp_path):
 		"a = 1\n"
 		"a.required = py:False\n"
 		"[profile]\n"
-		"a = py:2\n"
+		"a.type = int\n"
+		"a = 2\n"
 	)
 	params.loadFile(tmpfile2.as_posix(), profile = 'profile')
 	assert params.a.value == 2
