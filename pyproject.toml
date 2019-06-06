@@ -10,7 +10,7 @@ packages = [
 ]
 
 [tool.poetry.dependencies]
-python = "^3.3"
+python = "^3.4"
 colorama = "*"
 python-simpleconf = "^0.1.3"
 
