@@ -1,0 +1,21 @@
+sudo: false
+language: python
+python:
+  - "3.3"
+  - "3.4"
+  - "3.5"
+  - "3.6"
+  - "3.7"
+before_install:
+  - pip install poetry
+install:
+  - poetry install -v
+  - pip install tox-travis
+script: 
+  - pytest tests/
+deploy:
+  provider: script
+  script: poetry publish
+  on:
+    tags: true
+    condition: "$TRAVIS_PYTHON_VERSION == 3.7"
