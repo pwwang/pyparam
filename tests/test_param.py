@@ -3,8 +3,13 @@ import re
 import pytest
 import colorama
 from param import HelpAssembler, MAX_PAGE_WIDTH, MAX_OPT_WIDTH, \
-	Param, Params, params, ParamNameError, ParamTypeError, \
-	ParamsParseError, ParamsLoadError, OPT_UNSET_VALUE, OPT_POSITIONAL_NAME
+	Param, Params, params, commands, ParamNameError, ParamTypeError, \
+	ParamsParseError, ParamsLoadError, OPT_UNSET_VALUE, OPT_POSITIONAL_NAME, \
+	Commands
+
+def striphelp(msg):
+	msg = re.sub(r'\x1B\[[0-?]*[ -/]*[@-~]', '', msg.strip())
+	return re.sub(r'\s+', ' ', msg)
 
 class TestHelpAssembler:
 
@@ -333,7 +338,7 @@ def test_param_forcetype_exc(value, typename, exception):
 def test_param_repr():
 	param = Param('name', 'value')
 	assert repr(param).startswith(
-		"<Param(name='name',value='value',type='str:') @ ")
+		"<Param(name='name',value='value',type='str') @ ")
 
 def test_param_baseclass():
 	param1 = Param('name', '1')
@@ -532,6 +537,8 @@ def test_param_push():
 	([('list:', [1,2,'py:3','None'])], [], 'list:', [1,2,3,None]),
 	# bool
 	([('bool:', [])], [], 'bool:', True),
+	# list:auto
+	([('list:', ['1'])], [], 'list:', [1]),
 ])
 def test_param_checkout(stacks, exptwarns, exptype, exptval):
 	param = Param('a')
@@ -618,7 +625,6 @@ def test_params_props():
 	assert params._hbald is False
 
 def test_params_attr():
-	# use singleton
 	params.__file__ = None
 	assert params.__file__ is None
 	params.b = Param('b', None)
@@ -639,6 +645,7 @@ def test_params_repr():
 @pytest.mark.parametrize('args, exptstacks, exptpendings', [
 	([], {}, []),
 	(['a', 'b'], {OPT_POSITIONAL_NAME: [('list:', ['a', 'b'])]}, []),
+	(['-1'], {OPT_POSITIONAL_NAME: [('list:', ['-1'])]}, []),
 	# predefined
 	(['-b'], {'b': [('bool:', [])]}, []),
 	(['x', '-a'], {'a': [('auto:', [])]}, ['x']),
@@ -658,10 +665,6 @@ def test_params_preparse(args, exptstacks, exptpendings):
 	parsed, pendings = params._preParse(args)
 	assert pendings == exptpendings
 	assert {name: param.stacks for name, param in parsed.items()} == exptstacks
-
-def test_params_preparse_exc():
-	with pytest.raises(ParamsParseError):
-		Params()._preParse(['-*'])
 
 @pytest.mark.parametrize('args, exptdict, exptwarns', [
 	([], {}, []),
@@ -696,25 +699,90 @@ def test_params_parse_arbi(args, exptdict, exptwarns, capsys):
 	for exptwarn in exptwarns:
 		assert exptwarn in err
 
-def test_params_parse():
-	params1 = Params()
+def test_params_parse(capsys):
+	import sys
+	sys.argv = ['program']
 
-def test_params_help():
-	def gethelp(ps):
-		help = re.sub(r'\x1B\[[0-?]*[ -/]*[@-~]', '', ps.help().strip())
-		return re.sub(r'\s+', ' ', help)
+	params1 = Params()
+	params1._hbald = True
+	with pytest.raises(SystemExit):
+		params1.parse()
+	assert 'help' in capsys.readouterr().err
+
+	with pytest.raises(ParamsParseError):
+		params1.parse(raise_exc = True)
+
+	params1.a = 1
+	params1.parse(['-a', '2', '-b', '3'])
+	assert "Unrecognized option: '-b'" in capsys.readouterr().err
+	assert params1.dict() == {'a': 2}
+
+	with pytest.raises(SystemExit):
+		params1.parse(['-h'])
+	assert 'help' in capsys.readouterr().err
+
+	params1.a.callback = lambda param: param.setValue(param.value + 1)
+	params1.parse(['-a', '2'])
+	assert params1.dict() == {'a': 3}
+
+	params1.b = 10
+	params1.b.callback = lambda param, params: param.setValue(param.value * params.a.value)
+	params1.parse(['-a', '2'])
+	assert params1.dict() == {'a': 3, 'b': 30}
+
+	params1.a.callback = lambda param: list(1)
+	params1.b.callback = None
+	with pytest.raises(TypeError):
+		params1.parse(['-a', '2'])
+
+	params1.a.callback = lambda param: 'Should be negative number' if param.value > 0 else None
+	params1.parse(['-a', '-2'])
+	assert params1.dict() == {'a': -2, 'b': 30}
+
+	with pytest.raises(SystemExit):
+		params1.parse(['-a', '2'])
+	assert "Option '-a': Should be negative number" in capsys.readouterr().err
+
+	params1.c.required = True
+	params1.d = 3
+	with pytest.raises(SystemExit):
+		params1.parse(['-a', '-2'])
+	assert "Option '-c' is required." in capsys.readouterr().err
+
+	# see if lists get accumulated
+	params2 = Params()
+	params2.e = [1,2,3]
+	params2.parse(['-e', '4', '-e', '5', '6'])
+	assert params2.dict() == {'e': [1,2,3,4,5,6]}
+	# list:reset
+	params2.parse(['-e:l:r', '4', '-e', '5', '6', '-e', '7', '8'])
+	assert params2.dict() == {'e': [7, 8]}
+	capsyserr = capsys.readouterr().err
+	assert "Previous settings (type='list:reset', value=['4']) were ignored for option 'e'" in capsyserr
+	assert "Previous settings (type='list:reset', value=['5', '6']) were ignored for option 'e'" in capsyserr
+
+	# list of list
+	params3 = Params()
+	params3.f = []
+	params3.f.type = 'list:list'
+	params3.parse(['-f', '1', '2', '-f', '3', '4'])
+	assert params3.dict() == {'f': [['1', '2'], ['3', '4']]}
+
+def test_params_help(capsys):
 	import sys
 	sys.argv = ['program']
 	params = Params()
 	#print ('-'*10, params.help(), '-'*10)
-	assert gethelp(params) == 'USAGE: program [OPTIONS] OPTIONAL OPTIONS: -h, --help, -H ' + \
+	assert striphelp(params.help()) == 'USAGE: program [OPTIONS] OPTIONAL OPTIONS: -h, --help, -H ' + \
 		'- Print this help information'
 
 	params.optional = 'default'
-	assert gethelp(params) == 'USAGE: program [OPTIONS] OPTIONAL OPTIONS: -optional <STR> ' + \
+	assert striphelp(params.help()) == 'USAGE: program [OPTIONS] OPTIONAL OPTIONS: -optional <STR> ' + \
 		"- Default: 'default' -h, --help, -H " + \
 		'- Print this help information'
 	params.req.required = True
+	# 1088
+	params.req.type = 'NoneType'
 	params.req2.required = True
 	params.req3 = params.req
 	params.req4 = params.req
@@ -726,12 +794,27 @@ def test_params_help():
 	params.req722222222 = params.req
 	params.opt = params.optional
 	params.opt2 = 1
-	print ('-'*10, params.help(), '-'*10)
+	assert striphelp(params.help()) == "USAGE: program <-req auto> <-req2 auto> [OPTIONS] REQUIRED OPTIONS: -req, -req3, -req4, -req5, -req6, -req7, -req73333, -req722222, -req722222222 <AUTO> - [No description] -req2 <AUTO> - [No description] OPTIONAL OPTIONS: -opt, -optional <STR> - Default: 'default' -opt2 <INT> - Default: 1 -h, --help, -H - Print this help information"
 
 	params._usage = '{prog} <-this THIS> <-is IS> <-a A> <-very VERY> <-very VERY>' + \
 		' <-very VERY> <-very VERY> <-very VERY> <-very VERY> <-very VERY> <-long LONG>' + \
 		' <-usage USAGE>'
-	print ('-'*10, params.help(), '-'*10)
+	assert striphelp(params.help()) == "USAGE: program <-this THIS> <-is IS> <-a A> <-very VERY> <-very VERY> <-very VERY> <-very \\ VERY> <-very VERY> <-very VERY> <-very VERY> <-long LONG> <-usage USAGE> REQUIRED OPTIONS: -req, -req3, -req4, -req5, -req6, -req7, -req73333, -req722222, -req722222222 <AUTO> - [No description] -req2 <AUTO> - [No description] OPTIONAL OPTIONS: -opt, -optional <STR> - Default: 'default' -opt2 <INT> - Default: 1 -h, --help, -H - Print this help information"
+
+	params._ = ['positional']
+	params._usage = []
+	assert striphelp(params.help()) == "USAGE: program <-req auto> <-req2 auto> [OPTIONS] [POSITIONAL] REQUIRED OPTIONS: -req, -req3, -req4, -req5, -req6, -req7, -req73333, -req722222, -req722222222 <AUTO> - [No description] -req2 <AUTO> - [No description] OPTIONAL OPTIONS: -opt, -optional <STR> - Default: 'default' -opt2 <INT> - Default: 1 POSITIONAL - Default: ['positional'] -h, --help, -H - Print this help information"
+
+	params._.required = True
+	params._desc = 'An example description'
+	assert striphelp(params.help()) == "DESCRIPTION: An example description USAGE: program <-req auto> <-req2 auto> [OPTIONS] POSITIONAL REQUIRED OPTIONS: -req, -req3, -req4, -req5, -req6, -req7, -req73333, -req722222, -req722222222 <AUTO> - [No description] -req2 <AUTO> - [No description] POSITIONAL - Default: ['positional'] OPTIONAL OPTIONS: -opt, -optional <STR> - Default: 'default' -opt2 <INT> - Default: 1 -h, --help, -H - Print this help information"
+
+	params._helpx = lambda items: items.update({'helpx': ['helpx demo']}) or items
+	assert striphelp(params.help(error = 'example error')) == "Error: example error DESCRIPTION: An example description USAGE: program <-req auto> <-req2 auto> [OPTIONS] POSITIONAL REQUIRED OPTIONS: -req, -req3, -req4, -req5, -req6, -req7, -req73333, -req722222, -req722222222 <AUTO> - [No description] -req2 <AUTO> - [No description] POSITIONAL - Default: ['positional'] OPTIONAL OPTIONS: -opt, -optional <STR> - Default: 'default' -opt2 <INT> - Default: 1 -h, --help, -H - Print this help information HELPX: helpx demo"
+
+	with pytest.raises(SystemExit):
+		params.help(print_and_exit = True)
+	assert striphelp(capsys.readouterr().err) == "DESCRIPTION: An example description USAGE: program <-req auto> <-req2 auto> [OPTIONS] POSITIONAL REQUIRED OPTIONS: -req, -req3, -req4, -req5, -req6, -req7, -req73333, -req722222, -req722222222 <AUTO> - [No description] -req2 <AUTO> - [No description] POSITIONAL - Default: ['positional'] OPTIONAL OPTIONS: -opt, -optional <STR> - Default: 'default' -opt2 <INT> - Default: 1 -h, --help, -H - Print this help information HELPX: helpx demo"
 
 def test_params_hashable():
 	params = Params()
@@ -739,4 +822,135 @@ def test_params_hashable():
 	params_dict = {params: 1}
 	assert list(params_dict.keys())[0] == params
 	assert list(params_dict.keys())[0] != params2
+
+def test_params_loaddict():
+	params = Params()
+	params.loadDict({})
+	assert params.dict() == {}
+
+	params.load({"a": 1})
+	assert isinstance(params.a, Param)
+	assert not params.a.show
+	params.load({"a": 1, "a.show": True})
+	assert params.a.show
+
+	with pytest.raises(ParamsLoadError):
+		params.load({"x.show": True})
+
+	with pytest.raises(ParamsLoadError):
+		params.load({"x": True, "x.t": 1})
+
+def test_params_loadfile(tmp_path):
+	tmpfile1 = tmp_path / 'params1.config'
+	tmpfile1.write_text(
+		"[DEFAULT]\n"
+		"a = 1\n"
+		"a.required = py:False\n"
+	)
+	params = Params()
+	params.loadFile(tmpfile1.as_posix())
+	assert isinstance(params.a, Param)
+	assert not params.a.required
+
+	tmpfile2 = tmp_path / 'params2.config'
+	tmpfile2.write_text(
+		"[DEFAULT]\n"
+		"a = 1\n"
+		"a.required = py:False\n"
+		"[profile]\n"
+		"a = py:2\n"
+	)
+	params.loadFile(tmpfile2.as_posix(), profile = 'profile')
+	assert params.a.value == 2
+# endregion
+
+# region: Commands
+def test_commands_init():
+	commands = Commands()
+	assert commands._prefix == '-'
+	commands._setPrefix('--')
+	commands._prefix == '--'
+	commands._._prefix == '--'
+	assert commands._desc == []
+	assert commands._desc is commands._props['_desc']
+	assert commands._hcmd == ['help']
+	assert commands._hcmd is commands._props['_hcmd']
+	commands._desc = 'a\nb'
+	assert commands._desc == ['a', 'b']
+	commands._setDesc('c\nd')
+	assert commands._desc == ['c', 'd']
+	commands._setHcmd('help,h')
+	assert commands._hcmd == ['help', 'h']
+	assert commands._assembler.theme['error'] == colorama.Fore.RED
+	commands._setTheme('plain')
+	assert commands._assembler.theme['error'] == ''
+
+	commands.list = 'List all commands'
+	commands.show = commands.list
+	assert commands.show._prog.endswith('list|show')
+
+def test_commands_attr():
+	commands.__file__ = None
+	assert commands.__file__ is None
+
+def test_commands_help(capsys):
+	commands = Commands()
+	assert striphelp(commands.help()) == "USAGE: program [COMMON OPTIONS] <command> [COMMAND OPTIONS] OPTIONAL OPTIONS: -h, --help, -H - Print this help information COMMANDS: help <COMMAND> - Print help information for the command"
+
+	commands.cmd1 = 'Comman 1'
+	commands.alongcommand = 'A long command'
+	commands.cmd2 = commands.cmd1
+	assert striphelp(commands.help()) == "USAGE: program [COMMON OPTIONS] <command> [COMMAND OPTIONS] OPTIONAL OPTIONS: -h, --help, -H - Print this help information COMMANDS: cmd1 | cmd2 - Comman 1 alongcommand - A long command help <COMMAND> - Print help information for the command"
+
+	commands._helpx = lambda items: items.update({'Additional': ['demo']}) or items
+	assert striphelp(commands.help()) == "USAGE: program [COMMON OPTIONS] <command> [COMMAND OPTIONS] OPTIONAL OPTIONS: -h, --help, -H - Print this help information COMMANDS: cmd1 | cmd2 - Comman 1 alongcommand - A long command help <COMMAND> - Print help information for the command ADDITIONAL: demo"
+
+	commands._.a.required = True
+	assert striphelp(commands.help('some errors')) == "Error: some errors USAGE: program [COMMON OPTIONS] <command> [COMMAND OPTIONS] REQUIRED OPTIONS: -a <AUTO> - [No description] OPTIONAL OPTIONS: -h, --help, -H - Print this help information COMMANDS: cmd1 | cmd2 - Comman 1 alongcommand - A long command help <COMMAND> - Print help information for the command ADDITIONAL: demo"
+
+	with pytest.raises(SystemExit):
+		commands.help(print_and_exit = True)
+	assert 'help' in capsys.readouterr().err
+
+	commands._desc = 'Command description'
+	commands.cmd1         = 'First command'
+	commands.cmd1._usage  = '{prog} options'
+	commands.cmd2         = commands.cmd1
+	commands._.a.required = True
+	assert striphelp(commands.help()) == "DESCRIPTION: Command description USAGE: program [COMMON OPTIONS] <command> [COMMAND OPTIONS] REQUIRED OPTIONS: -a <AUTO> - [No description] OPTIONAL OPTIONS: -h, --help, -H - Print this help information COMMANDS: cmd1 | cmd2 - First command alongcommand - A long command help <COMMAND> - Print help information for the command ADDITIONAL: demo"
+
+def test_commands_parse(capsys):
+	commands = Commands()
+	with pytest.raises(SystemExit):
+		commands.parse()
+	assert 'help' in capsys.readouterr().err
+
+	with pytest.raises(SystemExit):
+		commands.parse(['help'])
+	assert 'help' in capsys.readouterr().err
+
+	with pytest.raises(SystemExit):
+		commands.parse(['1'])
+	assert 'No command given.' in capsys.readouterr().err
+
+	commands.cmd1            = 'First command'
+	commands.cmd1._usage     = '{prog} options'
+	commands.cmd2            = commands.cmd1
+	commands.cmd2.a.required = True
+	commands._.a.required    = True
+	with pytest.raises(SystemExit):
+		commands.parse(['cmd2'])
+	assert "Option '-a' is required." in capsys.readouterr().err
+
+	with pytest.raises(SystemExit):
+		commands.parse(['-a', 'cmd2', '0'])
+	err = capsys.readouterr().err
+	assert "Option '-a' is required." in err
+	assert "program cmd1|cmd2" in err
+
+	command, opts, copts = commands.parse(['-a', '2', 'cmd1', '-a', '1'])
+	assert command == 'cmd1'
+	assert opts == {'a': 1}
+	assert copts == {'a': 2}
+
 # endregion

@@ -74,7 +74,10 @@ OPT_PY_PATTERN    = r'^(?:py|repr):(.+)$'
 
 OPT_POSITIONAL_NAME = '_'
 OPT_UNSET_VALUE     = '__Param_Value_Not_Set__'
-CMD_COMMON_NAME     = '_'
+CMD_COMMON_PARAMS   = '_'
+
+REQUIRED_OPT_TITLE = 'REQUIRED OPTIONS'
+OPTIONAL_OPT_TITLE = 'OPTIONAL OPTIONS'
 
 class ParamNameError(Exception):
 	pass
@@ -86,6 +89,9 @@ class ParamsParseError(Exception):
 	pass
 
 class ParamsLoadError(Exception):
+	pass
+
+class CommandsParseError(Exception):
 	pass
 
 class _Hashable:
@@ -454,29 +460,50 @@ class Param(_Valuable):
 		if typename:
 			# push an item forcely using previous type
 			if typename is True:
-				if self.stacks:
-					typename = self.stacks[-1][0]
-				else:
-					typename = self.type or 'auto'
+				typename = self.stacks[-1][0] if self.stacks else (self.type or 'auto')
 
 			typename = Param._normalizeType(typename)
 			type1, type2 = typename.split(':')
-			append = False
-			if not self.stacks:
-				append = True
-			else:
-				prevtype, prevalue = self.stacks[-1]
-				if typename == prevtype and type2 == 'list':
-					prevalue.append([] if value == OPT_UNSET_VALUE else [value])
-				elif typename == prevtype and type1 == 'dict':
-					prevalue.append(value)
-				else:
-					append = True
-			if append:
+
+			appended = not self.stacks
+			# if not stacks, we got to append to, because we are push values anyway
+			if appended:
+				self.stacks.append((typename, [[]] if typename == 'list:list' else []))
+
+			prevtype, prevalue = self.stacks[-1]
+			if typename == prevtype and typename == 'list:list':
+				# if it is list of list, we have to append a list to prevalue anyway
+				# if list is already appended, use it
+				# because we want explicit -opt to create a new list
+				if not appended or not prevalue:
+					prevalue.append([])
 				if value != OPT_UNSET_VALUE:
-					self.stacks.append((typename, [[value]] if type2 == 'list' else [value]))
-				else:
-					self.stacks.append((typename, [[]] if type2 == 'list' else []))
+					prevalue[-1].append(value)
+			elif typename == prevtype and typename == 'list:reset':
+				# if the list is supposed to reset
+				# we are gonna start a new stack anyway
+				if not appended:
+					self.stacks.append((typename, []))
+				if value != OPT_UNSET_VALUE:
+					self.stacks[-1][-1].append(value)
+			elif typename == prevtype and type1 == 'dict':
+				if value != OPT_UNSET_VALUE:
+					prevalue.append(value)
+			elif typename == prevtype and type1 == 'list':
+				if not prevalue and len(self.stacks) == 1: # add default values
+					prevalue.extend(self.value or [])
+				if value != OPT_UNSET_VALUE:
+					prevalue.append(value)
+			elif typename == 'list:list':
+				if not appended:
+					self.stacks.append((typename, [[]]))
+				if value != OPT_UNSET_VALUE:
+					self.stacks[-1][-1][-1].append(value)
+			else:
+				if not appended:
+					self.stacks.append((typename, []))
+				if value != OPT_UNSET_VALUE:
+					self.stacks[-1][-1].append(value)
 
 		else:
 			if not self.stacks and not self.type:
@@ -514,8 +541,8 @@ class Param(_Valuable):
 			self._type = typename
 			self.value = value
 		elif type2 == 'reset':
-			self._type = Param._normalizeType(type1)
-			self.value = value
+			self._type = Param._normalizeType(type1 + ':')
+			self.value = Param._forceType(value, type1 + ':')
 		elif type1 == 'list':
 			self._type = typename
 			self.value = Param._forceType(value, typename)
@@ -572,6 +599,9 @@ class Param(_Valuable):
 		if self.type == 'bool:':
 			raise ParamTypeError(
 				self.value, 'Bool option %r cannot be set as required' % self.name)
+		if self.type == 'NoneType:':
+			# make sure required options being detected by validation
+			self.type = 'auto:'
 		self._required = req
 
 	@property
@@ -670,8 +700,11 @@ class Param(_Valuable):
 		return ret0
 
 	def __repr__(self):
+		typename = self.type or ''
+		if typename.endswith(':'):
+			typename = typename[:-1]
 		return '<Param(name={!r},value={!r},type={!r}) @ {}>'.format(
-			self.name, self.value, self.type, hex(id(self)))
+			self.name, self.value, typename, hex(id(self)))
 
 	def setDesc (self, desc):
 		"""
@@ -769,14 +802,15 @@ class Params(_Hashable):
 			`name` : The name of the Param
 			`value`: The value of the Param
 		"""
-		if name.startswith('__') or name.startswith('_Params'):
+		if name.startswith('__') or name.startswith('_' + self.__class__.__name__):
 			super(Params, self).__setattr__(name, value)
 		elif isinstance(value, Param):
 			self._params[name] = value
 		elif name in self._params:
 			self._params[name].value = value
-		elif name in ['_' + key for key in self._props.keys()
-					  if key not in ('prog', 'assembler', 'helpx')] + ['_theme']:
+		elif name in ('_assembler', '_helpx', '_prog'):
+			self._props[name[1:]] = value
+		elif name in ['_' + key for key in self._props.keys()] + ['_theme']:
 			getattr(self, '_set' + name[1:].capitalize())(value)
 		else:
 			self._params[name] = Param(name, value)
@@ -790,28 +824,16 @@ class Params(_Hashable):
 			A `Param` instance if `name` exists in `self._params`, otherwise,
 			the value of the attribute `name`
 		"""
-		if name.startswith('__') or name.startswith('_Params'):
+		if name.startswith('__') or name.startswith('_' + self.__class__.__name__):
 			return super(Params, self).__getattr__(name)
-		elif name in ['_' + key for key in self._props.keys()]:
+		if name in ['_' + key for key in self._props.keys()]:
 			return self._props[name[1:]]
-		elif not name in self._params:
+		if not name in self._params:
 			self._params[name] = Param(name, None)
 		return self._params[name]
 
-	def __setitem__(self, name, value):
-		"""
-		Compose a `Param` using the `name` and `value`
-		@params:
-			`name` : The name of the `Param`
-			`value`: The value of the `Param`
-		"""
-		self._params[name] = Param(name, value)
-
-	def __getitem__(self, name):
-		"""
-		Alias of `__getattr__`
-		"""
-		return getattr(self, name)
+	__getitem__ = __getattr__
+	__setitem__ = __setattr__
 
 	def _setTheme(self, theme):
 		"""
@@ -890,8 +912,15 @@ class Params(_Hashable):
 			if arg.startswith(self._prefix):
 				argtoparse = arg[len(self._prefix):]
 				matches = re.match(OPT_PATTERN, argtoparse)
+				# if it is not an option, treat it as value
+				# for example, negative numbers: -1, -2
 				if not matches:
-					raise ParamsParseError('Unable to parse option: %r' % arg)
+					if lastopt is None:
+						pendings.append(arg)
+					else:
+						lastopt.push(arg)
+					continue
+
 				argname = matches.group(1) or OPT_POSITIONAL_NAME
 				argtype = matches.group(2)
 				argval  = matches.group(3) or OPT_UNSET_VALUE
@@ -953,7 +982,7 @@ class Params(_Hashable):
 
 		return parsed, pendings
 
-	def parse(self, args = None, arbi = False):
+	def parse(self, args = None, arbi = False, dict_wrapper = dict, raise_exc = False):
 		args = sys.argv[1:] if args is None else args
 		try:
 			if not args and self._hbald:
@@ -972,16 +1001,13 @@ class Params(_Hashable):
 					pass
 				elif arbi:
 					self._params[name] = param
+				elif self._prefix + name in self._hopts:
+					raise ParamsParseError('__help__')
 				else:
-					warns.append('Unrecognized option: %r' % name)
+					warns.append('Unrecognized option: %r' % (self._prefix + name))
 					continue
 
 				warns.extend(param.checkout())
-
-			for hopt in self._hopts:
-				hopt = hopt[len(self._prefix):]
-				if hopt in self._params and self._params[hopt].bool():
-					raise ParamsParseError('__help__')
 
 			# apply callbacks
 			for name, param in self._params.items():
@@ -990,41 +1016,32 @@ class Params(_Hashable):
 				try:
 					ret = param.callback(param)
 				except TypeError as ex: # wrong # arguments
-					if 'argument' not in str(ex):
+					if 'missing' not in str(ex) and 'argument' not in str(ex):
 						raise
 					ret = param.callback(param, self)
 				if ret is True or ret is None or isinstance(ret, Param):
 					continue
 
 				error = 'Callback error.' if ret is False else ret
-				raise ParamsParseError('Option %r: %s' % (name, error))
+				raise ParamsParseError('Option %r: %s' % (self._prefix + name, error))
 
 			# check required
 			for name, param in self._params.items():
-				if not param.required or param.type == 'NoneType:':
-					continue
-				if param.value is None:
-					raise ParamsParseError('Option %r is required.' % name)
+				if param.required and param.value is None and param.type != 'NoneType:':
+					raise ParamsParseError('Option %r is required.' % (self._prefix + name))
 
 			for warn in warns[:(MAX_WARNINGS+1)]:
 				sys.stderr.write(warn + '\n')
-			return self.asDict()
+			return self.asDict(dict_wrapper)
 		except ParamsParseError as exc:
+			if raise_exc:
+				raise
 			exc = str(exc)
 			if exc == '__help__':
 				exc = ''
 			self.help(exc, print_and_exit = True)
 
-	def help (self, error = '', print_and_exit = False):
-		"""
-		Calculate the help page
-		@params:
-			`error`: The error message to show before the help information. Default: `''`
-			`print_and_exit`: Print the help page and exit the program?
-				Default: `False` (return the help information)
-		@return:
-			The help information
-		"""
+	def _helpitems(self):
 		# alias
 		revparams = {}
 		for key, val in self._params.items():
@@ -1061,6 +1078,8 @@ class Params(_Hashable):
 				optional_options.append(option)
 
 		if isinstance(posopt, Param):
+			# force description generation
+			posopt.desc = posopt.desc
 			if posopt.required:
 				required_options.append(('POSITIONAL', '', posopt.desc))
 			else:
@@ -1080,7 +1099,7 @@ class Params(_Hashable):
 				if optname == 'POSITIONAL':
 					continue
 				defusage.append('<{} {}>'.format(
-					optname,
+					optname.split(',')[0],
 					opttype or optname[len(self._props['prefix']):].upper())
 				)
 			if optional_options:
@@ -1099,19 +1118,33 @@ class Params(_Hashable):
 			', '.join(filter(None, self._props['hopts'])),
 			'', ['Print this help information']))
 		if required_options:
-			helpitems['required options'] = required_options
+			helpitems[REQUIRED_OPT_TITLE] = required_options
 		if optional_options:
-			helpitems['optional options'] = optional_options
+			helpitems[OPTIONAL_OPT_TITLE] = optional_options
 
 		if callable(self._helpx):
 			helpitems = self._helpx(helpitems)
 
+		return helpitems
+
+	def help (self, error = '', print_and_exit = False):
+		"""
+		Calculate the help page
+		@params:
+			`error`: The error message to show before the help information. Default: `''`
+			`print_and_exit`: Print the help page and exit the program?
+				Default: `False` (return the help information)
+		@return:
+			The help information
+		"""
+		assert error or isinstance(error, (list, str))
+
 		ret = []
 		if error:
-			if not isinstance(error, list):
-				error = [error]
+			if isinstance(error, str):
+				error = error.splitlines()
 			ret = [self._assembler.error(err.strip()) for err in error]
-		ret.extend(self._assembler.assemble(helpitems))
+		ret.extend(self._assembler.assemble(self._helpitems()))
 
 		if print_and_exit:
 			sys.stderr.write('\n'.join(ret))
@@ -1143,17 +1176,16 @@ class Params(_Hashable):
 		for key, val in dict_var.items():
 			if '.' not in key:
 				continue
-			k, prop = key.split('.', 1)
-			if not k in self._params:
-				raise ParamsLoadError(
-					key, 'Cannot set attribute of an undefined option %s' % repr(k))
+			opt, prop = key.split('.', 1)
+			if not opt in self._params:
+				raise ParamsLoadError('Cannot set attribute of an undefined option %r' % opt)
 			if not prop in ['desc', 'required', 'show', 'type']:
-				raise ParamsLoadError(prop, 'Unknown attribute name for option %s' % repr(k))
+				raise ParamsLoadError('Unknown attribute %r for option %r' % (prop, opt))
 
-			setattr (self._params[k], prop, val)
+			setattr(self._params[opt], prop, val)
 		return self
 
-	def loadFile (self, cfgfile, show = False):
+	def loadFile (self, cfgfile, profile = False, show = False):
 		"""
 		Load parameters from a json/config file
 		If the file name ends with '.json', `json.load` will be used,
@@ -1165,24 +1197,11 @@ class Params(_Hashable):
 				- Default: False (don'typename show parameter from config file in help page)
 				- It'll be overwritten by the `show` property inside the config file.
 		"""
-		config = Config(with_profile = False)
+		config = Config(with_profile = bool(profile))
 		config._load(cfgfile)
-
-		for key, val in config.items():
-			if key.endswith('.type'):
-				conf[key] = val
-				if val.startswith('list') and \
-					key[:-5] in config and \
-					not isinstance(config[key[:-5]], list):
-
-					config[key[:-5]] = config[key[:-5]].strip().splitlines()
-
-			elif key.endswith('.show') or key.endswith('.required'):
-				if isinstance(val, bool):
-					continue
-				config[key] = Params._coerceValue(val, 'bool')
-		self.loadDict(config, show = show)
-		return self
+		if profile:
+			config._use(profile)
+		return self.loadDict(config, show = show)
 
 	def asDict (self, wrapper = dict):
 		"""
@@ -1196,23 +1215,30 @@ class Params(_Hashable):
 		return ret
 
 	dict = asDict
+	load = loadDict
 
 class Commands(object):
 	"""
 	Support sub-command for command line argument parse.
 	"""
 
-	def __init__(self, theme = 'default'):
+	def __init__(self, theme = 'default', prefix = '-'):
 		"""
 		Constructor
 		@params:
 			`theme`: The theme
 		"""
-		self.__dict__['_desc']      = []
-		self.__dict__['_hcmd']      = 'help'
-		self.__dict__['_cmds']      = OrderedDict()
-		self.__dict__['_assembler'] = HelpAssembler(None, theme)
-		self.__dict__['_helpx']     = None
+		self.__dict__['_props'] = dict(
+			_desc     = [],
+			_hcmd     = ['help'],
+			cmds      = OrderedDict(),
+			assembler = HelpAssembler(None, theme),
+			helpx     = None,
+			prefix    = prefix
+		)
+		self._cmds[CMD_COMMON_PARAMS] = Params(None, theme)
+		self._cmds[CMD_COMMON_PARAMS]._prefix = prefix
+		self._cmds[CMD_COMMON_PARAMS]._hbald  = False
 
 	def _setDesc(self, desc):
 		"""
@@ -1220,7 +1246,7 @@ class Commands(object):
 		@params:
 			`desc`: The description
 		"""
-		self.__dict__['_desc'] = desc if isinstance(desc, list) else [desc]
+		self._desc = desc
 		return self
 
 	def _setHcmd(self, hcmd):
@@ -1229,7 +1255,7 @@ class Commands(object):
 		@params:
 			`hcmd`: The help command
 		"""
-		self.__dict__['_hcmd'] = hcmd
+		self._hcmd = hcmd
 		return self
 
 	def _setTheme(self, theme):
@@ -1238,7 +1264,11 @@ class Commands(object):
 		@params:
 			`theme`: The theme
 		"""
-		self.__dict__['_assembler'] = HelpAssembler(None, theme)
+		self._theme = theme
+		return self
+
+	def _setPrefix(self, prefix):
+		self._prefix = prefix
 		return self
 
 	def __getattr__(self, name):
@@ -1249,10 +1279,15 @@ class Commands(object):
 		@returns:
 			The value of the attribute
 		"""
-		if name.startswith('__') or name.startswith('_Commands'): # pragma: no cover
+		if name.startswith('__') or name.startswith('_' + self.__class__.__name__):
 			return super(Commands, self).__getattr__(name)
-		elif not name in self._cmds:
+		if name in ('_desc', '_hcmd'):
+			return self._props[name]
+		if name in ('_cmds', '_assembler', '_helpx', '_prefix'):
+			return self._props[name[1:]]
+		if name not in self._cmds:
 			self._cmds[name] = Params(name, self._assembler.theme)
+			self._cmds[name]._prefix = self._prefix
 		return self._cmds[name]
 
 	def __setattr__(self, name, value):
@@ -1262,35 +1297,36 @@ class Commands(object):
 			`name` : The name of the attribute
 			`value`: The value of the attribute
 		"""
-		if name.startswith('__') or name.startswith('_Commands'): # pragma: no cover
+		if name.startswith('__') or name.startswith('_' + self.__class__.__name__):
 			super(Commands, self).__setattr__(name, value)
-		elif name == '_desc':
-			self._setDesc(value)
 		elif name == '_theme':
-			self._setTheme(value)
+			self._assembler = HelpAssembler(None, value)
 		elif name == '_hcmd':
-			self._setHcmd(value)
-		elif name == '_helpx':
-			self.__dict__['_helpx'] = value
+			self._props['_hcmd'] = [cmd.strip() for cmd in value.split(',')] \
+				if isinstance(value, str) else value
+		elif name == '_desc':
+			self._props['_desc'] = value.splitlines() if isinstance(value, str) else value
+		elif name == '_prefix':
+			self._props['prefix'] = value
+			for cmd in self._cmds.values():
+				cmd._prefix = value
+		elif name in ('_cmds', '_assembler', '_helpx'):
+			self._props[name[1:]] = value
+		elif isinstance(value, Params): # alias
+			self._cmds[name] = value
+			if name != value._prog.split()[-1]:
+				value._prog += '|' + name
+				value._assembler = HelpAssembler(value._prog, value._assembler.theme)
 		else:
-			# alias
-			if isinstance(value, Params):
-				self._cmds[name] = value
-				if name != value._prog.split()[-1]:
-					value._prog += '|' + name
-					value._assembler = HelpAssembler(value._prog, value._assembler.theme)
-			else:
-				if not name in self._cmds:
-					self._cmds[name] = Params(name, self._assembler.theme)
-				self._cmds[name]('desc', value if isinstance(value, list) else [value])
+			if name not in self._cmds:
+				self._cmds[name] = Params(name, self._assembler.theme)
+				self._cmds[name]._prefix = self._prefix
+			self._cmds[name]._desc = value
 
-	def __getitem__(self, name):
-		"""
-		Alias of `__getattr__`
-		"""
-		return getattr(self, name)
+	__getitem__ = __getattr__
+	__setitem__ = __setattr__
 
-	def parse(self, args = None, arbi = False):
+	def parse(self, args = None, arbi = False, dict_wrapper = dict):
 		"""
 		Parse the arguments.
 		@params:
@@ -1301,31 +1337,42 @@ class Commands(object):
 			A `tuple` with first element the subcommand and second the parameters being parsed.
 		"""
 		args = sys.argv[1:] if args is None else args
-		if arbi:
+		# the commands have to be defined even for arbitrary mode
+		try:
 			if not args:
-				return '', {}
+				raise CommandsParseError('__help__')
+			# get which command is hit
+			cmdidx  = None
+			command = None
+			for i, arg in enumerate(args):
+				if arg == 'help':
+					raise CommandsParseError('__help__')
+
+				if arg != CMD_COMMON_PARAMS and arg in self._cmds:
+					command = arg
+					cmdidx = i
+					break
 			else:
-				command = args.pop(0)
-				cmdps   = getattr(self, command)
-				if isinstance(cmdps, Params):
-					return command, cmdps.parse(args, arbi = True)
-				return command, {Params.POSITIONAL: args}
-		else:
-			if not args or (len(args) == 1 and args[0] == self._hcmd):
-				self.help(print_and_exit = True)
+				raise CommandsParseError('No command given.')
 
-			command = args.pop(0)
-			if (command == self._hcmd and args[0] not in self._cmds) or \
-				(command != self._hcmd and command not in self._cmds):
-				self.help(
-					error = 'Unknown command: {}'.format(
-						args[0] if command == self._hcmd else command),
-					print_and_exit = True
-				)
-			if command == self._hcmd:
-				self._cmds[args[0]].help(print_and_exit = True)
+			common_args = args[:cmdidx]
+			try:
+				common_opts = self._cmds[CMD_COMMON_PARAMS].parse(
+					common_args, arbi, dict_wrapper, True)
+			except ParamsParseError as exc:
+				raise CommandsParseError(str(exc))
 
-			return command, self._cmds[command].parse(args)
+			command_args = args[(cmdidx+1):]
+			command_opts = self._cmds[command].parse(
+				command_args, arbi, dict_wrapper)
+
+			return command, command_opts, common_opts
+
+		except CommandsParseError as exc:
+			exc = str(exc)
+			if exc == '__help__':
+				exc = ''
+			self.help(error = exc, print_and_exit = True)
 
 	def help(self, error = '', print_and_exit = False):
 		"""
@@ -1340,33 +1387,43 @@ class Commands(object):
 		if self._desc:
 			helpitems['description'] = self._desc
 
-		helpitems['commands'] = []
+		helpitems['usage'] = ['{prog} [COMMON OPTIONS] <command> [COMMAND OPTIONS]']
 
+		common_opt_items = self._cmds[CMD_COMMON_PARAMS]._helpitems()
+		if REQUIRED_OPT_TITLE in common_opt_items:
+			helpitems[REQUIRED_OPT_TITLE] = common_opt_items[REQUIRED_OPT_TITLE]
+		if OPTIONAL_OPT_TITLE in common_opt_items:
+			helpitems[OPTIONAL_OPT_TITLE] = common_opt_items[OPTIONAL_OPT_TITLE]
+
+		helpitems['commands'] = []
 		revcmds = OrderedDict()
 		for key, val in self._cmds.items():
+			if key == CMD_COMMON_PARAMS:
+				continue
 			if val not in revcmds:
 				revcmds[val] = []
 			revcmds[val].append(key)
 
 		for key, val in revcmds.items():
-			helpitems['commands'].append((' | '.join(val), '', key._props['desc']))
+			helpitems['commands'].append((' | '.join(val), '', key._desc))
 		helpitems['commands'].append(
-			(self._hcmd, 'command', ['Print help information for the command']))
+			(' | '.join(self._hcmd), 'command', ['Print help information for the command']))
 
 		if callable(self._helpx):
 			helpitems = self._helpx(helpitems)
 
 		ret = []
 		if error:
-			ret = [self._assembler.error(error.strip())]
-		ret += self._assembler.assemble(helpitems)
+			if isinstance(error, str):
+				error = error.splitlines()
+			ret = [self._assembler.error(err.strip()) for err in error]
+		ret.extend(self._assembler.assemble(helpitems))
 
-		out = '\n'.join(ret) + '\n'
 		if print_and_exit:
-			sys.stderr.write(out)
+			sys.stderr.write('\n'.join(ret))
 			sys.exit(1)
 		else:
-			return out
+			return '\n'.join(ret)
 
 # pylint: disable=invalid-name
 params   = Params()
