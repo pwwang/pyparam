@@ -32,18 +32,14 @@ THEMES = dict(
 		optdesc = ''),
 
 	blue = dict(
-		error   = colorama.Fore.RED,
-		warning = colorama.Fore.YELLOW,
 		title   = colorama.Style.BRIGHT + colorama.Fore.GREEN,
 		prog    = colorama.Style.BRIGHT + colorama.Fore.BLUE,
-		default = colorama.Fore.MAGENTA,
 		optname = colorama.Style.BRIGHT + colorama.Fore.BLUE,
-		opttype = colorama.Style.BRIGHT,
-		optdesc = ''),
+		opttype = colorama.Style.BRIGHT),
 
 	plain = dict(
 		error   = '', warning = '', title   = '', prog    = '',
-		default = '', optname = '', opttype = '', optdesc = '')
+		default = '', optname = '', opttype = '')
 )
 
 OPT_ALLOWED_TYPES = ('str', 'int', 'float', 'bool', 'list', 'py', 'NoneType', 'dict')
@@ -190,7 +186,9 @@ class HelpAssembler:
 			`theme`: The theme. Could be a name of `THEMES`, or a dict of a custom theme.
 		"""
 		self.progname = prog or path.basename(sys.argv[0])
-		self.theme    = theme if isinstance(theme, dict) else THEMES[theme]
+		self.theme    = THEMES['default'].copy()
+		if theme != 'default':
+			self.theme.update(theme if isinstance(theme, dict) else THEMES[theme])
 
 	def error(self, msg, with_prefix = True):
 		"""
