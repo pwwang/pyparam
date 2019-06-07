@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "pyparam"
-version = "0.1.0"
+version = "0.1.1"
 description = "Powerful parameter processing."
 authors = ["pwwang <pwwang@pwwang.com>"]
 license = "MIT"
