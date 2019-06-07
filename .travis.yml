@@ -22,7 +22,7 @@ after_success: |
   fi
 deploy:
   provider: script
-  script: poetry publish --build
+  script: poetry publish --build -u $PYPI_USER -p $PYPI_PASSWORD
   on:
     tags: true
     condition: "$TRAVIS_PYTHON_VERSION == 3.7"
