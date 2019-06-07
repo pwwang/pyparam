@@ -7,17 +7,335 @@ Powerful parameter processing
 `pip install pyparam`
 
 ## Usage
-### Command line argument parsing
-`program.py`
-```python
-from param import params
-params.a.desc = 'Option a'
-print(params.parse())
-```
-```shell
-> program.py -a 1
-{'a': 1}
-```
+### Parameters from command line arguments
+- Basic usage
+
+	`program.py`
+	```python
+	from param import params
+	# define arguments
+	params.opt1 = '1' # default value
+	params.opt1.desc = 'This is option 1'
+	# required option
+	params.opt2.required = True
+	params.opt2.desc = 'This is option 2'
+	# Alias
+	params.option2 = params.opt2
+	# define type of an option
+	params.opt3.required = True
+	params.opt3.type = int # or 'int'
+	params.opt3.desc = 'This is option 3'
+
+	print(params.parse())
+	```
+	```shell
+	> python program.py
+	```
+	![help][9]
+
+	```shell
+	> python program.py -opt2 1 -opt3 4 -opt1 5
+	{'opt1': '5', 'opt2': 1, 'option2': 1, 'opt3': 4}
+
+	> python program.py -opt2 True -opt3 4 -opt1 5
+	{'opt1': '5', 'opt2': True, 'option2': 1, 'opt3': 4}
+
+	> python program.py -opt2 1 -opt3 x -opt1 5
+	Traceback (most recent call last):
+	... ...
+		raise ParamTypeError('Unable to coerce value %r to type %r' % (value, typename))
+	param.ParamTypeError: Unable to coerce value 'x' to type 'int:'
+	```
+
+	- Different prefix
+	```python
+	params._prefix = '--'
+	```
+	```shell
+	> python program.py --opt2 1 --opt3 4 --opt1 5
+	{'opt1': '5', 'opt2': 1, 'option2': 1, 'opt3': 4}
+	```
+
+- Short and long options
+	```python
+	params._prefix = '-'
+	params.o.required = True
+	params.o.type = str
+	params.o.desc = 'The output file.'
+	params['-output'] = params.o
+	```
+	```shell
+	> python program.py
+	```
+	![short_long][10]
+
+	```shell
+	> python program.py -o /path/to/outfile
+	{'o': '/path/to/outfile', '-output': '/path/to/outfile'}
+	# Note you have to use "-output" to access the value instead of "output"
+	```
+
+- Callbacks
+	```python
+	from os import path
+	from param import params
+	params._prefix = '-'
+	params.o.required = True
+	params.o.callback = lambda param: 'Directory of output file does not exist.' if not path.exists(path.dirname(param.value)) else None
+	print(params.parse())
+	```
+	```shell
+	python program.py -o /path/not/exists/outfile
+	```
+	![callback_error][11]
+
+	Modify value with other options:
+	```python
+	params.amplifier = 10
+	params.number.type = int
+	params.number.callback = lambda param, ps: param.setValue(param.value * ps.amplifier.value)
+	```
+	```shell
+	> python program.py -amplifier 100 -number 2
+	{'amplifier': 100, 'number': 200}
+	```
+
+- Type redefinition
+	```python
+	# option 'opt' defined but no value and no type defined ('auto' implied)
+	param.opt.desc = 'Option'
+	```
+	```shell
+	> python program.py -opt 1
+	{'opt': 1}
+
+	> python program.py -opt a
+	{'opt': 'a'}
+
+	# force str
+	> python program.py -opt:str 1
+	{'opt': '1'}
+	```
+
+- List/Array options
+	```python
+	params.infiles.type = list
+	```
+	```shell
+	> python program.py -infiles file1 file2 file3 # or
+	> python program.py -infiles file1 -infiles file2 -infiles file3
+	{'infiles': ['file1', 'file2', 'file3']}
+	```
+
+	Default values:
+	```python
+	params.infiles = ['file0']
+	```
+	```shell
+	> python program.py -infiles file1 file2 file3
+	{'infiles': ['file0', 'file1', 'file2', 'file3']}
+	```
+
+	Reset list options
+	```shell
+	> python program.py -infiles:reset file1 -infiles file2 -infiles file3 # or
+	> python program.py -infiles:reset file1 file2 file3 # or
+	> python program.py -infiles:list:reset file1 file2 file3
+	# or use short names `l:r` for `list:reset`
+	{'infiles': ['file1', 'file2', 'file3']}
+	```
+
+	Elements are convert using `auto` type:
+	```shell
+	> python program.py -infiles file1 file2 3
+	{'infiles': ['file0', 'file1', 'file2', 3]}
+	# to force all str type, note the option is reset
+	> python program.py -infiles:list:str file1 file2 3
+	{'infiles': ['file1', 'file2', '3']}
+	```
+
+	List of list options
+	```python
+	params.files = ['file01', 'file02']
+	params.files.type = 'list:list'
+	```
+	```shell
+	> python program.py -files file11 file12 -files 3
+	{'infiles': [['file01', 'file02'], ['file11', 'file12'], ['3']]}
+	# Note that list:list don't to auto conversion for elements
+	# reset list:list
+	> python program.py -files:r file11 file12 -files 3
+	{'infiles': [['file11', 'file12'], ['3']]}
+	```
+
+- Positional options
+	```python
+	params._.desc = 'Positional option'
+	```
+	```shell
+	> python program.py file1
+	{'_': ['file1']}
+	```
+
+	If last option is a list option:
+	```python
+	params.infiles = []
+	params._.desc = 'Positional option'
+	```
+	```shell
+	> python program.py -infiles file1 file2 file3
+	{'infiles': ['file1', 'file2', 'file3'], '_': None}
+	# If I want file3 to be the positional option
+	> python program.py -infiles file1 file2 - file3
+	{'infiles': ['file1', 'file2'], '_': 'file3'}
+	```
+
+- Dict options
+	```python
+	params.config = {'default': 1}
+	```
+	```shell
+	> python program.py -config.width 10 -config.height 20 -config.sub.switch
+	{'config': {'default': 1, 'width': 10, 'height': 20, 'sub': {'switch': True}}}
+	# reset dict option
+	> python program.py -config:r -config.width 10 -config.height 20
+	{'config': {'width': 10, 'height': 20}}
+	```
+
+- Arbitrary parsing
+	Parse the arguments without definition
+	```python
+	print(params.parse(arbi = True))
+	```
+	```shell
+	> python program.py -a 1 -b:list 2 3 -c:dict -c.a.b 4 -c.a.c 5 -d:list:list 6 7 -d 8 9
+	{'a': 1, 'b': [2, 3], 'c': {'a': {'b': 4, 'c': 5}}, 'd': [['6', '7'], ['8', '9']]}
+	```
+
+### Help message
+- Themes
+	```python
+	from param import params
+	params._theme = 'blue'
+	print(params.parse())
+	```
+	```shell
+	> python program.py
+	```
+	![theme_blue][13]
+	```python
+	params._theme = 'plain'
+	```
+	![theme_blue][14]
+
+	Customize theme based on default theme:
+	```python
+	dict(
+		error   = colorama.Fore.RED,
+		warning = colorama.Fore.YELLOW,
+		title   = colorama.Style.BRIGHT + colorama.Fore.CYAN,  # section title
+		prog    = colorama.Style.BRIGHT + colorama.Fore.GREEN, # program name
+		default = colorama.Fore.MAGENTA,              # default values
+		optname = colorama.Style.BRIGHT + colorama.Fore.GREEN,
+		opttype = colorama.Fore.BLUE,
+		optdesc = ''),
+	```
+	```python
+	import colorama
+	from param import params
+	params._theme = dict(title = colorama.Style.BRIGHT + colorama.Fore.YELLOW)
+	print(params.parse())
+	```
+	![theme_custom][15]
+
+- Manipulation of the message
+	Help message is first transformed into a `list`, where the element is a `tuple` of (option name, type and description) if it is an option otherwise a string, and then formatted with the `HelpAssembler` class.
+	A callback is available to operate on the transformed message so that the help page can be hacked.
+	```python
+	from param import params
+	params.a = 1
+	print(params._helpitems())
+	# OrderedDict([
+	#   ('usage', ['{prog} [OPTIONS]']),
+	#   ('OPTIONAL OPTIONS', [
+	#       ('-a', 'int', ['Default: 1']),
+	#       ('-h, --help, -H', '', ['Print this help information'])
+	#   ])
+	# ])
+	```
+	```python
+	from param import params
+	params.a = 1
+
+	# add description for the program
+	params._desc = 'A sample program.'
+
+	def helpx(items):
+		# add a section
+		items['Java options'] = [('-java.io.tmpdir', 'dir', ['Tmpdir for java.'])]
+		return items
+
+	params._helpx = helpx
+	params.parse()
+	```
+	```shell
+	> python program.py
+	```
+	![helpx][16]
+
+### Parameters from dict
+-
+	```python
+	from param import params
+	params.load({
+		'opt1': '1',
+		'opt2.required': True,
+		'opt2.desc': 'This is option 2',
+		'option2.alias': 'opt2',
+		'opt3.required': True,
+		'opt3.type': 'int',
+		'opt3.desc': 'This is option 3',
+	})
+	print(params.parse())
+	```
+	```shell
+	python program.py
+	```
+	![fromdict][9]
+
+	If an option is defined before loading, then the value and attributes will be overwritten.
+
+### Sub-commands
+-
+	```python
+	from param import commands
+	# common options for all commands
+	commands._.workdir.desc      = 'The work directory.'
+	commands._.workdir.required  = 'The work directory.'
+	commands.show                = 'Shows information'
+	commands.show.all            = False
+	commands.show.all.desc       = 'Show all information'
+	commands.show.depth          = 2
+	commands.show.depth.desc     = 'Show the information on depth'
+	# alias
+	commands.list                = commands.show
+	commands.run                 = 'Run script'
+	commands.run.script.desc     = 'The script to run'
+	commands.run.script.required = True
+	print(commands.parse())
+	```
+	```shell
+	> python program.py
+	```
+	![subcommand][12]
+	```shell
+	> python program.py -workdir ./workdir show -depth 3 -all
+	('show', {'all': True, 'depth': 3}, {'workdir': './workdir'})
+	#command,command options,          common options
+	```
+
+
+
 
 [1]: https://img.shields.io/pypi/v/pyparam.svg?style=flat-square
 [2]: https://pypi.org/project/pyparam/
@@ -27,3 +345,11 @@ print(params.parse())
 [6]: https://app.codacy.com/project/pwwang/pyparam/dashboard
 [7]: https://img.shields.io/codacy/coverage/a34b1afaccf84019a6b138d40932d566.svg?style=flat-square
 [8]: https://img.shields.io/pypi/pyversions/pyparam.svg?style=flat-square
+[9]: ./static/help.png
+[10]: ./static/short_long.png
+[11]: ./static/callback_error.png
+[12]: ./static/subcommand.png
+[13]: ./static/theme_blue.png
+[14]: ./static/theme_plain.png
+[15]: ./static/theme_custom.png
+[16]: ./static/helpx.png

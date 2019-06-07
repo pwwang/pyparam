@@ -52,11 +52,9 @@ OPT_TYPE_MAPPINGS = dict(
 	l = 'list',  list  = 'list',  array  = 'list',
 )
 
-OPT_BOOL_TRUES  = [True , 1, 't', 'T', 'True' , 'TRUE' , 'true' , '1', 'Y', 'y', 'Yes',
-	'YES', 'yes', 'on' , 'ON' , 'On' ]
+OPT_BOOL_TRUES  = [True , 1, 'True' , 'TRUE' , 'true' , '1']
 
-OPT_BOOL_FALSES = [False, 0, 'f', 'F', 'False', 'FALSE', 'false', '0', 'N', 'n', 'No' ,
-	'NO' , 'no' , 'off', 'OFF', 'Off', None]
+OPT_BOOL_FALSES = [False, 0, 'False', 'FALSE', 'false', '0', 'None', 'none', None]
 
 OPT_NONES = [None, 'none', 'None']
 
@@ -64,8 +62,7 @@ OPT_PATTERN       = r"^([a-zA-Z\?@-][\w,\._-]*)?(?::([\w:]+))?(?:=(.*))?$"
 OPT_INT_PATTERN   = r'^[+-]?\d+$'
 OPT_FLOAT_PATTERN = r'^[+-]?(?:\d*\.)?\d+(?:[Ee][+-]\d+)?$'
 OPT_NONE_PATTERN  = r'^none|None$'
-OPT_BOOL_PATTERN  = r'^(t|T|True|TRUE|true|1|Y|y|Yes|YES|yes|on|ON|On|f|F|False' + \
-	r'|FALSE|false|0|N|n|No|NO|off|Off|OFF|None|none)$'
+OPT_BOOL_PATTERN  = r'^(%s)$' % ('|'.join(set(str(x) for x in OPT_BOOL_TRUES + OPT_BOOL_FALSES)))
 OPT_PY_PATTERN    = r'^(?:py|repr):(.+)$'
 
 OPT_POSITIONAL_NAME = '_'
@@ -501,7 +498,7 @@ class Param(_Valuable):
 					self.stacks.append((type1 + ':', []))
 				elif type1 == 'list':
 					if origtype == typename:
-						self.stacks.append((typename, self.value[:]))
+						self.stacks.append((typename, (self.value or [])[:]))
 					else:
 						self.stacks.append((typename, []))
 				elif type1 == 'dict':
@@ -577,23 +574,28 @@ class Param(_Valuable):
 
 	@property
 	def desc(self):
+		# try to add default value information in desc
+		self._desc = self._desc or []
+		if not self._desc:
+			self._desc.append('')
+		self._desc[-1] = self._desc[-1].rstrip()
+		#  add default only if
+		# 1. not self.required
+		# 2. self.required and self.value is not None
+		# 3. default not in self._desc[-1]
+		if not ('DEFAULT: ' in self._desc[-1] or 'Default: ' in self._desc[-1] or (
+			self.required and self.value is None)):
+			self._desc[-1] = self._desc[-1] and self._desc[-1] + ' '
+			self._desc[-1] = self._desc[-1] + 'Default: %r' % self.value
+
+		if len(self._desc) == 1 and not self._desc[-1]:
+			self._desc[-1] = '[No description]'
 		return self._desc
 
 	@desc.setter
-	def desc(self, description):
-		assert isinstance(description, (list, str))
-		if isinstance(description, str):
-			description = description.splitlines()
-		if not description:
-			description.append('')
-		if not self.required and not 'DEFAULT: ' in description[-1] and \
-			'Default: ' not in description[-1]:
-			if description[-1]:
-				description[-1] += ' '
-			description[-1] += 'Default: ' + repr(self.value)
-		if len(description) == 1 and not description[0]:
-			description[0] = '[No description]'
-		self._desc = description
+	def desc(self, desc):
+		assert isinstance(desc, (list, str))
+		self._desc = desc if isinstance(desc, list) else desc.splitlines()
 
 	@property
 	def required(self):
@@ -604,9 +606,9 @@ class Param(_Valuable):
 		if self.type == 'bool:':
 			raise ParamTypeError(
 				self.value, 'Bool option %r cannot be set as required' % self.name)
-		if self.type == 'NoneType:':
-			# make sure required options being detected by validation
-			self.type = 'auto:'
+		# try remove default: in desc if self.value is None
+		if self._desc and self._desc[-1].endswith('Default: None'):
+			self._desc[-1] = self._desc[-1][:-13].rstrip()
 		self._required = req
 
 	@property
@@ -624,6 +626,8 @@ class Param(_Valuable):
 		type1, type2 = typename.split(':')
 		try:
 			if type1 in ('int', 'float', 'str'):
+				if value is None:
+					return None
 				return getattr(builtins, type1)(value)
 
 			if type1 == 'bool':
@@ -639,11 +643,15 @@ class Param(_Valuable):
 				return None
 
 			if type1 == 'py':
+				if value is None:
+					return None
 				value = value[3:] if value.startswith('py:') else \
 						value[5:] if value.startswith('repr:') else value
 				return ast.literal_eval(value)
 
 			if type1 == 'dict':
+				if value is None:
+					return None
 				if not isinstance(value, dict):
 					if not value:
 						value = {}
@@ -672,6 +680,8 @@ class Param(_Valuable):
 					return value
 
 			if type1 == 'list':
+				if value is None:
+					return None
 				type2 = type2 or 'auto'
 				if isinstance(value, str):
 					value = [value]
@@ -832,7 +842,7 @@ class Params(_Hashable):
 		if name in ['_' + key for key in self._props.keys()]:
 			return self._props[name[1:]]
 		if not name in self._params:
-			self._params[name] = Param(name, None)
+			self._params[name] = Param(name)
 		return self._params[name]
 
 	__getitem__ = __getattr__
@@ -957,7 +967,9 @@ class Params(_Hashable):
 		# no options detected at all
 		# all pendings will be used as positional
 		if lastopt is None and pendings:
-			parsed[OPT_POSITIONAL_NAME] = Param(OPT_POSITIONAL_NAME, [])
+			if OPT_POSITIONAL_NAME not in parsed:
+				parsed[OPT_POSITIONAL_NAME] = self._params[OPT_POSITIONAL_NAME] \
+					if OPT_POSITIONAL_NAME in self._params else Param(OPT_POSITIONAL_NAME, [])
 			for pend in pendings:
 				parsed[OPT_POSITIONAL_NAME].push(pend)
 			pendings = []
@@ -971,17 +983,18 @@ class Params(_Hashable):
 				posvalues = lastopt.stacks[-1][1][1:]
 				lastopt.stacks[-1] = (lastopt.stacks[-1][0], lastopt.stacks[-1][1][:1])
 
-			# is it necessary to create positional?
+			# is it necessary to create positional? or it exists
 			# or it is already there
 			# if it is already there, that means tailing values should not be added to positional
+
 			if OPT_POSITIONAL_NAME in parsed or not posvalues:
 				pendings.extend(posvalues)
 				return parsed, pendings
 
-			posopt = Param(OPT_POSITIONAL_NAME, [])
-			parsed[OPT_POSITIONAL_NAME] = posopt
+			parsed[OPT_POSITIONAL_NAME] = self._params[OPT_POSITIONAL_NAME] \
+				if OPT_POSITIONAL_NAME in self._params else Param(OPT_POSITIONAL_NAME, [])
 			for posval in posvalues:
-				posopt.push(posval)
+				parsed[OPT_POSITIONAL_NAME].push(posval)
 
 		return parsed, pendings
 
@@ -1035,6 +1048,7 @@ class Params(_Hashable):
 
 			for warn in warns[:(MAX_WARNINGS+1)]:
 				sys.stderr.write(warn + '\n')
+
 			return self.asDict(dict_wrapper)
 		except ParamsParseError as exc:
 			if raise_exc:
@@ -1064,8 +1078,6 @@ class Params(_Hashable):
 			if not val.show or val.name == OPT_POSITIONAL_NAME:
 				continue
 
-			# Force calculate default in description
-			val.desc = val.desc
 			valtype  = val.type or ''
 			valtype  = valtype.rstrip(':')
 			if valtype == 'NoneType':
@@ -1080,8 +1092,6 @@ class Params(_Hashable):
 				optional_options.append(option)
 
 		if isinstance(posopt, Param):
-			# force description generation
-			posopt.desc = posopt.desc
 			if posopt.required:
 				required_options.append(('POSITIONAL', '', posopt.desc))
 			else:
@@ -1102,7 +1112,7 @@ class Params(_Hashable):
 					continue
 				defusage.append('<{} {}>'.format(
 					optname.split(',')[0],
-					opttype or optname[len(self._props['prefix']):].upper())
+					(opttype or optname[len(self._props['prefix']):]).upper())
 				)
 			if optional_options:
 				defusage.append('[OPTIONS]')
@@ -1165,7 +1175,7 @@ class Params(_Hashable):
 				- It'll be overwritten by the `show` property inside dict variable.
 				- If it is None, will inherit the param's show value
 		"""
-		# load the param first
+		# load the params first
 		for key, val in dict_var.items():
 			if '.' in key:
 				continue
@@ -1174,13 +1184,30 @@ class Params(_Hashable):
 			self._params[key].value = val
 			if show is not None:
 				self._params[key].show = show
-		# then load property
+		# load the params that is not given a value
+		# start with setting an attribute
 		for key, val in dict_var.items():
 			if '.' not in key:
 				continue
+			key = key.split('.')[0]
+			if key in self._params:
+				continue
+			self._params[key] = Param(key)
+			if show is not None:
+				self._params[key].show = show
+		# load aliases
+		for key, val in dict_var.items():
+			if not key.endswith('.alias'):
+				continue
+			key = key[:-6]
+			if val not in self._params:
+				raise ParamsLoadError('Cannot set alias %r to an undefined option %r' % (key, val))
+			self._params[key] = self._params[val]
+		# then load property
+		for key, val in dict_var.items():
+			if '.' not in key or key.endswith('.alias'):
+				continue
 			opt, prop = key.split('.', 1)
-			if not opt in self._params:
-				raise ParamsLoadError('Cannot set attribute of an undefined option %r' % opt)
 			if not prop in ['desc', 'required', 'show', 'type']:
 				raise ParamsLoadError('Unknown attribute %r for option %r' % (prop, opt))
 

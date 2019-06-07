@@ -203,6 +203,18 @@ def test_param_init():
 		Param('*1234', 'value')
 
 	param = Param('name')
+	param.type = 'int'
+	param.value = '1'
+	assert param.type == 'int:'
+	assert param.value == '1'
+
+	param = Param('name')
+	param.value = '1'
+	param.type = 'int'
+	assert param.type == 'int:'
+	assert param.value == 1
+
+	param = Param('name')
 	assert param.type == 'auto:'
 	assert param.value is None
 
@@ -241,14 +253,23 @@ def test_param_value():
 
 def test_param_desc():
 	param = Param('name', None)
-	assert param.desc == []
-
-	param.desc = []
 	assert param.desc == ['Default: None']
 
 	param.value = 1
 	param.setDesc('option description.')
 	assert param.desc == ['option description. Default: 1']
+
+	param = Param('name')
+	param.desc = []
+	assert param.desc == ['Default: None']
+	param.required = True
+	assert param.desc == ['[No description]']
+
+	param = Param('name', 'default')
+	assert param.desc == ["Default: 'default'"]
+	assert param.desc == ["Default: 'default'"]
+
+
 
 def test_param_required():
 	param = Param('name', 'value')
@@ -302,6 +323,7 @@ def test_param_type():
 	('1', 'bool:', True),
 	('0', 'bool:', False),
 	('none', 'NoneType:', None),
+	(None, 'py:', None),
 	('py:None', 'py:', None),
 	('repr:None', 'py:', None),
 	('None', 'py:', None),
@@ -309,18 +331,21 @@ def test_param_type():
 	('none', 'auto:', None),
 	('1', 'auto:', 1),
 	('1.1', 'auto:', 1.1),
-	('t', 'auto:', True),
+	('true', 'auto:', True),
 	('py:1.23', 'auto:', 1.23),
 	('xyz', 'auto:', 'xyz'),
 	(1, 'auto:', 1),
 	('xyz', 'list:', ['xyz']),
 	({'xyz'}, 'list:', ['xyz']),
 	(1, 'list:', [1]),
+	([1], 'list:', [1]),
+	(['x', 'y'], 'list:', ['x', 'y']),
 	('1', 'list:str', ['1']),
 	('1', 'list:reset', ['1']),
 	('1', 'list:list', [['1']]),
 	([1,2,3], 'list:list', [[1,2,3]]),
 	('', 'dict:', {}),
+	(None, 'dict:', None),
 ])
 def test_param_forcetype(value, typename, expt):
 	assert Param._forceType(value, typename) == expt
@@ -595,6 +620,15 @@ def test_param_checkout(stacks, exptwarns, exptype, exptval):
 	assert param.type == exptype
 	assert param.value == exptval
 
+def test_param_checkout_list():
+	param = Param('a', [])
+	assert param.type == 'list:'
+	assert param.value == []
+	param.stacks = [('list:', ['x', 'y'])]
+	param.checkout()
+	assert param.type == 'list:'
+	assert param.value == ['x', 'y']
+
 @pytest.mark.parametrize('dorig, dup, expt', [
 	({}, {'a':1}, {'a':1}),
 	({'a': {'b': 2, 'c': 3}}, {'a': {'b': 1}}, {'a': {'b': 1, 'c': 3}}),
@@ -823,6 +857,28 @@ def test_params_parse(capsys):
 	params4.parse(['-g.b', '2'])
 	assert params4.dict() == {'g': {'a':1, 'b':2}}
 
+def test_params_parse_positional(capsys):
+	# positional
+	params5 = Params()
+	params5[OPT_POSITIONAL_NAME].desc = 'positional'
+	assert params5.parse(['x', 'y']) == {OPT_POSITIONAL_NAME: 'x'}
+	assert "Later value 'y' was ignored for option '_' (type='auto:')" in capsys.readouterr().err
+
+	params5 = Params()
+	params5[OPT_POSITIONAL_NAME] = []
+	assert params5.parse(['x', 'y']) == {OPT_POSITIONAL_NAME: ['x','y']}
+
+	params5 = Params()
+	params5[OPT_POSITIONAL_NAME] = []
+	params5.a.type = str
+	assert params5.parse(['-a', '1', 'x', 'y']) == {'a': '1', '_': ['x', 'y']}
+
+	params5 = Params()
+	params5[OPT_POSITIONAL_NAME] = []
+	assert params5.parse(['-:str', 'x', 'y']) == {'_': 'x'}
+	assert "Unrecognized value: 'y'" in capsys.readouterr().err
+
+
 def test_params_help(capsys):
 	import sys
 	sys.argv = ['program']
@@ -849,7 +905,8 @@ def test_params_help(capsys):
 	params.req722222222 = params.req
 	params.opt = params.optional
 	params.opt2 = 1
-	assert striphelp(params.help()) == "USAGE: program <-req auto> <-req2 auto> [OPTIONS] REQUIRED OPTIONS: -req, -req3, -req4, -req5, -req6, -req7, -req73333, -req722222, -req722222222 <AUTO> - [No description] -req2 <AUTO> - [No description] OPTIONAL OPTIONS: -opt, -optional <STR> - Default: 'default' -opt2 <INT> - Default: 1 -h, --help, -H - Print this help information"
+	print(params._helpitems())
+	assert striphelp(params.help()) == "USAGE: program <-req AUTO> <-req2 AUTO> [OPTIONS] REQUIRED OPTIONS: -req, -req3, -req4, -req5, -req6, -req7, -req73333, -req722222, -req722222222 <AUTO> - [No description] -req2 <AUTO> - [No description] OPTIONAL OPTIONS: -opt, -optional <STR> - Default: 'default' -opt2 <INT> - Default: 1 -h, --help, -H - Print this help information"
 
 	params._usage = '{prog} <-this THIS> <-is IS> <-a A> <-very VERY> <-very VERY>' + \
 		' <-very VERY> <-very VERY> <-very VERY> <-very VERY> <-very VERY> <-long LONG>' + \
@@ -858,18 +915,18 @@ def test_params_help(capsys):
 
 	params._ = ['positional']
 	params._usage = []
-	assert striphelp(params.help()) == "USAGE: program <-req auto> <-req2 auto> [OPTIONS] [POSITIONAL] REQUIRED OPTIONS: -req, -req3, -req4, -req5, -req6, -req7, -req73333, -req722222, -req722222222 <AUTO> - [No description] -req2 <AUTO> - [No description] OPTIONAL OPTIONS: -opt, -optional <STR> - Default: 'default' -opt2 <INT> - Default: 1 POSITIONAL - Default: ['positional'] -h, --help, -H - Print this help information"
+	assert striphelp(params.help()) == "USAGE: program <-req AUTO> <-req2 AUTO> [OPTIONS] [POSITIONAL] REQUIRED OPTIONS: -req, -req3, -req4, -req5, -req6, -req7, -req73333, -req722222, -req722222222 <AUTO> - [No description] -req2 <AUTO> - [No description] OPTIONAL OPTIONS: -opt, -optional <STR> - Default: 'default' -opt2 <INT> - Default: 1 POSITIONAL - Default: ['positional'] -h, --help, -H - Print this help information"
 
 	params._.required = True
 	params._desc = 'An example description'
-	assert striphelp(params.help()) == "DESCRIPTION: An example description USAGE: program <-req auto> <-req2 auto> [OPTIONS] POSITIONAL REQUIRED OPTIONS: -req, -req3, -req4, -req5, -req6, -req7, -req73333, -req722222, -req722222222 <AUTO> - [No description] -req2 <AUTO> - [No description] POSITIONAL - Default: ['positional'] OPTIONAL OPTIONS: -opt, -optional <STR> - Default: 'default' -opt2 <INT> - Default: 1 -h, --help, -H - Print this help information"
+	assert striphelp(params.help()) == "DESCRIPTION: An example description USAGE: program <-req AUTO> <-req2 AUTO> [OPTIONS] POSITIONAL REQUIRED OPTIONS: -req, -req3, -req4, -req5, -req6, -req7, -req73333, -req722222, -req722222222 <AUTO> - [No description] -req2 <AUTO> - [No description] POSITIONAL - Default: ['positional'] OPTIONAL OPTIONS: -opt, -optional <STR> - Default: 'default' -opt2 <INT> - Default: 1 -h, --help, -H - Print this help information"
 
 	params._helpx = lambda items: items.update({'helpx': ['helpx demo']}) or items
-	assert striphelp(params.help(error = 'example error')) == "Error: example error DESCRIPTION: An example description USAGE: program <-req auto> <-req2 auto> [OPTIONS] POSITIONAL REQUIRED OPTIONS: -req, -req3, -req4, -req5, -req6, -req7, -req73333, -req722222, -req722222222 <AUTO> - [No description] -req2 <AUTO> - [No description] POSITIONAL - Default: ['positional'] OPTIONAL OPTIONS: -opt, -optional <STR> - Default: 'default' -opt2 <INT> - Default: 1 -h, --help, -H - Print this help information HELPX: helpx demo"
+	assert striphelp(params.help(error = 'example error')) == "Error: example error DESCRIPTION: An example description USAGE: program <-req AUTO> <-req2 AUTO> [OPTIONS] POSITIONAL REQUIRED OPTIONS: -req, -req3, -req4, -req5, -req6, -req7, -req73333, -req722222, -req722222222 <AUTO> - [No description] -req2 <AUTO> - [No description] POSITIONAL - Default: ['positional'] OPTIONAL OPTIONS: -opt, -optional <STR> - Default: 'default' -opt2 <INT> - Default: 1 -h, --help, -H - Print this help information HELPX: helpx demo"
 
 	with pytest.raises(SystemExit):
 		params.help(print_and_exit = True)
-	assert striphelp(capsys.readouterr().err) == "DESCRIPTION: An example description USAGE: program <-req auto> <-req2 auto> [OPTIONS] POSITIONAL REQUIRED OPTIONS: -req, -req3, -req4, -req5, -req6, -req7, -req73333, -req722222, -req722222222 <AUTO> - [No description] -req2 <AUTO> - [No description] POSITIONAL - Default: ['positional'] OPTIONAL OPTIONS: -opt, -optional <STR> - Default: 'default' -opt2 <INT> - Default: 1 -h, --help, -H - Print this help information HELPX: helpx demo"
+	assert striphelp(capsys.readouterr().err) == "DESCRIPTION: An example description USAGE: program <-req AUTO> <-req2 AUTO> [OPTIONS] POSITIONAL REQUIRED OPTIONS: -req, -req3, -req4, -req5, -req6, -req7, -req73333, -req722222, -req722222222 <AUTO> - [No description] -req2 <AUTO> - [No description] POSITIONAL - Default: ['positional'] OPTIONAL OPTIONS: -opt, -optional <STR> - Default: 'default' -opt2 <INT> - Default: 1 -h, --help, -H - Print this help information HELPX: helpx demo"
 
 def test_params_hashable():
 	params = Params()
@@ -888,9 +945,6 @@ def test_params_loaddict():
 	assert not params.a.show
 	params.load({"a": 1, "a.show": True})
 	assert params.a.show
-
-	with pytest.raises(ParamsLoadError):
-		params.load({"x.show": True})
 
 	with pytest.raises(ParamsLoadError):
 		params.load({"x": True, "x.t": 1})
@@ -915,9 +969,24 @@ def test_params_loadfile(tmp_path):
 		"[profile]\n"
 		"a.type = int\n"
 		"a = 2\n"
+		"b.alias = a\n"
 	)
 	params.loadFile(tmpfile2.as_posix(), profile = 'profile')
 	assert params.a.value == 2
+	assert params.b is params.a
+
+	tmpfile3 = tmp_path / 'params3.config'
+	tmpfile3.write_text(
+		"[DEFAULT]\n"
+		"a = 1\n"
+		"a.required = py:False\n"
+		"[profile]\n"
+		"a.type = int\n"
+		"a = 2\n"
+		"b.alias = c\n"
+	)
+	with pytest.raises(ParamsLoadError):
+		params.loadFile(tmpfile3.as_posix(), profile = 'profile')
 # endregion
 
 # region: Commands
