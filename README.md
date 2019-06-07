@@ -26,7 +26,7 @@ Powerful parameter processing
 	params.opt3.type = int # or 'int'
 	params.opt3.desc = 'This is option 3'
 
-	print(params.parse())
+	print(params._parse())
 	```
 	```shell
 	> python program.py
@@ -81,8 +81,9 @@ Powerful parameter processing
 	from param import params
 	params._prefix = '-'
 	params.o.required = True
-	params.o.callback = lambda param: 'Directory of output file does not exist.' if not path.exists(path.dirname(param.value)) else None
-	print(params.parse())
+	params.o.callback = lambda param: 'Directory of output file does not exist.' \
+		if not path.exists(path.dirname(param.value)) else None
+	print(params._parse())
 	```
 	```shell
 	python program.py -o /path/not/exists/outfile
@@ -205,7 +206,7 @@ Powerful parameter processing
 - Arbitrary parsing
 	Parse the arguments without definition
 	```python
-	print(params.parse(arbi = True))
+	print(params._parse(arbi = True))
 	```
 	```shell
 	> python program.py -a 1 -b:list 2 3 -c:dict -c.a.b 4 -c.a.c 5 -d:list:list 6 7 -d 8 9
@@ -217,7 +218,7 @@ Powerful parameter processing
 	```python
 	from param import params
 	params._theme = 'blue'
-	print(params.parse())
+	print(params._parse())
 	```
 	```shell
 	> python program.py
@@ -244,7 +245,7 @@ Powerful parameter processing
 	import colorama
 	from param import params
 	params._theme = dict(title = colorama.Style.BRIGHT + colorama.Fore.YELLOW)
-	print(params.parse())
+	print(params._parse())
 	```
 	![theme_custom][15]
 
@@ -276,7 +277,7 @@ Powerful parameter processing
 		return items
 
 	params._helpx = helpx
-	params.parse()
+	params._parse()
 	```
 	```shell
 	> python program.py
@@ -287,7 +288,7 @@ Powerful parameter processing
 -
 	```python
 	from param import params
-	params.load({
+	params._load({
 		'opt1': '1',
 		'opt2.required': True,
 		'opt2.desc': 'This is option 2',
@@ -295,8 +296,10 @@ Powerful parameter processing
 		'opt3.required': True,
 		'opt3.type': 'int',
 		'opt3.desc': 'This is option 3',
-	})
-	print(params.parse())
+	}, show = True)
+	# show = False by default, params loaded from dict 
+	# will not be show in help page
+	print(params._parse())
 	```
 	```shell
 	python program.py
@@ -304,6 +307,35 @@ Powerful parameter processing
 	![fromdict][9]
 
 	If an option is defined before loading, then the value and attributes will be overwritten.
+
+### Parameters from file
+-
+	Parameters can also be loaded from a configuration file that is supported by [`python-simpleconf`][17]
+	`sample.ini`
+	```ini
+	[default]
+	opt1 = 1
+	opt1.desc = 'This is option 1'
+	[profile1]
+	opt1 = 2
+	```
+	```python
+	params._loadFile('sample.ini', profile = 'default')
+	print(params.dict())
+	# {'opt1': 1}
+	# profile = 'profile1'
+	# {'opt1': 2}
+	```
+### Different wrapper for `_parse` return value
+-
+	```python
+	# python-box
+	from box import Box
+	from param import params
+	params.opt = {'a': {'b': 1}}
+	args = params._parse(dict_wrapper = Box)
+	args.opt.a.b == 1
+	```
 
 ### Sub-commands
 -
@@ -322,7 +354,7 @@ Powerful parameter processing
 	commands.run                 = 'Run script'
 	commands.run.script.desc     = 'The script to run'
 	commands.run.script.required = True
-	print(commands.parse())
+	print(commands._parse())
 	```
 	```shell
 	> python program.py
@@ -353,3 +385,4 @@ Powerful parameter processing
 [14]: ./static/theme_plain.png
 [15]: ./static/theme_custom.png
 [16]: ./static/helpx.png
+[17]: https://github.com/pwwang/simpleconf

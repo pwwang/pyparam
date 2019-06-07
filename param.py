@@ -73,19 +73,19 @@ REQUIRED_OPT_TITLE = 'REQUIRED OPTIONS'
 OPTIONAL_OPT_TITLE = 'OPTIONAL OPTIONS'
 
 class ParamNameError(Exception):
-	pass
+	"""Exception to raise while name of a param is invalid"""
 
 class ParamTypeError(Exception):
-	pass
+	"""Exception to raise while type of a param is invalid"""
 
 class ParamsParseError(Exception):
-	pass
+	"""Exception to raise while failed to parse arguments from command line"""
 
 class ParamsLoadError(Exception):
-	pass
+	"""Exception to raise while failed to load params from dict/file"""
 
 class CommandsParseError(Exception):
-	pass
+	"""Exception to raise while failed to parse command arguments from command line"""
 
 class _Hashable:
 	"""
@@ -122,9 +122,11 @@ class _Valuable:
 		return str(self.value)
 
 	def str(self):
+		"""Return the value in str type"""
 		return str(self.value)
 
 	def int(self, raise_exc = True):
+		"""Return the value in int type"""
 		try:
 			return int(self.value)
 		except (ValueError, TypeError):
@@ -133,6 +135,7 @@ class _Valuable:
 			return None
 
 	def float(self, raise_exc = True):
+		"""Return the value in float type"""
 		try:
 			return float(self.value)
 		except (ValueError, TypeError):
@@ -141,6 +144,7 @@ class _Valuable:
 			return None
 
 	def bool(self):
+		"""Return the value in bool type"""
 		return bool(self.value)
 
 	def __getattr__(self, item):
@@ -536,6 +540,7 @@ class Param(_Valuable):
 				prevalue.append(value)
 
 	def checkout(self):
+		"""Checkout the types and values in stack"""
 		if not self.stacks:
 			return []
 
@@ -574,6 +579,7 @@ class Param(_Valuable):
 
 	@property
 	def desc(self):
+		"""Return the description of a param"""
 		# try to add default value information in desc
 		self._desc = self._desc or []
 		if not self._desc:
@@ -599,6 +605,7 @@ class Param(_Valuable):
 
 	@property
 	def required(self):
+		"""Return if the param is required"""
 		return self._required
 
 	@required.setter
@@ -613,6 +620,7 @@ class Param(_Valuable):
 
 	@property
 	def type(self):
+		"""Return the type of the param"""
 		return self._type
 
 	@type.setter
@@ -701,6 +709,13 @@ class Param(_Valuable):
 			raise ParamTypeError('Unable to coerce value %r to type %r' % (value, typename))
 
 	def dict(self):
+		"""
+		Return the value in dict format
+		There must be dot('.') in the name
+		The first part will be ignored
+		params a.b.c with value 1 will be converted into
+		{"b": {"c": 1}}
+		"""
 		if '.' not in self.name:
 			raise ParamTypeError(
 				'Unable to convert param into dict without dot in name: %r' % self.name)
@@ -714,8 +729,8 @@ class Param(_Valuable):
 
 	def __repr__(self):
 		typename = self.type or ''
-		return '<Param(name={!r},value={!r},type={!r}) @ {}>'.format(
-			self.name, self.value, typename.rstrip(':'), hex(id(self)))
+		return '<Param(name={!r},value={!r},type={!r},required={!r},show={!r}) @ {}>'.format(
+			self.name, self.value, typename.rstrip(':'), self.required, self.show, hex(id(self)))
 
 	def setDesc (self, desc):
 		"""
@@ -838,7 +853,7 @@ class Params(_Hashable):
 			the value of the attribute `name`
 		"""
 		if name.startswith('__') or name.startswith('_' + self.__class__.__name__):
-			return super(Params, self).__getattr__(name)
+			return getattr(super(Params, self), name)
 		if name in ['_' + key for key in self._props.keys()]:
 			return self._props[name[1:]]
 		if not name in self._params:
@@ -998,7 +1013,7 @@ class Params(_Hashable):
 
 		return parsed, pendings
 
-	def parse(self, args = None, arbi = False, dict_wrapper = dict, raise_exc = False):
+	def _parse(self, args = None, arbi = False, dict_wrapper = builtins.dict, raise_exc = False):
 		args = sys.argv[1:] if args is None else args
 		try:
 			if not args and self._hbald:
@@ -1049,14 +1064,14 @@ class Params(_Hashable):
 			for warn in warns[:(MAX_WARNINGS+1)]:
 				sys.stderr.write(warn + '\n')
 
-			return self.asDict(dict_wrapper)
+			return self._asDict(dict_wrapper)
 		except ParamsParseError as exc:
 			if raise_exc:
 				raise
 			exc = str(exc)
 			if exc == '__help__':
 				exc = ''
-			self.help(exc, print_and_exit = True)
+			self._help(exc, print_and_exit = True)
 
 	def _helpitems(self):
 		# alias
@@ -1073,7 +1088,7 @@ class Params(_Hashable):
 		required_options   = []
 		optional_options   = []
 
-		for val in revparams.keys():
+		for val, key in revparams.items():
 			# options not suppose to show
 			if not val.show or val.name == OPT_POSITIONAL_NAME:
 				continue
@@ -1084,7 +1099,7 @@ class Params(_Hashable):
 				valtype = 'auto'
 			option = (
 				', '.join([self._props['prefix'] + k
-						   for k in sorted(revparams[val], key = len)]),
+						   for k in sorted(key, key = len)]),
 				valtype, val.desc)
 			if val.required:
 				required_options.append(option)
@@ -1129,6 +1144,7 @@ class Params(_Hashable):
 		optional_options.append((
 			', '.join(filter(None, self._props['hopts'])),
 			'', ['Print this help information']))
+
 		if required_options:
 			helpitems[REQUIRED_OPT_TITLE] = required_options
 		if optional_options:
@@ -1139,7 +1155,7 @@ class Params(_Hashable):
 
 		return helpitems
 
-	def help (self, error = '', print_and_exit = False):
+	def _help (self, error = '', print_and_exit = False):
 		"""
 		Calculate the help page
 		@params:
@@ -1164,7 +1180,7 @@ class Params(_Hashable):
 		else:
 			return '\n'.join(ret)
 
-	def loadDict (self, dict_var, show = False):
+	def _loadDict (self, dict_var, show = False):
 		"""
 		Load parameters from a dict
 		@params:
@@ -1208,13 +1224,13 @@ class Params(_Hashable):
 			if '.' not in key or key.endswith('.alias'):
 				continue
 			opt, prop = key.split('.', 1)
-			if not prop in ['desc', 'required', 'show', 'type']:
+			if not prop in ('desc', 'required', 'show', 'type', 'value'):
 				raise ParamsLoadError('Unknown attribute %r for option %r' % (prop, opt))
 
 			setattr(self._params[opt], prop, val)
 		return self
 
-	def loadFile (self, cfgfile, profile = False, show = False):
+	def _loadFile (self, cfgfile, profile = False, show = False):
 		"""
 		Load parameters from a json/config file
 		If the file name ends with '.json', `json.load` will be used,
@@ -1230,9 +1246,9 @@ class Params(_Hashable):
 		config._load(cfgfile)
 		if profile:
 			config._use(profile)
-		return self.loadDict(config, show = show)
+		return self._loadDict(config, show = show)
 
-	def asDict (self, wrapper = dict):
+	def _asDict (self, wrapper = builtins.dict):
 		"""
 		Convert the parameters to dict object
 		@returns:
@@ -1243,10 +1259,10 @@ class Params(_Hashable):
 			ret[name] = self._params[name].value
 		return ret
 
-	dict = asDict
-	load = loadDict
+	_dict = _asDict
+	_load = _loadDict
 
-class Commands(object):
+class Commands:
 	"""
 	Support sub-command for command line argument parse.
 	"""
@@ -1309,7 +1325,7 @@ class Commands(object):
 			The value of the attribute
 		"""
 		if name.startswith('__') or name.startswith('_' + self.__class__.__name__):
-			return super(Commands, self).__getattr__(name)
+			return getattr(super(Commands, self), name)
 		if name in ('_desc', '_hcmd'):
 			return self._props[name]
 		if name in ('_cmds', '_assembler', '_helpx', '_prefix'):
@@ -1355,7 +1371,7 @@ class Commands(object):
 	__getitem__ = __getattr__
 	__setitem__ = __setattr__
 
-	def parse(self, args = None, arbi = False, dict_wrapper = dict):
+	def _parse(self, args = None, arbi = False, dict_wrapper = dict):
 		"""
 		Parse the arguments.
 		@params:
@@ -1386,13 +1402,13 @@ class Commands(object):
 
 			common_args = args[:cmdidx]
 			try:
-				common_opts = self._cmds[CMD_COMMON_PARAMS].parse(
+				common_opts = self._cmds[CMD_COMMON_PARAMS]._parse(
 					common_args, arbi, dict_wrapper, True)
 			except ParamsParseError as exc:
 				raise CommandsParseError(str(exc))
 
 			command_args = args[(cmdidx+1):]
-			command_opts = self._cmds[command].parse(
+			command_opts = self._cmds[command]._parse(
 				command_args, arbi, dict_wrapper)
 
 			return command, command_opts, common_opts
@@ -1401,9 +1417,9 @@ class Commands(object):
 			exc = str(exc)
 			if exc == '__help__':
 				exc = ''
-			self.help(error = exc, print_and_exit = True)
+			self._help(error = exc, print_and_exit = True)
 
-	def help(self, error = '', print_and_exit = False):
+	def _help(self, error = '', print_and_exit = False):
 		"""
 		Construct the help page
 		@params:
