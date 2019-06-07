@@ -12,7 +12,7 @@ Powerful parameter processing
 
 	`program.py`
 	```python
-	from param import params
+	from pyparam import params
 	# define arguments
 	params.opt1 = '1' # default value
 	params.opt1.desc = 'This is option 1'
@@ -78,7 +78,7 @@ Powerful parameter processing
 - Callbacks
 	```python
 	from os import path
-	from param import params
+	from pyparam import params
 	params._prefix = '-'
 	params.o.required = True
 	params.o.callback = lambda param: 'Directory of output file does not exist.' \
@@ -216,7 +216,7 @@ Powerful parameter processing
 ### Help message
 - Themes
 	```python
-	from param import params
+	from pyparam import params
 	params._theme = 'blue'
 	print(params._parse())
 	```
@@ -243,7 +243,7 @@ Powerful parameter processing
 	```
 	```python
 	import colorama
-	from param import params
+	from pyparam import params
 	params._theme = dict(title = colorama.Style.BRIGHT + colorama.Fore.YELLOW)
 	print(params._parse())
 	```
@@ -253,7 +253,7 @@ Powerful parameter processing
 	Help message is first transformed into a `list`, where the element is a `tuple` of (option name, type and description) if it is an option otherwise a string, and then formatted with the `HelpAssembler` class.
 	A callback is available to operate on the transformed message so that the help page can be hacked.
 	```python
-	from param import params
+	from pyparam import params
 	params.a = 1
 	print(params._helpitems())
 	# OrderedDict([
@@ -265,7 +265,7 @@ Powerful parameter processing
 	# ])
 	```
 	```python
-	from param import params
+	from pyparam import params
 	params.a = 1
 
 	# add description for the program
@@ -287,7 +287,7 @@ Powerful parameter processing
 ### Parameters from dict
 -
 	```python
-	from param import params
+	from pyparam import params
 	params._load({
 		'opt1': '1',
 		'opt2.required': True,
@@ -297,7 +297,7 @@ Powerful parameter processing
 		'opt3.type': 'int',
 		'opt3.desc': 'This is option 3',
 	}, show = True)
-	# show = False by default, params loaded from dict 
+	# show = False by default, params loaded from dict
 	# will not be show in help page
 	print(params._parse())
 	```
@@ -331,7 +331,7 @@ Powerful parameter processing
 	```python
 	# python-box
 	from box import Box
-	from param import params
+	from pyparam import params
 	params.opt = {'a': {'b': 1}}
 	args = params._parse(dict_wrapper = Box)
 	args.opt.a.b == 1
@@ -340,7 +340,7 @@ Powerful parameter processing
 ### Sub-commands
 -
 	```python
-	from param import commands
+	from pyparam import commands
 	# common options for all commands
 	commands._.workdir.desc      = 'The work directory.'
 	commands._.workdir.required  = 'The work directory.'

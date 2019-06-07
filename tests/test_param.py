@@ -2,7 +2,7 @@ from collections import OrderedDict
 import re
 import pytest
 import colorama
-from param import HelpAssembler, MAX_PAGE_WIDTH, MAX_OPT_WIDTH, \
+from pyparam import HelpAssembler, MAX_PAGE_WIDTH, MAX_OPT_WIDTH, \
 	Param, Params, params, commands, ParamNameError, ParamTypeError, \
 	ParamsParseError, ParamsLoadError, OPT_UNSET_VALUE, OPT_POSITIONAL_NAME, \
 	Commands
