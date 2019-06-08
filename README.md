@@ -20,7 +20,7 @@ Powerful parameter processing
 	params.opt2.required = True
 	params.opt2.desc = 'This is option 2'
 	# Alias
-	params.option2 = params.opt2
+	params.o = params.opt2
 	# define type of an option
 	params.opt3.required = True
 	params.opt3.type = int # or 'int'
@@ -34,45 +34,26 @@ Powerful parameter processing
 	![help][9]
 
 	```shell
-	> python program.py -opt2 1 -opt3 4 -opt1 5
-	{'opt1': '5', 'opt2': 1, 'option2': 1, 'opt3': 4}
+	> python program.py --opt2 1 --opt3 4 --opt1 5
+	{'h': False, 'help': False, 'H': False, 'opt1': '5', 'opt2': 1, 'o': 1, 'opt3': 4}
 
-	> python program.py -opt2 True -opt3 4 -opt1 5
-	{'opt1': '5', 'opt2': True, 'option2': 1, 'opt3': 4}
+	> python program.py -o --opt3 4 --opt1 5
+	{'h': False, 'help': False, 'H': False, 'opt1': '5', 'opt2': True, 'o': True, 'opt3': 4}
 
-	> python program.py -opt2 1 -opt3 x -opt1 5
+	> python program.py --opt2 1 --opt3 x --opt1 5
 	Traceback (most recent call last):
 	... ...
 		raise ParamTypeError('Unable to coerce value %r to type %r' % (value, typename))
 	param.ParamTypeError: Unable to coerce value 'x' to type 'int:'
 	```
 
-	- Different prefix
-	```python
-	params._prefix = '--'
-	```
-	```shell
-	> python program.py --opt2 1 --opt3 4 --opt1 5
-	{'opt1': '5', 'opt2': 1, 'option2': 1, 'opt3': 4}
-	```
-
-- Short and long options
+	- Fixed prefix
 	```python
 	params._prefix = '-'
-	params.o.required = True
-	params.o.type = str
-	params.o.desc = 'The output file.'
-	params['-output'] = params.o
 	```
 	```shell
-	> python program.py
-	```
-	![short_long][10]
-
-	```shell
-	> python program.py -o /path/to/outfile
-	{'o': '/path/to/outfile', '-output': '/path/to/outfile'}
-	# Note you have to use "-output" to access the value instead of "output"
+	> python program.py -opt2 1 -opt3 4 -opt1 5
+	{'h': False, 'help': False, 'H': False, 'opt1': '5', 'opt2': 1, 'o': 1, 'opt3': 4}
 	```
 
 - Callbacks
@@ -98,7 +79,7 @@ Powerful parameter processing
 	```
 	```shell
 	> python program.py -amplifier 100 -number 2
-	{'amplifier': 100, 'number': 200}
+	{'h': False, 'help': False, 'H': False, 'amplifier': 100, 'number': 200}
 	```
 
 - Type redefinition
@@ -107,15 +88,15 @@ Powerful parameter processing
 	param.opt.desc = 'Option'
 	```
 	```shell
-	> python program.py -opt 1
-	{'opt': 1}
+	> python program.py --opt 1
+	{'h': False, 'help': False, 'H': False, 'opt': 1}
 
-	> python program.py -opt a
-	{'opt': 'a'}
+	> python program.py --opt a
+	{'h': False, 'help': False, 'H': False, 'opt': 'a'}
 
 	# force str
-	> python program.py -opt:str 1
-	{'opt': '1'}
+	> python program.py --opt:str 1
+	{'h': False, 'help': False, 'H': False, 'opt': '1'}
 	```
 
 - List/Array options
@@ -125,7 +106,7 @@ Powerful parameter processing
 	```shell
 	> python program.py -infiles file1 file2 file3 # or
 	> python program.py -infiles file1 -infiles file2 -infiles file3
-	{'infiles': ['file1', 'file2', 'file3']}
+	{'h': False, 'help': False, 'H': False, 'infiles': ['file1', 'file2', 'file3']}
 	```
 
 	Default values:
@@ -134,7 +115,7 @@ Powerful parameter processing
 	```
 	```shell
 	> python program.py -infiles file1 file2 file3
-	{'infiles': ['file0', 'file1', 'file2', 'file3']}
+	{'h': False, 'help': False, 'H': False, 'infiles': ['file0', 'file1', 'file2', 'file3']}
 	```
 
 	Reset list options
@@ -143,16 +124,16 @@ Powerful parameter processing
 	> python program.py -infiles:reset file1 file2 file3 # or
 	> python program.py -infiles:list:reset file1 file2 file3
 	# or use short names `l:r` for `list:reset`
-	{'infiles': ['file1', 'file2', 'file3']}
+	{'h': False, 'help': False, 'H': False, 'infiles': ['file1', 'file2', 'file3']}
 	```
 
 	Elements are convert using `auto` type:
 	```shell
 	> python program.py -infiles file1 file2 3
-	{'infiles': ['file0', 'file1', 'file2', 3]}
+	{'h': False, 'help': False, 'H': False, 'infiles': ['file0', 'file1', 'file2', 3]}
 	# to force all str type, note the option is reset
 	> python program.py -infiles:list:str file1 file2 3
-	{'infiles': ['file1', 'file2', '3']}
+	{'h': False, 'help': False, 'H': False, 'infiles': ['file1', 'file2', '3']}
 	```
 
 	List of list options
@@ -162,11 +143,12 @@ Powerful parameter processing
 	```
 	```shell
 	> python program.py -files file11 file12 -files 3
-	{'infiles': [['file01', 'file02'], ['file11', 'file12'], ['3']]}
+	{'h': False, 'help': False, 'H': False,
+	 'infiles': [['file01', 'file02'], ['file11', 'file12'], ['3']]}
 	# Note that list:list don't to auto conversion for elements
 	# reset list:list
 	> python program.py -files:r file11 file12 -files 3
-	{'infiles': [['file11', 'file12'], ['3']]}
+	{'h': False, 'help': False, 'H': False, 'infiles': [['file11', 'file12'], ['3']]}
 	```
 
 - Positional options
@@ -175,7 +157,7 @@ Powerful parameter processing
 	```
 	```shell
 	> python program.py file1
-	{'_': ['file1']}
+	{'h': False, 'help': False, 'H': False, '_': ['file1']}
 	```
 
 	If last option is a list option:
@@ -185,10 +167,10 @@ Powerful parameter processing
 	```
 	```shell
 	> python program.py -infiles file1 file2 file3
-	{'infiles': ['file1', 'file2', 'file3'], '_': None}
+	{'h': False, 'help': False, 'H': False, 'infiles': ['file1', 'file2', 'file3'], '_': None}
 	# If I want file3 to be the positional option
 	> python program.py -infiles file1 file2 - file3
-	{'infiles': ['file1', 'file2'], '_': 'file3'}
+	{'h': False, 'help': False, 'H': False, 'infiles': ['file1', 'file2'], '_': 'file3'}
 	```
 
 - Dict options
@@ -197,10 +179,11 @@ Powerful parameter processing
 	```
 	```shell
 	> python program.py -config.width 10 -config.height 20 -config.sub.switch
-	{'config': {'default': 1, 'width': 10, 'height': 20, 'sub': {'switch': True}}}
+	{'h': False, 'help': False, 'H': False,
+	 'config': {'default': 1, 'width': 10, 'height': 20, 'sub': {'switch': True}}}
 	# reset dict option
 	> python program.py -config:r -config.width 10 -config.height 20
-	{'config': {'width': 10, 'height': 20}}
+	{'h': False, 'help': False, 'H': False, 'config': {'width': 10, 'height': 20}}
 	```
 
 - Arbitrary parsing
@@ -210,7 +193,8 @@ Powerful parameter processing
 	```
 	```shell
 	> python program.py -a 1 -b:list 2 3 -c:dict -c.a.b 4 -c.a.c 5 -d:list:list 6 7 -d 8 9
-	{'a': 1, 'b': [2, 3], 'c': {'a': {'b': 4, 'c': 5}}, 'd': [['6', '7'], ['8', '9']]}
+	{'h': False, 'help': False, 'H': False,
+	 'a': 1, 'b': [2, 3], 'c': {'a': {'b': 4, 'c': 5}}, 'd': [['6', '7'], ['8', '9']]}
 	```
 
 ### Help message
@@ -288,6 +272,7 @@ Powerful parameter processing
 -
 	```python
 	from pyparam import params
+	params._prefix = '-'
 	params._load({
 		'opt1': '1',
 		'opt2.required': True,
@@ -332,6 +317,8 @@ Powerful parameter processing
 	# python-box
 	from box import Box
 	from pyparam import params
+	# don't exit if not arguments provided
+	params._hbald = False
 	params.opt = {'a': {'b': 1}}
 	args = params._parse(dict_wrapper = Box)
 	args.opt.a.b == 1
@@ -341,6 +328,7 @@ Powerful parameter processing
 -
 	```python
 	from pyparam import commands
+	commands._prefix = '-'
 	# common options for all commands
 	commands._.workdir.desc      = 'The work directory.'
 	commands._.workdir.required  = 'The work directory.'
@@ -377,12 +365,12 @@ Powerful parameter processing
 [6]: https://app.codacy.com/project/pwwang/pyparam/dashboard
 [7]: https://img.shields.io/codacy/coverage/a34b1afaccf84019a6b138d40932d566.svg?style=flat-square
 [8]: https://img.shields.io/pypi/pyversions/pyparam.svg?style=flat-square
-[9]: https://raw.githubusercontent.com/pwwang/pyparam/d129bfa10e0043313f5c152df1bb64977b8d82e2/static/helpx.png
-[10]: https://raw.githubusercontent.com/pwwang/pyparam/d129bfa10e0043313f5c152df1bb64977b8d82e2/static/short_long.png
-[11]: https://raw.githubusercontent.com/pwwang/pyparam/d129bfa10e0043313f5c152df1bb64977b8d82e2/static/callback_error.png
-[12]: https://raw.githubusercontent.com/pwwang/pyparam/d129bfa10e0043313f5c152df1bb64977b8d82e2/static/subcommand.png
-[13]: https://raw.githubusercontent.com/pwwang/pyparam/d129bfa10e0043313f5c152df1bb64977b8d82e2/static/theme_blue.png
-[14]: https://raw.githubusercontent.com/pwwang/pyparam/d129bfa10e0043313f5c152df1bb64977b8d82e2/static/theme_plain.png
-[15]: https://raw.githubusercontent.com/pwwang/pyparam/d129bfa10e0043313f5c152df1bb64977b8d82e2/static/theme_custom.png
-[16]: https://raw.githubusercontent.com/pwwang/pyparam/d129bfa10e0043313f5c152df1bb64977b8d82e2/static/helpx.png
+[9]: https://raw.githubusercontent.com/pwwang/pyparam/master/static/helpx.png
+[10]: https://raw.githubusercontent.com/pwwang/pyparam/master/static/short_long.png
+[11]: https://raw.githubusercontent.com/pwwang/pyparam/master/static/callback_error.png
+[12]: https://raw.githubusercontent.com/pwwang/pyparam/master/static/subcommand.png
+[13]: https://raw.githubusercontent.com/pwwang/pyparam/master/static/theme_blue.png
+[14]: https://raw.githubusercontent.com/pwwang/pyparam/master/static/theme_plain.png
+[15]: https://raw.githubusercontent.com/pwwang/pyparam/master/static/theme_custom.png
+[16]: https://raw.githubusercontent.com/pwwang/pyparam/master/static/helpx.png
 [17]: https://github.com/pwwang/simpleconf

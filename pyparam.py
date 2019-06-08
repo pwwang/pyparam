@@ -58,7 +58,7 @@ OPT_BOOL_FALSES = [False, 0, 'False', 'FALSE', 'false', '0', 'None', 'none', Non
 
 OPT_NONES = [None, 'none', 'None']
 
-OPT_PATTERN       = r"^([a-zA-Z\?@-][\w,\._-]*)?(?::([\w:]+))?(?:=(.*))?$"
+OPT_PATTERN       = r"^([a-zA-Z@-][\w,\._-]*)?(?::([\w:]+))?(?:=(.*))?$"
 OPT_INT_PATTERN   = r'^[+-]?\d+$'
 OPT_FLOAT_PATTERN = r'^[+-]?(?:\d*\.)?\d+(?:[Ee][+-]\d+)?$'
 OPT_NONE_PATTERN  = r'^none|None$'
@@ -67,7 +67,7 @@ OPT_PY_PATTERN    = r'^(?:py|repr):(.+)$'
 
 OPT_POSITIONAL_NAME = '_'
 OPT_UNSET_VALUE     = '__Param_Value_Not_Set__'
-CMD_COMMON_PARAMS   = '_'
+CMD_GLOBAL_PARAMS   = '_'
 
 REQUIRED_OPT_TITLE = 'REQUIRED OPTIONS'
 OPTIONAL_OPT_TITLE = 'OPTIONAL OPTIONS'
@@ -151,7 +151,7 @@ class _Valuable:
 		# attach str methods
 		if item in _Valuable.STR_METHODS:
 			return getattr(str(self.value), item)
-		raise AttributeError('No such attribute: {}'.format(item))
+		raise AttributeError('Class %r: No such attribute: %r' % (self.__class__.__name__, item))
 
 	def __add__(self, other):
 		return self.value + other
@@ -383,12 +383,13 @@ class Param(_Valuable):
 			`name`:  The name of the parameter
 			`value`: The initial value of the parameter
 		"""
-		self.value, self._type = Param._typeFromValue(value)
+		self._value, self._type = Param._typeFromValue(value)
 
 		self._desc     = []
 		self._required = False
 		self.show      = True
 		self.name      = name
+		self.default   = self._value
 		self.stacks    = []
 		self.callback  = None
 
@@ -541,6 +542,8 @@ class Param(_Valuable):
 
 	def checkout(self):
 		"""Checkout the types and values in stack"""
+		# use self._value = value instead of self.value = value
+		# don't update default
 		if not self.stacks:
 			return []
 
@@ -552,14 +555,14 @@ class Param(_Valuable):
 		type1, type2 = typename.split(':')
 		self._type = typename
 		if type2 == 'list':
-			self.value = value
+			self._value = value
 		elif type1 == 'list':
-			self.value = Param._forceType(value, typename)
+			self._value = Param._forceType(value, typename)
 		elif type1 in ('bool', 'auto') and not value:
-			self.value = True
+			self._value = True
 		elif type1 == 'dict':
 			if not value:
-				self.value = {}
+				self._value = {}
 			else:
 				val0 = value.pop(0)
 				if isinstance(val0, Param):
@@ -568,14 +571,23 @@ class Param(_Valuable):
 					if isinstance(val, Param):
 						val = val.dict()
 					val0 = Param._dictUpdate(val0, val)
-				self.value = val0
+				self._value = val0
 		else:
-			self.value = Param._forceType(value.pop(0), typename)
+			self._value = Param._forceType(value.pop(0), typename)
 			for val in value:
 				warns.append('Later value %r was ignored for option %r (type=%r)' % (
 					val, self.name, typename))
 
 		return warns
+
+	@property
+	def value(self):
+		return self._value
+
+	@value.setter
+	def value(self, value):
+		self._value = value
+		self.default = value
 
 	@property
 	def desc(self):
@@ -590,9 +602,12 @@ class Param(_Valuable):
 		# 2. self.required and self.value is not None
 		# 3. default not in self._desc[-1]
 		if not ('DEFAULT: ' in self._desc[-1] or 'Default: ' in self._desc[-1] or (
-			self.required and self.value is None)):
-			self._desc[-1] = self._desc[-1] and self._desc[-1] + ' '
-			self._desc[-1] = self._desc[-1] + 'Default: %r' % self.value
+			self.required and self.default is None)):
+			if len(self._desc[-1]) > 20:
+				self._desc.append('Default: %r' % self.default)
+			else:
+				self._desc[-1] = self._desc[-1] and self._desc[-1] + ' '
+				self._desc[-1] = self._desc[-1] + 'Default: %r' % self.default
 
 		if len(self._desc) == 1 and not self._desc[-1]:
 			self._desc[-1] = '[No description]'
@@ -761,7 +776,7 @@ class Param(_Valuable):
 			typename = typename.__name__
 		self._type = Param._normalizeType(typename)
 		if update_value:
-			self.value = Param._forceType(self.value, self._type)
+			self._value = Param._forceType(self.value, self._type)
 		return self
 
 	def setCallback(self, callback):
@@ -786,14 +801,15 @@ class Param(_Valuable):
 
 	def setValue(self, value, update_type = False):
 		"""
-		Set the value of the parameter
+		Set the value of the parameter.
+		Note default value will be not updated
 		@params:
 			`val`: The value
 		"""
 		if update_type:
-			self.value, self._type = Param._typeFromValue(value)
+			self._value, self._type = Param._typeFromValue(value)
 		else:
-			self.value = value
+			self._value = value
 		return self
 
 class Params(_Hashable):
@@ -814,13 +830,14 @@ class Params(_Hashable):
 			prog      = prog,
 			usage     = [],
 			desc      = [],
-			hopts     = ['-h', '--help', '-H'],
-			prefix    = '-',
+			hopts     = ['h', 'help', 'H'],
+			prefix    = 'auto',
 			hbald     = True,
 			assembler = HelpAssembler(prog, theme),
 			helpx     = None
 		)
 		self.__dict__['_params']    = OrderedDict()
+		self._setHopts(self._hopts)
 
 	def __setattr__(self, name, value):
 		"""
@@ -898,9 +915,23 @@ class Params(_Hashable):
 		@params:
 			`hopts`: The help options
 		"""
+		if not hopts:
+			raise ValueError('No option specified for help.')
 		assert isinstance(hopts, (list, str))
+		# remove all previous help options
+		for hopt in self._hopts:
+			if hopt in self._params:
+				del self._params[hopt]
+
 		self._props['hopts'] = hopts if isinstance(hopts, list) else \
 			[ho.strip() for ho in hopts.split(',')]
+		if any('.' in hopt for hopt in self._hopts):
+			raise ValueError('No dot allowed in help option name.')
+
+		self[self._hopts[0]] = False
+		self[self._hopts[0]].desc = 'Show help message and exit.'
+		for hopt in self._hopts[1:]:
+			self[hopt] = self[self._hopts[0]]
 		return self
 
 	def _setPrefix(self, prefix):
@@ -909,10 +940,15 @@ class Params(_Hashable):
 		@params:
 			`prefix`: The prefix
 		"""
-		if not prefix:
-			raise ParamsParseError('Empty prefix.')
+		if prefix not in ('-', '--', 'auto'):
+			raise ParamsParseError('Prefix should be one of -, -- and auto.')
 		self._props['prefix'] = prefix
 		return self
+
+	def _prefixit(self, name):
+		if self._prefix == 'auto':
+			return '-' + name if len(name.split('.')[0]) == 1 else '--' + name
+		return self._prefix + name
 
 	def _setHbald(self, hbald = True):
 		"""
@@ -925,7 +961,8 @@ class Params(_Hashable):
 
 	def __repr__(self):
 		return '<Params({}) @ {}>'.format(','.join(
-			'{p.name}:{p.type}'.format(p = param) for param in self._params.values()
+			'{name}:{p.value!r}'.format(name = key, p = param)
+			for key, param in self._params.items()
 		), hex(id(self)))
 
 	def _preParse(self, args):
@@ -937,8 +974,8 @@ class Params(_Hashable):
 		pendings = []
 		lastopt  = None
 		for arg in args:
-			if arg.startswith(self._prefix):
-				argtoparse = arg[len(self._prefix):]
+			if (self._prefix == 'auto' and arg.startswith('-')) or arg.startswith(self._prefix):
+				argtoparse = arg.lstrip('-') if self._prefix == 'auto' else arg[len(self._prefix):]
 				matches = re.match(OPT_PATTERN, argtoparse)
 				# if it is not an option, treat it as value
 				# for example, negative numbers: -1, -2
@@ -1028,14 +1065,14 @@ class Params(_Hashable):
 			for name, param in parsed.items():
 				if '.' in name:
 					continue
-				if name in self._params:
+				if name in self._hopts:
+					raise ParamsParseError('__help__')
+				elif name in self._params:
 					pass
 				elif arbi:
 					self._params[name] = param
-				elif self._prefix + name in self._hopts:
-					raise ParamsParseError('__help__')
 				else:
-					warns.append('Unrecognized option: %r' % (self._prefix + name))
+					warns.append('Unrecognized option: %r' % self._prefixit(name))
 					continue
 
 				warns.extend(param.checkout())
@@ -1054,12 +1091,12 @@ class Params(_Hashable):
 					continue
 
 				error = 'Callback error.' if ret is False else ret
-				raise ParamsParseError('Option %r: %s' % (self._prefix + name, error))
+				raise ParamsParseError('Option %r: %s' % (self._prefixit(name), error))
 
 			# check required
 			for name, param in self._params.items():
 				if param.required and param.value is None and param.type != 'NoneType:':
-					raise ParamsParseError('Option %r is required.' % (self._prefix + name))
+					raise ParamsParseError('Option %r is required.' % (self._prefixit(name)))
 
 			for warn in warns[:(MAX_WARNINGS+1)]:
 				sys.stderr.write(warn + '\n')
@@ -1085,22 +1122,32 @@ class Params(_Hashable):
 		if OPT_POSITIONAL_NAME in self._params:
 			posopt = self._params[OPT_POSITIONAL_NAME]
 
+		# see if we have any mixed short and long options
+		# because we are try to align the option like:
+		# -o, --output        - The output
+		#     --all           - Do for all cases
+		options_mixed = self._prefix == 'auto' and any(
+			len(set(len(name) == 1 for name in names)) == 2
+			for names in revparams.values())
+
 		required_options   = []
 		optional_options   = []
 
 		for val, key in revparams.items():
 			# options not suppose to show
-			if not val.show or val.name == OPT_POSITIONAL_NAME:
+			if not val.show or val.name in self._hopts + [OPT_POSITIONAL_NAME]:
 				continue
 
 			valtype  = val.type or ''
 			valtype  = valtype.rstrip(':')
 			if valtype == 'NoneType':
 				valtype = 'auto'
-			option = (
-				', '.join([self._props['prefix'] + k
-						   for k in sorted(key, key = len)]),
-				valtype, val.desc)
+
+			optname = ', '.join(self._prefixit(k) for k in sorted(key, key = len))
+			if options_mixed and optname.startswith('--'):
+				#          -o, --
+				optname = '    ' + optname
+			option = (optname, valtype, val.desc)
 			if val.required:
 				required_options.append(option)
 			else:
@@ -1126,8 +1173,8 @@ class Params(_Hashable):
 				if optname == 'POSITIONAL':
 					continue
 				defusage.append('<{} {}>'.format(
-					optname.split(',')[0],
-					(opttype or optname[len(self._props['prefix']):]).upper())
+					optname.split(',')[0].strip(),
+					(opttype or optname.lstrip('-')).upper())
 				)
 			if optional_options:
 				defusage.append('[OPTIONS]')
@@ -1142,18 +1189,15 @@ class Params(_Hashable):
 			helpitems['usage'] = defusage
 
 		optional_options.append((
-			', '.join(filter(None, self._props['hopts'])),
-			'', ['Print this help information']))
+			', '.join(self._prefixit(hopt) for hopt in self._hopts),
+			'', self._params[self._hopts[0]]._desc))
 
 		if required_options:
 			helpitems[REQUIRED_OPT_TITLE] = required_options
 		if optional_options:
 			helpitems[OPTIONAL_OPT_TITLE] = optional_options
 
-		if callable(self._helpx):
-			helpitems = self._helpx(helpitems)
-
-		return helpitems
+		return self._helpx(helpitems) if callable(self._helpx) else helpitems
 
 	def _help (self, error = '', print_and_exit = False):
 		"""
@@ -1259,6 +1303,13 @@ class Params(_Hashable):
 			ret[name] = self._params[name].value
 		return ret
 
+	def _complete(self, shell, auto = False):
+		from completions import Completions
+		completions = Completions(desc = self._desc and self._desc[0] or '')
+		for key, val in self._params.items():
+			completions.addOption(self._prefixit(key), val.desc and val.desc[0] or '')
+		return completions.generate(shell, auto)
+
 	_dict = _asDict
 	_load = _loadDict
 
@@ -1267,7 +1318,7 @@ class Commands:
 	Support sub-command for command line argument parse.
 	"""
 
-	def __init__(self, theme = 'default', prefix = '-'):
+	def __init__(self, theme = 'default', prefix = 'auto'):
 		"""
 		Constructor
 		@params:
@@ -1281,9 +1332,9 @@ class Commands:
 			helpx     = None,
 			prefix    = prefix
 		)
-		self._cmds[CMD_COMMON_PARAMS] = Params(None, theme)
-		self._cmds[CMD_COMMON_PARAMS]._prefix = prefix
-		self._cmds[CMD_COMMON_PARAMS]._hbald  = False
+		self._cmds[CMD_GLOBAL_PARAMS] = Params(None, theme)
+		self._cmds[CMD_GLOBAL_PARAMS]._prefix = prefix
+		self._cmds[CMD_GLOBAL_PARAMS]._hbald  = False
 
 	def _setDesc(self, desc):
 		"""
@@ -1393,17 +1444,17 @@ class Commands:
 				if arg == 'help':
 					raise CommandsParseError('__help__')
 
-				if arg != CMD_COMMON_PARAMS and arg in self._cmds:
+				if arg != CMD_GLOBAL_PARAMS and arg in self._cmds:
 					command = arg
 					cmdidx = i
 					break
 			else:
 				raise CommandsParseError('No command given.')
 
-			common_args = args[:cmdidx]
+			global_args = args[:cmdidx]
 			try:
-				common_opts = self._cmds[CMD_COMMON_PARAMS]._parse(
-					common_args, arbi, dict_wrapper, True)
+				global_opts = self._cmds[CMD_GLOBAL_PARAMS]._parse(
+					global_args, arbi, dict_wrapper, True)
 			except ParamsParseError as exc:
 				raise CommandsParseError(str(exc))
 
@@ -1411,7 +1462,7 @@ class Commands:
 			command_opts = self._cmds[command]._parse(
 				command_args, arbi, dict_wrapper)
 
-			return command, command_opts, common_opts
+			return command, command_opts, global_opts
 
 		except CommandsParseError as exc:
 			exc = str(exc)
@@ -1432,18 +1483,18 @@ class Commands:
 		if self._desc:
 			helpitems['description'] = self._desc
 
-		helpitems['usage'] = ['{prog} [COMMON OPTIONS] <command> [COMMAND OPTIONS]']
+		helpitems['usage'] = ['{prog} [GLOBAL OPTIONS] <command> [COMMAND OPTIONS]']
 
-		common_opt_items = self._cmds[CMD_COMMON_PARAMS]._helpitems()
-		if REQUIRED_OPT_TITLE in common_opt_items:
-			helpitems[REQUIRED_OPT_TITLE] = common_opt_items[REQUIRED_OPT_TITLE]
-		if OPTIONAL_OPT_TITLE in common_opt_items:
-			helpitems[OPTIONAL_OPT_TITLE] = common_opt_items[OPTIONAL_OPT_TITLE]
+		global_opt_items = self._cmds[CMD_GLOBAL_PARAMS]._helpitems()
+		if REQUIRED_OPT_TITLE in global_opt_items:
+			helpitems['GLOBAL ' + REQUIRED_OPT_TITLE] = global_opt_items[REQUIRED_OPT_TITLE]
+		if OPTIONAL_OPT_TITLE in global_opt_items:
+			helpitems['GLOBAL ' + OPTIONAL_OPT_TITLE] = global_opt_items[OPTIONAL_OPT_TITLE]
 
 		helpitems['commands'] = []
 		revcmds = OrderedDict()
 		for key, val in self._cmds.items():
-			if key == CMD_COMMON_PARAMS:
+			if key == CMD_GLOBAL_PARAMS:
 				continue
 			if val not in revcmds:
 				revcmds[val] = []
@@ -1469,6 +1520,23 @@ class Commands:
 			sys.exit(1)
 		else:
 			return '\n'.join(ret)
+
+	def _complete(self, shell, auto = False):
+		from completions import Completions
+		completions = Completions(desc = self._desc and self._desc[0] or '')
+		if CMD_GLOBAL_PARAMS in self._cmds:
+			for key, val in self._cmds[CMD_GLOBAL_PARAMS]._params.items():
+				completions.addOption(
+					self._cmds[CMD_GLOBAL_PARAMS]._prefixit(key),
+					val.desc and val.desc[0] or '')
+		for key, val in self._cmds.items():
+			if key == CMD_GLOBAL_PARAMS:
+				continue
+			completions.addCommand(key, ' '.join(val._desc))
+			for pname, param in val._params.items():
+				completions.command(key).addOption(
+					val._prefixit(pname), param.desc and param.desc[0] or '')
+		return completions.generate(shell, auto)
 
 # pylint: disable=invalid-name
 params   = Params()

@@ -144,11 +144,11 @@ class TestHelpAssembler:
 				f = colorama.Fore, s = colorama.Style),
 			'  some description about the program',
 			'', '']),
-		({'optional options': [('-h, --help, -H', '', ['Print this help information'])]}, [
+		({'optional options': [('-h, --help, -H', '', ['Show help message and exit.'])]}, [
 			'{s.BRIGHT}{f.CYAN}OPTIONAL OPTIONS{s.RESET_ALL}:'.format(
 				f = colorama.Fore, s = colorama.Style),
 			'{s.BRIGHT}{f.GREEN}  -h, --help, -H{s.RESET_ALL}   '
-			'     - Print this help information{s.RESET_ALL}'.format(
+			'     - Show help message and exit.{s.RESET_ALL}'.format(
 				f = colorama.Fore, s = colorama.Style),
 			'', '']),
 		({'description': ['some very very very very very very very very very very very very '
@@ -258,6 +258,8 @@ def test_param_desc():
 	param.value = 1
 	param.setDesc('option description.')
 	assert param.desc == ['option description. Default: 1']
+	param.setDesc('long long option description.')
+	assert param.desc == ['long long option description.', 'Default: 1']
 
 	param = Param('name')
 	param.desc = []
@@ -656,10 +658,10 @@ def test_params_init():
 	assert params._prog == 'program'
 	assert params._usage == []
 	assert params._desc == []
-	assert params._hopts == ['-h', '--help', '-H']
-	assert params._prefix == '-'
+	assert params._hopts == ['h', 'help', 'H']
+	assert params._prefix == 'auto'
 	assert params._hbald == True
-	assert params._params == {}
+	assert list(params._params.keys()) == params._hopts
 	assert params._assembler.theme['error'] == colorama.Fore.RED
 	assert params._helpx == None
 
@@ -691,14 +693,22 @@ def test_params_props():
 	assert params._hopts == ['-h', '--help']
 	params._hopts = ['-H']
 	assert params._hopts == ['-H']
+	with pytest.raises(ValueError):
+		params._setHopts('')
+	with pytest.raises(ValueError):
+		params._setHopts('h.e.l.p')
 
 	# prefix
 	params._setPrefix('--')
 	assert params._prefix == '--'
+	assert params._prefixit('a') == '--a'
 	params._prefix = '-'
 	assert params._prefix == '-'
+	assert params._prefixit('a') == '-a'
 	with pytest.raises(ParamsParseError):
 		params._prefix = ''
+
+
 
 	# hbald
 	params._setHbald()
@@ -722,7 +732,7 @@ def test_params_repr():
 	params = Params()
 	params.a = 1
 	params.b = 2
-	assert repr(params).startswith('<Params(a:int:,b:int:) @ ')
+	assert repr(params).startswith('<Params(h:False,help:False,H:False,a:1,b:2) @ ')
 
 @pytest.mark.parametrize('args, exptstacks, exptpendings', [
 	([], {}, []),
@@ -776,6 +786,7 @@ def test_params_preparse(args, exptstacks, exptpendings):
 def test_params_parse_arbi(args, exptdict, exptwarns, capsys):
 	params = Params()
 	params._hbald = False
+	exptdict.update(zip(params._hopts, [False] * len(params._hopts)))
 	assert params._parse(args, True) == exptdict
 	err = capsys.readouterr().err
 	for exptwarn in exptwarns:
@@ -797,7 +808,7 @@ def test_params_parse(capsys):
 	params1.a = 1
 	params1._parse(['-a', '2', '-b', '3'])
 	assert "Unrecognized option: '-b'" in capsys.readouterr().err
-	assert params1._dict() == {'a': 2}
+	assert params1._dict() == {'H': False, 'h': False, 'help': False, 'a': 2}
 
 	with pytest.raises(SystemExit):
 		params1._parse(['-h'])
@@ -805,12 +816,12 @@ def test_params_parse(capsys):
 
 	params1.a.callback = lambda param: param.setValue(param.value + 1)
 	params1._parse(['-a', '2'])
-	assert params1._dict() == {'a': 3}
+	assert params1._dict() == {'H': False, 'h': False, 'help': False, 'a': 3}
 
 	params1.b = 10
 	params1.b.callback = lambda param, params: param.setValue(param.value * params.a.value)
 	params1._parse(['-a', '2'])
-	assert params1._dict() == {'a': 3, 'b': 30}
+	assert params1._dict() == {'H': False, 'h': False, 'help': False, 'a': 3, 'b': 30}
 
 	params1.a.callback = lambda param: list(1)
 	params1.b.callback = None
@@ -819,7 +830,7 @@ def test_params_parse(capsys):
 
 	params1.a.callback = lambda param: 'Should be negative number' if param.value > 0 else None
 	params1._parse(['-a', '-2'])
-	assert params1._dict() == {'a': -2, 'b': 30}
+	assert params1._dict() == {'H': False, 'h': False, 'help': False, 'a': -2, 'b': 30}
 
 	with pytest.raises(SystemExit):
 		params1._parse(['-a', '2'])
@@ -835,47 +846,47 @@ def test_params_parse(capsys):
 	params2 = Params()
 	params2.e = [1,2,3]
 	params2._parse(['-e', '4', '-e', '5', '6'])
-	assert params2._dict() == {'e': [1,2,3,4,5,6]}
+	assert params2._dict() == {'H': False, 'h': False, 'help': False, 'e': [1,2,3,4,5,6]}
 	# list:reset
 	params2._parse(['-e:l:r', '4', '-e', '5', '6', '-e', '7', '8'])
-	assert params2._dict() == {'e': [4, 5, 6, 7, 8]}
+	assert params2._dict() == {'H': False, 'h': False, 'help': False, 'e': [4, 5, 6, 7, 8]}
 
 	# reset
 	params2._parse(['-e:r', '4', '-e', '5', '6', '-e', '7', '8'])
-	assert params2._dict() == {'e': [4, 5, 6, 7, 8]}
+	assert params2._dict() == {'H': False, 'h': False, 'help': False, 'e': [4, 5, 6, 7, 8]}
 
 	# list of list
 	params3 = Params()
 	params3.f = []
 	params3.f.type = 'list:list'
 	params3._parse(['-f', '1', '2', '-f', '3', '4'])
-	assert params3._dict() == {'f': [['1', '2'], ['3', '4']]}
+	assert params3._dict() == {'H': False, 'h': False, 'help': False, 'f': [['1', '2'], ['3', '4']]}
 
 	# reset dict
 	params4 = Params()
 	params4.g = {'a': 1}
 	params4._parse(['-g.b', '2'])
-	assert params4._dict() == {'g': {'a':1, 'b':2}}
+	assert params4._dict() == {'H': False, 'h': False, 'help': False, 'g': {'a':1, 'b':2}}
 
 def test_params_parse_positional(capsys):
 	# positional
 	params5 = Params()
 	params5[OPT_POSITIONAL_NAME].desc = 'positional'
-	assert params5._parse(['x', 'y']) == {OPT_POSITIONAL_NAME: 'x'}
+	assert params5._parse(['x', 'y']) == {'H': False, 'h': False, 'help': False, OPT_POSITIONAL_NAME: 'x'}
 	assert "Later value 'y' was ignored for option '_' (type='auto:')" in capsys.readouterr().err
 
 	params5 = Params()
 	params5[OPT_POSITIONAL_NAME] = []
-	assert params5._parse(['x', 'y']) == {OPT_POSITIONAL_NAME: ['x','y']}
+	assert params5._parse(['x', 'y']) == {'H': False, 'h': False, 'help': False, OPT_POSITIONAL_NAME: ['x','y']}
 
 	params5 = Params()
 	params5[OPT_POSITIONAL_NAME] = []
 	params5.a.type = str
-	assert params5._parse(['-a', '1', 'x', 'y']) == {'a': '1', '_': ['x', 'y']}
+	assert params5._parse(['-a', '1', 'x', 'y']) == {'H': False, 'h': False, 'help': False, 'a': '1', '_': ['x', 'y']}
 
 	params5 = Params()
 	params5[OPT_POSITIONAL_NAME] = []
-	assert params5._parse(['-:str', 'x', 'y']) == {'_': 'x'}
+	assert params5._parse(['-:str', 'x', 'y']) == {'H': False, 'h': False, 'help': False, '_': 'x'}
 	assert "Unrecognized value: 'y'" in capsys.readouterr().err
 
 
@@ -885,48 +896,46 @@ def test_params_help(capsys):
 	params = Params()
 	#print ('-'*10, params._help(), '-'*10)
 	assert striphelp(params._help()) == 'USAGE: program [OPTIONS] OPTIONAL OPTIONS: -h, --help, -H ' + \
-		'- Print this help information'
+		'- Show help message and exit.'
 
 	params.optional = 'default'
-	assert striphelp(params._help()) == 'USAGE: program [OPTIONS] OPTIONAL OPTIONS: -optional <STR> ' + \
+	assert striphelp(params._help()) == 'USAGE: program [OPTIONS] OPTIONAL OPTIONS: --optional <STR> ' + \
 		"- Default: 'default' -h, --help, -H " + \
-		'- Print this help information'
-	params.req.required = True
-	# 1088
-	params.req.type = 'NoneType'
+		'- Show help message and exit.'
+	params.r.required = True
+	params.r.type = 'NoneType'
 	params.req2.required = True
-	params.req3 = params.req
-	params.req4 = params.req
-	params.req5 = params.req
-	params.req6 = params.req
-	params.req7 = params.req
-	params.req73333 = params.req
-	params.req722222 = params.req
-	params.req722222222 = params.req
+	params.req3 = params.r
+	params.req4 = params.r
+	params.req5 = params.r
+	params.req6 = params.r
+	params.req7 = params.r
+	params.req73333 = params.r
+	params.req722222 = params.r
+	params.req722222222 = params.r
 	params.opt = params.optional
 	params.opt2 = 1
-	print(params._helpitems())
-	assert striphelp(params._help()) == "USAGE: program <-req AUTO> <-req2 AUTO> [OPTIONS] REQUIRED OPTIONS: -req, -req3, -req4, -req5, -req6, -req7, -req73333, -req722222, -req722222222 <AUTO> - [No description] -req2 <AUTO> - [No description] OPTIONAL OPTIONS: -opt, -optional <STR> - Default: 'default' -opt2 <INT> - Default: 1 -h, --help, -H - Print this help information"
+	assert striphelp(params._help()) == "USAGE: program <-r AUTO> <--req2 AUTO> [OPTIONS] REQUIRED OPTIONS: -r, --req3, --req4, --req5, --req6, --req7, --req73333, --req722222, --req722222222 <AUTO> - [No description] --req2 <AUTO> - [No description] OPTIONAL OPTIONS: --opt, --optional <STR> - Default: 'default' --opt2 <INT> - Default: 1 -h, --help, -H - Show help message and exit."
 
 	params._usage = '{prog} <-this THIS> <-is IS> <-a A> <-very VERY> <-very VERY>' + \
 		' <-very VERY> <-very VERY> <-very VERY> <-very VERY> <-very VERY> <-long LONG>' + \
 		' <-usage USAGE>'
-	assert striphelp(params._help()) == "USAGE: program <-this THIS> <-is IS> <-a A> <-very VERY> <-very VERY> <-very VERY> <-very \\ VERY> <-very VERY> <-very VERY> <-very VERY> <-long LONG> <-usage USAGE> REQUIRED OPTIONS: -req, -req3, -req4, -req5, -req6, -req7, -req73333, -req722222, -req722222222 <AUTO> - [No description] -req2 <AUTO> - [No description] OPTIONAL OPTIONS: -opt, -optional <STR> - Default: 'default' -opt2 <INT> - Default: 1 -h, --help, -H - Print this help information"
+	assert striphelp(params._help()) == "USAGE: program <-this THIS> <-is IS> <-a A> <-very VERY> <-very VERY> <-very VERY> <-very \\ VERY> <-very VERY> <-very VERY> <-very VERY> <-long LONG> <-usage USAGE> REQUIRED OPTIONS: -r, --req3, --req4, --req5, --req6, --req7, --req73333, --req722222, --req722222222 <AUTO> - [No description] --req2 <AUTO> - [No description] OPTIONAL OPTIONS: --opt, --optional <STR> - Default: 'default' --opt2 <INT> - Default: 1 -h, --help, -H - Show help message and exit."
 
 	params._ = ['positional']
 	params._usage = []
-	assert striphelp(params._help()) == "USAGE: program <-req AUTO> <-req2 AUTO> [OPTIONS] [POSITIONAL] REQUIRED OPTIONS: -req, -req3, -req4, -req5, -req6, -req7, -req73333, -req722222, -req722222222 <AUTO> - [No description] -req2 <AUTO> - [No description] OPTIONAL OPTIONS: -opt, -optional <STR> - Default: 'default' -opt2 <INT> - Default: 1 POSITIONAL - Default: ['positional'] -h, --help, -H - Print this help information"
+	assert striphelp(params._help()) == "USAGE: program <-r AUTO> <--req2 AUTO> [OPTIONS] [POSITIONAL] REQUIRED OPTIONS: -r, --req3, --req4, --req5, --req6, --req7, --req73333, --req722222, --req722222222 <AUTO> - [No description] --req2 <AUTO> - [No description] OPTIONAL OPTIONS: --opt, --optional <STR> - Default: 'default' --opt2 <INT> - Default: 1 POSITIONAL - Default: ['positional'] -h, --help, -H - Show help message and exit."
 
 	params._.required = True
 	params._desc = 'An example description'
-	assert striphelp(params._help()) == "DESCRIPTION: An example description USAGE: program <-req AUTO> <-req2 AUTO> [OPTIONS] POSITIONAL REQUIRED OPTIONS: -req, -req3, -req4, -req5, -req6, -req7, -req73333, -req722222, -req722222222 <AUTO> - [No description] -req2 <AUTO> - [No description] POSITIONAL - Default: ['positional'] OPTIONAL OPTIONS: -opt, -optional <STR> - Default: 'default' -opt2 <INT> - Default: 1 -h, --help, -H - Print this help information"
+	assert striphelp(params._help()) == "DESCRIPTION: An example description USAGE: program <-r AUTO> <--req2 AUTO> [OPTIONS] POSITIONAL REQUIRED OPTIONS: -r, --req3, --req4, --req5, --req6, --req7, --req73333, --req722222, --req722222222 <AUTO> - [No description] --req2 <AUTO> - [No description] POSITIONAL - Default: ['positional'] OPTIONAL OPTIONS: --opt, --optional <STR> - Default: 'default' --opt2 <INT> - Default: 1 -h, --help, -H - Show help message and exit."
 
 	params._helpx = lambda items: items.update({'helpx': ['helpx demo']}) or items
-	assert striphelp(params._help(error = 'example error')) == "Error: example error DESCRIPTION: An example description USAGE: program <-req AUTO> <-req2 AUTO> [OPTIONS] POSITIONAL REQUIRED OPTIONS: -req, -req3, -req4, -req5, -req6, -req7, -req73333, -req722222, -req722222222 <AUTO> - [No description] -req2 <AUTO> - [No description] POSITIONAL - Default: ['positional'] OPTIONAL OPTIONS: -opt, -optional <STR> - Default: 'default' -opt2 <INT> - Default: 1 -h, --help, -H - Print this help information HELPX: helpx demo"
+	assert striphelp(params._help(error = 'example error')) == "Error: example error DESCRIPTION: An example description USAGE: program <-r AUTO> <--req2 AUTO> [OPTIONS] POSITIONAL REQUIRED OPTIONS: -r, --req3, --req4, --req5, --req6, --req7, --req73333, --req722222, --req722222222 <AUTO> - [No description] --req2 <AUTO> - [No description] POSITIONAL - Default: ['positional'] OPTIONAL OPTIONS: --opt, --optional <STR> - Default: 'default' --opt2 <INT> - Default: 1 -h, --help, -H - Show help message and exit. HELPX: helpx demo"
 
 	with pytest.raises(SystemExit):
 		params._help(print_and_exit = True)
-	assert striphelp(capsys.readouterr().err) == "DESCRIPTION: An example description USAGE: program <-req AUTO> <-req2 AUTO> [OPTIONS] POSITIONAL REQUIRED OPTIONS: -req, -req3, -req4, -req5, -req6, -req7, -req73333, -req722222, -req722222222 <AUTO> - [No description] -req2 <AUTO> - [No description] POSITIONAL - Default: ['positional'] OPTIONAL OPTIONS: -opt, -optional <STR> - Default: 'default' -opt2 <INT> - Default: 1 -h, --help, -H - Print this help information HELPX: helpx demo"
+	assert striphelp(capsys.readouterr().err) == "DESCRIPTION: An example description USAGE: program <-r AUTO> <--req2 AUTO> [OPTIONS] POSITIONAL REQUIRED OPTIONS: -r, --req3, --req4, --req5, --req6, --req7, --req73333, --req722222, --req722222222 <AUTO> - [No description] --req2 <AUTO> - [No description] POSITIONAL - Default: ['positional'] OPTIONAL OPTIONS: --opt, --optional <STR> - Default: 'default' --opt2 <INT> - Default: 1 -h, --help, -H - Show help message and exit. HELPX: helpx demo"
 
 def test_params_hashable():
 	params = Params()
@@ -938,7 +947,7 @@ def test_params_hashable():
 def test_params_loaddict():
 	params = Params()
 	params._loadDict({})
-	assert params._dict() == {}
+	assert params._dict() == {'H': False, 'h': False, 'help': False, }
 
 	params._load({"a": 1})
 	assert isinstance(params.a, Param)
@@ -992,7 +1001,7 @@ def test_params_loadfile(tmp_path):
 # region: Commands
 def test_commands_init():
 	commands = Commands()
-	assert commands._prefix == '-'
+	assert commands._prefix == 'auto'
 	commands._setPrefix('--')
 	commands._prefix == '--'
 	commands._._prefix == '--'
@@ -1020,18 +1029,18 @@ def test_commands_attr():
 
 def test_commands_help(capsys):
 	commands = Commands()
-	assert striphelp(commands._help()) == "USAGE: program [COMMON OPTIONS] <command> [COMMAND OPTIONS] OPTIONAL OPTIONS: -h, --help, -H - Print this help information COMMANDS: help <COMMAND> - Print help information for the command"
+	assert striphelp(commands._help()) == "USAGE: program [GLOBAL OPTIONS] <command> [COMMAND OPTIONS] GLOBAL OPTIONAL OPTIONS: -h, --help, -H - Show help message and exit. COMMANDS: help <COMMAND> - Print help information for the command"
 
 	commands.cmd1 = 'Comman 1'
 	commands.alongcommand = 'A long command'
 	commands.cmd2 = commands.cmd1
-	assert striphelp(commands._help()) == "USAGE: program [COMMON OPTIONS] <command> [COMMAND OPTIONS] OPTIONAL OPTIONS: -h, --help, -H - Print this help information COMMANDS: cmd1 | cmd2 - Comman 1 alongcommand - A long command help <COMMAND> - Print help information for the command"
+	assert striphelp(commands._help()) == "USAGE: program [GLOBAL OPTIONS] <command> [COMMAND OPTIONS] GLOBAL OPTIONAL OPTIONS: -h, --help, -H - Show help message and exit. COMMANDS: cmd1 | cmd2 - Comman 1 alongcommand - A long command help <COMMAND> - Print help information for the command"
 
 	commands._helpx = lambda items: items.update({'Additional': ['demo']}) or items
-	assert striphelp(commands._help()) == "USAGE: program [COMMON OPTIONS] <command> [COMMAND OPTIONS] OPTIONAL OPTIONS: -h, --help, -H - Print this help information COMMANDS: cmd1 | cmd2 - Comman 1 alongcommand - A long command help <COMMAND> - Print help information for the command ADDITIONAL: demo"
+	assert striphelp(commands._help()) == "USAGE: program [GLOBAL OPTIONS] <command> [COMMAND OPTIONS] GLOBAL OPTIONAL OPTIONS: -h, --help, -H - Show help message and exit. COMMANDS: cmd1 | cmd2 - Comman 1 alongcommand - A long command help <COMMAND> - Print help information for the command ADDITIONAL: demo"
 
 	commands._.a.required = True
-	assert striphelp(commands._help('some errors')) == "Error: some errors USAGE: program [COMMON OPTIONS] <command> [COMMAND OPTIONS] REQUIRED OPTIONS: -a <AUTO> - [No description] OPTIONAL OPTIONS: -h, --help, -H - Print this help information COMMANDS: cmd1 | cmd2 - Comman 1 alongcommand - A long command help <COMMAND> - Print help information for the command ADDITIONAL: demo"
+	assert striphelp(commands._help('some errors')) == "Error: some errors USAGE: program [GLOBAL OPTIONS] <command> [COMMAND OPTIONS] GLOBAL REQUIRED OPTIONS: -a <AUTO> - [No description] GLOBAL OPTIONAL OPTIONS: -h, --help, -H - Show help message and exit. COMMANDS: cmd1 | cmd2 - Comman 1 alongcommand - A long command help <COMMAND> - Print help information for the command ADDITIONAL: demo"
 
 	with pytest.raises(SystemExit):
 		commands._help(print_and_exit = True)
@@ -1042,7 +1051,7 @@ def test_commands_help(capsys):
 	commands.cmd1._usage  = '{prog} options'
 	commands.cmd2         = commands.cmd1
 	commands._.a.required = True
-	assert striphelp(commands._help()) == "DESCRIPTION: Command description USAGE: program [COMMON OPTIONS] <command> [COMMAND OPTIONS] REQUIRED OPTIONS: -a <AUTO> - [No description] OPTIONAL OPTIONS: -h, --help, -H - Print this help information COMMANDS: cmd1 | cmd2 - First command alongcommand - A long command help <COMMAND> - Print help information for the command ADDITIONAL: demo"
+	assert striphelp(commands._help()) == "DESCRIPTION: Command description USAGE: program [GLOBAL OPTIONS] <command> [COMMAND OPTIONS] GLOBAL REQUIRED OPTIONS: -a <AUTO> - [No description] GLOBAL OPTIONAL OPTIONS: -h, --help, -H - Show help message and exit. COMMANDS: cmd1 | cmd2 - First command alongcommand - A long command help <COMMAND> - Print help information for the command ADDITIONAL: demo"
 
 def test_commands_parse(capsys):
 	commands = Commands()
@@ -1075,7 +1084,7 @@ def test_commands_parse(capsys):
 
 	command, opts, copts = commands._parse(['-a', '2', 'cmd1', '-a', '1'])
 	assert command == 'cmd1'
-	assert opts == {'a': 1}
-	assert copts == {'a': 2}
+	assert opts == {'h': False, 'help': False, 'H': False, 'a': 1}
+	assert copts == {'h': False, 'help': False, 'H': False, 'a': 2}
 
 # endregion
