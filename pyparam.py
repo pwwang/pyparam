@@ -582,6 +582,7 @@ class Param(_Valuable):
 
 	@property
 	def value(self):
+		"""Get the value of the parameter"""
 		return self._value
 
 	@value.setter
@@ -1303,11 +1304,26 @@ class Params(_Hashable):
 			ret[name] = self._params[name].value
 		return ret
 
-	def _complete(self, shell, auto = False):
+	def _addToCompletions(self, completions, withtype, alias):
+		revparams = OrderedDict()
+		for name, param in self._params.items():
+			if param not in revparams:
+				revparams[param] = []
+			revparams[param].append(name)
+		for param, names in revparams.items():
+			if not alias: # keep the longest one
+				names = [list(sorted(names, key = len))[-1]]
+			if withtype:
+				names.extend([name + ':' + param.type.rstrip(':')
+					for name in names if param.type and param.type != 'auto'])
+			for name in names:
+				completions.addOption(self._prefixit(name), param.desc and param.desc[0] or '')
+
+	def _complete(self, shell, auto = False, withtype = False, alias = False):
 		from completions import Completions
 		completions = Completions(desc = self._desc and self._desc[0] or '')
-		for key, val in self._params.items():
-			completions.addOption(self._prefixit(key), val.desc and val.desc[0] or '')
+		self._addToCompletions(completions, withtype, alias)
+
 		return completions.generate(shell, auto)
 
 	_dict = _asDict
@@ -1521,21 +1537,26 @@ class Commands:
 		else:
 			return '\n'.join(ret)
 
-	def _complete(self, shell, auto = False):
+	def _complete(self, shell, auto = False, withtype = False, alias = True):
 		from completions import Completions
 		completions = Completions(desc = self._desc and self._desc[0] or '')
-		if CMD_GLOBAL_PARAMS in self._cmds:
-			for key, val in self._cmds[CMD_GLOBAL_PARAMS]._params.items():
-				completions.addOption(
-					self._cmds[CMD_GLOBAL_PARAMS]._prefixit(key),
-					val.desc and val.desc[0] or '')
+		revcmds = OrderedDict()
 		for key, val in self._cmds.items():
 			if key == CMD_GLOBAL_PARAMS:
 				continue
-			completions.addCommand(key, ' '.join(val._desc))
-			for pname, param in val._params.items():
-				completions.command(key).addOption(
-					val._prefixit(pname), param.desc and param.desc[0] or '')
+			if val not in revcmds:
+				revcmds[val] = []
+			revcmds[val].append(key)
+
+		if CMD_GLOBAL_PARAMS in self._cmds:
+			self._cmds[CMD_GLOBAL_PARAMS]._addToCompletions(completions, withtype, alias)
+
+		for command, names in revcmds.items():
+			if not alias:
+				names = [list(sorted(names, key = len))[-1]]
+			for name in names:
+				completions.addCommand(name, command._desc and command._desc[0] or '')
+				command._addToCompletions(completions.command(name), withtype, alias)
 		return completions.generate(shell, auto)
 
 # pylint: disable=invalid-name

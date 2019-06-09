@@ -365,7 +365,7 @@ Powerful parameter processing
 [6]: https://app.codacy.com/project/pwwang/pyparam/dashboard
 [7]: https://img.shields.io/codacy/coverage/a34b1afaccf84019a6b138d40932d566.svg?style=flat-square
 [8]: https://img.shields.io/pypi/pyversions/pyparam.svg?style=flat-square
-[9]: https://raw.githubusercontent.com/pwwang/pyparam/master/static/helpx.png
+[9]: https://raw.githubusercontent.com/pwwang/pyparam/master/static/help.png
 [10]: https://raw.githubusercontent.com/pwwang/pyparam/master/static/short_long.png
 [11]: https://raw.githubusercontent.com/pwwang/pyparam/master/static/callback_error.png
 [12]: https://raw.githubusercontent.com/pwwang/pyparam/master/static/subcommand.png
