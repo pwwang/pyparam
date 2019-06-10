@@ -10,15 +10,16 @@ from os import path
 from collections import OrderedDict
 import colorama
 from simpleconf import Config
+from .help import HelpItems, HelpOptions, HelpOptionDescriptions, Helps
 
 # the max width of the help page, not including the leading space
-MAX_PAGE_WIDTH = 100
+MAX_PAGE_WIDTH      = 100
 # the max width of the option name (include the type and placeholder, but not the leading space)
-MAX_OPT_WIDTH  = 36
+MAX_OPT_WIDTH       = 36
 # the min gap between optname/opttype and option description
-MIN_OPT_GAP    = 5
+MIN_OPTDESC_LEADING = 5
 # maximum warnings to print
-MAX_WARNINGS   = 10
+MAX_WARNINGS        = 10
 
 THEMES = dict(
 	default = dict(
@@ -68,7 +69,7 @@ OPT_PY_PATTERN    = r'^(?:py|repr):(.+)$'
 
 OPT_POSITIONAL_NAME = '_'
 OPT_UNSET_VALUE     = '__Param_Value_Not_Set__'
-CMD_GLOBAL_PARAMS   = '_'
+CMD_GLOBAL_OPTPROXY = '_'
 
 REQUIRED_OPT_TITLE = 'REQUIRED OPTIONS'
 OPTIONAL_OPT_TITLE = 'OPTIONAL OPTIONS'
@@ -278,10 +279,10 @@ class HelpAssembler:
 		"""
 		trimmedmsg = msg.rstrip().upper()
 		if not trimmedmsg:
-			return msg + '  '
+			return msg
 		return '{colorstart}{msg}{colorend}'.format(
 			colorstart = self.theme['opttype'],
-			msg        = ('({})' if trimmedmsg == 'BOOL' else '<{}>').format(trimmedmsg),
+			msg        = trimmedmsg,
 			colorend   = colorama.Style.RESET_ALL
 		) + ' ' * (len(msg) - len(trimmedmsg))
 
@@ -324,161 +325,40 @@ class HelpAssembler:
 		"""
 
 		ret = []
-		maxoptwidth = 0
-		for helpitems in helps.values():
-			for item in helpitems:
-				if not isinstance(item, tuple):
-					continue
-				# 5 = <first 2 spaces: 2> +
-				#     <gap between name and type: 1> +
-				#     <brackts around type: 2>
-				maxoptwidth = max(maxoptwidth,
-					max(len(item[0] + item[1]) + MIN_OPT_GAP + 5
-						for item in helpitems
-						if len(item[0] + item[1]) + MIN_OPT_GAP + 5 <= MAX_OPT_WIDTH))
-
-		maxoptwidth = maxoptwidth or MAX_OPT_WIDTH
+		maxoptwidth = helps.maxOptNameWidth
 
 		for title, helpitems in helps.items():
-
+			if not helpitems:
+				continue
 			ret.append(self.title(title))
-			if not any(isinstance(item, tuple) for item in helpitems):
+
+			if isinstance(helpitems, HelpOptions):
+				for optname, opttype, optdesc in helpitems:
+					descs = sum((_textwrap(desc, MAX_PAGE_WIDTH - maxoptwidth)
+								for desc in optdesc), [])
+					optlen = len(optname + opttype) + MIN_OPTDESC_LEADING + 3
+					if optlen > MAX_OPT_WIDTH:
+						ret.append(
+							self.optname(optname, prefix = '  ') + ' ' + self.opttype(opttype))
+						if descs:
+							ret.append(' ' * maxoptwidth + self.optdesc(descs.pop(0), True))
+					else:
+						to_append = self.optname(optname, prefix = '  ') + ' ' + \
+									self.opttype(opttype.ljust(maxoptwidth - len(optname) - 3))
+						if descs:
+							to_append += self.optdesc(descs.pop(0), True)
+						ret.append(to_append)
+					if descs:
+						ret.extend(' ' * maxoptwidth + self.optdesc(desc) for desc in descs)
+				ret.append('')
+			else: # HelpItems
 				for item in helpitems:
 					ret.extend(self.plain(it) for it in _textwrap(
 						item, MAX_PAGE_WIDTH - 2, initial_indent = '  ', subsequent_indent = '  '))
 				ret.append('')
-				continue
 
-			helpitems = [item if isinstance(item, tuple) else ('', '', item)
-						 for item in helpitems]
-
-			for optname, opttype, optdesc in helpitems:
-				descs = sum((_textwrap(desc, MAX_PAGE_WIDTH - maxoptwidth)
-							for desc in optdesc), [])
-				optlen = len(optname + opttype) + MIN_OPT_GAP + 5
-				if optlen > MAX_OPT_WIDTH:
-					ret.append(
-						self.optname(optname, prefix = '  ') + ' ' + self.opttype(opttype))
-					if descs:
-						ret.append(' ' * maxoptwidth + self.optdesc(descs.pop(0), True))
-				else:
-					to_append = self.optname(optname, prefix = '  ') + ' ' + \
-								self.opttype(opttype.ljust(maxoptwidth - len(optname) - 5))
-					if descs:
-						to_append += self.optdesc(descs.pop(0), True)
-					ret.append(to_append)
-				if descs:
-					ret.extend(' ' * maxoptwidth + self.optdesc(desc) for desc in descs)
-			ret.append('')
 		ret.append('')
 		return ret
-
-class HelpSection(list):
-	"""
-	Plain section of help page, sections other then those with options
-	"""
-	def __init__(self, *args, **kwargs):
-		for arg in args:
-			self.add(arg)
-
-	def add(self, item, **kwargs):
-		if not isinstance(item, list):
-			item = item.splitlines()
-		self.extend(item)
-
-	def query(self, selector):
-		for i, item in enumerate(self):
-			if isinstance(selector, re.Pattern) and selector.search(item):
-				return i
-			if isinstance(selector, str) and selector in item:
-				return i
-		raise ValueError('No element found by selector: %r' % selector)
-
-	def after(self, selector, item, **kwargs):
-		tmp = self[:]
-		index = self.query(selector)
-		self.clear()
-		self.add(tmp[:(index+1)])
-		self.add(item, **kwargs)
-		self.add(tmp[(index+1):])
-
-	def before(self, selector, item):
-		tmp = self[:]
-		index = self.query(selector)
-		self.clear()
-		self.add(tmp[:index])
-		self.add(item, **kwargs)
-		self.add(tmp[index:])
-
-	def replace(self, selector, content):
-		index = self.query(selector)
-		self[index] = content
-
-	def select(self, selector):
-		return self[self.query(selector)]
-
-	def delete(self, selector):
-		del self[self.query(selector)]
-
-class HelpOptionDesc(HelpSection):
-	"""Option descriptions in help page"""
-
-class HelpOptionSection(HelpSection):
-
-	def __init__(self, *args, **kwargs):
-		self.prefix = kwargs.pop('prefix', 'auto')
-		super(HelpOptionSection, self).__init__(*args, **kwargs)
-
-	def _prefixName(self, name):
-		if name.startswith('-') or not self.prefix:
-			return name
-		if self.prefix != 'auto':
-			return self.prefix + name
-		return '-' if len(name) <= 1 or name[1] == '.' else '--' + name
-
-	def addParam(self, param, aliases = None, ishelp = False):
-		aliases = aliases or [param.name]
-		if param.type == 'verbose:':
-			aliases.extend(['-' + param.name * 2, '-' * param.name * 3])
-		paramtype = '<VERBOSITY>' if param.type == 'verbose:' else '' \
-			if ishelp else '(BOOL)' \
-			if param.type == 'bool:' else '<%s>' % param.type.rstrip(':').upper()
-		self.add((
-			', '.join(self._prefixName(alias) for alias in aliases),
-			paramtype,
-			param.desc
-		))
-
-	def addCommand(self, params, aliases, ishelp = False):
-		cmdtype = '[COMMAND]' if ishelp else ''
-		self.add((
-			', '.join(aliases),
-			cmdtype,
-			params._desc
-		))
-
-	def add(self, item, aliases = None, ishelp = False):
-		if isinstance(item, Param):
-			self.addParam(item, aliases, ishelp)
-		elif isinstance(item, Params):
-			self.addCommand(item, aliases, ishelp)
-		elif not isinstance(item, tuple) or len(item) != 3:
-			raise ValueError('Expect a 3-element tuple as an option item in help page.')
-		if not isinstance(item[2], HelpSection):
-			item = item[:2] + (HelpOptionDesc(item[2]),)
-		self.append(item)
-
-	def query(self, selector):
-		for i, item in enumerate(self):
-			if isinstance(selector, re.Pattern) and selector.search(item[0]):
-				return i
-			if isinstance(selector, str):
-				options = item[0].strip().split(', ')
-				if selector in options or selector in (opt.lstrip('-') for opt in options):
-					return i
-		raise ValueError('No element found by selector: %r' % selector)
-
-
 
 class Param(_Valuable):
 	"""
@@ -1117,7 +997,6 @@ class Params(_Hashable):
 
 				# check if argname is defined, or argname[0] is defined
 				# and check if it is a verbose option
-				print(argname, argtype, argval, arg)
 				if not arg.startswith('--') and argname and argname not in self._params \
 					and '.' not in argname and argname[0] in self._params \
 					and self._prefix in ('auto', '-') and not argtype and not argval:
@@ -1151,7 +1030,7 @@ class Params(_Hashable):
 				pendings.append(arg)
 			else:
 				lastopt.push(arg)
-		print(parsed, [p.stacks for p in parsed.values()])
+
 		# no options detected at all
 		# all pendings will be used as positional
 		if lastopt is None and pendings:
@@ -1246,98 +1125,77 @@ class Params(_Hashable):
 				exc = ''
 			self._help(exc, print_and_exit = True)
 
+	@property
 	def _helpitems(self):
-		# alias
-		revparams = {}
+
+		# collect aliases
+		required_params = {}
+		optional_params = {}
 		for name, param in self._params.items():
-			if not param in revparams:
-				if param.type == 'verbose:' and self._prefix in ('auto', '-'):
-					revparams[param] = ['-' + name * 2, '-' + name * 3]
-				else:
-					revparams[param] = []
-
-			revparams[param].append(name)
-
-		posopt = None
-		if OPT_POSITIONAL_NAME in self._params:
-			posopt = self._params[OPT_POSITIONAL_NAME]
-
-		# see if we have any mixed short and long options
-		# because we are try to align the option like:
-		# -o, --output        - The output
-		#     --all           - Do for all cases
-		options_mixed = self._prefix == 'auto' and any(
-			len(set(len(name) == 1 for name in names)) == 2
-			for names in revparams.values())
-
-		required_options   = []
-		optional_options   = []
-
-		for val, key in revparams.items():
-			# options not suppose to show
-			if not val.show or val.name in self._hopts + [OPT_POSITIONAL_NAME]:
+			if name in self._hopts + [OPT_POSITIONAL_NAME]:
 				continue
-
-			valtype  = val.type or ''
-			valtype  = valtype.rstrip(':')
-			if valtype == 'NoneType':
-				valtype = 'auto'
-
-			optname = ', '.join(self._prefixit(k) for k in sorted(key, key = len))
-			if options_mixed and optname.startswith('--'):
-				#          -o, --
-				optname = '    ' + optname
-			option = (optname, valtype, val.desc)
-			if val.required:
-				required_options.append(option)
+			if param.required:
+				required_params.setdefault(param, []).append(name)
 			else:
-				optional_options.append(option)
+				optional_params.setdefault(param, []).append(name)
 
-		if isinstance(posopt, Param):
-			if posopt.required:
-				required_options.append(('POSITIONAL', '', posopt.desc))
-			else:
-				optional_options.append(('POSITIONAL', '', posopt.desc))
+		# positional option
+		pos_option = None
+		if OPT_POSITIONAL_NAME in self._params:
+			pos_option = self._params[OPT_POSITIONAL_NAME]
 
-		helpitems = OrderedDict()
-		if self._props['desc']:
-			helpitems['description'] = self._props['desc']
+		helps = Helps()
+		# DESCRIPTION
+		if self._desc:
+			helps.add('DESCRIPTION', self._desc)
 
-		if self._props['usage']:
-			helpitems['usage'] = sum((_textwrap(
-				usage, MAX_PAGE_WIDTH - (len(self._prog) - 6) * 4 - 10, subsequent_indent = '  ')
-				for usage in self._props['usage']), [])
+		# USAGE
+		helps.add('USAGE', HelpItems())
+		if self._usage:
+			helps['USAGE'].add(sum((_textwrap(
+				# allow 4 program names with more than 6 chars each in one usage
+				# 15 chars for backup.
+				usage, MAX_PAGE_WIDTH - (len(self._prog) - 6) * 4 - 15, subsequent_indent = '  ')
+				for usage in self._props['usage']), []))
 		else: # default usage
-			defusage = ['{prog}']
-			for optname, opttype, _ in required_options:
-				if optname == 'POSITIONAL':
-					continue
-				defusage.append('<{} {}>'.format(
-					optname.split(',')[0].strip(),
-					(opttype or optname.lstrip('-')).upper())
-				)
-			if optional_options:
-				defusage.append('[OPTIONS]')
-			if isinstance(posopt, Param):
-				defusage.append('POSITIONAL' if posopt.required else '[POSITIONAL]')
+			defusage = '{prog}'
+			for param, names in required_params.items():
+				defusage += ' <{} {}>'.format(
+					self._prefixit(names[0]),
+					(param.type.rstrip(':') or names[0]).upper())
+			defusage += ' [OPTIONS]'
 
-			if len(defusage) == 1:
-				defusage.append('[OPTIONS]')
+			if pos_option:
+				defusage += ' POSITIONAL' if pos_option.required else ' [POSITIONAL]'
 
-			defusage = _textwrap(' '.join(defusage),
-				MAX_PAGE_WIDTH - (len(self._prog) - 6) * 4 - 10, subsequent_indent = '  ')
-			helpitems['usage'] = defusage
+			defusage = _textwrap(defusage,
+				MAX_PAGE_WIDTH - (len(self._prog) - 6) * 4 - 15,
+				subsequent_indent = '  ')
+			helps['USAGE'].add(defusage)
 
-		optional_options.append((
-			', '.join(self._prefixit(hopt) for hopt in self._hopts),
-			'', self._params[self._hopts[0]]._desc))
+		helps.add(REQUIRED_OPT_TITLE, HelpOptions())
+		helps.add(OPTIONAL_OPT_TITLE, HelpOptions())
 
-		if required_options:
-			helpitems[REQUIRED_OPT_TITLE] = required_options
-		if optional_options:
-			helpitems[OPTIONAL_OPT_TITLE] = optional_options
+		for param, names in required_params.items():
+			helps[REQUIRED_OPT_TITLE].addParam(param, names)
 
-		return self._helpx(helpitems) if callable(self._helpx) else helpitems
+		for param, names in optional_params.items():
+			helps[OPTIONAL_OPT_TITLE].addParam(param, names)
+
+		if pos_option:
+			helpsection = helps[REQUIRED_OPT_TITLE] if pos_option.required \
+				  else helps[OPTIONAL_OPT_TITLE]
+			if helpsection:
+				# leave an empty line for positional
+				helpsection.add(('', '', ['']))
+			helpsection.addParam(pos_option)
+
+		helps[OPTIONAL_OPT_TITLE].add(self._params[self._hopts[0]], self._hopts, ishelp = True)
+
+		if callable(self._helpx):
+			self._helpx(helps)
+
+		return helps
 
 	def _help (self, error = '', print_and_exit = False):
 		"""
@@ -1356,7 +1214,7 @@ class Params(_Hashable):
 			if isinstance(error, str):
 				error = error.splitlines()
 			ret = [self._assembler.error(err.strip()) for err in error]
-		ret.extend(self._assembler.assemble(self._helpitems()))
+		ret.extend(self._assembler.assemble(self._helpitems))
 
 		if print_and_exit:
 			sys.stderr.write('\n'.join(ret))
@@ -1483,13 +1341,17 @@ class Commands:
 			_desc     = [],
 			_hcmd     = ['help'],
 			cmds      = OrderedDict(),
+			ginherit  = True,
 			assembler = HelpAssembler(None, theme),
 			helpx     = None,
 			prefix    = prefix
 		)
-		self._cmds[CMD_GLOBAL_PARAMS] = Params(None, theme)
-		self._cmds[CMD_GLOBAL_PARAMS]._prefix = prefix
-		self._cmds[CMD_GLOBAL_PARAMS]._hbald  = False
+		self._cmds[CMD_GLOBAL_OPTPROXY] = Params(None, theme)
+		self._cmds[CMD_GLOBAL_OPTPROXY]._prefix = prefix
+		self._cmds[CMD_GLOBAL_OPTPROXY]._hbald  = False
+
+	def _setGinherit(self, ginherit):
+		self._ginherit = ginherit
 
 	def _setDesc(self, desc):
 		"""
@@ -1534,7 +1396,7 @@ class Commands:
 			return getattr(super(Commands, self), name)
 		if name in ('_desc', '_hcmd'):
 			return self._props[name]
-		if name in ('_cmds', '_assembler', '_helpx', '_prefix'):
+		if name in ('_cmds', '_assembler', '_helpx', '_prefix', '_ginherit'):
 			return self._props[name[1:]]
 		if name not in self._cmds:
 			self._cmds[name] = Params(name, self._assembler.theme)
@@ -1561,7 +1423,7 @@ class Commands:
 			self._props['prefix'] = value
 			for cmd in self._cmds.values():
 				cmd._prefix = value
-		elif name in ('_cmds', '_assembler', '_helpx'):
+		elif name in ('_cmds', '_assembler', '_helpx', '_ginherit'):
 			self._props[name[1:]] = value
 		elif isinstance(value, Params): # alias
 			self._cmds[name] = value
@@ -1599,7 +1461,7 @@ class Commands:
 				if arg == 'help':
 					raise CommandsParseError('__help__')
 
-				if arg != CMD_GLOBAL_PARAMS and arg in self._cmds:
+				if arg != CMD_GLOBAL_OPTPROXY and arg in self._cmds:
 					command = arg
 					cmdidx = i
 					break
@@ -1608,7 +1470,7 @@ class Commands:
 
 			global_args = args[:cmdidx]
 			try:
-				global_opts = self._cmds[CMD_GLOBAL_PARAMS]._parse(
+				global_opts = self._cmds[CMD_GLOBAL_OPTPROXY]._parse(
 					global_args, arbi, dict_wrapper, True)
 			except ParamsParseError as exc:
 				raise CommandsParseError(str(exc))
@@ -1634,41 +1496,42 @@ class Commands:
 		@returns:
 			The help information if `print_and_exit` is `False`
 		"""
-		helpitems = OrderedDict()
+		helps = Helps()
+
 		if self._desc:
-			helpitems['description'] = self._desc
+			helps.add('DESCRIPTION', self._desc)
 
-		helpitems['usage'] = ['{prog} [GLOBAL OPTIONS] <command> [COMMAND OPTIONS]']
+		helps.add('USAGE', '{prog} <command> [OPTIONS]' if self._ginherit \
+			else '{prog} [GLOBAL OPTIONS] <command> [COMMAND OPTIONS]')
 
-		global_opt_items = self._cmds[CMD_GLOBAL_PARAMS]._helpitems()
-		if REQUIRED_OPT_TITLE in global_opt_items:
-			helpitems['GLOBAL ' + REQUIRED_OPT_TITLE] = global_opt_items[REQUIRED_OPT_TITLE]
-		if OPTIONAL_OPT_TITLE in global_opt_items:
-			helpitems['GLOBAL ' + OPTIONAL_OPT_TITLE] = global_opt_items[OPTIONAL_OPT_TITLE]
+		global_opt_items = self._cmds[CMD_GLOBAL_OPTPROXY]._helpitems
+		helps.add('GLOBAL ' + REQUIRED_OPT_TITLE, global_opt_items[REQUIRED_OPT_TITLE])
+		helps.add('GLOBAL ' + OPTIONAL_OPT_TITLE, global_opt_items[OPTIONAL_OPT_TITLE])
 
-		helpitems['commands'] = []
+		helps.add('AVAILABLE COMMANDS', HelpOptions())
+
 		revcmds = OrderedDict()
-		for key, val in self._cmds.items():
-			if key == CMD_GLOBAL_PARAMS:
+		for name, command in self._cmds.items():
+			if name == CMD_GLOBAL_OPTPROXY:
 				continue
-			if val not in revcmds:
-				revcmds[val] = []
-			revcmds[val].append(key)
+			revcmds.setdefault(command, []).append(name)
 
-		for key, val in revcmds.items():
-			helpitems['commands'].append((' | '.join(val), '', key._desc))
-		helpitems['commands'].append(
-			(' | '.join(self._hcmd), 'command', ['Print help information for the command']))
+		for command, names in revcmds.items():
+			helps['AVAILABLE COMMANDS'].add(command, names)
+
+		helps['AVAILABLE COMMANDS'].add(
+			{'_desc': 'Print help message for the command.'}, self._hcmd, ishelp = True)
 
 		if callable(self._helpx):
-			helpitems = self._helpx(helpitems)
+			self._helpx(helps)
 
 		ret = []
 		if error:
 			if isinstance(error, str):
 				error = error.splitlines()
 			ret = [self._assembler.error(err.strip()) for err in error]
-		ret.extend(self._assembler.assemble(helpitems))
+
+		ret.extend(self._assembler.assemble(helps))
 
 		if print_and_exit:
 			sys.stderr.write('\n'.join(ret))
@@ -1681,14 +1544,14 @@ class Commands:
 		completions = Completions(desc = self._desc and self._desc[0] or '')
 		revcmds = OrderedDict()
 		for key, val in self._cmds.items():
-			if key == CMD_GLOBAL_PARAMS:
+			if key == CMD_GLOBAL_OPTPROXY:
 				continue
 			if val not in revcmds:
 				revcmds[val] = []
 			revcmds[val].append(key)
 
-		if CMD_GLOBAL_PARAMS in self._cmds:
-			self._cmds[CMD_GLOBAL_PARAMS]._addToCompletions(completions, withtype, alias)
+		if CMD_GLOBAL_OPTPROXY in self._cmds:
+			self._cmds[CMD_GLOBAL_OPTPROXY]._addToCompletions(completions, withtype, alias)
 
 		for command, names in revcmds.items():
 			if not alias:

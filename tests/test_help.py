@@ -1,11 +1,12 @@
 import re
 import pytest
-from pyparam.help import _match, HelpItems, HelpOptions, HelpOptionDescriptions, Helps
+from pyparam.help import _match, HelpItems, HelpOptions, HelpOptionDescriptions, Helps, NotAnOptionException
 from pyparam import Param, Params
 
 @pytest.mark.parametrize('selector, item, regex, expt', [
 	(r'what\d+ever', '1what123ever', True, True),
 	(re.compile(r'what\d+ever'), '1what123ever', True, True),
+	(r'/what\d+ever/', '1what123ever', False, True),
 	(r'what\d+ever', '1whxat123ever', True, False),
 	(re.compile(r'what\d+ever'), '1whxat123ever', True, False),
 	('what', 'what123ever', False, True),
@@ -103,6 +104,9 @@ def test_helpoptions_prefixname(name, prefix, expt):
 	(Param('d', 1).setDesc('Whehter to show the description or not.'),
 	 ['desc'], False, 'auto',
 	 [('-d, --desc', '<INT>', ['Whehter to show the description or not.', 'Default: 1'])]),
+	(Param('help', False).setDesc('Show the help message for command.'),
+	 [], True, 'auto',
+	 [('--help', '', ['Show the help message for command.'])]), # don't show default
 ])
 def test_helpoptions_addparam(param, aliases, ishelp, prefix, expt):
 	ho = HelpOptions(prefix = prefix)
@@ -149,5 +153,42 @@ def test_helpoptions_add(param, aliases, ishelp, prefix, expt):
 
 def test_helpoptions_add_exc():
 	ho = HelpOptions()
-	with pytest.raises(ValueError):
+	with pytest.raises(NotAnOptionException):
 		ho.add((1,))
+
+@pytest.mark.parametrize("args, kwargs, expt", [
+	([HelpOptions()], {}, HelpOptions),
+	([HelpItems()], {}, HelpItems),
+	(["Hello world"], {}, HelpItems),
+	([("-opt", "int", "Hello world")], {}, HelpOptions),
+])
+def test_helps_section(args, kwargs, expt):
+	assert isinstance(Helps._section(*args, **kwargs), expt)
+
+def test_helps_insert():
+	helps = Helps()
+	helps['A'] = '1'
+	helps['B'] = '2'
+	helps['C'] = '3'
+	helps.after('B', 'B1', '21')
+	assert list(helps.items()) == [('A', '1'), ('B', '2'), ('B1', ['21']), ('C', '3')]
+	helps.after('C', 'D', '4')
+	assert list(helps.items()) == [('A', '1'), ('B', '2'), ('B1', ['21']), ('C', '3'), ('D', ['4'])]
+	helps.before('C', 'C0', '30')
+	assert list(helps.items()) == [('A', '1'), ('B', '2'), ('B1', ['21']), ('C0', ['30']), ('C', '3'), ('D', ['4'])]
+	helps.before('A', '_', '0')
+	assert list(helps.items()) == [('_', ['0']), ('A', '1'), ('B', '2'), ('B1', ['21']), ('C0', ['30']), ('C', '3'), ('D', ['4'])]
+
+	helps.remove('_')
+	assert list(helps.items()) == [('A', '1'), ('B', '2'), ('B1', ['21']), ('C0', ['30']), ('C', '3'), ('D', ['4'])]
+
+	with pytest.raises(ValueError):
+		helps.remove('keynotexists')
+
+	assert helps.select('A') == '1'
+	helps.clear()
+	assert list(helps.items()) == []
+
+	helps.add('A', '1')
+	helps.add('B', '2')
+	assert list(helps.items()) == [('A', ['1']), ('B', ['2'])]
