@@ -49,7 +49,8 @@ OPT_TYPE_MAPPINGS = dict(
 	f = 'float', float = 'float', b = 'bool',  bool  = 'bool', none = 'NoneType',
 	s = 'str',   str   = 'str',   d = 'dict',  dict = 'dict',  box = 'dict',
 	p = 'py',    py    = 'py',    python = 'py', r = 'reset',  reset = 'reset',
-	l = 'list',  list  = 'list',  array  = 'list',
+	l = 'list',  list  = 'list',  array  = 'list', v = 'verbose', verb = 'verbose',
+	verbose = 'verbose'
 )
 
 OPT_BOOL_TRUES  = [True , 1, 'True' , 'TRUE' , 'true' , '1']
@@ -58,7 +59,7 @@ OPT_BOOL_FALSES = [False, 0, 'False', 'FALSE', 'false', '0', 'None', 'none', Non
 
 OPT_NONES = [None, 'none', 'None']
 
-OPT_PATTERN       = r"^([a-zA-Z@-][\w,\._-]*)?(?::([\w:]+))?(?:=(.*))?$"
+OPT_PATTERN       = r"^([a-zA-Z@][\w,\._-]*)?(?::([\w:]+))?(?:=(.*))?$"
 OPT_INT_PATTERN   = r'^[+-]?\d+$'
 OPT_FLOAT_PATTERN = r'^[+-]?(?:\d*\.)?\d+(?:[Ee][+-]\d+)?$'
 OPT_NONE_PATTERN  = r'^none|None$'
@@ -372,6 +373,113 @@ class HelpAssembler:
 		ret.append('')
 		return ret
 
+class HelpSection(list):
+	"""
+	Plain section of help page, sections other then those with options
+	"""
+	def __init__(self, *args, **kwargs):
+		for arg in args:
+			self.add(arg)
+
+	def add(self, item, **kwargs):
+		if not isinstance(item, list):
+			item = item.splitlines()
+		self.extend(item)
+
+	def query(self, selector):
+		for i, item in enumerate(self):
+			if isinstance(selector, re.Pattern) and selector.search(item):
+				return i
+			if isinstance(selector, str) and selector in item:
+				return i
+		raise ValueError('No element found by selector: %r' % selector)
+
+	def after(self, selector, item, **kwargs):
+		tmp = self[:]
+		index = self.query(selector)
+		self.clear()
+		self.add(tmp[:(index+1)])
+		self.add(item, **kwargs)
+		self.add(tmp[(index+1):])
+
+	def before(self, selector, item):
+		tmp = self[:]
+		index = self.query(selector)
+		self.clear()
+		self.add(tmp[:index])
+		self.add(item, **kwargs)
+		self.add(tmp[index:])
+
+	def replace(self, selector, content):
+		index = self.query(selector)
+		self[index] = content
+
+	def select(self, selector):
+		return self[self.query(selector)]
+
+	def delete(self, selector):
+		del self[self.query(selector)]
+
+class HelpOptionDesc(HelpSection):
+	"""Option descriptions in help page"""
+
+class HelpOptionSection(HelpSection):
+
+	def __init__(self, *args, **kwargs):
+		self.prefix = kwargs.pop('prefix', 'auto')
+		super(HelpOptionSection, self).__init__(*args, **kwargs)
+
+	def _prefixName(self, name):
+		if name.startswith('-') or not self.prefix:
+			return name
+		if self.prefix != 'auto':
+			return self.prefix + name
+		return '-' if len(name) <= 1 or name[1] == '.' else '--' + name
+
+	def addParam(self, param, aliases = None, ishelp = False):
+		aliases = aliases or [param.name]
+		if param.type == 'verbose:':
+			aliases.extend(['-' + param.name * 2, '-' * param.name * 3])
+		paramtype = '<VERBOSITY>' if param.type == 'verbose:' else '' \
+			if ishelp else '(BOOL)' \
+			if param.type == 'bool:' else '<%s>' % param.type.rstrip(':').upper()
+		self.add((
+			', '.join(self._prefixName(alias) for alias in aliases),
+			paramtype,
+			param.desc
+		))
+
+	def addCommand(self, params, aliases, ishelp = False):
+		cmdtype = '[COMMAND]' if ishelp else ''
+		self.add((
+			', '.join(aliases),
+			cmdtype,
+			params._desc
+		))
+
+	def add(self, item, aliases = None, ishelp = False):
+		if isinstance(item, Param):
+			self.addParam(item, aliases, ishelp)
+		elif isinstance(item, Params):
+			self.addCommand(item, aliases, ishelp)
+		elif not isinstance(item, tuple) or len(item) != 3:
+			raise ValueError('Expect a 3-element tuple as an option item in help page.')
+		if not isinstance(item[2], HelpSection):
+			item = item[:2] + (HelpOptionDesc(item[2]),)
+		self.append(item)
+
+	def query(self, selector):
+		for i, item in enumerate(self):
+			if isinstance(selector, re.Pattern) and selector.search(item[0]):
+				return i
+			if isinstance(selector, str):
+				options = item[0].strip().split(', ')
+				if selector in options or selector in (opt.lstrip('-') for opt in options):
+					return i
+		raise ValueError('No element found by selector: %r' % selector)
+
+
+
 class Param(_Valuable):
 	"""
 	The class for a single parameter
@@ -573,7 +681,9 @@ class Param(_Valuable):
 					val0 = Param._dictUpdate(val0, val)
 				self._value = val0
 		else:
-			self._value = Param._forceType(value.pop(0), typename)
+			if type1 == 'verbose' and not value:
+				value.append(1)
+			self._value = Param._forceType(value.pop(0), typename, self.name)
 			for val in value:
 				warns.append('Later value %r was ignored for option %r (type=%r)' % (
 					val, self.name, typename))
@@ -644,7 +754,7 @@ class Param(_Valuable):
 		self.setType(typename, True)
 
 	@staticmethod
-	def _forceType(value, typename):
+	def _forceType(value, typename, name = None):
 		if not typename:
 			return value
 		type1, type2 = typename.split(':')
@@ -653,6 +763,17 @@ class Param(_Valuable):
 				if value is None:
 					return None
 				return getattr(builtins, type1)(value)
+
+			if type1 == 'verbose':
+				if value is None:
+					return 0
+				if value == '':
+					return 1
+				if isinstance(value, (int, float)) or (isinstance(value, str) and value.isdigit()):
+					return int(value)
+				if isinstance(value, str) and value.count(name) == len(value):
+					return len(value) + 1
+				raise ParamTypeError('Unable to coerce value %r to verbose (int)' % value)
 
 			if type1 == 'bool':
 				if value in OPT_BOOL_TRUES:
@@ -776,6 +897,9 @@ class Param(_Valuable):
 		if not isinstance(typename, str):
 			typename = typename.__name__
 		self._type = Param._normalizeType(typename)
+		# verbose type can only have name with length 1
+		if self._type == 'verbose:' and len(self.name) != 1:
+			raise ParamTypeError("Option with type 'verbose' can only have name with length 1.")
 		if update_value:
 			self._value = Param._forceType(self.value, self._type)
 		return self
@@ -976,8 +1100,8 @@ class Params(_Hashable):
 		lastopt  = None
 		for arg in args:
 			if (self._prefix == 'auto' and arg.startswith('-')) or arg.startswith(self._prefix):
-				argtoparse = arg.lstrip('-') if self._prefix == 'auto' else arg[len(self._prefix):]
-				matches = re.match(OPT_PATTERN, argtoparse)
+
+				matches = re.match(OPT_PATTERN, arg.lstrip('-'))
 				# if it is not an option, treat it as value
 				# for example, negative numbers: -1, -2
 				if not matches:
@@ -987,9 +1111,20 @@ class Params(_Hashable):
 						lastopt.push(arg)
 					continue
 
-				argname = matches.group(1) or OPT_POSITIONAL_NAME
+				argname = matches.group(1) #or OPT_POSITIONAL_NAME
 				argtype = matches.group(2)
-				argval  = matches.group(3) or OPT_UNSET_VALUE
+				argval  = matches.group(3) #or OPT_UNSET_VALUE
+
+				# check if argname is defined, or argname[0] is defined
+				# and check if it is a verbose option
+				print(argname, argtype, argval, arg)
+				if not arg.startswith('--') and argname and argname not in self._params \
+					and '.' not in argname and argname[0] in self._params \
+					and self._prefix in ('auto', '-') and not argtype and not argval:
+					argname, argval = argname[0], argname[1:]
+				else:
+					argname = argname or OPT_POSITIONAL_NAME
+					argval  = argval or OPT_UNSET_VALUE
 
 				if argname in parsed:
 					lastopt = parsed[argname]
@@ -1016,7 +1151,7 @@ class Params(_Hashable):
 				pendings.append(arg)
 			else:
 				lastopt.push(arg)
-
+		print(parsed, [p.stacks for p in parsed.values()])
 		# no options detected at all
 		# all pendings will be used as positional
 		if lastopt is None and pendings:
@@ -1114,10 +1249,14 @@ class Params(_Hashable):
 	def _helpitems(self):
 		# alias
 		revparams = {}
-		for key, val in self._params.items():
-			if not val in revparams:
-				revparams[val] = []
-			revparams[val].append(key)
+		for name, param in self._params.items():
+			if not param in revparams:
+				if param.type == 'verbose:' and self._prefix in ('auto', '-'):
+					revparams[param] = ['-' + name * 2, '-' + name * 3]
+				else:
+					revparams[param] = []
+
+			revparams[param].append(name)
 
 		posopt = None
 		if OPT_POSITIONAL_NAME in self._params:

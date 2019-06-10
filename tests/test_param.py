@@ -316,47 +316,56 @@ def test_param_type():
 	assert param.value == 1
 	with pytest.raises(ParamTypeError):
 		param.type = 'int:list'
+	with pytest.raises(ParamTypeError):
+		param.type = 'verbose'
 
-@pytest.mark.parametrize('value, typename, expt', [
-	('whatever', None, 'whatever'),
-	('1', 'int:', 1),
-	('1.1', 'float:', 1.1),
-	('1.0', 'str:', '1.0'),
-	('1', 'bool:', True),
-	('0', 'bool:', False),
-	('none', 'NoneType:', None),
-	(None, 'py:', None),
-	('py:None', 'py:', None),
-	('repr:None', 'py:', None),
-	('None', 'py:', None),
-	('{"a":1}', 'py:', {"a":1}),
-	('none', 'auto:', None),
-	('1', 'auto:', 1),
-	('1.1', 'auto:', 1.1),
-	('true', 'auto:', True),
-	('py:1.23', 'auto:', 1.23),
-	('xyz', 'auto:', 'xyz'),
-	(1, 'auto:', 1),
-	('xyz', 'list:', ['xyz']),
-	({'xyz'}, 'list:', ['xyz']),
-	(1, 'list:', [1]),
-	([1], 'list:', [1]),
-	(['x', 'y'], 'list:', ['x', 'y']),
-	('1', 'list:str', ['1']),
-	('1', 'list:reset', ['1']),
-	('1', 'list:list', [['1']]),
-	([1,2,3], 'list:list', [[1,2,3]]),
-	('', 'dict:', {}),
-	(None, 'dict:', None),
+@pytest.mark.parametrize('value, typename, expt, name', [
+	('whatever', None, 'whatever', None),
+	('1', 'int:', 1, None),
+	('1.1', 'float:', 1.1, None),
+	('1.0', 'str:', '1.0', None),
+	('1', 'bool:', True, None),
+	('0', 'bool:', False, None),
+	('none', 'NoneType:', None, None),
+	(None, 'py:', None, None),
+	('py:None', 'py:', None, None),
+	('repr:None', 'py:', None, None),
+	('None', 'py:', None, None),
+	('{"a":1}', 'py:', {"a":1}, None),
+	('none', 'auto:', None, None),
+	('1', 'auto:', 1, None),
+	('1.1', 'auto:', 1.1, None),
+	('true', 'auto:', True, None),
+	('py:1.23', 'auto:', 1.23, None),
+	('xyz', 'auto:', 'xyz', None),
+	(1, 'auto:', 1, None),
+	('xyz', 'list:', ['xyz'], None),
+	({'xyz'}, 'list:', ['xyz'], None),
+	(1, 'list:', [1], None),
+	([1], 'list:', [1], None),
+	(['x', 'y'], 'list:', ['x', 'y'], None),
+	('1', 'list:str', ['1'], None),
+	('1', 'list:reset', ['1'], None),
+	('1', 'list:list', [['1']], None),
+	([1,2,3], 'list:list', [[1,2,3]], None),
+	('', 'dict:', {}, None),
+	(None, 'dict:', None, None),
+	(None, 'verbose:', 0, None),
+	(1, 'verbose:', 1, None),
+	('2', 'verbose:', 2, None),
+	('', 'verbose:', 1, None),
+	('v', 'verbose:', 2, 'v'),
+	('vv', 'verbose:', 3, 'v'),
 ])
-def test_param_forcetype(value, typename, expt):
-	assert Param._forceType(value, typename) == expt
+def test_param_forcetype(value, typename, expt, name):
+	assert Param._forceType(value, typename, name) == expt
 
 @pytest.mark.parametrize('value, typename, exception', [
 	('x', 'bool:', ParamTypeError),
 	('x', 'NoneType:', ParamTypeError),
 	('x', 'x:', ParamTypeError),
 	(1, 'dict:', ParamTypeError),
+	([], 'verbose:', ParamTypeError),
 ])
 def test_param_forcetype_exc(value, typename, exception):
 	with pytest.raises(exception):
@@ -614,6 +623,7 @@ def test_param_push():
 	([('list:', ['1'])], [], 'list:', [1]),
 	# param
 	([('dict:', [Param('a.b', 1)])], [], 'dict:', {'b': 1}),
+	([('verbose:', [])], [], 'verbose:', 1),
 ])
 def test_param_checkout(stacks, exptwarns, exptype, exptval):
 	param = Param('a')
@@ -750,9 +760,11 @@ def test_params_repr():
 		OPT_POSITIONAL_NAME: [('list:', ['1'])]}, []),
 	(['-', '1', '-a', '2', '-a', '3', '4'], {'a': [('auto:', ['2']), ('auto:', ['3'])],
 		OPT_POSITIONAL_NAME: [('list:', ['1'])]}, ['4']),
+	(['-bb'], {'b': [('bool:', ['b'])]}, []),
 ])
 def test_params_preparse(args, exptstacks, exptpendings):
 	params = Params()
+	params._prefix = '-'
 	params.b = Param('b', False)
 	parsed, pendings = params._preParse(args)
 	assert pendings == exptpendings
@@ -868,6 +880,30 @@ def test_params_parse(capsys):
 	params4._parse(['-g.b', '2'])
 	assert params4._dict() == {'H': False, 'h': False, 'help': False, 'g': {'a':1, 'b':2}}
 
+	# option names include one another
+	params6 = Params()
+	params6._prefix = '-'
+	params6.sort = 1
+	params6.s = False
+	assert params6._dict() == {'H': False, 'h': False, 'help': False, 'sort': 1, 's': False}
+	assert params6._parse(['-sort', '2', '-s']) == {'H': False, 'h': False, 'help': False, 'sort': 2, 's': True}
+	assert params6._parse(['-s1', '-sort', '2']) == {'H': False, 'h': False, 'help': False, 'sort': 2, 's': True}
+
+def test_params_parse_verbose():
+	# verbose
+	params5 = Params()
+	params5.v = 0
+	params5.a = 0
+	params5.v.type = 'verbose'
+	params5._parse(['-v', '-a1'])
+	assert params5._dict() == {'H': False, 'h': False, 'help': False, 'v': 1, 'a': 1}
+	params5._parse(['-vv', '-a1'])
+	assert params5._dict() == {'H': False, 'h': False, 'help': False, 'v': 2, 'a': 1}
+	params5._parse(['-vvv', '-a1'])
+	assert params5._dict() == {'H': False, 'h': False, 'help': False, 'v': 3, 'a': 1}
+	params5._parse(['-v4', '-a1'])
+	assert params5._dict() == {'H': False, 'h': False, 'help': False, 'v': 4, 'a': 1}
+
 def test_params_parse_positional(capsys):
 	# positional
 	params5 = Params()
@@ -936,6 +972,12 @@ def test_params_help(capsys):
 	with pytest.raises(SystemExit):
 		params._help(print_and_exit = True)
 	assert striphelp(capsys.readouterr().err) == "DESCRIPTION: An example description USAGE: program <-r AUTO> <--req2 AUTO> [OPTIONS] POSITIONAL REQUIRED OPTIONS: -r, --req3, --req4, --req5, --req6, --req7, --req73333, --req722222, --req722222222 <AUTO> - [No description] --req2 <AUTO> - [No description] POSITIONAL - Default: ['positional'] OPTIONAL OPTIONS: --opt, --optional <STR> - Default: 'default' --opt2 <INT> - Default: 1 -h, --help, -H - Show help message and exit. HELPX: helpx demo"
+
+	params1 = Params()
+	params1.v.type = 'verbose'
+	params1.verbose = params1.v
+
+	print(params1._help())
 
 def test_params_hashable():
 	params = Params()
