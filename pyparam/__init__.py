@@ -995,23 +995,35 @@ class Params(_Hashable):
 				argtype = matches.group(2)
 				argval  = matches.group(3) #or OPT_UNSET_VALUE
 
-				# check if argname is defined, or argname[0] is defined
-				# and check if it is a verbose option
-				if not arg.startswith('--') and argname and argname not in self._params \
-					and '.' not in argname and argname[0] in self._params \
-					and self._prefix in ('auto', '-') and not argtype and not argval:
-					argname, argval = argname[0], argname[1:]
-				else:
+				if arg.startswith('--') or not argname or argname in self._params \
+					or '.' in argname or argname[0] not in self._params \
+					or self._prefix == '--' or argval:
+					# we should go ahead and parse the argument as it is
 					argname = argname or OPT_POSITIONAL_NAME
 					argval  = argval or OPT_UNSET_VALUE
+				elif all(boolarg in self._params for boolarg in list(argname)) \
+					and (not argtype or Param._normalizeType(argtype) == 'bool:') \
+					and len(set(list(argname))) == len(argname):
+					# if each char is a bool option, then all are True, and no more value to push
+					# -abc => -a -b -c
+					lastopt = None
+					for boolarg in list(argname):
+						if boolarg not in parsed:
+							parsed[boolarg] = self._params[boolarg]
+						parsed[boolarg].push(True, 'bool')
+					continue
+				else: # argname[0] in self._params:
+					# -n1 => -n 1
+					argname, argval = argname[0], argname[1:]
+				# else:
+				# 	# will not happen, cuz if argname[0] not in params then first condition meets.
+				# 	argname = argname or OPT_POSITIONAL_NAME
+				# 	argval  = argval or OPT_UNSET_VALUE
 
-				if argname in parsed:
-					lastopt = parsed[argname]
-				else:
-					lastopt = self._params[argname] \
+				if argname not in parsed:
+					lastopt = parsed[argname] = self._params[argname] \
 						if argname in self._params else Param(argname, []) \
 						if argname == OPT_POSITIONAL_NAME and not argtype else Param(argname)
-					parsed[argname] = lastopt
 
 				lastopt = parsed[argname]
 				lastopt.push(argval, argtype or True)
