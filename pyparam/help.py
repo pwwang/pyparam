@@ -6,14 +6,13 @@ class NotAnOptionException(Exception):
 	"""Raises while item is not an option"""
 
 def _match(selector, item, regex = False):
-	isinstance(selector, (str, re.Pattern))
 	if isinstance(selector, str):
 		if regex:
 			selector = re.compile(selector)
 		elif len(selector) > 2 and selector[0] == '/' and selector[-1] == '/':
 			selector = re.compile(selector[1:-1])
 
-	if isinstance(selector, re.Pattern):
+	if hasattr(selector, 'search'):
 		return bool(selector.search(item[0] if isinstance(item, tuple) else item))
 
 	if isinstance(item, tuple):
