@@ -981,11 +981,25 @@ class Params(_Hashable):
 		pendings = []
 		lastopt  = None
 		for arg in args:
-			if (self._prefix == 'auto' and arg.startswith('-')) or arg.startswith(self._prefix):
+			if arg.startswith('-'):
 
-				matches = re.match(OPT_PATTERN, arg.lstrip('-'))
-				# if it is not an option, treat it as value
-				# for example, negative numbers: -1, -2
+				# --abc.x:list
+				# abc.x:list
+				argnoprefix = arg.lstrip('-')
+				# abc
+				argoptname  = re.split(r'[.:=]', argnoprefix)[0]
+				# False
+				argshort    = len(argoptname) <= 1
+				# --
+				argprefix   = arg[:-len(argnoprefix)] if argnoprefix else arg
+				if (self._prefix != 'auto' and self._prefix != argprefix) or \
+				   (self._prefix == 'auto' and argshort and argprefix == '--' ) or \
+				   argprefix not in ('-', '--'):
+					matches = None
+				else:
+					matches = re.match(OPT_PATTERN, argnoprefix)
+					# if it is not an option, treat it as value
+					# for example, negative numbers: -1, -2
 				if not matches:
 					if lastopt is None:
 						pendings.append(arg)
@@ -1076,7 +1090,6 @@ class Params(_Hashable):
 				if OPT_POSITIONAL_NAME in self._params else Param(OPT_POSITIONAL_NAME, [])
 			for posval in posvalues:
 				parsed[OPT_POSITIONAL_NAME].push(posval)
-
 		return parsed, pendings
 
 	def _parse(self, args = None, arbi = False, dict_wrapper = builtins.dict, raise_exc = False):
@@ -1107,8 +1120,12 @@ class Params(_Hashable):
 					pass
 				elif arbi:
 					self._params[name] = param
-				else:
+				elif name != OPT_POSITIONAL_NAME:
 					warns.append('Unrecognized option: %r' % self._prefixit(name))
+					continue
+				else:
+					warns.append('Unrecognized positional values: %s' % ', '.join(
+						repr(val) for val in param.stacks[-1][-1]))
 					continue
 
 				warns.extend(param.checkout())
@@ -1135,7 +1152,7 @@ class Params(_Hashable):
 					raise ParamsParseError('Option %r is required.' % (self._prefixit(name)))
 
 			for warn in warns[:(MAX_WARNINGS+1)]:
-				sys.stderr.write(warn + '\n')
+				sys.stderr.write(self._assembler.warning(warn) + '\n')
 
 			return self._asDict(dict_wrapper)
 		except ParamsParseError as exc:

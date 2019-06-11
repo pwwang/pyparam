@@ -762,25 +762,26 @@ def test_params_repr():
 	params.b = 2
 	assert repr(params).startswith('<Params(h:False,help:False,H:False,a:1,b:2) @ ')
 
-@pytest.mark.parametrize('args, exptstacks, exptpendings', [
-	([], {}, []),
-	(['a', 'b'], {OPT_POSITIONAL_NAME: [('list:', ['a', 'b'])]}, []),
-	(['-1'], {OPT_POSITIONAL_NAME: [('list:', ['-1'])]}, []),
+@pytest.mark.parametrize('mark, args, exptstacks, exptpendings', [
+	(1, [], {}, []),
+	(2, ['a', 'b'], {OPT_POSITIONAL_NAME: [('list:', ['a', 'b'])]}, []),
+	(3, ['-1'], {OPT_POSITIONAL_NAME: [('list:', ['-1'])]}, []),
 	# predefined
-	(['-b'], {'b': [('bool:', [])]}, []),
-	(['x', '-a'], {'a': [('auto:', [])]}, ['x']),
-	(['-a=1'], {'a': [('auto:', ['1'])]}, []),
-	(['-a', '1'], {'a': [('auto:', ['1'])]}, []),
-	(['-a=1', '2'], {'a': [('auto:', ['1'])],
+	(4, ['-b'], {'b': [('bool:', [])]}, []),
+	(5, ['x', '-a'], {'a': [('auto:', [])]}, ['x']),
+	(6, ['-a=1'], {'a': [('auto:', ['1'])]}, []),
+	(7, ['-a', '1'], {'a': [('auto:', ['1'])]}, []),
+	(8, ['-a=1', '2'], {'a': [('auto:', ['1'])],
 		OPT_POSITIONAL_NAME: [('list:', ['2'])]}, []),
-	(['-a:list=1', '2'], {'a': [('list:', ['1', '2'])]}, []),
-	(['-', '1', '-a', '2'], {'a': [('auto:', ['2'])],
+	(9, ['-a:list=1', '2'], {'a': [('list:', ['1', '2'])]}, []),
+	(10, ['-', '1', '-a', '2'], {'a': [('auto:', ['2'])],
 		OPT_POSITIONAL_NAME: [('list:', ['1'])]}, []),
-	(['-', '1', '-a', '2', '-a', '3', '4'], {'a': [('auto:', ['2']), ('auto:', ['3'])],
+	(11, ['-', '1', '-a', '2', '-a', '3', '4'], {'a': [('auto:', ['2']), ('auto:', ['3'])],
 		OPT_POSITIONAL_NAME: [('list:', ['1'])]}, ['4']),
-	(['-bb'], {'b': [('bool:', ['b'])]}, []),
+	(12, ['-bb'], {'b': [('bool:', ['b'])]}, []),
+	(13, ['--b'], {'_': [('list:', ['--b'])]}, []),
 ])
-def test_params_preparse(args, exptstacks, exptpendings):
+def test_params_preparse(mark, args, exptstacks, exptpendings):
 	params = Params()
 	params._prefix = '-'
 	params.b = Param('b', False)
@@ -914,7 +915,7 @@ def test_params_parse(capsys):
 	assert params6._parse(['-sort', '2', '-s']) == {'H': False, 'h': False, 'help': False, 'sort': 2, 's': True}
 	assert params6._parse(['-s1', '-sort', '2']) == {'H': False, 'h': False, 'help': False, 'sort': 2, 's': True}
 
-def test_params_parse_linked():
+def test_params_parse_pooled():
 	# linked name and values
 	params = Params()
 	params.v = 0
