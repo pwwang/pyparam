@@ -1,10 +1,16 @@
 # pyparam
-[![pypi][1]][2] [![travis][3]][4] [![codacy quality][5]][6] [![codacy quality][7]][6] ![pyver][8]
+[![pypi][1]][2] [![travis][3]][4] [![docs][18]][19] [![codacy quality][5]][6] [![codacy quality][7]][6] ![pyver][8]
 
 Powerful parameter processing
 
 ## Installation
-`pip install pyparam`
+```shell
+pip install pyparam
+# install latest version via poetry
+git clone https://github.com/pwwang/pyparam.git
+cd pyparam
+poetry install
+```
 
 ## Usage
 ### Parameters from command line arguments
@@ -374,3 +380,5 @@ Powerful parameter processing
 [15]: https://raw.githubusercontent.com/pwwang/pyparam/master/docs/static/theme_custom.png
 [16]: https://raw.githubusercontent.com/pwwang/pyparam/master/docs/static/helpx.png
 [17]: https://github.com/pwwang/simpleconf
+[18]: https://img.shields.io/readthedocs/pyparam.svg?style=flat-square
+[19]: https://pyparam.readthedocs.io/en/latest/

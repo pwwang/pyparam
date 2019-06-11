@@ -1,6 +1,6 @@
 site_name: pyparam
 theme:
-    name: 'material'
+    name: 'readthedocs'
     font:
       text: 'Ubuntu'
       code: 'Ubuntu Mono'
