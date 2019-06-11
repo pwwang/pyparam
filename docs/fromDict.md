@@ -98,5 +98,24 @@ params._loadFile(
 print(params._parse())
 ```
 
+```python
+> python examples/fromFile.py --packages numpy --dev-depends.pytest=3.4
+Warning: Unrecognized option: '--dev-depends'
+{'v': 0, 'version': False, 'quiet': False,
+ 'depends': {}, 'token': 'some-secrete-token',
+ 'packages': ['numpy'], 'verbose': 0, 'V': False}
+```
+
+Load from different profile:
+```python
+params._loadFile(..., profile = 'dev')
+```
+```python
+> python examples/fromFile.py --packages numpy --dev-depends.pytest=3.4
+{'v': 0, 'version': False, 'quiet': False, 'dev-depends': {'pytest': '3.4'}
+ 'depends': {}, 'token': 'some-secrete-token',
+ 'packages': ['numpy'], 'verbose': 0, 'V': False}
+```
+
 [1]: https://raw.githubusercontent.com/pwwang/pyparam/master/docs/static/optionsFromDict.png
 [17]: https://github.com/pwwang/simpleconf

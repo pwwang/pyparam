@@ -1620,9 +1620,7 @@ class Commands:
 		for key, val in self._cmds.items():
 			if key == CMD_GLOBAL_OPTPROXY:
 				continue
-			if val not in revcmds:
-				revcmds[val] = []
-			revcmds[val].append(key)
+			revcmds.setdefault(val, []).append(key)
 
 		if CMD_GLOBAL_OPTPROXY in self._cmds:
 			self._cmds[CMD_GLOBAL_OPTPROXY]._addToCompletions(completions, withtype, alias)

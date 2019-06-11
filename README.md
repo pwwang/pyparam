@@ -73,6 +73,5 @@ print(params._parse())
 [9]: https://raw.githubusercontent.com/pwwang/pyparam/master/docs/static/help.png
 [10]: https://img.shields.io/github/tag/pwwang/pyparam.svg?style=flat-square
 [11]: https://github.com/pwwang/pyparam
-[12]: https://raw.githubusercontent.com/pwwang/pyparam/master/docs/static/subcommand.png
 [18]: https://img.shields.io/readthedocs/pyparam.svg?style=flat-square
 [19]: https://pyparam.readthedocs.io/en/latest/

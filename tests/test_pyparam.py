@@ -1057,8 +1057,8 @@ def test_params_loaddict():
 	params._load({"a": 1})
 	assert isinstance(params.a, Param)
 	assert not params.a.show
-	params._load({"a": 1, "a.show": True})
-	assert params.a.show
+	params._load({"b.show": True})
+	assert params.b.show
 
 	with pytest.raises(ParamsLoadError):
 		params._load({"x": True, "x.t": 1})
