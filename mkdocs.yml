@@ -1,9 +1,6 @@
 site_name: pyparam
 theme:
-    name: 'readthedocs'
-    font:
-      text: 'Ubuntu'
-      code: 'Ubuntu Mono'
+    name: 'simplex'
 markdown_extensions:
     - markdown.extensions.admonition
     - pymdownx.superfences:
