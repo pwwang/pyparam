@@ -1,6 +1,6 @@
 site_name: pyparam
 theme:
-    name: 'simplex'
+    name: 'yeti'
 markdown_extensions:
     - markdown.extensions.admonition
     - pymdownx.superfences:
