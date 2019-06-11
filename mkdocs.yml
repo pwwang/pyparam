@@ -1,6 +1,6 @@
 site_name: pyparam
 theme:
-    name: 'yeti'
+    name: 'material'
 markdown_extensions:
     - markdown.extensions.admonition
     - pymdownx.superfences:
@@ -9,3 +9,11 @@ markdown_extensions:
         baselevel: 2
 nav:
     - 'Introduction': 'index.md'
+    - 'From command line arguments': 'fromCommandline.md'
+    - 'Shell completions': 'shellCompletions.md'
+    - 'Help page': 'helpPage.md'
+    - 'From dict': 'fromDict.md'
+    - 'From file': 'fromFile.md'
+    - 'Subcommands': 'commands.md'
+    - 'Use the values': 'useTheValues.md'
+    - 'Change log': 'changeLog.md'

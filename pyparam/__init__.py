@@ -199,7 +199,7 @@ class HelpAssembler:
 		@params:
 			`msg`: The error message
 		"""
-		msg = msg.format(prog = self.prog(self.progname))
+		msg = msg.replace('{prog}', self.progname)
 		return '{colorstart}{prefix}{msg}{colorend}'.format(
 			colorstart = self.theme['error'],
 			prefix     = 'Error: ' if with_prefix else '',
@@ -213,7 +213,7 @@ class HelpAssembler:
 		@params:
 			`msg`: The warning message
 		"""
-		msg = msg.format(prog = self.prog(self.progname))
+		msg = msg.replace('{prog}', self.progname)
 		return '{colorstart}{prefix}{msg}{colorend}'.format(
 			colorstart = self.theme['warning'],
 			prefix     = 'Warning: ' if with_prefix else '',
@@ -292,7 +292,7 @@ class HelpAssembler:
 		@params:
 			`msg`: the option descriptions
 		"""
-		msg = msg.format(prog = self.prog(self.progname))
+		msg = msg.replace('{prog}', self.progname)
 
 		default_index = msg.rfind('DEFAULT: ')
 		if default_index == -1:
@@ -1215,7 +1215,6 @@ class Params(_Hashable):
 
 		if callable(self._helpx):
 			self._helpx(helps)
-
 		return helps
 
 	def _help (self, error = '', print_and_exit = False):

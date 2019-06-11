@@ -1,2 +1,2 @@
-mkdocs-bootswatch
+mkdocs-material
 pymdown-extensions
