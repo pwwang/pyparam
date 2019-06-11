@@ -201,6 +201,11 @@ class Helps(OrderedDict):
 			return args[0]
 		if len(args) == 1 and isinstance(args[0], HelpItems):
 			return args[0]
+		sectype = kwargs.pop('sectype', '').lower()
+		if sectype == 'option':
+			return HelpOptions(*args, **kwargs)
+		if sectype in ('item', 'plain'):
+			return HelpItems(*args, **kwargs)
 		try:
 			return HelpOptions(*args, **kwargs)
 		except NotAnOptionException:

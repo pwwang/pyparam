@@ -199,7 +199,7 @@ class HelpAssembler:
 		@params:
 			`msg`: The error message
 		"""
-		msg = msg.replace('{prog}', self.progname)
+		msg = msg.replace('{prog}', self.prog(self.progname))
 		return '{colorstart}{prefix}{msg}{colorend}'.format(
 			colorstart = self.theme['error'],
 			prefix     = 'Error: ' if with_prefix else '',
@@ -213,7 +213,7 @@ class HelpAssembler:
 		@params:
 			`msg`: The warning message
 		"""
-		msg = msg.replace('{prog}', self.progname)
+		msg = msg.replace('{prog}', self.prog(self.progname))
 		return '{colorstart}{prefix}{msg}{colorend}'.format(
 			colorstart = self.theme['warning'],
 			prefix     = 'Warning: ' if with_prefix else '',
@@ -292,7 +292,7 @@ class HelpAssembler:
 		@params:
 			`msg`: the option descriptions
 		"""
-		msg = msg.replace('{prog}', self.progname)
+		msg = msg.replace('{prog}', self.prog(self.progname))
 
 		default_index = msg.rfind('DEFAULT: ')
 		if default_index == -1:

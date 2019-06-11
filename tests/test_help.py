@@ -195,3 +195,9 @@ def test_helps_insert():
 	helps.add('A', '1')
 	helps.add('B', '2')
 	assert list(helps.items()) == [('A', ['1']), ('B', ['2'])]
+
+	helps.add('X', 'plain', sectype = 'plain')
+	assert list(helps.items()) == [('A', ['1']), ('B', ['2']), ('X', ['plain'])]
+
+	helps.add('Y', sectype = 'option')
+	assert isinstance(helps.select('Y'), HelpOptions)
