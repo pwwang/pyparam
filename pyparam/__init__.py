@@ -1353,6 +1353,10 @@ class Params(_Hashable):
 					for name in names if param.type and param.type != 'auto'])
 			for name in names:
 				completions.addOption(self._prefixit(name), param.desc and param.desc[0] or '')
+			if param.type == 'verbose:':
+				completions.addOption('-' + param.name * 2, param.desc and param.desc[0] or '')
+				completions.addOption('-' + param.name * 3, param.desc and param.desc[0] or '')
+
 
 	def _complete(self, shell, auto = False, withtype = False, alias = False):
 		from completions import Completions

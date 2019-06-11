@@ -1,6 +1,9 @@
 site_name: pyparam
 theme:
     name: 'material'
+    font:
+      text: 'Ubuntu'
+      code: 'Ubuntu Mono'
 markdown_extensions:
     - markdown.extensions.admonition
     - pymdownx.superfences:
