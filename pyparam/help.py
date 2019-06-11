@@ -89,10 +89,12 @@ class HelpOptions(HelpItems):
 		from . import OPT_POSITIONAL_NAME
 		aliases = aliases or []
 		aliases.append(param.name)
+		aliases = list(set(aliases))
 		if param.type == 'verbose:':
-			aliases.extend(['-' + param.name * 2, '-' + param.name * 3])
-		paramtype = '<VERBOSITY>' if param.type == 'verbose:' \
-			else '' if ishelp \
+			aliases[aliases.index(param.name)] = '-' + '|'.join(
+				param.name * (i+1) for i in range(3))
+		paramtype = '<VERBOSITY>' if param.type == 'verbose:' and len(aliases) > 1 \
+			else '' if ishelp or (param.type == 'verbose:' and len(aliases) == 1) \
 			else '[BOOL]' if param.type == 'bool:' \
 			else '' if not param.type \
 			else '<AUTO>' if param.type == 'NoneType' \
@@ -104,10 +106,11 @@ class HelpOptions(HelpItems):
 				del paramdesc[-1]
 		return self.add((
 			', '.join(self._prefixName(alias) if alias != OPT_POSITIONAL_NAME else 'POSITIONAL'
-				for alias in sorted(set(aliases), key = lambda alia: (len(alia), [
+				for alias in sorted(aliases, key = lambda alia: (
+					0 if '|' in alia else len(alia) , [
 					# try to lower case first
-					a.lower() + '1' if a.isupper() else a for a in list(alia)
-				]) )),
+					a.lower() + '1' if a.isupper() else a for a in list(alia)]
+				) )),
 			paramtype, paramdesc))
 
 	def addCommand(self, params, aliases, ishelp = False):
@@ -139,7 +142,8 @@ class HelpOptions(HelpItems):
 
 	@property
 	def isMixed(self):
-		firstopts = [item[0] for item in self if item[0].startswith('-')]
+		firstopts = [item[0] for item in self
+			if item[0].startswith('-') and '|' not in item[0]]
 		if not firstopts or firstopts[0].startswith('--'):
 			return False
 		_, mixed = divmod(sum([opt[:2].count('-') for opt in firstopts]), len(firstopts))

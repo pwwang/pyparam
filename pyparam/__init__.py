@@ -854,7 +854,9 @@ class Params(_Hashable):
 		"""
 		if name.startswith('__') or name.startswith('_' + self.__class__.__name__):
 			super(Params, self).__setattr__(name, value)
-		elif isinstance(value, Param):
+		elif isinstance(value, Param): # set alias
+			if value.type == 'verbose:' and len(name) == 1:
+				raise ParamNameError('Cannot alias verbose option to a short option')
 			self._params[name] = value
 		elif name in self._params:
 			self._params[name].value = value
@@ -1078,6 +1080,13 @@ class Params(_Hashable):
 		return parsed, pendings
 
 	def _parse(self, args = None, arbi = False, dict_wrapper = builtins.dict, raise_exc = False):
+		# verbose option is not allowed for prefix '--'
+		if self._prefix == '--':
+			for param in self._params.values():
+				if param.type == 'verbose:':
+					raise ParamTypeError(
+						"Verbose option %r is not allow with prefix '--'" % param.name)
+
 		args = sys.argv[1:] if args is None else args
 		try:
 			if not args and self._hbald:
@@ -1316,9 +1325,7 @@ class Params(_Hashable):
 	def _addToCompletions(self, completions, withtype, alias):
 		revparams = OrderedDict()
 		for name, param in self._params.items():
-			if param not in revparams:
-				revparams[param] = []
-			revparams[param].append(name)
+			revparams.setdefault(param, []).append(name)
 		for param, names in revparams.items():
 			if not alias: # keep the longest one
 				names = [list(sorted(names, key = len))[-1]]
@@ -1353,7 +1360,7 @@ class Commands:
 			_desc     = [],
 			_hcmd     = ['help'],
 			cmds      = OrderedDict(),
-			ginherit  = True,
+			inherit   = True,
 			assembler = HelpAssembler(None, theme),
 			helpx     = None,
 			prefix    = prefix
@@ -1362,8 +1369,8 @@ class Commands:
 		self._cmds[CMD_GLOBAL_OPTPROXY]._prefix = prefix
 		self._cmds[CMD_GLOBAL_OPTPROXY]._hbald  = False
 
-	def _setGinherit(self, ginherit):
-		self._ginherit = ginherit
+	def _setInherit(self, inherit):
+		self._inherit = inherit
 
 	def _setDesc(self, desc):
 		"""
@@ -1408,7 +1415,7 @@ class Commands:
 			return getattr(super(Commands, self), name)
 		if name in ('_desc', '_hcmd'):
 			return self._props[name]
-		if name in ('_cmds', '_assembler', '_helpx', '_prefix', '_ginherit'):
+		if name in ('_cmds', '_assembler', '_helpx', '_prefix', '_inherit'):
 			return self._props[name[1:]]
 		if name not in self._cmds:
 			self._cmds[name] = Params(name, self._assembler.theme)
@@ -1435,7 +1442,7 @@ class Commands:
 			self._props['prefix'] = value
 			for cmd in self._cmds.values():
 				cmd._prefix = value
-		elif name in ('_cmds', '_assembler', '_helpx', '_ginherit'):
+		elif name in ('_cmds', '_assembler', '_helpx', '_inherit'):
 			self._props[name[1:]] = value
 		elif isinstance(value, Params): # alias
 			self._cmds[name] = value
@@ -1451,6 +1458,29 @@ class Commands:
 	__getitem__ = __getattr__
 	__setitem__ = __setattr__
 
+	def _inheritGlobalOptions(self):
+		if not self._inherit:
+			return
+
+		globalopts = self._cmds[CMD_GLOBAL_OPTPROXY]
+		for name, param in globalopts._params.items():
+			if name in globalopts._hopts:
+				continue
+			for cmd, cmdparams in self._cmds.items():
+				if cmd == CMD_GLOBAL_OPTPROXY:
+					continue
+				if self._cmds[CMD_GLOBAL_OPTPROXY]._prefix != cmdparams._prefix:
+					raise ValueError(
+						'Cannot inheirt global options (%s) with inconsistent prefix (%s).' % (
+							self._cmds[CMD_GLOBAL_OPTPROXY]._prefix, cmdparams._prefix))
+
+				if name in cmdparams._params and cmdparams[name] is not param:
+					raise ParamNameError(
+						('Cannot have option %r defined for both global and command %r\n' +
+						 'if you let command inherit global options (_inherit = True).') % (
+							name, cmd))
+				cmdparams[name] = param
+
 	def _parse(self, args = None, arbi = False, dict_wrapper = dict):
 		"""
 		Parse the arguments.
@@ -1461,6 +1491,9 @@ class Commands:
 		@returns:
 			A `tuple` with first element the subcommand and second the parameters being parsed.
 		"""
+		# check if inherit is True, then we should also attach global options to commands
+		self._inheritGlobalOptions()
+
 		args = sys.argv[1:] if args is None else args
 		# the commands have to be defined even for arbitrary mode
 		try:
@@ -1480,16 +1513,22 @@ class Commands:
 			else:
 				raise CommandsParseError('No command given.')
 
-			global_args = args[:cmdidx]
-			try:
-				global_opts = self._cmds[CMD_GLOBAL_OPTPROXY]._parse(
-					global_args, arbi, dict_wrapper, True)
-			except ParamsParseError as exc:
-				raise CommandsParseError(str(exc))
-
+			global_args  = args[:cmdidx]
 			command_args = args[(cmdidx+1):]
-			command_opts = self._cmds[command]._parse(
-				command_args, arbi, dict_wrapper)
+
+			if self._inherit:
+				command_opts = self._cmds[command]._parse(
+					global_args + command_args, arbi, dict_wrapper)
+				global_opts = self._cmds[CMD_GLOBAL_OPTPROXY]._dict(wrapper = dict_wrapper)
+			else:
+				try:
+					global_opts = self._cmds[CMD_GLOBAL_OPTPROXY]._parse(
+						global_args, arbi, dict_wrapper, raise_exc = True)
+				except ParamsParseError as exc:
+					raise CommandsParseError(str(exc))
+
+				command_opts = self._cmds[command]._parse(
+					command_args, arbi, dict_wrapper)
 
 			return command, command_opts, global_opts
 
@@ -1513,7 +1552,7 @@ class Commands:
 		if self._desc:
 			helps.add('DESCRIPTION', self._desc)
 
-		helps.add('USAGE', '{prog} <command> [OPTIONS]' if self._ginherit \
+		helps.add('USAGE', '{prog} <command> [OPTIONS]' if self._inherit \
 			else '{prog} [GLOBAL OPTIONS] <command> [COMMAND OPTIONS]')
 
 		global_opt_items = self._cmds[CMD_GLOBAL_OPTPROXY]._helpitems

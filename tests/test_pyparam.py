@@ -752,6 +752,10 @@ def test_params_attr():
 	params['c'] = 1
 	assert isinstance(params['c'], Param)
 
+	params.v.type = 'verbose'
+	with pytest.raises(ParamNameError):
+		params.s = params.v
+
 def test_params_repr():
 	params = Params()
 	params.a = 1
@@ -817,6 +821,13 @@ def test_params_parse_arbi(args, exptdict, exptwarns, capsys):
 	err = capsys.readouterr().err
 	for exptwarn in exptwarns:
 		assert exptwarn in err
+
+def test_params_parse_verbosecheck():
+	params = Params()
+	params._prefix = '--'
+	params.v.type = 'verbose'
+	with pytest.raises(ParamTypeError):
+		params._parse()
 
 def test_params_parse(capsys):
 	import sys
@@ -1020,7 +1031,7 @@ def test_params_help(capsys):
 	params1.v.type = 'verbose'
 	params1.verbose = params1.v
 
-	assert striphelp(params1._help()) == "USAGE: program [OPTIONS] OPTIONAL OPTIONS: -v, -vv, -vvv, --verbose <VERBOSITY> - Default: None -h, -H, --help - Show help message and exit."
+	assert striphelp(params1._help()) == "USAGE: program [OPTIONS] OPTIONAL OPTIONS: -v|vv|vvv, --verbose <VERBOSITY> - Default: None -h, -H, --help - Show help message and exit."
 
 def test_params_hashable():
 	params = Params()
@@ -1108,8 +1119,8 @@ def test_commands_init():
 	commands.show = commands.list
 	assert commands.show._prog.endswith('list|show')
 
-	commands._setGinherit(False)
-	assert commands._ginherit is False
+	commands._setInherit(False)
+	assert commands._inherit is False
 
 def test_commands_attr():
 	commands.__file__ = None
@@ -1144,6 +1155,7 @@ def test_commands_help(capsys):
 
 def test_commands_parse(capsys):
 	commands = Commands()
+	commands._inherit = False
 	with pytest.raises(SystemExit):
 		commands._parse()
 	assert 'help' in capsys.readouterr().err
@@ -1171,9 +1183,34 @@ def test_commands_parse(capsys):
 	assert "Option '-a' is required." in err
 	assert "program cmd1|cmd2" in err
 
-	command, opts, copts = commands._parse(['-a', '2', 'cmd1', '-a', '1'])
+	command, opts, gopts = commands._parse(['-a', '2', 'cmd1', '-a', '1'])
 	assert command == 'cmd1'
 	assert opts == {'h': False, 'help': False, 'H': False, 'a': 1}
-	assert copts == {'h': False, 'help': False, 'H': False, 'a': 2}
+	assert gopts == {'h': False, 'help': False, 'H': False, 'a': 2}
+
+def test_commands_parse_inherit():
+	commands = Commands()
+	commands._._prefix = '-'
+	commands._.a = 1
+	commands.list = 'List commands'
+	with pytest.raises(ValueError): # inconsistent prefix
+		commands._parse()
+	commands._._prefix = 'auto'
+	commands.list.a = True
+	with pytest.raises(ParamNameError): # can't share option
+		commands._parse()
+	del commands.list._params['a']
+
+	commands.list.x = 9
+	command, opts, gopts = commands._parse(['-a', '2', 'list', '-x', '1'])
+	assert command == 'list'
+	assert opts == {'h': False, 'help': False, 'H': False, 'a': 2, 'x': 1}
+	assert gopts == {'h': False, 'help': False, 'H': False, 'a': 2}
+
+	command, opts, gopts = commands._parse(['list', '-a', '2', '-x', '1'])
+	assert command == 'list'
+	assert opts == {'h': False, 'help': False, 'H': False, 'a': 2, 'x': 1}
+	assert gopts == {'h': False, 'help': False, 'H': False, 'a': 2}
+
 
 # endregion

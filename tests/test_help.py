@@ -97,7 +97,10 @@ def test_helpoptions_prefixname(name, prefix, expt):
 @pytest.mark.parametrize("param, aliases, ishelp, prefix, expt", [
 	(Param('v', 0).setType('verbose'),
 	 ['verbose'], False, 'auto',
-	 [('-v, -vv, -vvv, --verbose', '<VERBOSITY>', ['Default: 0'])]),
+	 [('-v|vv|vvv, --verbose', '<VERBOSITY>', ['Default: 0'])]),
+	(Param('v', 0).setType('verbose'),
+	 [], False, 'auto',
+	 [('-v|vv|vvv', '', ['Default: 0'])]),
 	(Param('a', False),
 	 ['auto'], False, 'auto',
 	 [('-a, --auto', '[BOOL]', ['Default: False'])]),
@@ -129,7 +132,7 @@ def test_helpoptions_addcommand(params, aliases, ishelp, expt):
 @pytest.mark.parametrize("param, aliases, ishelp, prefix, expt", [
 	(Param('v', 0).setType('verbose'),
 	 ['verbose'], False, 'auto',
-	 [('-v, -vv, -vvv, --verbose', '<VERBOSITY>', ['Default: 0'])]),
+	 [('-v|vv|vvv, --verbose', '<VERBOSITY>', ['Default: 0'])]),
 	(Param('a', False),
 	 ['auto'], False, 'auto',
 	 [('-a, --auto', '[BOOL]', ['Default: False'])]),
