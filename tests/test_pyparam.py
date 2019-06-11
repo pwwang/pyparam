@@ -600,7 +600,15 @@ def test_param_push():
 	param.push(5)
 	assert param.stacks == [('list:', [3,4,5])]
 
-
+def test_param_push_listreset():
+	param = Param('a', ['0'])
+	param.type == 'list:str'
+	param.push(typename = 'list:reset')
+	assert param.stacks == [('list:', [])]
+	param.push('1', 'list:str')
+	assert param.stacks == [('list:str', ['1'])]
+	param.push('2', 'list:str')
+	assert param.stacks == [('list:str', ['1', '2'])]
 
 
 @pytest.mark.parametrize('stacks, exptwarns, exptype, exptval', [

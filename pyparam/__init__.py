@@ -517,6 +517,9 @@ class Param(_Valuable):
 					self.stacks.append((typename, [[]]))
 			elif type1 not in ('list', 'dict'):
 				self.stacks.append((typename, []))
+			elif type1 == 'list' and origtype != typename and not self.stacks[-1][-1]:
+				# previous is reset
+				self.stacks[-1] = (typename, [])
 
 			# since container has been created
 			self.push(value)

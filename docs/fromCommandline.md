@@ -21,12 +21,12 @@ params.depends.desc  = 'The dependencies'
 
 print(params._parse())
 ```
-```shell
+```python
 > python example/basic.py
 ```
 ![help][9]
 
-```shell
+```python
 > python examples/basic.py -vv --quiet \
 	--packages numpy pandas pyparam \
 	--depends.completions 0.0.1
@@ -48,7 +48,7 @@ from pyparam import params
 params._prefix = '-'
 # same as basic.py
 ```
-```shell
+```python
 > python examples/fixedPrefix.py  -vv \
 	-packages numpy pandas pyparam \
 	-depends.completions 0.0.1 --quiet
@@ -92,7 +92,7 @@ params.a.desc = 'This is an option with `auto` type.'
 print(params._parse())
 ```
 
-```shell
+```python
 python examples/autotype.py -a none
 {'a': None}
 
@@ -118,7 +118,7 @@ python examples/autotype.py -a:str 1
 
 ## List/Array options
 
-```shell
+```python
 > python examples/basic.py --packages pkg1 pkg2 pkg3 # or
 > python examples/basic.py --packages pkg1 --packages pkg2 --packages pkg3
 # other values not shown
@@ -129,51 +129,52 @@ Default values:
 ```python
 params.packages = ['required_package']
 ```
-```shell
+```python
 > python examples/basic.py --packages pkg1 pkg2 pkg3
 'packages': ['required_package', 'pkg1', 'pkg2', 'pkg3']
 ```
 
 Reset list options
-```shell
+```python
 # we don't want to install the "required_package"
+> python examples/basic.py --packages:list:reset pkg1 pkg2 pkg3
+# or simply
 > python examples/basic.py --packages:reset pkg1 pkg2 pkg3
 'packages': ['pkg1', 'pkg2', 'pkg3']
 ```
 
 Elements are casted using `auto` type by default:
-```shell
+```python
 > python examples/basic.py --packages:reset pkg1 pkg2 true
 'packages': ['pkg1', 'pkg2', True]
 ```
 
 You may force it all strings after reset:
-```shell
+```python
 > python examples/basic.py --packages:reset --packages:list:str pkg1 pkg2 true
 'packages': ['pkg1', 'pkg2', 'true']
 # or define the subtype:
 # params.packages.type = 'list:str'
 ```
 
+## List of list options
+Aimed to get values like `[[1, 2], [3, 4], ...]`
 
-
-
-
-
-
-List of list options
+`examples/listoflist.py`
 ```python
-params.files = ['file01', 'file02']
-params.files.type = 'list:list'
+from pyparam import params
+params.pkgset = [['required-pkg']]
+params.pkgset.desc = 'Sets of packages.'
+params.pkgset.type = 'list:list'
+print(params._parse())
 ```
-```shell
-> python program.py -files file11 file12 -files 3
-{'h': False, 'help': False, 'H': False,
-	'infiles': [['file01', 'file02'], ['file11', 'file12'], ['3']]}
-# Note that list:list don't to auto conversion for elements
-# reset list:list
-> python program.py -files:r file11 file12 -files 3
-{'h': False, 'help': False, 'H': False, 'infiles': [['file11', 'file12'], ['3']]}
+```python
+> python examples/listoflist.py --pkgset pkg1 pkg2 --pkgset pkg3 pkg4
+{'pkgset': [['required-pkg'], ['pkg1', 'pkg2'], ['pkg3', 'pkg4']]}
+
+# if we don't want default values
+> python examples/listoflist.py --pkgset:reset pkg1 pkg2 --pkgset pkg3 pkg4
+{'pkgset': [['pkg1', 'pkg2'], ['pkg3', 'pkg4']]}
 ```
 
 ## Callbacks
@@ -189,7 +190,7 @@ params.o.callback = lambda param: 'Directory of output file does not exist.' \
 	if not path.exists(path.dirname(param.value)) else None
 print(params._parse())
 ```
-```shell
+```python
 python examples/callback_check.py -o /path/not/exists/outfile
 ```
 ![callback_error][11]
@@ -205,74 +206,89 @@ params.number.callback = lambda param, ps: param.setValue(
 	param.value * ps.amplifier.value)
 print(params._parse())
 ```
-```shell
+```python
 > python examples/callback_modify.py -amplifier 100 -number 2
 {'amplifier': 100, 'number': 200}
 ```
 
-## Type redefinition
-```python
-# option 'opt' defined but no value and no type defined ('auto' implied)
-param.opt.desc = 'Option'
-```
-```shell
-> python program.py --opt 1
-{'h': False, 'help': False, 'H': False, 'opt': 1}
-
-> python program.py --opt a
-{'h': False, 'help': False, 'H': False, 'opt': 'a'}
-
-# force str
-> python program.py --opt:str 1
-{'h': False, 'help': False, 'H': False, 'opt': '1'}
-```
-
-
-
 ## Positional options
+`examples/positional.py`
 ```python
+from pyparam import params
+params.packages = []
+# default key for positional option is '_'
 params._.desc = 'Positional option'
+print(params._parse())
 ```
-```shell
-> python program.py file1
-{'h': False, 'help': False, 'H': False, '_': ['file1']}
+```python
+> python examples/positional.py file1
+{'packages': [], '_': 'file1'}
 ```
 
-If last option is a list option:
+If it is next a list option:
+Say we want `{'packages': ['pkg'], '_': 'file1'}`
 ```python
-params.infiles = []
+> python examples/positional.py --packages pkg file1
+# but we get
+{'packages': ['pkg', 'file1'], '_': None}
+
+# to get the intentional results
+> python examples/positional.py --packages pkg - file1
+{'packages': ['pkg', 'file1'], '_': None}
+```
+
+Positional option can also be `list`:
+```python
+params._ = []
 params._.desc = 'Positional option'
 ```
-```shell
-> python program.py -infiles file1 file2 file3
-{'h': False, 'help': False, 'H': False, 'infiles': ['file1', 'file2', 'file3'], '_': None}
-# If I want file3 to be the positional option
-> python program.py -infiles file1 file2 - file3
-{'h': False, 'help': False, 'H': False, 'infiles': ['file1', 'file2'], '_': 'file3'}
+```python
+> python examples/positional.py file1
+{'packages': [], '_': ['file1']}
 ```
 
 ## Dict options
+Like defined in `examples/basic.py`
 ```python
-params.config = {'default': 1}
+params.depends = {} # type auto detected
 ```
-```shell
-> python program.py -config.width 10 -config.height 20 -config.sub.switch
-{'h': False, 'help': False, 'H': False,
-	'config': {'default': 1, 'width': 10, 'height': 20, 'sub': {'switch': True}}}
-# reset dict option
-> python program.py -config:r -config.width 10 -config.height 20
-{'h': False, 'help': False, 'H': False, 'config': {'width': 10, 'height': 20}}
+```python
+> python examples/basic.py --depends.completions 0.0.1 --packages completions
+{'packages': ['completions'], 'depends': {'completions': '0.0.1'}}
 ```
+
+You may chain the dict options:
+```python
+> python examples/basic.py --depends.completions.version 0.0.1 \
+	--depends.completions.optional \
+	--packages completions
+{'packages': ['completions'], 'depends': {
+	'completions': {'version': '0.0.1', 'optional': True}
+}}
+```
+
+You values are parsed using `auto` type, you can also declare the type:
+```python
+> python examples/basic.py --depends.dev.pytest:float 3.4 \
+	--packages pytest
+{'packages': ['pytest'], 'depends': {'dev': {'pytest': 3.4}}}
+```
+
+!!! Note
+	If you are using prefix `auto`, then whether the option is short or long is determined by the name without the types and the keys of a dict option. For example: `-d.key1` should be a short one.
 
 ## Arbitrary parsing
 Parse the arguments without definition
+`examples/arbitrary.py`
 ```python
+from pyparam import params
 print(params._parse(arbi = True))
 ```
-```shell
-> python program.py -a 1 -b:list 2 3 -c:dict -c.a.b 4 -c.a.c 5 -d:list:list 6 7 -d 8 9
-{'h': False, 'help': False, 'H': False,
- 'a': 1, 'b': [2, 3], 'c': {'a': {'b': 4, 'c': 5}}, 'd': [['6', '7'], ['8', '9']]}
+```python
+> python examples/arbitrary.py -a 1 -b:list 2 3 -c:dict \
+	-c.a.b 4 -c.a.c 5 -d:list:list 6 7 -d 8 9
+{'a': 1, 'b': [2, 3], 'c': {'a': {'b': 4, 'c': 5}},
+ 'd': [['6', '7'], ['8', '9']]}
 ```
 
 [9]: https://raw.githubusercontent.com/pwwang/pyparam/master/docs/static/help.png
