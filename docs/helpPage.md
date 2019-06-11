@@ -120,7 +120,7 @@ All you need to do is to pass a function to `params._helpx` to manipulate the he
     2. A `perl` like regular expression, starting and ending with `/`
     3. A substring of the item
 
-    !!! Note:
+    !!! Note
 
         It's case-insensitive for 2 and 3. You may compile a regex by yourself with `re.compile(..., re.I)` to get a case-insenstive selector.
         The first item that matched will be returned.

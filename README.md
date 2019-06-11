@@ -1,5 +1,5 @@
 # pyparam
-[![pypi][1]][2] [![travis][3]][4] [![docs][18]][19] [![codacy quality][5]][6] [![codacy quality][7]][6] ![pyver][8]
+[![pypi][1]][2] [![pypi][10]][11] [![travis][3]][4] [![docs][18]][19] [![codacy quality][5]][6] [![codacy quality][7]][6] ![pyver][8]
 
 Powerful parameter processing
 
@@ -71,6 +71,8 @@ print(params._parse())
 [7]: https://img.shields.io/codacy/coverage/a34b1afaccf84019a6b138d40932d566.svg?style=flat-square
 [8]: https://img.shields.io/pypi/pyversions/pyparam.svg?style=flat-square
 [9]: https://raw.githubusercontent.com/pwwang/pyparam/master/docs/static/help.png
+[10]: https://img.shields.io/github/tag/pwwang/pyparam.svg?style=flat-square
+[11]: https://github.com/pwwang/pyparam
 [12]: https://raw.githubusercontent.com/pwwang/pyparam/master/docs/static/subcommand.png
 [18]: https://img.shields.io/readthedocs/pyparam.svg?style=flat-square
 [19]: https://pyparam.readthedocs.io/en/latest/
