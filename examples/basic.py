@@ -1,4 +1,6 @@
+import colorama
 from pyparam import params
+params._theme = dict(title = colorama.Style.BRIGHT + colorama.Fore.YELLOW)
 # define arguments
 params.v            = 0
 # verbose option

@@ -177,40 +177,6 @@ print(params._parse())
 {'pkgset': [['pkg1', 'pkg2'], ['pkg3', 'pkg4']]}
 ```
 
-## Callbacks
-Callbacks are used to modified/check option values.
-
-`examples/callback_check.py`
-```python
-from os import path
-from pyparam import params
-params._prefix = '-'
-params.o.required = True
-params.o.callback = lambda param: 'Directory of output file does not exist.' \
-	if not path.exists(path.dirname(param.value)) else None
-print(params._parse())
-```
-```python
-python examples/callback_check.py -o /path/not/exists/outfile
-```
-![callback_error][11]
-
-Modify value with other options:
-
-`examples/callback_modify.py`
-```python
-from pyparam import params
-params.amplifier = 10
-params.number.type = int
-params.number.callback = lambda param, ps: param.setValue(
-	param.value * ps.amplifier.value)
-print(params._parse())
-```
-```python
-> python examples/callback_modify.py -amplifier 100 -number 2
-{'amplifier': 100, 'number': 200}
-```
-
 ## Positional options
 `examples/positional.py`
 ```python
@@ -276,6 +242,66 @@ You values are parsed using `auto` type, you can also declare the type:
 
 !!! Note
 	If you are using prefix `auto`, then whether the option is short or long is determined by the name without the types and the keys of a dict option. For example: `-d.key1` should be a short one.
+
+## Pooled options
+Sometimes people like to pool the options and/or values together:
+```shell
+tar -zxvf some.tar.gz
+head -n20 some.txt
+```
+We also support this feature:
+`examples/pooled.py`
+```python
+from pyparam import params
+params.z = params.x = params.v = params.f = False
+params.n = 10
+print(params._parse())
+```
+```python
+> python examples/pooled.py -zxvf -n20
+{'z': True, 'x': True, 'v': True, 'f': True, 'n': 20}
+```
+
+## Callbacks
+Callbacks are used to modified/check option values.
+
+`examples/callback_check.py`
+```python
+from os import path
+from pyparam import params
+params._prefix = '-'
+params.o.required = True
+params.o.callback = lambda param: 'Directory of output file does not exist.' \
+	if not path.exists(path.dirname(param.value)) else None
+print(params._parse())
+```
+```python
+python examples/callback_check.py -o /path/not/exists/outfile
+```
+![callback_error][11]
+
+Modify value with other options:
+
+`examples/callback_modify.py`
+```python
+from pyparam import params
+params.amplifier = 10
+params.number.type = int
+params.number.callback = lambda param, ps: param.setValue(
+	param.value * ps.amplifier.value)
+print(params._parse())
+```
+```python
+> python examples/callback_modify.py -amplifier 100 -number 2
+{'amplifier': 100, 'number': 200}
+```
+
+## Contination on no arguments passed
+We can switch it off for print help message and exit when no arguments passed. In case we don't have any required options and we can get enough parameters from default values of optional options:
+```python
+params._hbald = False
+```
+
 
 ## Arbitrary parsing
 Parse the arguments without definition

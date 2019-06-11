@@ -154,6 +154,47 @@ def test_helpoptions_add(param, aliases, ishelp, prefix, expt):
 	ho.add(param, aliases, ishelp)
 	assert ho == expt
 
+def test_helpoptions_ba():
+	ho = HelpOptions()
+	ho.add(('-option', '<INT>', 'Description'))
+	ho.after('-option', ('-option2', '<INT>', 'Description 2'))
+	assert ho == [
+		('-option', '<INT>', ['Description']),
+		('-option2', '<INT>', ['Description 2']),
+	]
+	ho.before('-option2', ('-option1', '<INT>', 'Description 1'))
+	assert ho == [
+		('-option', '<INT>', ['Description']),
+		('-option1', '<INT>', ['Description 1']),
+		('-option2', '<INT>', ['Description 2']),
+	]
+
+	ho = HelpOptions()
+	options = HelpOptions(
+		('-option', '<INT>', ['Description']),
+		('-option1', '<INT>', ['Description 1']),
+		('-option2', '<INT>', ['Description 2']),
+	)
+	ho.insert(0, options)
+	assert ho == [
+		('-option', '<INT>', ['Description']),
+		('-option1', '<INT>', ['Description 1']),
+		('-option2', '<INT>', ['Description 2']),
+	]
+
+	ho = HelpOptions()
+	options = [
+		('-option', '<INT>', ['Description']),
+		('-option1', '<INT>', ['Description 1']),
+		('-option2', '<INT>', ['Description 2']),
+	]
+	ho.insert(0, options)
+	assert ho == [
+		('-option', '<INT>', ['Description']),
+		('-option1', '<INT>', ['Description 1']),
+		('-option2', '<INT>', ['Description 2']),
+	]
+
 def test_helpoptions_add_exc():
 	ho = HelpOptions()
 	with pytest.raises(NotAnOptionException):

@@ -8,17 +8,18 @@ class NotAnOptionException(Exception):
 def _match(selector, item, regex = False):
 	if isinstance(selector, str):
 		if regex:
-			selector = re.compile(selector)
+			selector = re.compile(selector, re.IGNORECASE)
 		elif len(selector) > 2 and selector[0] == '/' and selector[-1] == '/':
-			selector = re.compile(selector[1:-1])
+			selector = re.compile(selector[1:-1], re.IGNORECASE)
 
 	if hasattr(selector, 'search'):
 		return bool(selector.search(item[0] if isinstance(item, tuple) else item))
 
 	if isinstance(item, tuple):
 		items = item[0].split(', ')
-		return selector in items or selector in (it.lstrip('-') for it in items)
-	return selector in item
+		items = [it.lower() for it in items] + [it.lstrip('-').lower() for it in items]
+		return selector.lower() in items
+	return selector.lower() in item.lower()
 
 class HelpItems(list):
 	"""
@@ -85,7 +86,9 @@ class HelpOptions(HelpItems):
 
 	def __init__(self, *args, **kwargs):
 		self.prefix = kwargs.pop('prefix', 'auto')
-		super(HelpOptions, self).__init__(*args, **kwargs)
+		super(HelpOptions, self).__init__()
+		options = HelpOptions._tupleToOption(list(args))
+		self.add(options)
 
 	def _prefixName(self, name):
 		if name.startswith('-') or not self.prefix:
@@ -93,6 +96,16 @@ class HelpOptions(HelpItems):
 		if self.prefix != 'auto':
 			return self.prefix + name
 		return '-' + name if len(name) <= 1 or name[1] == '.' else '--' + name
+
+	@staticmethod
+	def _tupleToOption(item):
+		if isinstance(item, list):
+			return [HelpOptions._tupleToOption(it) for it in item]
+		if not isinstance(item, tuple) or len(item) != 3:
+			raise NotAnOptionException('Expect a 3-element tuple as an option item in help page.')
+		if not isinstance(item[2], HelpOptionDescriptions):
+			return (item[0], item[1], HelpOptionDescriptions(item[2]))
+		return item
 
 	def addParam(self, param, aliases = None, ishelp = False):
 		"""Add a param"""
@@ -141,15 +154,30 @@ class HelpOptions(HelpItems):
 		elif isinstance(item, list):
 			for it in item:
 				self.add(it)
-		elif not isinstance(item, tuple) or len(item) != 3:
-			raise NotAnOptionException('Expect a 3-element tuple as an option item in help page.')
-		elif not isinstance(item[2], HelpItems):
-			item = item[:2] + (HelpOptionDescriptions(item[2]),)
-			self.append(item)
 		else:
-			self.append(item)
+			self.append(HelpOptions._tupleToOption(item))
 		self.fixMixed()
 		return self
+
+	def insert(self, index, item):
+		"""Insert an item at index"""
+		if isinstance(item, HelpOptions):
+			self[index:index] = item
+		elif isinstance(item, list):
+			self[index:index] = HelpOptions._tupleToOption(item)
+		else:
+			self[index:index] = [HelpOptions._tupleToOption(item)]
+		return self
+
+	def after(self, selector, item, **kwargs):
+		"""Add an item after the item matched selector"""
+		index = self.query(selector, kwargs.pop('regex', False)) + 1
+		return self.insert(index, item)
+
+	def before(self, selector, item, **kwargs):
+		"""Add an item before the item matched selector"""
+		index = self.query(selector, kwargs.pop('regex', False))
+		return self.insert(index, item)
 
 	@property
 	def isMixed(self):
@@ -189,7 +217,8 @@ class Helps(OrderedDict):
 		for key in self:
 			if _match(selector, key, regex):
 				return key
-		raise ValueError('No section found by selector: %r' % selector)
+		raise ValueError('No section found by selector: %r\n- Available sections:\n  %s' % (
+			selector, '\n  '.join(self.keys())))
 
 	def select(self, selector, regex = False):
 		"""Select the selection of the  key matching the selector"""
@@ -243,9 +272,11 @@ class Helps(OrderedDict):
 	def maxOptNameWidth(self, min_optdesc_leading = 5, max_opt_width = 36):
 		"""Calculate the width of option name and type"""
 		ret = 0
+
 		for item in self.values():
 			if not item or not isinstance(item, HelpOptions):
 				continue
+
 			# 3 = <first 2 spaces: 2> +
 			#     <gap between name and type: 1> +
 			itemlens = [len(it[0] + it[1]) + min_optdesc_leading + 3

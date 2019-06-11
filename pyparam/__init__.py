@@ -1232,9 +1232,9 @@ class Params(_Hashable):
 			helpsection.addParam(pos_option)
 
 		helps[OPTIONAL_OPT_TITLE].add(self._params[self._hopts[0]], self._hopts, ishelp = True)
-
 		if callable(self._helpx):
 			self._helpx(helps)
+
 		return helps
 
 	def _help (self, error = '', print_and_exit = False):
@@ -1254,6 +1254,7 @@ class Params(_Hashable):
 			if isinstance(error, str):
 				error = error.splitlines()
 			ret = [self._assembler.error(err.strip()) for err in error]
+
 		ret.extend(self._assembler.assemble(self._helpitems))
 
 		if print_and_exit:
