@@ -1173,7 +1173,7 @@ class Params(_Hashable):
 		required_params = {}
 		optional_params = {}
 		for name, param in self._params.items():
-			if name in self._hopts + [OPT_POSITIONAL_NAME]:
+			if not param.show or name in self._hopts + [OPT_POSITIONAL_NAME]:
 				continue
 			if param.required:
 				required_params.setdefault(param, []).append(name)
@@ -1286,14 +1286,14 @@ class Params(_Hashable):
 		# load the params that is not given a value
 		# start with setting an attribute
 		for key, val in dict_var.items():
-			if '.' not in key:
+			if '.' not in key or key.endswith('.alias'):
 				continue
 			key = key.split('.')[0]
 			if key in self._params:
 				continue
-			self._params[key] = Param(key)
+			self[key] = Param(key)
 			if show is not None:
-				self._params[key].show = show
+				self[key].show = show
 		# load aliases
 		for key, val in dict_var.items():
 			if not key.endswith('.alias'):
@@ -1301,7 +1301,7 @@ class Params(_Hashable):
 			key = key[:-6]
 			if val not in self._params:
 				raise ParamsLoadError('Cannot set alias %r to an undefined option %r' % (key, val))
-			self._params[key] = self._params[val]
+			self[key] = self[val]
 		# then load property
 		for key, val in dict_var.items():
 			if '.' not in key or key.endswith('.alias'):
@@ -1309,8 +1309,7 @@ class Params(_Hashable):
 			opt, prop = key.split('.', 1)
 			if not prop in ('desc', 'required', 'show', 'type', 'value'):
 				raise ParamsLoadError('Unknown attribute %r for option %r' % (prop, opt))
-
-			setattr(self._params[opt], prop, val)
+			setattr(self[opt], prop, val)
 		return self
 
 	def _loadFile (self, cfgfile, profile = False, show = False):
