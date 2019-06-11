@@ -24,7 +24,7 @@ print(params._parse())
 ```shell
 > python example/basic.py
 ```
-![help][9]{ width=75% }
+![help][9]
 
 ```shell
 > python examples/basic.py -vv --quiet \
