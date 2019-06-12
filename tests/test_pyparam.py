@@ -158,8 +158,8 @@ class TestHelpAssembler:
 			'{s.BRIGHT}{f.CYAN}DESCRIPTION{s.RESET_ALL}:'.format(
 				f = colorama.Fore, s = colorama.Style),
 			'  some very very very very very very very very very very very very very very '
-			'very very \\',
-			'  description about the program',
+			'very \\',
+			'  very description about the program',
 			'', '']),
 		({'options': [('-nthreads', '<int>', ['Number of threads to use. Default: 1'])]}, [
 			'{s.BRIGHT}{f.CYAN}OPTIONS{s.RESET_ALL}:'.format(
@@ -1018,7 +1018,7 @@ def test_params_help(capsys):
 	params._usage = '{prog} <-this THIS> <-is IS> <-a A> <-very VERY> <-very VERY>' + \
 		' <-very VERY> <-very VERY> <-very VERY> <-very VERY> <-very VERY> <-long LONG>' + \
 		' <-usage USAGE>'
-	assert striphelp(params._help()) == "USAGE: program <-this THIS> <-is IS> <-a A> <-very VERY> <-very VERY> <-very VERY> \\ <-very VERY> <-very VERY> <-very VERY> <-very VERY> <-long LONG> <-usage \\ USAGE> REQUIRED OPTIONS: -r, --req3, --req4, --req5, --req6, --req7, --req73333, --req722222, --req722222222 <NONETYPE> - [No description] --req2 <AUTO> - [No description] OPTIONAL OPTIONS: --opt, --optional <STR> - Default: 'default' --opt2 <INT> - Default: 1 -h, -H, --help - Show help message and exit."
+	assert striphelp(params._help()) == "USAGE: program <-this THIS> <-is IS> <-a A> <-very VERY> <-very VERY> <-very VERY> <-very \\ VERY> <-very VERY> <-very VERY> <-very VERY> <-long LONG> <-usage USAGE> REQUIRED OPTIONS: -r, --req3, --req4, --req5, --req6, --req7, --req73333, --req722222, --req722222222 <NONETYPE> - [No description] --req2 <AUTO> - [No description] OPTIONAL OPTIONS: --opt, --optional <STR> - Default: 'default' --opt2 <INT> - Default: 1 -h, -H, --help - Show help message and exit."
 
 	params._ = ['positional']
 	params._usage = []

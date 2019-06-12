@@ -323,7 +323,6 @@ class HelpAssembler:
 		@returns:
 			lines (`list`) of the help information.
 		"""
-
 		ret = []
 		maxoptwidth = helps.maxOptNameWidth
 
@@ -353,8 +352,11 @@ class HelpAssembler:
 				ret.append('')
 			else: # HelpItems
 				for item in helpitems:
-					ret.extend(self.plain(it) for it in _textwrap(
-						item, MAX_PAGE_WIDTH - 2, initial_indent = '  ', subsequent_indent = '  '))
+					if item.endswith(' \\'):
+						ret.append(self.plain(item))
+					else:
+						ret.extend(self.plain(it) for it in _textwrap(item, MAX_PAGE_WIDTH - 15,
+							initial_indent = '  ', subsequent_indent = '  '))
 				ret.append('')
 
 		ret.append('')
@@ -1192,11 +1194,14 @@ class Params(_Hashable):
 
 		# USAGE
 		helps.add('USAGE', HelpItems())
+		# auto wrap long lines in usage
+		# allow 2 {prog}s
+		maxusagelen = MAX_PAGE_WIDTH - (len(self._prog.split()[0]) - 6)*2 - 15
 		if self._usage:
 			helps['USAGE'].add(sum((_textwrap(
 				# allow 4 program names with more than 6 chars each in one usage
 				# 15 chars for backup.
-				usage, MAX_PAGE_WIDTH - (len(self._prog) - 6) * 4 - 15, subsequent_indent = '  ')
+				usage, maxusagelen, subsequent_indent = '  ')
 				for usage in self._props['usage']), []))
 		else: # default usage
 			defusage = '{prog}'
@@ -1209,9 +1214,7 @@ class Params(_Hashable):
 			if pos_option:
 				defusage += ' POSITIONAL' if pos_option.required else ' [POSITIONAL]'
 
-			defusage = _textwrap(defusage,
-				MAX_PAGE_WIDTH - (len(self._prog) - 6) * 4 - 15,
-				subsequent_indent = '  ')
+			defusage = _textwrap(defusage, maxusagelen, subsequent_indent = '  ')
 			helps['USAGE'].add(defusage)
 
 		helps.add(REQUIRED_OPT_TITLE, HelpOptions())
