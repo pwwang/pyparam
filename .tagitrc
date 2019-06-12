@@ -1,0 +1,5 @@
+[TAGIT]
+changelog = docs/changelog.md
+interactive = py:True
+checktoml = py:True
+increment = patch
