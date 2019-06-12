@@ -1347,6 +1347,8 @@ class Params(_Hashable):
 	def _addToCompletions(self, completions, withtype, alias):
 		revparams = OrderedDict()
 		for name, param in self._params.items():
+			if name in self._hopts:
+				continue
 			revparams.setdefault(param, []).append(name)
 		for param, names in revparams.items():
 			if not alias: # keep the longest one
@@ -1354,12 +1356,11 @@ class Params(_Hashable):
 			if withtype:
 				names.extend([name + ':' + param.type.rstrip(':')
 					for name in names if param.type and param.type != 'auto'])
-			for name in names:
-				completions.addOption(self._prefixit(name), param.desc and param.desc[0] or '')
+			completions.addOption([self._prefixit(name) for name in names],
+								  param.desc and param.desc[0] or '')
 			if param.type == 'verbose:':
-				completions.addOption('-' + param.name * 2, param.desc and param.desc[0] or '')
-				completions.addOption('-' + param.name * 3, param.desc and param.desc[0] or '')
-
+				completions.addOption(['-' + param.name * 2, '-' + param.name * 3],
+									  param.desc and param.desc[0] or '')
 
 	def _complete(self, shell, auto = False, withtype = False, alias = False):
 		from completions import Completions
@@ -1616,12 +1617,13 @@ class Commands:
 		else:
 			return '\n'.join(ret)
 
-	def _complete(self, shell, auto = False, withtype = False, alias = True):
+	def _complete(self, shell, auto = False, inheirt = True, withtype = False, alias = True):
 		from completions import Completions
-		completions = Completions(desc = self._desc and self._desc[0] or '')
+		completions = Completions(inherit = inherit,
+								  desc = self._desc and self._desc[0] or '')
 		revcmds = OrderedDict()
 		for key, val in self._cmds.items():
-			if key == CMD_GLOBAL_OPTPROXY:
+			if key == CMD_GLOBAL_OPTPROXY or key in self._hcmd:
 				continue
 			revcmds.setdefault(val, []).append(key)
 
