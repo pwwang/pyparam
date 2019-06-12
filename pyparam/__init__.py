@@ -1617,7 +1617,7 @@ class Commands:
 		else:
 			return '\n'.join(ret)
 
-	def _complete(self, shell, auto = False, inheirt = True, withtype = False, alias = True):
+	def _complete(self, shell, auto = False, inherit = True, withtype = False, alias = True):
 		from completions import Completions
 		completions = Completions(inherit = inherit,
 								  desc = self._desc and self._desc[0] or '')
