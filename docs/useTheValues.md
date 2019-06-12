@@ -49,3 +49,14 @@ params.a = {}
 ret = params._parse(['-a.b.c.d', '1'], dict_wrapper = Box)
 assert ret.a.b.c.d == 1
 ```
+
+## Using multiple params instances
+You may want multiple `params` to store parameters from different sources, or for different uses.
+```python
+from pyparam import Params
+
+params1 = Params()
+params1._loadFile('config1')
+params2 = Params()
+params2._loadFile('config2')
+```

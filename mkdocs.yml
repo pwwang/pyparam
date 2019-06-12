@@ -17,5 +17,5 @@ nav:
     - 'Help page': 'helpPage.md'
     - 'From dict/configuration': 'fromDict.md'
     - 'Subcommands': 'commands.md'
-    - 'Use the values': 'useTheValues.md'
+    - 'Using the values': 'useTheValues.md'
     - 'Change log': 'changeLog.md'
