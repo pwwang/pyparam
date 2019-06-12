@@ -1,5 +1,7 @@
 exclude_paths:
   - 'tests/**'
+  - 'examples/**'
+  - 'pyparam/utils.py'
 
 engines:
   pylint:
