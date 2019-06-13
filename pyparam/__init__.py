@@ -959,7 +959,7 @@ class Params(_Hashable):
 
 	def _prefixit(self, name):
 		if self._prefix == 'auto':
-			return '-' + name if len(name.split('.')[0]) == 1 else '--' + name
+			return '-' + name if len(name.split('.')[0]) <= 1 else '--' + name
 		return self._prefix + name
 
 	def _setHbald(self, hbald = True):
@@ -977,6 +977,102 @@ class Params(_Hashable):
 			for key, param in self._params.items()
 		), hex(id(self)))
 
+	def _allFlags(self, optname):
+		"""See if it all flag option in the option name"""
+		optnames = list(optname)
+		# flags should not be repeated
+		if len(optnames) != len(set(optnames)):
+			return False
+		for opt in optnames:
+			if opt not in self._params or self._params[opt].type != 'bool:':
+				return False
+		return True
+
+	def _preParseOptionCandidate(self, arg, parsed, pendings, lastopt):
+		# --abc.x:list
+		# abc.x:list
+		argnoprefix = arg.lstrip('-')
+		# abc
+		argoptname  = re.split(r'[.:=]', argnoprefix)[0]
+		# False
+		argshort    = len(argoptname) <= 1
+		# --
+		argprefix   = arg[:-len(argnoprefix)] if argnoprefix else arg
+
+		# impossible an option
+		# ---a
+		# self.prefix == '-'    : --abc
+		# self.prefix == '--'   : -abc
+		# self.prefix == 'auto' : --a
+		if len(argprefix) > 2 or \
+			(self._prefix == '-' and argprefix == '--') or \
+			(self._prefix == '--' and argprefix == '-') or \
+			(self._prefix == 'auto' and argprefix == '--' and argshort):
+			return self._preParseValueCandidate(arg, parsed, pendings, lastopt)
+
+		# if a, b and c are defined as bool types, then it should be parsed as
+		#  {'a': True, 'b': True, 'c': True} like '-a -b -c'
+		#	# in the case '-abc' with self._prefix == '-'
+		#	# 'abc' is not defined
+		if (self._prefix in ('auto', '-') and argprefix == '-' and len(argoptname) > 1) \
+			and (self._prefix != '-' or argoptname not in self._params) \
+			and '=' not in argnoprefix:
+			# -abc:bool
+			if (':' not in argnoprefix or argnoprefix.endswith(':bool')) \
+				and self._allFlags(argoptname):
+				for opt in list(argoptname):
+					parsed[opt] = self._params[opt]
+					parsed[opt].push(True, 'bool:')
+				return None
+			# see if -abc can be parsed as '-a bc'
+			# -a. will also be parsed as '-a .' if a is not defined as dict
+			#   otherwise it will be parsed as {'a': {'': ...}}
+			# -a1:int is also allowed
+			if argoptname[0] in self._params \
+				and (argoptname[1] != '.' or self._params[argoptname[0]].type != 'dict:'):
+				argname = argoptname[0]
+				argval  = argoptname[1:]
+				argtype = argnoprefix.split(':', 1)[1] if ':' in argnoprefix else True
+				parsed[argname] = self._params[argname]
+				parsed[argname].push(argval, argtype)
+				return None
+
+			if self._prefix == 'auto' and argprefix == '-' and len(argoptname) > 1:
+				return self._preParseValueCandidate(arg, parsed, pendings, lastopt)
+
+		matches = re.match(OPT_PATTERN, argnoprefix)
+		if not matches:
+			return self._preParseValueCandidate(arg, parsed, pendings, lastopt)
+		argname = matches.group(1) or OPT_POSITIONAL_NAME
+		argtype = matches.group(2)
+		argval  = matches.group(3) or OPT_UNSET_VALUE
+
+		if argname not in parsed:
+			lastopt = parsed[argname] = self._params[argname] \
+				if argname in self._params else Param(argname, []) \
+				if argname == OPT_POSITIONAL_NAME and not argtype else Param(argname)
+
+		lastopt = parsed[argname]
+		lastopt.push(argval, argtype or True)
+
+		if '.' in argname:
+			doptname = argname.split('.')[0]
+			if doptname in parsed:
+				dictopt = parsed[doptname]
+			else:
+				dictopt = self._params[doptname] \
+					if doptname in self._params else Param(doptname, {})
+				parsed[doptname] = dictopt
+			dictopt.push(lastopt, 'dict:')
+		return lastopt
+
+	def _preParseValueCandidate(self, arg, parsed, pendings, lastopt):
+		if lastopt:
+			lastopt.push(arg)
+		else:
+			pendings.append(arg)
+		return lastopt
+
 	def _preParse(self, args):
 		"""
 		Parse the arguments from command line
@@ -985,84 +1081,11 @@ class Params(_Hashable):
 		parsed   = OrderedDict()
 		pendings = []
 		lastopt  = None
+
 		for arg in args:
-			if arg.startswith('-'):
-
-				# --abc.x:list
-				# abc.x:list
-				argnoprefix = arg.lstrip('-')
-				# abc
-				argoptname  = re.split(r'[.:=]', argnoprefix)[0]
-				# False
-				argshort    = len(argoptname) <= 1
-				# --
-				argprefix   = arg[:-len(argnoprefix)] if argnoprefix else arg
-				if (self._prefix != 'auto' and self._prefix != argprefix) or \
-				   (self._prefix == 'auto' and argshort and argprefix == '--' ) or \
-				   argprefix not in ('-', '--'):
-					matches = None
-				else:
-					matches = re.match(OPT_PATTERN, argnoprefix)
-					# if it is not an option, treat it as value
-					# for example, negative numbers: -1, -2
-				if not matches:
-					if lastopt is None:
-						pendings.append(arg)
-					else:
-						lastopt.push(arg)
-					continue
-
-				argname = matches.group(1) #or OPT_POSITIONAL_NAME
-				argtype = matches.group(2)
-				argval  = matches.group(3) #or OPT_UNSET_VALUE
-
-				if arg.startswith('--') or not argname or argname in self._params \
-					or '.' in argname or argname[0] not in self._params \
-					or self._prefix == '--' or argval:
-					# we should go ahead and parse the argument as it is
-					argname = argname or OPT_POSITIONAL_NAME
-					argval  = argval or OPT_UNSET_VALUE
-				elif all(boolarg in self._params for boolarg in list(argname)) \
-					and (not argtype or Param._normalizeType(argtype) == 'bool:') \
-					and len(set(list(argname))) == len(argname):
-					# if each char is a bool option, then all are True, and no more value to push
-					# -abc => -a -b -c
-					lastopt = None
-					for boolarg in list(argname):
-						if boolarg not in parsed:
-							parsed[boolarg] = self._params[boolarg]
-						parsed[boolarg].push(True, 'bool')
-					continue
-				else: # argname[0] in self._params:
-					# -n1 => -n 1
-					argname, argval = argname[0], argname[1:]
-				# else:
-				# 	# will not happen, cuz if argname[0] not in params then first condition meets.
-				# 	argname = argname or OPT_POSITIONAL_NAME
-				# 	argval  = argval or OPT_UNSET_VALUE
-
-				if argname not in parsed:
-					lastopt = parsed[argname] = self._params[argname] \
-						if argname in self._params else Param(argname, []) \
-						if argname == OPT_POSITIONAL_NAME and not argtype else Param(argname)
-
-				lastopt = parsed[argname]
-				lastopt.push(argval, argtype or True)
-
-				if '.' in argname:
-					doptname = argname.split('.')[0]
-					if doptname in parsed:
-						dictopt = parsed[doptname]
-					else:
-						dictopt = self._params[doptname] \
-							if doptname in self._params else Param(doptname, {})
-						parsed[doptname] = dictopt
-					dictopt.push(lastopt, 'dict:')
-
-			elif lastopt is None:
-				pendings.append(arg)
-			else:
-				lastopt.push(arg)
+			lastopt = self._preParseOptionCandidate(arg, parsed, pendings, lastopt) \
+				if arg.startswith('-') \
+				else self._preParseValueCandidate(arg, parsed, pendings, lastopt)
 
 		# no options detected at all
 		# all pendings will be used as positional
@@ -1110,12 +1133,12 @@ class Params(_Hashable):
 			if not args and self._hbald:
 				raise ParamsParseError('__help__')
 			parsed, pendings = self._preParse(args)
+
 			warns  = ['Unrecognized value: %r' % pend for pend in pendings]
 			# check out dict options first
 			for name, param in parsed.items():
 				if '.' in name:
 					warns.extend(param.checkout())
-
 			for name, param in parsed.items():
 				if '.' in name:
 					continue
@@ -1150,7 +1173,6 @@ class Params(_Hashable):
 
 				error = 'Callback error.' if ret is False else ret
 				raise ParamsParseError('Option %r: %s' % (self._prefixit(name), error))
-
 			# check required
 			for name, param in self._params.items():
 				if param.required and param.value is None and param.type != 'NoneType:':
@@ -1226,6 +1248,8 @@ class Params(_Hashable):
 		for param, names in optional_params.items():
 			helps[OPTIONAL_OPT_TITLE].addParam(param, names)
 
+		helps[OPTIONAL_OPT_TITLE].add(self._params[self._hopts[0]], self._hopts, ishelp = True)
+
 		if pos_option:
 			helpsection = helps[REQUIRED_OPT_TITLE] if pos_option.required \
 				  else helps[OPTIONAL_OPT_TITLE]
@@ -1234,7 +1258,6 @@ class Params(_Hashable):
 				helpsection.add(('', '', ['']))
 			helpsection.addParam(pos_option)
 
-		helps[OPTIONAL_OPT_TITLE].add(self._params[self._hopts[0]], self._hopts, ishelp = True)
 		if callable(self._helpx):
 			self._helpx(helps)
 
@@ -1353,6 +1376,7 @@ class Params(_Hashable):
 		for param, names in revparams.items():
 			if not alias: # keep the longest one
 				names = [list(sorted(names, key = len))[-1]]
+			names = ['' if name == OPT_POSITIONAL_NAME else name for name in names]
 			if withtype:
 				names.extend([name + ':' + param.type.rstrip(':')
 					for name in names if param.type and param.type != 'auto'])
@@ -1396,6 +1420,25 @@ class Commands:
 		self._cmds[CMD_GLOBAL_OPTPROXY]._prefix = prefix
 		self._cmds[CMD_GLOBAL_OPTPROXY]._hbald  = False
 
+		self._installHelpCommand()
+
+	def _installHelpCommand(self):
+		helpcmd = Params(None, self._assembler.theme)
+		helpcmd._desc = 'Print help message for the command and exit.'
+		helpcmd._hbald = False
+		helpcmd[OPT_POSITIONAL_NAME] = ''
+		helpcmd[OPT_POSITIONAL_NAME].desc = 'The command.'
+
+		def helpPositionalCommandCallback(param):
+			if not param.value or param.value in self._hcmd:
+				raise CommandsParseError('__help__')
+			if param.value not in self._cmds:
+				raise CommandsParseError('No such command: %s' % param.value)
+			self._cmds[param.value]._help(print_and_exit = True)
+		helpcmd[OPT_POSITIONAL_NAME].callback = helpPositionalCommandCallback
+		for hcmd in self._hcmd:
+			self._cmds[hcmd] = helpcmd
+
 	def _setInherit(self, inherit):
 		self._inherit = inherit
 
@@ -1414,7 +1457,14 @@ class Commands:
 		@params:
 			`hcmd`: The help command
 		"""
-		self._hcmd = hcmd
+		for cmd in self._hcmd:
+			if cmd in self._cmds:
+				del self._cmds[cmd]
+
+		self._props['_hcmd'] = [cmd.strip() for cmd in hcmd.split(',')] \
+			if isinstance(hcmd, str) else hcmd
+
+		self._installHelpCommand()
 		return self
 
 	def _setTheme(self, theme):
@@ -1461,8 +1511,7 @@ class Commands:
 		elif name == '_theme':
 			self._assembler = HelpAssembler(None, value)
 		elif name == '_hcmd':
-			self._props['_hcmd'] = [cmd.strip() for cmd in value.split(',')] \
-				if isinstance(value, str) else value
+			self._setHcmd(value)
 		elif name == '_desc':
 			self._props['_desc'] = value.splitlines() if isinstance(value, str) else value
 		elif name == '_prefix':
@@ -1494,7 +1543,7 @@ class Commands:
 			if name in globalopts._hopts:
 				continue
 			for cmd, cmdparams in self._cmds.items():
-				if cmd == CMD_GLOBAL_OPTPROXY:
+				if cmd == CMD_GLOBAL_OPTPROXY or cmd in self._hcmd:
 					continue
 				if self._cmds[CMD_GLOBAL_OPTPROXY]._prefix != cmdparams._prefix:
 					raise ValueError(
@@ -1528,22 +1577,25 @@ class Commands:
 				raise CommandsParseError('__help__')
 			# get which command is hit
 			cmdidx  = None
-			command = None
-			for i, arg in enumerate(args):
-				if arg == 'help':
-					raise CommandsParseError('__help__')
-
-				if arg != CMD_GLOBAL_OPTPROXY and arg in self._cmds:
-					command = arg
-					cmdidx = i
-					break
+			if arbi:
+				# arbitrary mode does not have global options
+				cmdidx = 0
+				if args[cmdidx] not in self._cmds:
+					self._cmds[args[cmdidx]] = Params(args[cmdidx], self._assembler.theme)
+					self._cmds[args[cmdidx]]._prefix = self._prefix
 			else:
-				raise CommandsParseError('No command given.')
+				for i, arg in enumerate(args):
+					if arg != CMD_GLOBAL_OPTPROXY and arg in self._cmds:
+						cmdidx = i
+						break
+				else:
+					raise CommandsParseError('No command given.')
 
+			command      = args[cmdidx]
 			global_args  = args[:cmdidx]
 			command_args = args[(cmdidx+1):]
 
-			if self._inherit:
+			if self._inherit and command not in self._hcmd:
 				command_opts = self._cmds[command]._parse(
 					global_args + command_args, arbi, dict_wrapper)
 				global_opts = self._cmds[CMD_GLOBAL_OPTPROXY]._dict(wrapper = dict_wrapper)
@@ -1553,7 +1605,6 @@ class Commands:
 						global_args, arbi, dict_wrapper, raise_exc = True)
 				except ParamsParseError as exc:
 					raise CommandsParseError(str(exc))
-
 				command_opts = self._cmds[command]._parse(
 					command_args, arbi, dict_wrapper)
 
@@ -1595,10 +1646,18 @@ class Commands:
 			revcmds.setdefault(command, []).append(name)
 
 		for command, names in revcmds.items():
+			if self._hcmd[0] in names:
+				continue
 			helps['AVAILABLE COMMANDS'].add(command, names)
 
-		helps['AVAILABLE COMMANDS'].add(
-			{'_desc': 'Print help message for the command.'}, self._hcmd, ishelp = True)
+		command_section = helps['AVAILABLE COMMANDS']
+		command_section.addCommand(self._cmds[self._hcmd[0]], self._hcmd)
+		command_help_index = command_section.query(self._hcmd[0])
+		command_help = command_section[command_help_index]
+		command_section[command_help_index] = (
+			command_help[0],
+			'[COMMAND]',
+			command_help[2])
 
 		if callable(self._helpx):
 			self._helpx(helps)
@@ -1623,19 +1682,28 @@ class Commands:
 								  desc = self._desc and self._desc[0] or '')
 		revcmds = OrderedDict()
 		for key, val in self._cmds.items():
-			if key == CMD_GLOBAL_OPTPROXY or key in self._hcmd:
+			if key == CMD_GLOBAL_OPTPROXY:
 				continue
 			revcmds.setdefault(val, []).append(key)
 
 		if CMD_GLOBAL_OPTPROXY in self._cmds:
 			self._cmds[CMD_GLOBAL_OPTPROXY]._addToCompletions(completions, withtype, alias)
 
+		helpoptions = {
+			cmdname: (command._desc and command._desc[0] or '')
+			for cmdname, command in self._cmds.items()
+			if cmdname not in self._hcmd and cmdname != CMD_GLOBAL_OPTPROXY
+		}
 		for command, names in revcmds.items():
 			if not alias:
 				names = [list(sorted(names, key = len))[-1]]
+			compdesc = command._desc and command._desc[0] or ''
 			for name in names:
-				completions.addCommand(name, command._desc and command._desc[0] or '')
-				command._addToCompletions(completions.command(name), withtype, alias)
+				if name in self._hcmd:
+					completions.addCommand(name, compdesc, helpoptions)
+				else:
+					completions.addCommand(name, compdesc)
+					command._addToCompletions(completions.command(name), withtype, alias)
 		return completions.generate(shell, auto)
 
 # pylint: disable=invalid-name
