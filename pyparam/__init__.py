@@ -965,6 +965,9 @@ class Params(_Hashable):
 			return '-' + name if len(name.split('.')[0]) <= 1 else '--' + name
 		return self._prefix + name
 
+	def __contains__(self, name):
+		return name in self._params
+
 	def _setHbald(self, hbald = True):
 		"""
 		Set if we should show help information if no arguments passed.
@@ -1089,7 +1092,6 @@ class Params(_Hashable):
 			lastopt = self._preParseOptionCandidate(arg, parsed, pendings, lastopt) \
 				if arg.startswith('-') \
 				else self._preParseValueCandidate(arg, parsed, pendings, lastopt)
-
 		# no options detected at all
 		# all pendings will be used as positional
 		if lastopt is None and pendings:
@@ -1105,6 +1107,10 @@ class Params(_Hashable):
 			if not lastopt.stacks or lastopt.stacks[-1][0].startswith('list:') or \
 				len(lastopt.stacks[-1][1]) < 2:
 				posvalues = []
+			elif lastopt.stacks[-1][0] == 'bool:' and lastopt.stacks[-1][1] \
+				and not re.match(OPT_BOOL_PATTERN, lastopt.stacks[-1][1][0]):
+				posvalues = lastopt.stacks[-1][1]
+				lastopt.stacks[-1] = (lastopt.stacks[-1][0], [])
 			else:
 				posvalues = lastopt.stacks[-1][1][1:]
 				lastopt.stacks[-1] = (lastopt.stacks[-1][0], lastopt.stacks[-1][1][:1])
