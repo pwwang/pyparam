@@ -1192,7 +1192,7 @@ class Params(_Hashable):
 
 	@property
 	def _helpitems(self):
-
+		print(self, self._prefix)
 		# collect aliases
 		required_params = {}
 		optional_params = {}
@@ -1239,8 +1239,8 @@ class Params(_Hashable):
 			defusage = _textwrap(defusage, maxusagelen, subsequent_indent = '  ')
 			helps['USAGE'].add(defusage)
 
-		helps.add(REQUIRED_OPT_TITLE, HelpOptions())
-		helps.add(OPTIONAL_OPT_TITLE, HelpOptions())
+		helps.add(REQUIRED_OPT_TITLE, HelpOptions(prefix = self._prefix))
+		helps.add(OPTIONAL_OPT_TITLE, HelpOptions(prefix = self._prefix))
 
 		for param, names in required_params.items():
 			helps[REQUIRED_OPT_TITLE].addParam(param, names)
@@ -1637,7 +1637,7 @@ class Commands:
 		helps.add('GLOBAL ' + REQUIRED_OPT_TITLE, global_opt_items[REQUIRED_OPT_TITLE])
 		helps.add('GLOBAL ' + OPTIONAL_OPT_TITLE, global_opt_items[OPTIONAL_OPT_TITLE])
 
-		helps.add('AVAILABLE COMMANDS', HelpOptions())
+		helps.add('AVAILABLE COMMANDS', HelpOptions(prefix = ''))
 
 		revcmds = OrderedDict()
 		for name, command in self._cmds.items():
