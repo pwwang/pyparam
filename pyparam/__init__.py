@@ -1,6 +1,9 @@
 """
 parameters module for PyPPL
 """
+
+__version__ = '0.1.7'
+
 import sys
 import re
 import ast
