@@ -1195,7 +1195,6 @@ class Params(_Hashable):
 
 	@property
 	def _helpitems(self):
-		print(self, self._prefix)
 		# collect aliases
 		required_params = {}
 		optional_params = {}
