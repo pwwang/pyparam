@@ -1,3 +1,5 @@
+## 0.1.7
+- Fix prefix inconsistency in help page in command mode.
 
 ## 0.1.6
 - Add tests for completions
