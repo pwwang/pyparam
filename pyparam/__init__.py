@@ -1185,6 +1185,8 @@ class Params(_Hashable):
 			# check required
 			for name, param in self._params.items():
 				if param.required and param.value is None and param.type != 'NoneType:':
+					if name == OPT_POSITIONAL_NAME:
+						raise ParamsParseError('POSITIONAL option is required.')
 					raise ParamsParseError('Option %r is required.' % (self._prefixit(name)))
 
 			for warn in warns[:(MAX_WARNINGS+1)]:
