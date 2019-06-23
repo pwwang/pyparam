@@ -1,3 +1,7 @@
+## 0.1.8
+- Show right OPTIONAL name in requiredness check.
+- Add auto-recognition for bool option.
+
 ## 0.1.7
 - Fix prefix inconsistency in help page in command mode.
 
