@@ -2,7 +2,7 @@
 parameters module for PyPPL
 """
 
-__version__ = '0.1.7'
+__version__ = '0.1.8'
 
 import sys
 import re
