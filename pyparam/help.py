@@ -16,7 +16,7 @@ def _match(selector, item, regex = False):
 		return bool(selector.search(item[0] if isinstance(item, tuple) else item))
 
 	if isinstance(item, tuple):
-		items = item[0].split(', ')
+		items = item[0].split(' | ') if ' | ' in item[0] else item[0].split(', ')
 		items = [it.lower() for it in items] + [it.lstrip('-').lower() for it in items]
 		return selector.lower() in items
 	return selector.lower() in item.lower()

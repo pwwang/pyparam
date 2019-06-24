@@ -234,7 +234,7 @@ class HelpAssembler:
 		"""
 		return '{colorstart}{msg}{colorend}{colon}'.format(
 			colorstart = self.theme['title'],
-			msg        = msg.upper(),
+			msg        = msg.capitalize(),
 			colorend   = colorama.Style.RESET_ALL,
 			colon      = ':' if with_colon else ''
 		)
