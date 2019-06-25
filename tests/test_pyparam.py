@@ -62,10 +62,10 @@ class TestHelpAssembler:
 		('', True, '{s.BRIGHT}{f.CYAN}{s.RESET_ALL}:'.format(
 			f = colorama.Fore,
 			s = colorama.Style)),
-		('title', False, '{s.BRIGHT}{f.CYAN}TITLE{s.RESET_ALL}'.format(
+		('title', False, '{s.BRIGHT}{f.CYAN}Title{s.RESET_ALL}'.format(
 			f = colorama.Fore,
 			s = colorama.Style)),
-		('title', True, '{s.BRIGHT}{f.CYAN}TITLE{s.RESET_ALL}:'.format(
+		('title', True, '{s.BRIGHT}{f.CYAN}Title{s.RESET_ALL}:'.format(
 			f = colorama.Fore,
 			s = colorama.Style)),
 	])
@@ -142,12 +142,12 @@ class TestHelpAssembler:
 		({}, ['']),
 		# hello is not asembled
 		({'description': ['some description about the program'], 'hello': []}, [
-			'{s.BRIGHT}{f.CYAN}DESCRIPTION{s.RESET_ALL}:'.format(
+			'{s.BRIGHT}{f.CYAN}Description{s.RESET_ALL}:'.format(
 				f = colorama.Fore, s = colorama.Style),
 			'  some description about the program',
 			'', '']),
 		({'optional options': [('-h, --help, -H', '', ['Show help message and exit.'])]}, [
-			'{s.BRIGHT}{f.CYAN}OPTIONAL OPTIONS{s.RESET_ALL}:'.format(
+			'{s.BRIGHT}{f.CYAN}Optional options{s.RESET_ALL}:'.format(
 				f = colorama.Fore, s = colorama.Style),
 			'{s.BRIGHT}{f.GREEN}  -h, --help, -H{s.RESET_ALL} '
 			'     - Show help message and exit.{s.RESET_ALL}'.format(
@@ -155,14 +155,14 @@ class TestHelpAssembler:
 			'', '']),
 		({'description': ['some very very very very very very very very very very very very '
 			'very very very very description about the program']}, [
-			'{s.BRIGHT}{f.CYAN}DESCRIPTION{s.RESET_ALL}:'.format(
+			'{s.BRIGHT}{f.CYAN}Description{s.RESET_ALL}:'.format(
 				f = colorama.Fore, s = colorama.Style),
 			'  some very very very very very very very very very very very very very very '
 			'very \\',
 			'  very description about the program',
 			'', '']),
 		({'options': [('-nthreads', '<int>', ['Number of threads to use. Default: 1'])]}, [
-			'{s.BRIGHT}{f.CYAN}OPTIONS{s.RESET_ALL}:'.format(
+			'{s.BRIGHT}{f.CYAN}Options{s.RESET_ALL}:'.format(
 				f = colorama.Fore, s = colorama.Style),
 			'{s.BRIGHT}{f.GREEN}  -nthreads{s.RESET_ALL} '
 			'{f.BLUE}<INT>{s.RESET_ALL}     - Number of threads to use. '
@@ -176,7 +176,7 @@ class TestHelpAssembler:
 				'Option descript without default value. And this is a long long long '
 				'long description'])]}, [ # expt
 
-			'{s.BRIGHT}{f.CYAN}OPTIONS{s.RESET_ALL}:'.format(
+			'{s.BRIGHT}{f.CYAN}Options{s.RESET_ALL}:'.format(
 				f = colorama.Fore, s = colorama.Style),
 
 			'{s.BRIGHT}{f.GREEN}  -nthreads{s.RESET_ALL} '
@@ -699,6 +699,7 @@ def test_params_init():
 
 	params = Params(command = 'list')
 	assert params._prog == 'program list'
+	assert 'h' in params
 
 def test_params_props():
 	params = Params()
@@ -788,6 +789,7 @@ def test_params_repr():
 		OPT_POSITIONAL_NAME: [('list:', ['1'])]}, ['4']),
 	(12, ['-bb'], {'b': [('bool:', ['b'])]}, []),
 	(13, ['--b'], {'_': [('list:', ['--b'])]}, []),
+	(14, ['-b', 'b', 'a'], {'b': [('bool:', [])], '_': [('list:', ['b', 'a'])]}, []),
 ])
 def test_params_preparse(mark, args, exptstacks, exptpendings):
 	params = Params()
@@ -923,6 +925,12 @@ def test_params_parse(capsys):
 	assert params6._parse(['-sort', '2', '-s']) == {'H': False, 'h': False, 'help': False, 'sort': 2, 's': True}
 	assert params6._parse(['-s1', '-sort', '2']) == {'H': False, 'h': False, 'help': False, 'sort': 2, 's': True}
 
+	params7 = Params()
+	params7._.required = True
+	with pytest.raises(SystemExit): # optional required
+		params7._parse(['-a'])
+	assert 'POSITIONAL option is required.' in capsys.readouterr().err
+
 def test_params_parse_pooled():
 	# linked name and values
 	params = Params()
@@ -999,11 +1007,11 @@ def test_params_help(capsys):
 	sys.argv = ['program']
 	params = Params()
 	#print ('-'*10, params._help(), '-'*10)
-	#assert striphelp(params._help()) == 'USAGE: program [OPTIONS] OPTIONAL OPTIONS: -h, -H, --help ' + \
+	#assert striphelp(params._help()) == 'Usage: program [OPTIONS] Optional options: -h, -H, --help ' + \
 	#	'- Show help message and exit.'
 
 	params.optional = 'default'
-	assert striphelp(params._help()) == 'USAGE: program [OPTIONS] OPTIONAL OPTIONS: --optional <STR> ' + \
+	assert striphelp(params._help()) == 'Usage: program [OPTIONS] Optional options: --optional <STR> ' + \
 		"- Default: 'default' -h, -H, --help " + \
 		'- Show help message and exit.'
 	params.r.required = True
@@ -1019,34 +1027,34 @@ def test_params_help(capsys):
 	params.req722222222 = params.r
 	params.opt = params.optional
 	params.opt2 = 1
-	assert striphelp(params._help()) == "USAGE: program <-r NONETYPE> <--req2 AUTO> [OPTIONS] REQUIRED OPTIONS: -r, --req3, --req4, --req5, --req6, --req7, --req73333, --req722222, --req722222222 <NONETYPE> - [No description] --req2 <AUTO> - [No description] OPTIONAL OPTIONS: --opt, --optional <STR> - Default: 'default' --opt2 <INT> - Default: 1 -h, -H, --help - Show help message and exit."
+	assert striphelp(params._help()) == "Usage: program <-r NONETYPE> <--req2 AUTO> [OPTIONS] Required options: -r, --req3, --req4, --req5, --req6, --req7, --req73333, --req722222, --req722222222 <NONETYPE> - [No description] --req2 <AUTO> - [No description] Optional options: --opt, --optional <STR> - Default: 'default' --opt2 <INT> - Default: 1 -h, -H, --help - Show help message and exit."
 
 	params._usage = '{prog} <-this THIS> <-is IS> <-a A> <-very VERY> <-very VERY>' + \
 		' <-very VERY> <-very VERY> <-very VERY> <-very VERY> <-very VERY> <-long LONG>' + \
-		' <-usage USAGE>'
-	assert striphelp(params._help()) == "USAGE: program <-this THIS> <-is IS> <-a A> <-very VERY> <-very VERY> <-very VERY> <-very \\ VERY> <-very VERY> <-very VERY> <-very VERY> <-long LONG> <-usage USAGE> REQUIRED OPTIONS: -r, --req3, --req4, --req5, --req6, --req7, --req73333, --req722222, --req722222222 <NONETYPE> - [No description] --req2 <AUTO> - [No description] OPTIONAL OPTIONS: --opt, --optional <STR> - Default: 'default' --opt2 <INT> - Default: 1 -h, -H, --help - Show help message and exit."
+		' <-usage Usage>'
+	assert striphelp(params._help()) == "Usage: program <-this THIS> <-is IS> <-a A> <-very VERY> <-very VERY> <-very VERY> <-very \\ VERY> <-very VERY> <-very VERY> <-very VERY> <-long LONG> <-usage Usage> Required options: -r, --req3, --req4, --req5, --req6, --req7, --req73333, --req722222, --req722222222 <NONETYPE> - [No description] --req2 <AUTO> - [No description] Optional options: --opt, --optional <STR> - Default: 'default' --opt2 <INT> - Default: 1 -h, -H, --help - Show help message and exit."
 
 	params._ = ['positional']
 	params._usage = []
-	assert striphelp(params._help()) == "USAGE: program <-r NONETYPE> <--req2 AUTO> [OPTIONS] [POSITIONAL] REQUIRED OPTIONS: -r, --req3, --req4, --req5, --req6, --req7, --req73333, --req722222, --req722222222 <NONETYPE> - [No description] --req2 <AUTO> - [No description] OPTIONAL OPTIONS: --opt, --optional <STR> - Default: 'default' --opt2 <INT> - Default: 1 -h, -H, --help - Show help message and exit. POSITIONAL <LIST> - Default: ['positional']"
+	assert striphelp(params._help()) == "Usage: program <-r NONETYPE> <--req2 AUTO> [OPTIONS] [POSITIONAL] Required options: -r, --req3, --req4, --req5, --req6, --req7, --req73333, --req722222, --req722222222 <NONETYPE> - [No description] --req2 <AUTO> - [No description] Optional options: --opt, --optional <STR> - Default: 'default' --opt2 <INT> - Default: 1 -h, -H, --help - Show help message and exit. POSITIONAL <LIST> - Default: ['positional']"
 
 	params._.required = True
 	params._desc = 'An example description'
-	assert striphelp(params._help()) == "DESCRIPTION: An example description USAGE: program <-r NONETYPE> <--req2 AUTO> [OPTIONS] POSITIONAL REQUIRED OPTIONS: -r, --req3, --req4, --req5, --req6, --req7, --req73333, --req722222, --req722222222 <NONETYPE> - [No description] --req2 <AUTO> - [No description] POSITIONAL <LIST> - Default: ['positional'] OPTIONAL OPTIONS: --opt, --optional <STR> - Default: 'default' --opt2 <INT> - Default: 1 -h, -H, --help - Show help message and exit."
+	assert striphelp(params._help()) == "Description: An example description Usage: program <-r NONETYPE> <--req2 AUTO> [OPTIONS] POSITIONAL Required options: -r, --req3, --req4, --req5, --req6, --req7, --req73333, --req722222, --req722222222 <NONETYPE> - [No description] --req2 <AUTO> - [No description] POSITIONAL <LIST> - Default: ['positional'] Optional options: --opt, --optional <STR> - Default: 'default' --opt2 <INT> - Default: 1 -h, -H, --help - Show help message and exit."
 
 	params._helpx = lambda items: items.add('helpx', HelpItems()).select('helpx').add('helpx demo')
-	assert striphelp(params._help(error = 'example error')) == "Error: example error DESCRIPTION: An example description USAGE: program <-r NONETYPE> <--req2 AUTO> [OPTIONS] POSITIONAL REQUIRED OPTIONS: -r, --req3, --req4, --req5, --req6, --req7, --req73333, --req722222, --req722222222 <NONETYPE> - [No description] --req2 <AUTO> - [No description] POSITIONAL <LIST> - Default: ['positional'] OPTIONAL OPTIONS: --opt, --optional <STR> - Default: 'default' --opt2 <INT> - Default: 1 -h, -H, --help - Show help message and exit. HELPX: helpx demo"
+	assert striphelp(params._help(error = 'example error')) == "Error: example error Description: An example description Usage: program <-r NONETYPE> <--req2 AUTO> [OPTIONS] POSITIONAL Required options: -r, --req3, --req4, --req5, --req6, --req7, --req73333, --req722222, --req722222222 <NONETYPE> - [No description] --req2 <AUTO> - [No description] POSITIONAL <LIST> - Default: ['positional'] Optional options: --opt, --optional <STR> - Default: 'default' --opt2 <INT> - Default: 1 -h, -H, --help - Show help message and exit. Helpx: helpx demo"
 
 	with pytest.raises(SystemExit):
 		params._help(print_and_exit = True)
 
-	assert striphelp(capsys.readouterr().err) == "DESCRIPTION: An example description USAGE: program <-r NONETYPE> <--req2 AUTO> [OPTIONS] POSITIONAL REQUIRED OPTIONS: -r, --req3, --req4, --req5, --req6, --req7, --req73333, --req722222, --req722222222 <NONETYPE> - [No description] --req2 <AUTO> - [No description] POSITIONAL <LIST> - Default: ['positional'] OPTIONAL OPTIONS: --opt, --optional <STR> - Default: 'default' --opt2 <INT> - Default: 1 -h, -H, --help - Show help message and exit. HELPX: helpx demo"
+	assert striphelp(capsys.readouterr().err) == "Description: An example description Usage: program <-r NONETYPE> <--req2 AUTO> [OPTIONS] POSITIONAL Required options: -r, --req3, --req4, --req5, --req6, --req7, --req73333, --req722222, --req722222222 <NONETYPE> - [No description] --req2 <AUTO> - [No description] POSITIONAL <LIST> - Default: ['positional'] Optional options: --opt, --optional <STR> - Default: 'default' --opt2 <INT> - Default: 1 -h, -H, --help - Show help message and exit. Helpx: helpx demo"
 
 	params1 = Params()
 	params1.v.type = 'verbose'
 	params1.verbose = params1.v
 
-	assert striphelp(params1._help()) == "USAGE: program [OPTIONS] OPTIONAL OPTIONS: -v|vv|vvv, --verbose <VERBOSITY> - Default: None -h, -H, --help - Show help message and exit."
+	assert striphelp(params1._help()) == "Usage: program [OPTIONS] Optional options: -v|vv|vvv, --verbose <VERBOSITY> - Default: None -h, -H, --help - Show help message and exit."
 
 def test_params_hashable():
 	params = Params()
@@ -1156,18 +1164,18 @@ def test_commands_attr():
 def test_commands_help(capsys):
 	commands = Commands()
 	commands._props['assembler'].progname = 'program'
-	assert striphelp(commands._help()) == "USAGE: program <command> [OPTIONS] GLOBAL OPTIONAL OPTIONS: -h, -H, --help - Show help message and exit. AVAILABLE COMMANDS: help [COMMAND] - Print help message for the command and exit."
+	assert striphelp(commands._help()) == "Usage: program <command> [OPTIONS] Global optional options: -h, -H, --help - Show help message and exit. Available commands: help [COMMAND] - Print help message for the command and exit."
 
 	commands.cmd1 = 'Comman 1'
 	commands.alongcommand = 'A long command'
 	commands.cmd2 = commands.cmd1
-	assert striphelp(commands._help()) == "USAGE: program <command> [OPTIONS] GLOBAL OPTIONAL OPTIONS: -h, -H, --help - Show help message and exit. AVAILABLE COMMANDS: cmd1 | cmd2 - Comman 1 alongcommand - A long command help [COMMAND] - Print help message for the command and exit."
+	assert striphelp(commands._help()) == "Usage: program <command> [OPTIONS] Global optional options: -h, -H, --help - Show help message and exit. Available commands: cmd1 | cmd2 - Comman 1 alongcommand - A long command help [COMMAND] - Print help message for the command and exit."
 
 	commands._helpx = lambda items: items.add('Additional', HelpItems()).select('/Addi/').add('demo')
-	assert striphelp(commands._help()) == "USAGE: program <command> [OPTIONS] GLOBAL OPTIONAL OPTIONS: -h, -H, --help - Show help message and exit. AVAILABLE COMMANDS: cmd1 | cmd2 - Comman 1 alongcommand - A long command help [COMMAND] - Print help message for the command and exit. ADDITIONAL: demo"
+	assert striphelp(commands._help()) == "Usage: program <command> [OPTIONS] Global optional options: -h, -H, --help - Show help message and exit. Available commands: cmd1 | cmd2 - Comman 1 alongcommand - A long command help [COMMAND] - Print help message for the command and exit. Additional: demo"
 
 	commands._.a.required = True
-	assert striphelp(commands._help('some errors')) == "Error: some errors USAGE: program <command> [OPTIONS] GLOBAL REQUIRED OPTIONS: -a <AUTO> - [No description] GLOBAL OPTIONAL OPTIONS: -h, -H, --help - Show help message and exit. AVAILABLE COMMANDS: cmd1 | cmd2 - Comman 1 alongcommand - A long command help [COMMAND] - Print help message for the command and exit. ADDITIONAL: demo"
+	assert striphelp(commands._help('some errors')) == "Error: some errors Usage: program <command> [OPTIONS] Global required options: -a <AUTO> - [No description] Global optional options: -h, -H, --help - Show help message and exit. Available commands: cmd1 | cmd2 - Comman 1 alongcommand - A long command help [COMMAND] - Print help message for the command and exit. Additional: demo"
 
 	with pytest.raises(SystemExit):
 		commands._help(print_and_exit = True)
@@ -1178,7 +1186,7 @@ def test_commands_help(capsys):
 	commands.cmd1._usage  = '{prog} options'
 	commands.cmd2         = commands.cmd1
 	commands._.a.required = True
-	assert striphelp(commands._help()) == "DESCRIPTION: Command description USAGE: program <command> [OPTIONS] GLOBAL REQUIRED OPTIONS: -a <AUTO> - [No description] GLOBAL OPTIONAL OPTIONS: -h, -H, --help - Show help message and exit. AVAILABLE COMMANDS: cmd1 | cmd2 - First command alongcommand - A long command help [COMMAND] - Print help message for the command and exit. ADDITIONAL: demo"
+	assert striphelp(commands._help()) == "Description: Command description Usage: program <command> [OPTIONS] Global required options: -a <AUTO> - [No description] Global optional options: -h, -H, --help - Show help message and exit. Available commands: cmd1 | cmd2 - First command alongcommand - A long command help [COMMAND] - Print help message for the command and exit. Additional: demo"
 
 def test_commands_parse(capsys):
 	commands = Commands()
@@ -1255,13 +1263,13 @@ def test_commands_help_command(capsys):
 	commands.show = 'Show the list.'
 	with pytest.raises(SystemExit):
 		commands._parse(['help', 'show'])
-	# leading '  ' makes sure it is in DESCRIPTION
+	# leading '  ' makes sure it is in Description
 	assert '  Show the list.' in capsys.readouterr().err
 
 	commands._hcmd = 'h'
 	with pytest.raises(SystemExit):
 		commands._parse(['h', 'show'])
-	# leading '  ' makes sure it is in DESCRIPTION
+	# leading '  ' makes sure it is in Description
 	assert '  Show the list.' in capsys.readouterr().err
 
 def test_commands_completions():

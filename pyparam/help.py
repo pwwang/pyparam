@@ -87,7 +87,7 @@ class HelpOptions(HelpItems):
 	def __init__(self, *args, **kwargs):
 		self.prefix = kwargs.pop('prefix', 'auto')
 		super(HelpOptions, self).__init__()
-		options = HelpOptions._tupleToOption(list(args))
+		options = self._tupleToOption(list(args))
 		self.add(options)
 
 	def _prefixName(self, name):
@@ -97,10 +97,9 @@ class HelpOptions(HelpItems):
 			return self.prefix + name
 		return '-' + name if len(name) <= 1 or name[1] == '.' else '--' + name
 
-	@staticmethod
-	def _tupleToOption(item):
+	def _tupleToOption(self, item):
 		if isinstance(item, list):
-			return [HelpOptions._tupleToOption(it) for it in item]
+			return [self._tupleToOption(it) for it in item]
 		if not isinstance(item, tuple) or len(item) != 3:
 			raise NotAnOptionException('Expect a 3-element tuple as an option item in help page.')
 		if not isinstance(item[2], HelpOptionDescriptions):
@@ -155,7 +154,7 @@ class HelpOptions(HelpItems):
 			for it in item:
 				self.add(it)
 		else:
-			self.append(HelpOptions._tupleToOption(item))
+			self.append(self._tupleToOption(item))
 		self.fixMixed()
 		return self
 
@@ -164,9 +163,9 @@ class HelpOptions(HelpItems):
 		if isinstance(item, HelpOptions):
 			self[index:index] = item
 		elif isinstance(item, list):
-			self[index:index] = HelpOptions._tupleToOption(item)
+			self[index:index] = self._tupleToOption(item)
 		else:
-			self[index:index] = [HelpOptions._tupleToOption(item)]
+			self[index:index] = [self._tupleToOption(item)]
 		return self
 
 	def after(self, selector, item, **kwargs):

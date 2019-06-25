@@ -300,6 +300,8 @@ class HelpAssembler:
 		default_index = msg.rfind('DEFAULT: ')
 		if default_index == -1:
 			default_index = msg.rfind('Default: ')
+		if default_index == -1:
+			default_index = msg.rfind('default: ')
 
 		if default_index != -1:
 			defaults = '{colorstart}{defaults}{colorend}'.format(
@@ -1139,7 +1141,7 @@ class Params(_Hashable):
 
 		args = sys.argv[1:] if args is None else args
 		try:
-			if not args and self._hbald:
+			if not args and self._hbald and not arbi:
 				raise ParamsParseError('__help__')
 			parsed, pendings = self._preParse(args)
 
