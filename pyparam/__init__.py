@@ -1379,10 +1379,10 @@ class Params(_Hashable):
 			ret[name] = self._params[name].value
 		return ret
 
-	def _addToCompletions(self, completions, withtype, alias):
+	def _addToCompletions(self, completions, withtype = False, alias = False, showonly = True):
 		revparams = OrderedDict()
 		for name, param in self._params.items():
-			if name in self._hopts:
+			if name in self._hopts or (showonly and not param.show):
 				continue
 			revparams.setdefault(param, []).append(name)
 		for param, names in revparams.items():
@@ -1398,10 +1398,10 @@ class Params(_Hashable):
 				completions.addOption(['-' + param.name * 2, '-' + param.name * 3],
 									  param.desc and param.desc[0] or '')
 
-	def _complete(self, shell, auto = False, withtype = False, alias = False):
+	def _complete(self, shell, auto = False, withtype = False, alias = False, showonly = True):
 		from completions import Completions
 		completions = Completions(desc = self._desc and self._desc[0] or '')
-		self._addToCompletions(completions, withtype, alias)
+		self._addToCompletions(completions, withtype, alias, showonly)
 
 		return completions.generate(shell, auto)
 
@@ -1688,7 +1688,8 @@ class Commands:
 		else:
 			return '\n'.join(ret)
 
-	def _complete(self, shell, auto = False, inherit = True, withtype = False, alias = True):
+	def _complete(self, shell, auto = False, inherit = True,
+		withtype = False, alias = True, showonly = True):
 		from completions import Completions
 		completions = Completions(inherit = inherit,
 								  desc = self._desc and self._desc[0] or '')
@@ -1699,7 +1700,8 @@ class Commands:
 			revcmds.setdefault(val, []).append(key)
 
 		if CMD_GLOBAL_OPTPROXY in self._cmds:
-			self._cmds[CMD_GLOBAL_OPTPROXY]._addToCompletions(completions, withtype, alias)
+			self._cmds[CMD_GLOBAL_OPTPROXY]._addToCompletions(
+				completions, withtype, alias, showonly)
 
 		helpoptions = {
 			cmdname: (command._desc and command._desc[0] or '')
@@ -1715,7 +1717,8 @@ class Commands:
 					completions.addCommand(name, compdesc, helpoptions)
 				else:
 					completions.addCommand(name, compdesc)
-					command._addToCompletions(completions.command(name), withtype, alias)
+					command._addToCompletions(
+						completions.command(name), withtype, alias, showonly)
 		return completions.generate(shell, auto)
 
 # pylint: disable=invalid-name

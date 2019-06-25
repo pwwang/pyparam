@@ -1127,6 +1127,8 @@ def test_params_completions():
 	assert re.search(r"-s 'v'", params._complete(shell = 'fish'))
 	assert re.search(r"-o 'vv'", params._complete(shell = 'fish'))
 	assert re.search(r"-o 'vvv'", params._complete(shell = 'fish'))
+	params.v.show = False
+	assert not re.search(r"-o 'vvv'", params._complete(shell = 'fish'))
 # endregion
 
 # region: Commands
