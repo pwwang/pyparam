@@ -259,7 +259,7 @@ class HelpAssembler:
 		@params:
 			`msg`: the message
 		"""
-		return msg.format(prog = self.prog(self.progname))
+		return msg.replace('{prog}', self.prog(self.progname))
 
 	def optname(self, msg, prefix = '  '):
 		"""
@@ -1581,6 +1581,9 @@ class Commands:
 		"""
 		# check if inherit is True, then we should also attach global options to commands
 		self._inheritGlobalOptions()
+		if arbi:
+			for hcmd in self._hcmd:
+				self._cmds[hcmd][OPT_POSITIONAL_NAME].callback = None
 
 		args = sys.argv[1:] if args is None else args
 		# the commands have to be defined even for arbitrary mode
@@ -1607,7 +1610,7 @@ class Commands:
 			global_args  = args[:cmdidx]
 			command_args = args[(cmdidx+1):]
 
-			if self._inherit and command not in self._hcmd:
+			if (self._inherit and command not in self._hcmd):
 				command_opts = self._cmds[command]._parse(
 					global_args + command_args, arbi, dict_wrapper)
 				global_opts = self._cmds[CMD_GLOBAL_OPTPROXY]._dict(wrapper = dict_wrapper)
