@@ -1,3 +1,7 @@
+## 0.2.1
+- Use lastest dependencies
+- Use lastest tagit
+
 ## 0.2.0
 - Change titile to be capitalized.
 - Fix selector if section is option type but with subcommands.
