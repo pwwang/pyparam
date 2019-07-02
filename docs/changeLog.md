@@ -1,3 +1,6 @@
+## 0.2.2
+- Make the right color for long default values in option description.
+
 ## 0.2.1
 - Use lastest dependencies
 - Use lastest tagit
