@@ -117,26 +117,30 @@ class TestHelpAssembler:
 	def test_opttype(self, msg, expt):
 		assert self.assembler.opttype(msg) == expt
 
-	@pytest.mark.parametrize('msg, first, expt', [
-		('', False, '  {s.RESET_ALL}'.format(
+	@pytest.mark.parametrize('msg, first, alldefault, expt', [
+		('', False, False, '  {s.RESET_ALL}'.format(
 			f = colorama.Fore,
 			s = colorama.Style
 		)),
-		('DEfault: 1', True, '- DEfault: 1{s.RESET_ALL}'.format(
+		('DEfault: 1', True, False, '- DEfault: 1{s.RESET_ALL}'.format(
 			f = colorama.Fore,
 			s = colorama.Style
 		)),
-		('Default: 1', False, '  {f.MAGENTA}Default: 1{s.RESET_ALL}{s.RESET_ALL}'.format(
+		('Default: 1', False, False, '  {f.MAGENTA}Default: 1{s.RESET_ALL}{s.RESET_ALL}'.format(
 			f = colorama.Fore,
 			s = colorama.Style
 		)),
-		('XDEFAULT: 1', True, '- X{f.MAGENTA}DEFAULT: 1{s.RESET_ALL}{s.RESET_ALL}'.format(
+		('XDEFAULT: 1', True, False, '- X{f.MAGENTA}DEFAULT: 1{s.RESET_ALL}{s.RESET_ALL}'.format(
+			f = colorama.Fore,
+			s = colorama.Style
+		)),
+		('a DEFAULT: 1', False, True, '  {f.MAGENTA}a DEFAULT: 1{s.RESET_ALL}'.format(
 			f = colorama.Fore,
 			s = colorama.Style
 		)),
 	])
-	def test_optdesc(self, msg, first, expt):
-		assert self.assembler.optdesc(msg, first) == expt
+	def test_optdesc(self, msg, first, alldefault, expt):
+		assert self.assembler.optdesc(msg, first, alldefault) == expt
 
 	@pytest.mark.parametrize('helps, expt', [
 		({}, ['']),
@@ -171,7 +175,7 @@ class TestHelpAssembler:
 			'', '']),
 		({'options': [
 			('-nthreads', '<int>', ['Number of threads to use. Default: 1']),
-			('-opt1', '<str>', ['String options.', 'DEFAULT: "Hello world!"']),
+			('-opt1', '<str>', ['String options.', 'DEFAULT: "Hello world! \\', 'Not end"']),
 			('-option, --very-very-long-option-name', '<int>', [
 				'Option descript without default value. And this is a long long long '
 				'long description'])]}, [ # expt
@@ -187,7 +191,9 @@ class TestHelpAssembler:
 			'{s.BRIGHT}{f.GREEN}  -opt1{s.RESET_ALL} {f.BLUE}<STR>{s.RESET_ALL}'
 			'         - String options.{s.RESET_ALL}'.format(f = colorama.Fore, s = colorama.Style),
 
-			'                        {f.MAGENTA}DEFAULT: "Hello world!"{s.RESET_ALL}{s.RESET_ALL}'.format(
+			'                        {f.MAGENTA}DEFAULT: "Hello world! \\{s.RESET_ALL}{s.RESET_ALL}'.format(
+				f = colorama.Fore, s = colorama.Style),
+			'                        {f.MAGENTA}Not end"{s.RESET_ALL}'.format(
 				f = colorama.Fore, s = colorama.Style),
 
 			'{s.BRIGHT}{f.GREEN}  -option, --very-very-long-option-name{s.RESET_ALL} '

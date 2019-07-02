@@ -2,7 +2,7 @@
 parameters module for PyPPL
 """
 
-__version__ = "0.2.1"
+__version__ = "0.2.2"
 
 import sys
 import re
@@ -289,19 +289,33 @@ class HelpAssembler:
 			colorend   = colorama.Style.RESET_ALL
 		) + ' ' * (len(msg) - len(trimmedmsg))
 
-	def optdesc(self, msg, first = False):
+	@staticmethod
+	def defaultIndex(msg, defaults = 'DEFAULT: ,Default: ,default: '):
+		if not isinstance(defaults, list):
+			defaults = defaults.split(',')
+		for deft in defaults:
+			dindex = msg.rfind(deft)
+			if dindex != -1:
+				return dindex
+		return -1
+
+	def optdesc(self, msg, first = False, alldefault = False):
 		"""
 		Render the option descriptions
 		@params:
 			`msg`: the option descriptions
+			`alldefault`: If the whole msg is part of default
 		"""
 		msg = msg.replace('{prog}', self.prog(self.progname))
+		if alldefault:
+			return '{prefix}{colorstart}{msg}{colorend}'.format(
+				prefix     = '- ' if first else '  ',
+				colorstart = self.theme['default'],
+				msg        = msg,
+				colorend   = colorama.Style.RESET_ALL
+			)
 
-		default_index = msg.rfind('DEFAULT: ')
-		if default_index == -1:
-			default_index = msg.rfind('Default: ')
-		if default_index == -1:
-			default_index = msg.rfind('default: ')
+		default_index = HelpAssembler.defaultIndex(msg)
 
 		if default_index != -1:
 			defaults = '{colorstart}{defaults}{colorend}'.format(
@@ -337,23 +351,32 @@ class HelpAssembler:
 			ret.append(self.title(title))
 
 			if isinstance(helpitems, HelpOptions):
-				for optname, opttype, optdesc in helpitems:
+				for optname, opttype, optdescs in helpitems:
 					descs = sum((_textwrap(desc, MAX_PAGE_WIDTH - maxoptwidth)
-								for desc in optdesc), [])
+								for desc in optdescs), [])
 					optlen = len(optname + opttype) + MIN_OPTDESC_LEADING + 3
 					if optlen > MAX_OPT_WIDTH:
 						ret.append(
 							self.optname(optname, prefix = '  ') + ' ' + self.opttype(opttype))
 						if descs:
-							ret.append(' ' * maxoptwidth + self.optdesc(descs.pop(0), True))
+							ret.append(' ' * maxoptwidth + self.optdesc(descs[0], True))
 					else:
 						to_append = self.optname(optname, prefix = '  ') + ' ' + \
 									self.opttype(opttype.ljust(maxoptwidth - len(optname) - 3))
 						if descs:
-							to_append += self.optdesc(descs.pop(0), True)
+							to_append += self.optdesc(descs[0], True)
 						ret.append(to_append)
 					if descs:
-						ret.extend(' ' * maxoptwidth + self.optdesc(desc) for desc in descs)
+						desc0 = descs.pop(0)
+						default_index = HelpAssembler.defaultIndex(desc0)
+						ends = desc0.endswith(' \\')
+					for desc in descs:
+						if default_index != -1 and ends:
+							ret.append(' ' * maxoptwidth + self.optdesc(desc, alldefault = True))
+						else:
+							ret.append(' ' * maxoptwidth + self.optdesc(desc))
+							default_index = HelpAssembler.defaultIndex(desc)
+							ends = desc.endswith(' \\')
 				ret.append('')
 			else: # HelpItems
 				for item in helpitems:
