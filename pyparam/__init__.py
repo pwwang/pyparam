@@ -353,7 +353,10 @@ class HelpAssembler:
 			if isinstance(helpitems, HelpOptions):
 				for optname, opttype, optdescs in helpitems:
 					descs = sum((_textwrap(desc, MAX_PAGE_WIDTH - maxoptwidth)
+								if not desc.endswith(' \\') else [desc]
 								for desc in optdescs), [])
+					if descs:
+						descs[-1] = descs[-1].rstrip(' \\')
 					optlen = len(optname + opttype) + MIN_OPTDESC_LEADING + 3
 					if optlen > MAX_OPT_WIDTH:
 						ret.append(
