@@ -162,8 +162,8 @@ class TestHelpAssembler:
 			'{s.BRIGHT}{f.CYAN}Description{s.RESET_ALL}:'.format(
 				f = colorama.Fore, s = colorama.Style),
 			'  some very very very very very very very very very very very very very very '
-			'very \\',
-			'  very description about the program',
+			'very very description \\',
+			'  about the program',
 			'', '']),
 		({'options': [('-nthreads', '<int>', ['Number of threads to use. Default: 1'])]}, [
 			'{s.BRIGHT}{f.CYAN}Options{s.RESET_ALL}:'.format(

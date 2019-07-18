@@ -177,7 +177,17 @@ class _Valuable:
 		return not self.__eq__(other)
 
 def _textwrap(text, width = 70, **kwargs):
-	width -= 2
+	width -= 2 # for ending ' \'
+	# keep the indentation
+	# '  - hello world' =>
+	# '  - hello \'
+	# '    world'
+	# '  1. hello world' =>
+	# '  1. hello \'
+	# '     world'
+	m = re.match(r'\s*(?:[-*#]|\w{1,2}\.)?\s+', text)
+	prefix = ' ' * len(m.group(0)) if m else ''
+	kwargs['subsequent_indent'] = prefix + kwargs.get('subsequent_indent', '')
 	wraps = textwrap.wrap(text, width, **kwargs)
 	return [line + ' \\' if i < len(wraps) - 1 else line
 			for i, line in enumerate(wraps)]
@@ -384,10 +394,9 @@ class HelpAssembler:
 			else: # HelpItems
 				for item in helpitems:
 					if item.endswith(' \\'):
-						ret.append(self.plain(item))
+						ret.append('  ' + self.plain(item))
 					else:
-						ret.extend(self.plain(it) for it in _textwrap(item, MAX_PAGE_WIDTH - 15,
-							initial_indent = '  ', subsequent_indent = '  '))
+						ret.extend(self.plain(it) for it in _textwrap('  ' + item, MAX_PAGE_WIDTH))
 				ret.append('')
 
 		ret.append('')
@@ -1256,11 +1265,11 @@ class Params(_Hashable):
 		helps.add('USAGE', HelpItems())
 		# auto wrap long lines in usage
 		# allow 2 {prog}s
-		maxusagelen = MAX_PAGE_WIDTH - (len(self._prog.split()[0]) - 6)*2 - 15
+		maxusagelen = MAX_PAGE_WIDTH - (len(self._prog.split()[0]) - 6)*2 - 10
 		if self._usage:
 			helps['USAGE'].add(sum((_textwrap(
-				# allow 4 program names with more than 6 chars each in one usage
-				# 15 chars for backup.
+				# allow 2 program names with more than 6 chars each in one usage
+				# 10 chars for backup.
 				usage, maxusagelen, subsequent_indent = '  ')
 				for usage in self._props['usage']), []))
 		else: # default usage
