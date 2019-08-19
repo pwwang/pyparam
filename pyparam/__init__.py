@@ -967,7 +967,7 @@ class Params(_Hashable):
 		@params:
 			`hopts`: The help options
 		"""
-		if not hopts:
+		if hopts is None:
 			raise ValueError('No option specified for help.')
 		assert isinstance(hopts, (list, str))
 		# remove all previous help options
@@ -980,10 +980,11 @@ class Params(_Hashable):
 		if any('.' in hopt for hopt in self._hopts):
 			raise ValueError('No dot allowed in help option name.')
 
-		self[self._hopts[0]] = False
-		self[self._hopts[0]].desc = 'Show help message and exit.'
-		for hopt in self._hopts[1:]:
-			self[hopt] = self[self._hopts[0]]
+		if self._hopts:
+			self[self._hopts[0]] = False
+			self[self._hopts[0]].desc = 'Show help message and exit.'
+			for hopt in self._hopts[1:]:
+				self[hopt] = self[self._hopts[0]]
 		return self
 
 	def _setPrefix(self, prefix):
