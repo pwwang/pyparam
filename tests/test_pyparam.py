@@ -733,7 +733,7 @@ def test_params_props():
 	params._hopts = ['-H']
 	assert params._hopts == ['-H']
 	with pytest.raises(ValueError):
-		params._setHopts('')
+		params._setHopts(None)
 	with pytest.raises(ValueError):
 		params._setHopts('h.e.l.p')
 
