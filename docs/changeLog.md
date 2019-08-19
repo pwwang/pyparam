@@ -1,3 +1,8 @@
+## 0.2.3
+- Remove trailing " \" for final default statement.
+- Fix #5: Wrong wrapping indents
+- Allow empty hopts to disable help options.
+
 ## 0.2.2
 - Make the right color for long default values in option description.
 

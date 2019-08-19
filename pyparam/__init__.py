@@ -2,7 +2,7 @@
 parameters module for PyPPL
 """
 
-__version__ = "0.2.2"
+__version__ = "0.2.3"
 
 import sys
 import re
@@ -177,7 +177,17 @@ class _Valuable:
 		return not self.__eq__(other)
 
 def _textwrap(text, width = 70, **kwargs):
-	width -= 2
+	width -= 2 # for ending ' \'
+	# keep the indentation
+	# '  - hello world' =>
+	# '  - hello \'
+	# '    world'
+	# '  1. hello world' =>
+	# '  1. hello \'
+	# '     world'
+	m = re.match(r'\s*(?:[-*#]|\w{1,2}\.)?\s+', text)
+	prefix = ' ' * len(m.group(0)) if m else ''
+	kwargs['subsequent_indent'] = prefix + kwargs.get('subsequent_indent', '')
 	wraps = textwrap.wrap(text, width, **kwargs)
 	return [line + ' \\' if i < len(wraps) - 1 else line
 			for i, line in enumerate(wraps)]
@@ -353,7 +363,10 @@ class HelpAssembler:
 			if isinstance(helpitems, HelpOptions):
 				for optname, opttype, optdescs in helpitems:
 					descs = sum((_textwrap(desc, MAX_PAGE_WIDTH - maxoptwidth)
+								if not desc.endswith(' \\') else [desc]
 								for desc in optdescs), [])
+					if descs:
+						descs[-1] = descs[-1].rstrip(' \\')
 					optlen = len(optname + opttype) + MIN_OPTDESC_LEADING + 3
 					if optlen > MAX_OPT_WIDTH:
 						ret.append(
@@ -381,10 +394,9 @@ class HelpAssembler:
 			else: # HelpItems
 				for item in helpitems:
 					if item.endswith(' \\'):
-						ret.append(self.plain(item))
+						ret.append('  ' + self.plain(item))
 					else:
-						ret.extend(self.plain(it) for it in _textwrap(item, MAX_PAGE_WIDTH - 15,
-							initial_indent = '  ', subsequent_indent = '  '))
+						ret.extend(self.plain(it) for it in _textwrap('  ' + item, MAX_PAGE_WIDTH))
 				ret.append('')
 
 		ret.append('')
@@ -955,7 +967,7 @@ class Params(_Hashable):
 		@params:
 			`hopts`: The help options
 		"""
-		if not hopts:
+		if hopts is None:
 			raise ValueError('No option specified for help.')
 		assert isinstance(hopts, (list, str))
 		# remove all previous help options
@@ -968,10 +980,11 @@ class Params(_Hashable):
 		if any('.' in hopt for hopt in self._hopts):
 			raise ValueError('No dot allowed in help option name.')
 
-		self[self._hopts[0]] = False
-		self[self._hopts[0]].desc = 'Show help message and exit.'
-		for hopt in self._hopts[1:]:
-			self[hopt] = self[self._hopts[0]]
+		if self._hopts:
+			self[self._hopts[0]] = False
+			self[self._hopts[0]].desc = 'Show help message and exit.'
+			for hopt in self._hopts[1:]:
+				self[hopt] = self[self._hopts[0]]
 		return self
 
 	def _setPrefix(self, prefix):
@@ -1253,11 +1266,11 @@ class Params(_Hashable):
 		helps.add('USAGE', HelpItems())
 		# auto wrap long lines in usage
 		# allow 2 {prog}s
-		maxusagelen = MAX_PAGE_WIDTH - (len(self._prog.split()[0]) - 6)*2 - 15
+		maxusagelen = MAX_PAGE_WIDTH - (len(self._prog.split()[0]) - 6)*2 - 10
 		if self._usage:
 			helps['USAGE'].add(sum((_textwrap(
-				# allow 4 program names with more than 6 chars each in one usage
-				# 15 chars for backup.
+				# allow 2 program names with more than 6 chars each in one usage
+				# 10 chars for backup.
 				usage, maxusagelen, subsequent_indent = '  ')
 				for usage in self._props['usage']), []))
 		else: # default usage

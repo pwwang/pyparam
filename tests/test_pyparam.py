@@ -162,8 +162,8 @@ class TestHelpAssembler:
 			'{s.BRIGHT}{f.CYAN}Description{s.RESET_ALL}:'.format(
 				f = colorama.Fore, s = colorama.Style),
 			'  some very very very very very very very very very very very very very very '
-			'very \\',
-			'  very description about the program',
+			'very very description \\',
+			'  about the program',
 			'', '']),
 		({'options': [('-nthreads', '<int>', ['Number of threads to use. Default: 1'])]}, [
 			'{s.BRIGHT}{f.CYAN}Options{s.RESET_ALL}:'.format(
@@ -733,7 +733,7 @@ def test_params_props():
 	params._hopts = ['-H']
 	assert params._hopts == ['-H']
 	with pytest.raises(ValueError):
-		params._setHopts('')
+		params._setHopts(None)
 	with pytest.raises(ValueError):
 		params._setHopts('h.e.l.p')
 
