@@ -7,6 +7,7 @@ __version__ = "0.2.3"
 import sys
 import re
 import ast
+import warnings
 import builtins
 import textwrap
 from os import path
@@ -884,7 +885,8 @@ class Params(_Hashable):
 			prefix    = 'auto',
 			hbald     = True,
 			assembler = HelpAssembler(prog, theme),
-			helpx     = None
+			helpx     = None,
+			locked    = False
 		)
 		self.__dict__['_params']    = OrderedDict()
 		self._setHopts(self._hopts)
@@ -904,8 +906,13 @@ class Params(_Hashable):
 				raise ParamNameError('Cannot alias verbose option to a short option')
 			self._params[name] = value
 		elif name in self._params:
+			if self._locked:
+				raise ParamNameError(
+					'Parameters are locked and parameter {0!r} exists. '
+					'To change the value of an existing parameter, '
+					'use \'params.{0}.value = xxx\''.format(name))
 			self._params[name].value = value
-		elif name in ('_assembler', '_helpx', '_prog'):
+		elif name in ('_assembler', '_helpx', '_prog', '_locked'):
 			self._props[name[1:]] = value
 		elif name in ['_' + key for key in self._props.keys()] + ['_theme']:
 			getattr(self, '_set' + name[1:].capitalize())(value)
@@ -923,10 +930,15 @@ class Params(_Hashable):
 		"""
 		if name.startswith('__') or name.startswith('_' + self.__class__.__name__):
 			return getattr(super(Params, self), name)
-		if name in ['_' + key for key in self._props.keys()]:
+		if name in ('_' + key for key in self._props.keys()):
 			return self._props[name[1:]]
-		if not name in self._params:
+		if name not in self._params:
 			self._params[name] = Param(name)
+		elif self._locked and not self._params[name].show:
+			warnings.warn("The parameters are locked. "
+				"You are trying to access a hiden parameter {0!r}. "
+				"To eliminate this warning, unlock the parameters or "
+				"set {0}.show = True first.".format(name))
 		return self._params[name]
 
 	__getitem__ = __getattr__
