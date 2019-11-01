@@ -689,6 +689,25 @@ def test_param_dict_exc():
 # endregion
 
 # region: Params
+def test_params_lock():
+	params = Params()
+	params.a = 1
+	params.b = 2
+	params.b.show = False
+	params._locked = True
+	with pytest.raises(ParamNameError):
+		params.a = 2
+	with pytest.raises(ParamNameError):
+		params.b.value = 3
+	with pytest.raises(ParamNameError):
+		params.b.desc = 'Description of b'
+	with pytest.raises(ParamNameError):
+		params.b.required = True
+	with pytest.raises(ParamNameError):
+		params.b.type = int
+	with pytest.raises(ParamNameError):
+		params.b.setCallback(lambda opt: None)
+
 def test_params_init():
 	import sys
 	sys.argv = ['program']

@@ -1,3 +1,6 @@
+## 0.2.4
+- Add lock for params.
+
 ## 0.2.3
 - Remove trailing " \" for final default statement.
 - Fix #5: Wrong wrapping indents
