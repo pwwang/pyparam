@@ -187,6 +187,7 @@ def _textwrap(text, width = 70, **kwargs):
 	# '     world'
 	match = re.match(r'\s*(?:[-*#]|\w{1,2}\.)?\s+', text)
 	prefix = ' ' * len(match.group(0)) if match else ''
+
 	kwargs['subsequent_indent'] = prefix + kwargs.get('subsequent_indent', '')
 	wraps = textwrap.wrap(text, width, **kwargs)
 	return [line + ' \\' if i < len(wraps) - 1 else line
