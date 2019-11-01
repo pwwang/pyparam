@@ -244,7 +244,7 @@ class OrderedDict(dict):
 
 		'''
 		if isinstance(other, OrderedDict):
-			return dict.__eq__(self, other) and all(map(_eq, self, other))
+			return dict.__eq__(self, other) and list(self.keys()) == list(other.keys())
 		return dict.__eq__(self, other)
 
 	def __insertion(self, link_prev, key_value):

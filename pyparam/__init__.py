@@ -185,8 +185,8 @@ def _textwrap(text, width = 70, **kwargs):
 	# '  1. hello world' =>
 	# '  1. hello \'
 	# '     world'
-	m = re.match(r'\s*(?:[-*#]|\w{1,2}\.)?\s+', text)
-	prefix = ' ' * len(m.group(0)) if m else ''
+	match = re.match(r'\s*(?:[-*#]|\w{1,2}\.)?\s+', text)
+	prefix = ' ' * len(match.group(0)) if match else ''
 	kwargs['subsequent_indent'] = prefix + kwargs.get('subsequent_indent', '')
 	wraps = textwrap.wrap(text, width, **kwargs)
 	return [line + ' \\' if i < len(wraps) - 1 else line
@@ -301,6 +301,7 @@ class HelpAssembler:
 
 	@staticmethod
 	def defaultIndex(msg, defaults = 'DEFAULT: ,Default: ,default: '):
+		"""Try to find the index of the default indicator"""
 		if not isinstance(defaults, list):
 			defaults = defaults.split(',')
 		for deft in defaults:
