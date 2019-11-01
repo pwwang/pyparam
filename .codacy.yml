@@ -1,9 +1,0 @@
-exclude_paths:
-  - 'tests/**'
-  - 'examples/**'
-  - 'pyparam/utils.py'
-
-engines:
-  pylint:
-    enabled: true
-    python_version: 3
