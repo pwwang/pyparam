@@ -7,7 +7,6 @@ __version__ = "0.2.3"
 import sys
 import re
 import ast
-import warnings
 import builtins
 import textwrap
 from os import path
@@ -423,6 +422,8 @@ class Param(_Valuable):
 		self.default   = self._value
 		self.stacks    = []
 		self.callback  = None
+		# should I raise an error if the parameters are locked?
+		self._shouldRaise = False
 
 		# We cannot change name later on
 		if not isinstance(name, str):
@@ -623,6 +624,8 @@ class Param(_Valuable):
 
 	@value.setter
 	def value(self, value):
+		if self._shouldRaise:
+			raise ParamNameError("Try to change a hiden parameter in locked parameters.")
 		self._value = value
 		self.default = value
 
@@ -652,6 +655,8 @@ class Param(_Valuable):
 
 	@desc.setter
 	def desc(self, desc):
+		if self._shouldRaise:
+			raise ParamNameError("Try to change a hiden parameter in locked parameters.")
 		assert isinstance(desc, (list, str))
 		self._desc = desc if isinstance(desc, list) else desc.splitlines()
 
@@ -662,6 +667,8 @@ class Param(_Valuable):
 
 	@required.setter
 	def required(self, req):
+		if self._shouldRaise:
+			raise ParamNameError("Try to change a hiden parameter in locked parameters.")
 		if self.type == 'bool:':
 			raise ParamTypeError(
 				self.value, 'Bool option %r cannot be set as required' % self.name)
@@ -677,6 +684,8 @@ class Param(_Valuable):
 
 	@type.setter
 	def type(self, typename):
+		if self._shouldRaise:
+			raise ParamNameError("Try to change a hiden parameter in locked parameters.")
 		self.setType(typename, True)
 
 	@staticmethod
@@ -836,6 +845,8 @@ class Param(_Valuable):
 		@params:
 			`callback`: The callback
 		"""
+		if self._shouldRaise:
+			raise ParamNameError("Try to change a hiden parameter in locked parameters.")
 		if callback and not callable(callback):
 			raise TypeError('Callback is not callable.')
 		self.callback = callback
@@ -935,10 +946,7 @@ class Params(_Hashable):
 		if name not in self._params:
 			self._params[name] = Param(name)
 		elif self._locked and not self._params[name].show:
-			warnings.warn("The parameters are locked. "
-				"You are trying to access a hiden parameter {0!r}. "
-				"To eliminate this warning, unlock the parameters or "
-				"set {0}.show = True first.".format(name))
+			self._params[name]._shouldRaise = True
 		return self._params[name]
 
 	__getitem__ = __getattr__
