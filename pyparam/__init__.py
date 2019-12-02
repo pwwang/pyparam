@@ -890,15 +890,16 @@ class Params(_Hashable):
 		prog = path.basename(sys.argv[0])
 		prog = prog + ' ' + command if command else prog
 		self.__dict__['_props'] = dict(
-			prog      = prog,
-			usage     = [],
-			desc      = [],
-			hopts     = ['h', 'help', 'H'],
-			prefix    = 'auto',
-			hbald     = True,
-			assembler = HelpAssembler(prog, theme),
-			helpx     = None,
-			locked    = False
+			prog       = prog,
+			usage      = [],
+			desc       = [],
+			hopts      = ['h', 'help', 'H'],
+			prefix     = 'auto',
+			hbald      = True,
+			assembler  = HelpAssembler(prog, theme),
+			helpx      = None,
+			locked     = False,
+			lockedkeys = []
 		)
 		self.__dict__['_params']    = OrderedDict()
 		self._setHopts(self._hopts)
@@ -917,15 +918,21 @@ class Params(_Hashable):
 			if value.type == 'verbose:' and len(name) == 1:
 				raise ParamNameError('Cannot alias verbose option to a short option')
 			self._params[name] = value
+		elif name in self._lockedkeys and self._locked:
+			raise ParamNameError(
+				'Parameters are locked and parameter {0!r} exists. '
+				'To change the value of an existing parameter, '
+				'use \'params.{0}.value = xxx\''.format(name))
 		elif name in self._params:
-			if self._locked:
-				raise ParamNameError(
-					'Parameters are locked and parameter {0!r} exists. '
-					'To change the value of an existing parameter, '
-					'use \'params.{0}.value = xxx\''.format(name))
 			self._params[name].value = value
-		elif name in ('_assembler', '_helpx', '_prog', '_locked'):
+		elif name in ('_assembler', '_helpx', '_prog', '_lockedkeys'):
 			self._props[name[1:]] = value
+		elif name == '_locked':
+			if not self._locked and value:
+				self._lockedkeys = list(self._params.keys())
+			elif not value:
+				self._lockedkeys = []
+			self._props['locked'] = bool(value)
 		elif name in ['_' + key for key in self._props.keys()] + ['_theme']:
 			getattr(self, '_set' + name[1:].capitalize())(value)
 		else:
@@ -946,7 +953,7 @@ class Params(_Hashable):
 			return self._props[name[1:]]
 		if name not in self._params:
 			self._params[name] = Param(name)
-		elif self._locked and not self._params[name].show:
+		elif self._locked and name in self._lockedkeys and not self._params[name].show:
 			self._params[name]._shouldRaise = True
 		return self._params[name]
 
