@@ -344,7 +344,7 @@ class HelpAssembler:
 			colorend   = colorama.Style.RESET_ALL
 		)
 
-	def assemble(self, helps):
+	def assemble(self, helps, min_optdesc_leading = 5, max_opt_width = 36):
 		"""
 		Assemble the whole help page.
 		@params:
@@ -355,7 +355,7 @@ class HelpAssembler:
 			lines (`list`) of the help information.
 		"""
 		ret = []
-		maxoptwidth = helps.maxOptNameWidth
+		maxoptnamewith = helps.maxOptNameWidth(min_optdesc_leading, max_opt_width)
 
 		for title, helpitems in helps.items():
 			if not helpitems:
@@ -364,20 +364,20 @@ class HelpAssembler:
 
 			if isinstance(helpitems, HelpOptions):
 				for optname, opttype, optdescs in helpitems:
-					descs = sum((_textwrap(desc, MAX_PAGE_WIDTH - maxoptwidth)
+					descs = sum((_textwrap(desc, MAX_PAGE_WIDTH - maxoptnamewith)
 								if not desc.endswith(' \\') else [desc]
 								for desc in optdescs), [])
 					if descs:
 						descs[-1] = descs[-1].rstrip(' \\')
-					optlen = len(optname + opttype) + MIN_OPTDESC_LEADING + 3
-					if optlen > MAX_OPT_WIDTH:
+					if len(optname + opttype) + MIN_OPTDESC_LEADING + 3 > MAX_OPT_WIDTH:
 						ret.append(
 							self.optname(optname, prefix = '  ') + ' ' + self.opttype(opttype))
 						if descs:
-							ret.append(' ' * maxoptwidth + self.optdesc(descs[0], True))
+							ret.append(' ' * maxoptnamewith + self.optdesc(descs[0], True))
 					else:
 						to_append = self.optname(optname, prefix = '  ') + ' ' + \
-									self.opttype(opttype.ljust(maxoptwidth - len(optname) - 3))
+									self.opttype(
+										opttype.ljust(maxoptnamewith - len(optname) - 3))
 						if descs:
 							to_append += self.optdesc(descs[0], True)
 						ret.append(to_append)
@@ -387,9 +387,10 @@ class HelpAssembler:
 						ends = desc0.endswith(' \\')
 					for desc in descs:
 						if default_index != -1 and ends:
-							ret.append(' ' * maxoptwidth + self.optdesc(desc, alldefault = True))
+							ret.append(' ' * maxoptnamewith + \
+								self.optdesc(desc, alldefault = True))
 						else:
-							ret.append(' ' * maxoptwidth + self.optdesc(desc))
+							ret.append(' ' * maxoptnamewith + self.optdesc(desc))
 							default_index = HelpAssembler.defaultIndex(desc)
 							ends = desc.endswith(' \\')
 				ret.append('')
@@ -508,8 +509,7 @@ class Param(_Valuable):
 		# otherwise auto
 		origtype = self.stacks[-1][0] if self.stacks else self.type
 
-		if typename is True:
-			typename = origtype
+		typename = origtype if typename is True else typename
 		# if typename is give, push a tuple anyway unless
 		# type1 == 'list:' and type2 != 'reset'
 		# type1 == 'dict:' and type2 != 'reset'
@@ -529,22 +529,15 @@ class Param(_Valuable):
 					else:
 						self.stacks.append((typename, [[]]))
 				elif type1 == 'reset':
-					if origtype == 'list:list':
-						self.stacks.append((origtype, [[]]))
-					else:
-						self.stacks.append((origtype, []))
+					self.stacks.append((origtype, [[]] if origtype == 'list:list' else []))
 				elif type2 == 'reset':
 					self.stacks.append((type1 + ':', []))
 				elif type1 == 'list':
-					if origtype == typename:
-						self.stacks.append((typename, (self.value or [])[:]))
-					else:
-						self.stacks.append((typename, []))
+					self.stacks.append((typename,
+						(self.value or [])[:] if origtype == typename else []))
 				elif type1 == 'dict':
-					if origtype == typename:
-						self.stacks.append((typename, [(self.value or {}).copy()]))
-					else:
-						self.stacks.append((typename, []))
+					self.stacks.append((typename,
+						[(self.value or {}).copy()] if origtype == typename else []))
 				else:
 					self.stacks.append((typename, []))
 			elif type2 == 'reset':
@@ -691,7 +684,7 @@ class Param(_Valuable):
 		self.setType(typename, True)
 
 	@staticmethod
-	def _forceType(value, typename, name = None):
+	def _forceType(value, typename, name = None): # pylint: disable=too-many-branches
 		if not typename:
 			return value
 		type1, type2 = typename.split(':')
@@ -735,8 +728,7 @@ class Param(_Valuable):
 				if value is None:
 					return None
 				if not isinstance(value, dict):
-					if not value:
-						value = {}
+					value = value or {}
 					try:
 						value = dict(value)
 					except TypeError:
@@ -745,18 +737,12 @@ class Param(_Valuable):
 
 			if type1 == 'auto':
 				try:
-					if re.match(OPT_NONE_PATTERN, value):
-						typename = 'NoneType'
-					elif re.match(OPT_INT_PATTERN, value):
-						typename = 'int'
-					elif re.match(OPT_FLOAT_PATTERN, value):
-						typename = 'float'
-					elif re.match(OPT_BOOL_PATTERN, value):
-						typename = 'bool'
-					elif re.match(OPT_PY_PATTERN, value):
-						typename = 'py'
-					else:
-						typename = 'str'
+					typename = 'NoneType' if re.match(OPT_NONE_PATTERN, value) \
+						else 'int' if re.match(OPT_INT_PATTERN, value) \
+						else 'float' if re.match(OPT_FLOAT_PATTERN, value) \
+						else 'bool' if re.match(OPT_BOOL_PATTERN, value) \
+						else 'py' if re.match(OPT_PY_PATTERN, value) \
+						else 'str'
 					return Param._forceType(value, Param._normalizeType(typename))
 				except TypeError: # value is not a string, cannot do re.match
 					return value
@@ -1081,7 +1067,7 @@ class Params(_Hashable):
 			(self._prefix == '-' and argprefix == '--') or \
 			(self._prefix == '--' and argprefix == '-') or \
 			(self._prefix == 'auto' and argprefix == '--' and argshort):
-			return self._preParseValueCandidate(arg, parsed, pendings, lastopt)
+			return self._preParseValueCandidate(arg, pendings, lastopt)
 
 		# if a, b and c are defined as bool types, then it should be parsed as
 		#  {'a': True, 'b': True, 'c': True} like '-a -b -c'
@@ -1111,11 +1097,11 @@ class Params(_Hashable):
 				return None
 
 			if self._prefix == 'auto' and argprefix == '-' and len(argoptname) > 1:
-				return self._preParseValueCandidate(arg, parsed, pendings, lastopt)
+				return self._preParseValueCandidate(arg, pendings, lastopt)
 
 		matches = re.match(OPT_PATTERN, argnoprefix)
 		if not matches:
-			return self._preParseValueCandidate(arg, parsed, pendings, lastopt)
+			return self._preParseValueCandidate(arg, pendings, lastopt)
 		argname = matches.group(1) or OPT_POSITIONAL_NAME
 		argtype = matches.group(2)
 		argval  = matches.group(3) or OPT_UNSET_VALUE
@@ -1139,7 +1125,8 @@ class Params(_Hashable):
 			dictopt.push(lastopt, 'dict:')
 		return lastopt
 
-	def _preParseValueCandidate(self, arg, parsed, pendings, lastopt):
+	@classmethod
+	def _preParseValueCandidate(cls, arg, pendings, lastopt):
 		if lastopt:
 			lastopt.push(arg)
 		else:
@@ -1158,7 +1145,7 @@ class Params(_Hashable):
 		for arg in args:
 			lastopt = self._preParseOptionCandidate(arg, parsed, pendings, lastopt) \
 				if arg.startswith('-') \
-				else self._preParseValueCandidate(arg, parsed, pendings, lastopt)
+				else self._preParseValueCandidate(arg, pendings, lastopt)
 		# no options detected at all
 		# all pendings will be used as positional
 		if lastopt is None and pendings:
@@ -1220,7 +1207,7 @@ class Params(_Hashable):
 					continue
 				if name in self._hopts:
 					raise ParamsParseError('__help__')
-				elif name in self._params:
+				if name in self._params:
 					pass
 				elif arbi:
 					self._params[name] = param
@@ -1263,9 +1250,7 @@ class Params(_Hashable):
 		except ParamsParseError as exc:
 			if raise_exc:
 				raise
-			exc = str(exc)
-			if exc == '__help__':
-				exc = ''
+			exc = '' if str(exc) == '__help__' else str(exc)
 			self._help(exc, print_and_exit = True)
 
 	@property
@@ -1779,7 +1764,7 @@ class Commands:
 		for command, names in revcmds.items():
 			if not alias:
 				names = [list(sorted(names, key = len))[-1]]
-			compdesc = command._desc and command._desc[0] or ''
+			compdesc = command._desc[0] if command._desc else ''
 			for name in names:
 				if name in self._hcmd:
 					completions.addCommand(name, compdesc, helpoptions)

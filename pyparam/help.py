@@ -267,7 +267,6 @@ class Helps(OrderedDict):
 
 	remove = delete
 
-	@property
 	def maxOptNameWidth(self, min_optdesc_leading = 5, max_opt_width = 36):
 		"""Calculate the width of option name and type"""
 		ret = 0
