@@ -1,0 +1,14 @@
+-   id: poetry2setuppy
+    name: Convert pyproject.toml to setup.py
+    entry: dephell deps convert --from=poetry --to=setup.py
+    always_run: true
+    exclude: ^.+$
+-   id: poetry2requirements
+    name: Convert pyproject.toml to requirements.txt
+    entry: dephell deps convert --from=poetry --to=requirements.txt
+    always_run: true
+    exclude: ^.+$
+-   id: pytest
+    name: Run pytest
+    entry: pytest
+    files: tests/
