@@ -14,3 +14,9 @@ repos:
     rev: v2.4.4
     hooks:
     -   id: pylint
+# -   repo: https://github.com/pwwang/pyparam
+#     rev: 89f9de5b0f2ab387b6ce3208f892438b9865f2eb
+#     hooks:
+#     -   id: poetry2setuppy
+#     -   id: poetry2requirements
+#     -   id: pytest
