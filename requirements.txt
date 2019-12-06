@@ -1,0 +1,5 @@
+colorama
+completions
+pytest
+pytest-cov
+python-simpleconf

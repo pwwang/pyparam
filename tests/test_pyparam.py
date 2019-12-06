@@ -697,6 +697,12 @@ def test_params_lock():
 	params._locked = True
 	with pytest.raises(ParamNameError):
 		params.a = 2
+	params._locked = False
+	params.a = 2
+	params._locked = True
+	params.c = 3
+	params._locked = True
+	params.c = 3 # should not raise
 	with pytest.raises(ParamNameError):
 		params.b.value = 3
 	with pytest.raises(ParamNameError):

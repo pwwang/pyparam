@@ -2,12 +2,13 @@
 OrderedDict is part _collections Python > 3.5
 We need pure python version of it to implement insertion.
 """
+# pylint: skip-file
 import _collections_abc
 from _weakref import proxy as _proxy
 from reprlib import recursive_repr as _recursive_repr
-class _Link(object):
-	__slots__ = 'prev', 'next', 'key', '__weakref__'
 
+class _Link:
+	__slots__ = 'prev', 'next', 'key', '__weakref__'
 
 class _OrderedDictKeysView(_collections_abc.KeysView):
 
