@@ -911,11 +911,6 @@ class Params(_Hashable):
 				'To change the value of an existing parameter, '
 				'use \'params.{0}.value = xxx\''.format(name))
 		elif name in self._params:
-			if self._locked:
-				raise ParamNameError(
-					'Parameters are locked and parameter {0!r} exists. '
-					'To change the value of an existing parameter, '
-					'use \'params.{0}.value = xxx\''.format(name))
 			self._params[name].value = value
 		elif name in ('_assembler', '_helpx', '_prog', '_lockedkeys'):
 			self._props[name[1:]] = value
