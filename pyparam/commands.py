@@ -5,8 +5,8 @@ from .defaults import (CMD_GLOBAL_OPTPROXY,
                        OPT_POSITIONAL_NAME,
                        OPTIONAL_OPT_TITLE,
                        REQUIRED_OPT_TITLE)
-from .help import HelpAssembler, Helps, HelpOptions
 from .params import Params, ParamsParseError, ParamNameError
+from .help import HelpAssembler, Helps, HelpOptions
 
 class CommandsParseError(Exception):
     """Exception to raise while failed to parse
@@ -310,17 +310,16 @@ class Commands:
 
         ret = []
         if error:
-            if isinstance(error, str):
-                error = error.splitlines()
+            error = error.splitlines() if isinstance(error, str) else error
             ret = [self._assembler.error(err.strip()) for err in error]
 
         ret.extend(self._assembler.assemble(helps))
 
-        if print_and_exit:
-            sys.stderr.write('\n'.join(ret))
-            sys.exit(1)
-        else:
+        if not print_and_exit:
             return '\n'.join(ret)
+
+        sys.stderr.write('\n'.join(ret))
+        sys.exit(1)
 
     def _complete(self,
                   shell,

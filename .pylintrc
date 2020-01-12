@@ -64,7 +64,9 @@ disable=print-statement,
         parameter-unpacking,
         attribute-defined-outside-init,
         protected-access,
-        import-outside-toplevel
+        import-outside-toplevel,
+        cyclic-import,
+        import-error
 
 # Enable the message, report, category or checker with the given id(s). You can
 # either give multiple identifier separated by comma (,) or put this option

@@ -42,7 +42,6 @@ class ParamsParseError(Exception):
 class ParamsLoadError(Exception):
     """Exception to raise while failed to load params from dict/file"""
 
-
 class Param(_Valuable):
     """
     The class for a single parameter
