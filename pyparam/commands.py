@@ -24,17 +24,17 @@ class Commands:
             `theme`: The theme
         """
         self.__dict__['_props'] = dict(
-            _desc     = [],
-            _hcmd     = ['help'],
-            cmds      = OrderedDiot(),
-            inherit   = True,
-            assembler = HelpAssembler(None, theme),
-            helpx     = None,
-            prefix    = prefix
+            _desc=[],
+            _hcmd=['help'],
+            cmds=OrderedDiot(),
+            inherit=True,
+            assembler=HelpAssembler(None, theme),
+            helpx=None,
+            prefix=prefix
         )
         self._cmds[CMD_GLOBAL_OPTPROXY] = Params(None, theme)
         self._cmds[CMD_GLOBAL_OPTPROXY]._prefix = prefix
-        self._cmds[CMD_GLOBAL_OPTPROXY]._hbald  = False
+        self._cmds[CMD_GLOBAL_OPTPROXY]._hbald = False
 
         self._installHelpCommand()
 
@@ -50,7 +50,7 @@ class Commands:
                 raise CommandsParseError('__help__')
             if param.value not in self._cmds:
                 raise CommandsParseError('No such command: %s' % param.value)
-            self._cmds[param.value]._help(print_and_exit = True)
+            self._cmds[param.value]._help(print_and_exit=True)
         helpcmd[OPT_POSITIONAL_NAME].callback = helpPositionalCommandCallback
         for hcmd in self._hcmd:
             self._cmds[hcmd] = helpcmd
@@ -210,7 +210,7 @@ class Commands:
             if not args:
                 raise CommandsParseError('__help__')
             # get which command is hit
-            cmdidx  = None
+            cmdidx = None
             if arbi:
                 # arbitrary mode does not have global options
                 cmdidx = 0
@@ -226,26 +226,26 @@ class Commands:
                 else:
                     raise CommandsParseError('No command given.')
 
-            command      = args[cmdidx]
-            global_args  = args[:cmdidx]
+            command = args[cmdidx]
+            global_args = args[:cmdidx]
             command_args = args[(cmdidx+1):]
             if (self._inherit and command not in self._hcmd):
                 command_opts = self._cmds[command]._parse(
                     global_args + command_args, arbi, dict_wrapper)
                 global_opts = self._cmds[CMD_GLOBAL_OPTPROXY]._dict(
-                                  wrapper=dict_wrapper
-                              )
+                    wrapper=dict_wrapper
+                )
             else:
                 try:
                     global_opts = self._cmds[CMD_GLOBAL_OPTPROXY]._parse(
-                        global_args, arbi, dict_wrapper, raise_exc = True)
+                        global_args, arbi, dict_wrapper, raise_exc=True)
                 except ParamsParseError as exc:
                     raise CommandsParseError(str(exc))
                 command_opts = self._cmds[command]._parse(
-                                   command_args,
-                                   arbi,
-                                   dict_wrapper
-                               )
+                    command_args,
+                    arbi,
+                    dict_wrapper
+                )
 
             return command, command_opts, global_opts
 
@@ -283,7 +283,7 @@ class Commands:
         helps.add('GLOBAL %s' % OPTIONAL_OPT_TITLE,
                   global_opt_items[OPTIONAL_OPT_TITLE])
 
-        helps.add('AVAILABLE COMMANDS', HelpOptions(prefix = ''))
+        helps.add('AVAILABLE COMMANDS', HelpOptions(prefix=''))
 
         revcmds = OrderedDiot()
         for name, command in self._cmds.items():
@@ -322,11 +322,16 @@ class Commands:
         else:
             return '\n'.join(ret)
 
-    def _complete(self, shell, auto = False, inherit = True,
-        withtype = False, alias = True, showonly = True):
+    def _complete(self,
+                  shell,
+                  auto=False,
+                  inherit=True,
+                  withtype=False,
+                  alias=True,
+                  showonly=True):
         from completions import Completions
-        completions = Completions(inherit = inherit,
-                                  desc = self._desc and self._desc[0] or '')
+        completions = Completions(inherit=inherit,
+                                  desc=self._desc and self._desc[0] or '')
         revcmds = OrderedDiot()
         for key, val in self._cmds.items():
             if key == CMD_GLOBAL_OPTPROXY:
@@ -344,7 +349,7 @@ class Commands:
         }
         for command, names in revcmds.items():
             if not alias:
-                names = [list(sorted(names, key = len))[-1]]
+                names = [list(sorted(names, key=len))[-1]]
             compdesc = command._desc[0] if command._desc else ''
             for name in names:
                 if name in self._hcmd:

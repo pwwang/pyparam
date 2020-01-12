@@ -56,13 +56,13 @@ class Param(_Valuable):
         """
         self._value, self._type = Param._typeFromValue(value)
 
-        self._desc     = []
+        self._desc = []
         self._required = False
-        self.show      = True
-        self.name      = name
-        self.default   = self._value
-        self.stacks    = []
-        self.callback  = None
+        self.show = True
+        self.name = name
+        self.default = self._value
+        self.stacks = []
+        self.callback = None
         # should I raise an error if the parameters are locked?
         self._shouldRaise = False
 
@@ -90,7 +90,7 @@ class Param(_Valuable):
                 raise ParamTypeError('Type not allowed: %r' % typename)
         else:
             typename = 'auto'
-            value    = None
+            value = None
         return value, Param._normalizeType(typename)
 
     @staticmethod
@@ -139,7 +139,7 @@ class Param(_Valuable):
                      self.type == other.type))
         return self.value == other
 
-    def push(self, value = OPT_UNSET_VALUE, typename = None):
+    def push(self, value=OPT_UNSET_VALUE, typename=None):
         """
         Push the value to the stack.
         """
@@ -170,7 +170,8 @@ class Param(_Valuable):
                 # typename is 'reset' and self.type is list:list
                 if typename == 'list:list':
                     if origtype == typename and self.value and self.value[0]:
-                        # we don't need to forceType because list:list can't be deducted from value
+                        # we don't need to forceType
+                        # because list:list can't be deducted from value
                         self.stacks.append((typename, self.value[:] + [[]]))
                     else:
                         self.stacks.append((typename, [[]]))
@@ -211,8 +212,8 @@ class Param(_Valuable):
             elif type1 not in ('list', 'dict'):
                 self.stacks.append((typename, []))
             elif (type1 == 'list' and
-                    origtype != typename and
-                    not self.stacks[-1][-1]):
+                  origtype != typename and
+                  not self.stacks[-1][-1]):
                 # previous is reset
                 self.stacks[-1] = (typename, [])
 
@@ -220,7 +221,7 @@ class Param(_Valuable):
             self.push(value)
         else:
             if not self.stacks:
-                self.push(value, typename = True)
+                self.push(value, typename=True)
             elif value != OPT_UNSET_VALUE:
                 type2 = origtype.split(':')[1]
                 prevalue = self.stacks[-1][-1][-1] \
@@ -336,7 +337,9 @@ class Param(_Valuable):
             )
         if self.type == 'bool:':
             raise ParamTypeError(
-                self.value, 'Bool option %r cannot be set as required' % self.name)
+                self.value,
+                'Bool option %r cannot be set as required' % self.name
+            )
         # try remove default: in desc if self.value is None
         if self._desc and self._desc[-1].endswith('Default: None'):
             self._desc[-1] = self._desc[-1][:-13].rstrip()
@@ -541,7 +544,7 @@ class Param(_Valuable):
         self.callback = callback
         return self
 
-    def setShow (self, show = True):
+    def setShow(self, show=True):
         """
         Set whether this parameter should be shown in help information
         @params:
@@ -578,18 +581,18 @@ class Params(_Hashable):
         prog = path.basename(sys.argv[0])
         prog = prog + ' ' + command if command else prog
         self.__dict__['_props'] = dict(
-            prog       = prog,
-            usage      = [],
-            desc       = [],
-            hopts      = ['h', 'help', 'H'],
-            prefix     = 'auto',
-            hbald      = True,
-            assembler  = HelpAssembler(prog, theme),
-            helpx      = None,
-            locked     = False,
-            lockedkeys = []
+            prog=prog,
+            usage=[],
+            desc=[],
+            hopts=['h', 'help', 'H'],
+            prefix='auto',
+            hbald=True,
+            assembler=HelpAssembler(prog, theme),
+            helpx=None,
+            locked=False,
+            lockedkeys=[]
         )
-        self.__dict__['_params']    = OrderedDict()
+        self.__dict__['_params'] = OrderedDict()
         self._setHopts(self._hopts)
 
     def __setattr__(self, name, value):
@@ -745,7 +748,7 @@ class Params(_Hashable):
 
     def __repr__(self):
         return '<Params({}) @ {}>'.format(','.join(
-            '{name}:{p.value!r}'.format(name = key, p = param)
+            '{name}:{p.value!r}'.format(name=key, p=param)
             for key, param in self._params.items()
         ), hex(id(self)))
 
@@ -765,21 +768,21 @@ class Params(_Hashable):
         # abc.x:list
         argnoprefix = arg.lstrip('-')
         # abc
-        argoptname  = re.split(r'[.:=]', argnoprefix)[0]
+        argoptname = re.split(r'[.:=]', argnoprefix)[0]
         # False
-        argshort    = len(argoptname) <= 1
+        argshort = len(argoptname) <= 1
         # --
-        argprefix   = arg[:-len(argnoprefix)] if argnoprefix else arg
+        argprefix = arg[:-len(argnoprefix)] if argnoprefix else arg
 
         # impossible an option
         # ---a
         # self.prefix == '-'    : --abc
         # self.prefix == '--'   : -abc
         # self.prefix == 'auto' : --a
-        if len(argprefix) > 2 or \
-            (self._prefix == '-' and argprefix == '--') or \
-            (self._prefix == '--' and argprefix == '-') or \
-            (self._prefix == 'auto' and argprefix == '--' and argshort):
+        if (len(argprefix) > 2 or
+                (self._prefix == '-' and argprefix == '--') or
+                (self._prefix == '--' and argprefix == '-') or
+                (self._prefix == 'auto' and argprefix == '--' and argshort)):
             return self._preParseValueCandidate(arg, pendings, lastopt)
 
         # if a, b and c are defined as bool types, then it should be parsed as
@@ -788,12 +791,12 @@ class Params(_Hashable):
         #	# 'abc' is not defined
         if ((self._prefix in ('auto', '-') and
              argprefix == '-' and len(argoptname) > 1) and
-            (self._prefix != '-' or argoptname not in self._params) and
-             '=' not in argnoprefix):
+                (self._prefix != '-' or argoptname not in self._params) and
+                '=' not in argnoprefix):
             # -abc:bool
             if ((':' not in argnoprefix or
-                    argnoprefix.endswith(':bool')) and
-                 self._allFlags(argoptname)):
+                 argnoprefix.endswith(':bool')) and
+                    self._allFlags(argoptname)):
                 for opt in list(argoptname):
                     parsed[opt] = self._params[opt]
                     parsed[opt].push(True, 'bool:')
@@ -803,10 +806,10 @@ class Params(_Hashable):
             #   otherwise it will be parsed as {'a': {'': ...}}
             # -a1:int is also allowed
             if (argoptname[0] in self._params and
-                (argoptname[1] != '.' or
-                 self._params[argoptname[0]].type != 'dict:')):
+                    (argoptname[1] != '.' or
+                     self._params[argoptname[0]].type != 'dict:')):
                 argname = argoptname[0]
-                argval  = argoptname[1:]
+                argval = argoptname[1:]
                 argtype = argnoprefix.split(':', 1)[1] \
                           if ':' in argnoprefix \
                           else True
@@ -824,7 +827,7 @@ class Params(_Hashable):
             return self._preParseValueCandidate(arg, pendings, lastopt)
         argname = matches.group(1) or OPT_POSITIONAL_NAME
         argtype = matches.group(2)
-        argval  = matches.group(3) or OPT_UNSET_VALUE
+        argval = matches.group(3) or OPT_UNSET_VALUE
 
         if argname not in parsed:
             lastopt = parsed[argname] = self._params[argname] \
@@ -862,9 +865,9 @@ class Params(_Hashable):
         Parse the arguments from command line
         Don't coerce the types and values yet.
         """
-        parsed   = OrderedDict()
+        parsed = OrderedDict()
         pendings = []
-        lastopt  = None
+        lastopt = None
 
         for arg in args:
             lastopt = self._preParseOptionCandidate(arg,
@@ -895,8 +898,8 @@ class Params(_Hashable):
                     len(lastopt.stacks[-1][1]) < 2):
                 posvalues = []
             elif (lastopt.stacks[-1][0] == 'bool:' and
-                    lastopt.stacks[-1][1] and
-                    not re.match(OPT_BOOL_PATTERN, lastopt.stacks[-1][1][0])):
+                  lastopt.stacks[-1][1] and
+                  not re.match(OPT_BOOL_PATTERN, lastopt.stacks[-1][1][0])):
                 posvalues = lastopt.stacks[-1][1]
                 lastopt.stacks[-1] = (lastopt.stacks[-1][0], [])
             else:
@@ -941,7 +944,7 @@ class Params(_Hashable):
             if not args and self._hbald and not arbi:
                 raise ParamsParseError('__help__')
             parsed, pendings = self._preParse(args)
-            warns  = ['Unrecognized value: %r' % pend for pend in pendings]
+            warns = ['Unrecognized value: %r' % pend for pend in pendings]
             # check out dict options first
             for name, param in parsed.items():
                 if '.' in name:
@@ -1008,7 +1011,7 @@ class Params(_Hashable):
             if raise_exc:
                 raise
             exc = '' if str(exc) == '__help__' else str(exc)
-            self._help(exc, print_and_exit = True)
+            self._help(exc, print_and_exit=True)
 
     @property
     def _helpitems(self):
@@ -1039,11 +1042,15 @@ class Params(_Hashable):
         # allow 2 {prog}s
         maxusagelen = MAX_PAGE_WIDTH - (len(self._prog.split()[0]) - 6)*2 - 10
         if self._usage:
-            helps['USAGE'].add(sum((wraptext(
+            helps['USAGE'].add(sum(
                 # allow 2 program names with more than 6 chars each in one usage
                 # 10 chars for backup.
-                usage, maxusagelen, subsequent_indent='  ')
-                for usage in self._props['usage']), []))
+                (wraptext(usage,
+                          maxusagelen,
+                          subsequent_indent='  ')
+                 for usage in self._props['usage']),
+                []
+            ))
         else: # default usage
             defusage = '{prog}'
             for param, names in required_params.items():

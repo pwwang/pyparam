@@ -52,7 +52,7 @@ class _Valuable:
         """Return the value in str type"""
         return str(self.value)
 
-    def int(self, raise_exc = True):
+    def int(self, raise_exc=True):
         """Return the value in int type"""
         try:
             return int(self.value)
@@ -61,7 +61,7 @@ class _Valuable:
                 raise
             return None
 
-    def float(self, raise_exc = True):
+    def float(self, raise_exc=True):
         """Return the value in float type"""
         try:
             return float(self.value)
@@ -122,7 +122,8 @@ class _Hashable:
         """
         return not self.__eq__(other)
 
-def wraptext(text, width = 70, **kwargs):
+def wraptext(text, width=70, **kwargs):
+    """Wrap a text"""
     width -= 2 # for ending ' \'
     # keep the indentation
     # '  - hello world' =>

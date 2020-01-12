@@ -1,16 +1,20 @@
 """Help stuff for help message"""
 import sys
 import re
-import colorama
 from os import path
+import colorama
 from diot import OrderedDiot
-from .defaults import THEMES, OPT_POSITIONAL_NAME, MAX_PAGE_WIDTH, MIN_OPTDESC_LEADING, MAX_OPT_WIDTH
+from .defaults import (THEMES,
+                       OPT_POSITIONAL_NAME,
+                       MAX_PAGE_WIDTH,
+                       MIN_OPTDESC_LEADING,
+                       MAX_OPT_WIDTH)
 from .utils import wraptext
 
 class NotAnOptionException(Exception):
     """Raises while item is not an option"""
 
-def _match(selector, item, regex = False):
+def _match(selector, item, regex=False):
     if isinstance(selector, str):
         if regex:
             selector = re.compile(selector, re.IGNORECASE)
@@ -18,11 +22,14 @@ def _match(selector, item, regex = False):
             selector = re.compile(selector[1:-1], re.IGNORECASE)
 
     if hasattr(selector, 'search'):
-        return bool(selector.search(item[0] if isinstance(item, tuple) else item))
+        return bool(selector.search(item[0] if isinstance(item, tuple) \
+                                            else item))
 
     if isinstance(item, tuple):
-        items = item[0].split(' | ') if ' | ' in item[0] else item[0].split(', ')
-        items = [it.lower() for it in items] + [it.lstrip('-').lower() for it in items]
+        items = item[0].split(' | ') if ' | ' in item[0] \
+                                     else item[0].split(', ')
+        items = [it.lower() for it in items] + [it.lstrip('-').lower()
+                                                for it in items]
         return selector.lower() in items
     return selector.lower() in item.lower()
 
@@ -44,7 +51,7 @@ class HelpItems(list):
         self.extend(item)
         return self
 
-    def query(self, selector, regex = False):
+    def query(self, selector, regex=False):
         """Get the index of the matched item"""
         for i, item in enumerate(self):
             if _match(selector, item, regex):
@@ -106,12 +113,14 @@ class HelpOptions(HelpItems):
         if isinstance(item, list):
             return [self._tupleToOption(it) for it in item]
         if not isinstance(item, tuple) or len(item) != 3:
-            raise NotAnOptionException('Expect a 3-element tuple as an option item in help page.')
+            raise NotAnOptionException(
+                'Expect a 3-element tuple as an option item in help page.'
+            )
         if not isinstance(item[2], HelpOptionDescriptions):
             return (item[0], item[1], HelpOptionDescriptions(item[2]))
         return item
 
-    def addParam(self, param, aliases = None, ishelp = False):
+    def addParam(self, param, aliases=None, ishelp=False):
         """Add a param"""
         aliases = aliases or []
         aliases.append(param.name)
@@ -119,36 +128,46 @@ class HelpOptions(HelpItems):
         if param.type == 'verbose:':
             aliases[aliases.index(param.name)] = '-' + '|'.join(
                 param.name * (i+1) for i in range(3))
-        paramtype = '<VERBOSITY>' if param.type == 'verbose:' and len(aliases) > 1 \
-            else '' if ishelp or (param.type == 'verbose:' and len(aliases) == 1) \
-            else '[BOOL]' if param.type == 'bool:' \
-            else '' if not param.type \
-            else '<AUTO>' if param.type == 'NoneType' \
-            else '<%s>' % param.type.rstrip(':').upper()
+        paramtype = '<VERBOSITY>' \
+                    if param.type == 'verbose:' and len(aliases) > 1 \
+                    else '' \
+                    if ishelp or (param.type == 'verbose:' and
+                                  len(aliases) == 1) \
+                    else '[BOOL]' \
+                    if param.type == 'bool:' \
+                    else '' \
+                    if not param.type \
+                    else '<AUTO>' \
+                    if param.type == 'NoneType' \
+                    else '<%s>' % param.type.rstrip(':').upper()
         paramdesc = param.desc[:]
         if ishelp and paramdesc and paramdesc[-1].endswith('Default: False'):
             paramdesc[-1] = paramdesc[-1][:-14].rstrip(' ')
             if not paramdesc[-1]:
                 del paramdesc[-1]
         return self.add((
-            ', '.join(self._prefixName(alias) if alias != OPT_POSITIONAL_NAME else 'POSITIONAL'
-                for alias in sorted(aliases, key = lambda alia: (
-                    0 if '|' in alia else len(alia) , [
-                    # try to lower case first
-                    a.lower() + '1' if a.isupper() else a for a in list(alia)]
-                ) )),
-            paramtype, paramdesc))
+            ', '.join(self._prefixName(alias) if alias != OPT_POSITIONAL_NAME \
+                                              else 'POSITIONAL'
+                      for alias in sorted(aliases, key=lambda alia: (
+                          0 if '|' in alia else len(alia),
+                          # try to lower case first
+                          [a.lower() + '1' if a.isupper() else a
+                           for a in list(alia)]
+                      ))),
+            paramtype,
+            paramdesc))
 
-    def addCommand(self, params, aliases, ishelp = False):
+    def addCommand(self, params, aliases, ishelp=False):
         """Add a set of params"""
         cmdtype = '[COMMAND]' if ishelp else ''
         return self.add((
-            ' | '.join(sorted(set(aliases), key = lambda alias: (len(alias), alias))),
+            ' | '.join(sorted(set(aliases),
+                              key=lambda alias: (len(alias), alias))),
             cmdtype,
             params['_desc'] if ishelp else params._desc
         ))
 
-    def add(self, item, aliases = None, ishelp = False): # pylint: disable=arguments-differ
+    def add(self, item, aliases=None, ishelp=False): # pylint: disable=arguments-differ
         from . import Param, Params
         if isinstance(item, Param):
             self.addParam(item, aliases, ishelp)
@@ -187,11 +206,13 @@ class HelpOptions(HelpItems):
         """Tell whether options are mixed with short and long ones
         check only if first option has a short name.
         """
-        firstopts = [item[0] for item in self
-            if item[0].startswith('-') and '|' not in item[0]]
+        firstopts = [item[0]
+                     for item in self
+                     if item[0].startswith('-') and '|' not in item[0]]
         if not firstopts or firstopts[0].startswith('--'):
             return False
-        _, mixed = divmod(sum([opt[:2].count('-') for opt in firstopts]), len(firstopts))
+        _, mixed = divmod(sum([opt[:2].count('-') for opt in firstopts]),
+                          len(firstopts))
         return bool(mixed)
 
     def fixMixed(self):
@@ -231,17 +252,20 @@ class Helps(OrderedDiot):
         except NotAnOptionException:
             return HelpItems(*args, **kwargs)
 
-    def query(self, selector, regex = False):
+    def query(self, selector, regex=False):
         """Get the  key matching the selector"""
         for key in self:
             if _match(selector, key, regex):
                 return key
-        raise ValueError('No section found by selector: %r\n- Available sections:\n  %s' % (
-            selector, '\n  '.join(self.keys())))
+        raise ValueError('No section found by selector: %r\n'
+                         '- Available sections:\n  %s' % (
+                             selector,
+                             '\n  '.join(self.keys())
+                         ))
 
-    def select(self, selector, regex = False):
+    def select(self, selector, regex=False):
         """Select the selection of the  key matching the selector"""
-        return self[self.query(selector, regex = regex)]
+        return self[self.query(selector, regex=regex)]
 
     def add(self, section, *args, **kwargs):
         """Add a selection"""
@@ -263,15 +287,15 @@ class Helps(OrderedDiot):
         self.insert_after(key, (section, sectionobj))
         return self
 
-    def delete(self, selector, regex = False):
+    def delete(self, selector, regex=False):
         """Delete the section titile matching selector"""
-        key = self.query(selector, regex = regex)
+        key = self.query(selector, regex=regex)
         del self[key]
         return self
 
     remove = delete
 
-    def maxOptNameWidth(self, min_optdesc_leading = 5, max_opt_width = 36):
+    def maxOptNameWidth(self, min_optdesc_leading=5, max_opt_width=36):
         """Calculate the width of option name and type"""
         ret = 0
 
@@ -281,28 +305,32 @@ class Helps(OrderedDiot):
 
             # 3 = <first 2 spaces: 2> +
             #     <gap between name and type: 1> +
-            itemlens = [len(it[0] + it[1]) + min_optdesc_leading + 3
-                    for it in item
-                    if len(it[0] + it[1]) + min_optdesc_leading + 3 <= max_opt_width]
+            itemlens = [
+                len(it[0] + it[1]) + min_optdesc_leading + 3
+                for it in item
+                if len(it[0] + it[1]) + min_optdesc_leading + 3 <= max_opt_width
+            ]
             ret = ret if not itemlens else max(ret, max(itemlens))
         return ret or max_opt_width
 
 
 class HelpAssembler:
     """A helper class to help assembling the help information page."""
-    def __init__(self, prog = None, theme = 'default'):
+    def __init__(self, prog=None, theme='default'):
         """
         Constructor
         @params:
             `prog`: The program name
-            `theme`: The theme. Could be a name of `THEMES`, or a dict of a custom theme.
+            `theme`: The theme. Could be a name of `THEMES`,
+                or a dict of a custom theme.
         """
         self.progname = prog or path.basename(sys.argv[0])
-        self.theme    = THEMES['default'].copy()
+        self.theme = THEMES['default'].copy()
         if theme != 'default':
-            self.theme.update(theme if isinstance(theme, dict) else THEMES[theme])
+            self.theme.update(theme if isinstance(theme, dict) \
+                                    else THEMES[theme])
 
-    def error(self, msg, with_prefix = True):
+    def error(self, msg, with_prefix=True):
         """
         Render an error message
         @params:
@@ -310,13 +338,13 @@ class HelpAssembler:
         """
         msg = msg.replace('{prog}', self.prog(self.progname))
         return '{colorstart}{prefix}{msg}{colorend}'.format(
-            colorstart = self.theme['error'],
-            prefix     = 'Error: ' if with_prefix else '',
-            msg        = msg,
-            colorend   = colorama.Style.RESET_ALL
+            colorstart=self.theme['error'],
+            prefix='Error: ' if with_prefix else '',
+            msg=msg,
+            colorend=colorama.Style.RESET_ALL
         )
 
-    def warning(self, msg, with_prefix = True):
+    def warning(self, msg, with_prefix=True):
         """
         Render an warning message
         @params:
@@ -324,28 +352,28 @@ class HelpAssembler:
         """
         msg = msg.replace('{prog}', self.prog(self.progname))
         return '{colorstart}{prefix}{msg}{colorend}'.format(
-            colorstart = self.theme['warning'],
-            prefix     = 'Warning: ' if with_prefix else '',
-            msg        = msg,
-            colorend   = colorama.Style.RESET_ALL
+            colorstart=self.theme['warning'],
+            prefix='Warning: ' if with_prefix else '',
+            msg=msg,
+            colorend=colorama.Style.RESET_ALL
         )
 
     warn = warning
 
-    def title(self, msg, with_colon = True):
+    def title(self, msg, with_colon=True):
         """
         Render an section title
         @params:
             `msg`: The section title
         """
         return '{colorstart}{msg}{colorend}{colon}'.format(
-            colorstart = self.theme['title'],
-            msg        = msg.capitalize(),
-            colorend   = colorama.Style.RESET_ALL,
-            colon      = ':' if with_colon else ''
+            colorstart=self.theme['title'],
+            msg=msg.capitalize(),
+            colorend=colorama.Style.RESET_ALL,
+            colon=':' if with_colon else ''
         )
 
-    def prog(self, prog = None):
+    def prog(self, prog=None):
         """
         Render the program name
         @params:
@@ -354,9 +382,9 @@ class HelpAssembler:
         if prog is None:
             prog = self.progname
         return '{colorstart}{prog}{colorend}'.format(
-            colorstart = self.theme['prog'],
-            prog       = prog,
-            colorend   = colorama.Style.RESET_ALL
+            colorstart=self.theme['prog'],
+            prog=prog,
+            colorend=colorama.Style.RESET_ALL
         )
 
     def plain(self, msg):
@@ -367,17 +395,17 @@ class HelpAssembler:
         """
         return msg.replace('{prog}', self.prog(self.progname))
 
-    def optname(self, msg, prefix = '  '):
+    def optname(self, msg, prefix='  '):
         """
         Render the option name
         @params:
             `msg`: The option name
         """
         return '{colorstart}{prefix}{msg}{colorend}'.format(
-            colorstart = self.theme['optname'],
-            prefix     = prefix,
-            msg        = msg,
-            colorend   = colorama.Style.RESET_ALL
+            colorstart=self.theme['optname'],
+            prefix=prefix,
+            msg=msg,
+            colorend=colorama.Style.RESET_ALL
         )
 
     def opttype(self, msg):
@@ -390,13 +418,13 @@ class HelpAssembler:
         if not trimmedmsg:
             return msg
         return '{colorstart}{msg}{colorend}'.format(
-            colorstart = self.theme['opttype'],
-            msg        = trimmedmsg,
-            colorend   = colorama.Style.RESET_ALL
+            colorstart=self.theme['opttype'],
+            msg=trimmedmsg,
+            colorend=colorama.Style.RESET_ALL
         ) + ' ' * (len(msg) - len(trimmedmsg))
 
     @staticmethod
-    def defaultIndex(msg, defaults = 'DEFAULT: ,Default: ,default: '):
+    def defaultIndex(msg, defaults='DEFAULT: ,Default: ,default: '):
         """Try to find the index of the default indicator"""
         if not isinstance(defaults, list):
             defaults = defaults.split(',')
@@ -406,7 +434,7 @@ class HelpAssembler:
                 return dindex
         return -1
 
-    def optdesc(self, msg, first = False, alldefault = False):
+    def optdesc(self, msg, first=False, alldefault=False):
         """
         Render the option descriptions
         @params:
@@ -416,41 +444,44 @@ class HelpAssembler:
         msg = msg.replace('{prog}', self.prog(self.progname))
         if alldefault:
             return '{prefix}{colorstart}{msg}{colorend}'.format(
-                prefix     = '- ' if first else '  ',
-                colorstart = self.theme['default'],
-                msg        = msg,
-                colorend   = colorama.Style.RESET_ALL
+                prefix='- ' if first else '  ',
+                colorstart=self.theme['default'],
+                msg=msg,
+                colorend=colorama.Style.RESET_ALL
             )
 
         default_index = HelpAssembler.defaultIndex(msg)
 
         if default_index != -1:
             defaults = '{colorstart}{defaults}{colorend}'.format(
-                colorstart = self.theme['default'],
-                defaults   = msg[default_index:],
-                colorend   = colorama.Style.RESET_ALL
+                colorstart=self.theme['default'],
+                defaults=msg[default_index:],
+                colorend=colorama.Style.RESET_ALL
             )
             msg = msg[:default_index] + defaults
 
         return '{prefix}{colorstart}{msg}{colorend}'.format(
-            prefix     = '- ' if first else '  ',
-            colorstart = self.theme['optdesc'],
-            msg        = msg,
-            colorend   = colorama.Style.RESET_ALL
+            prefix='- ' if first else '  ',
+            colorstart=self.theme['optdesc'],
+            msg=msg,
+            colorend=colorama.Style.RESET_ALL
         )
 
-    def assemble(self, helps, min_optdesc_leading = 5, max_opt_width = 36):
+    def assemble(self, helps, min_optdesc_leading=5, max_opt_width=36):
         """
         Assemble the whole help page.
         @params:
-            `helps`: The help items. A list with plain strings or tuples of 3 elements, which
-                will be treated as option name, option type/placeholder and option descriptions.
+            `helps`: The help items.
+                A list with plain strings or tuples of 3 elements, which
+                will be treated as option name,
+                option type/placeholder and option descriptions.
             `progname`: The program name used to replace '{prog}' with.
         @returns:
             lines (`list`) of the help information.
         """
         ret = []
-        maxoptnamewith = helps.maxOptNameWidth(min_optdesc_leading, max_opt_width)
+        maxoptnamewith = helps.maxOptNameWidth(min_optdesc_leading,
+                                               max_opt_width)
 
         for title, helpitems in helps.items():
             if not helpitems:
@@ -460,19 +491,31 @@ class HelpAssembler:
             if isinstance(helpitems, HelpOptions):
                 for optname, opttype, optdescs in helpitems:
                     descs = sum((wraptext(desc, MAX_PAGE_WIDTH - maxoptnamewith)
-                                if not desc.endswith(' \\') else [desc]
-                                for desc in optdescs), [])
+                                 if not desc.endswith(' \\') else [desc]
+                                 for desc in optdescs), [])
                     if descs:
                         descs[-1] = descs[-1].rstrip(' \\')
-                    if len(optname + opttype) + MIN_OPTDESC_LEADING + 3 > MAX_OPT_WIDTH:
+                    if len(
+                            optname + opttype
+                    ) + MIN_OPTDESC_LEADING + 3 > MAX_OPT_WIDTH:
                         ret.append(
-                            self.optname(optname, prefix = '  ') + ' ' + self.opttype(opttype))
+                            self.optname(optname, prefix='  ') + \
+                            ' ' + \
+                            self.opttype(opttype)
+                        )
                         if descs:
-                            ret.append(' ' * maxoptnamewith + self.optdesc(descs[0], True))
+                            ret.append(
+                                ' ' * maxoptnamewith + \
+                                self.optdesc(descs[0], True)
+                            )
                     else:
-                        to_append = self.optname(optname, prefix = '  ') + ' ' + \
+                        to_append = self.optname(optname, prefix='  ') + \
+                                    ' ' + \
                                     self.opttype(
-                                        opttype.ljust(maxoptnamewith - len(optname) - 3))
+                                        opttype.ljust(
+                                            maxoptnamewith - len(optname) - 3
+                                        )
+                                    )
                         if descs:
                             to_append += self.optdesc(descs[0], True)
                         ret.append(to_append)
@@ -482,10 +525,12 @@ class HelpAssembler:
                         ends = desc0.endswith(' \\')
                     for desc in descs:
                         if default_index != -1 and ends:
-                            ret.append(' ' * maxoptnamewith + \
-                                self.optdesc(desc, alldefault = True))
+                            ret.append(' ' * maxoptnamewith +
+                                       self.optdesc(desc, alldefault=True))
                         else:
-                            ret.append(' ' * maxoptnamewith + self.optdesc(desc))
+                            ret.append(
+                                ' ' * maxoptnamewith + self.optdesc(desc)
+                            )
                             default_index = HelpAssembler.defaultIndex(desc)
                             ends = desc.endswith(' \\')
                 ret.append('')
@@ -494,7 +539,9 @@ class HelpAssembler:
                     if item.endswith(' \\'):
                         ret.append('  ' + self.plain(item))
                     else:
-                        ret.extend(self.plain(it) for it in wraptext('  ' + item, MAX_PAGE_WIDTH))
+                        ret.extend(self.plain(it)
+                                   for it in wraptext('  ' + item,
+                                                      MAX_PAGE_WIDTH))
                 ret.append('')
 
         ret.append('')
