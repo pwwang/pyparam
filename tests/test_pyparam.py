@@ -2,11 +2,11 @@ from collections import OrderedDict
 import re
 import pytest
 import colorama
-from pyparam.help import Helps, HelpOptions, HelpItems
-from pyparam import HelpAssembler, MAX_PAGE_WIDTH, MAX_OPT_WIDTH, \
-	Param, Params, params, commands, ParamNameError, ParamTypeError, \
-	ParamsParseError, ParamsLoadError, OPT_UNSET_VALUE, OPT_POSITIONAL_NAME, \
-	Commands, CommandsParseError
+from pyparam.help import Helps, HelpOptions, HelpItems, HelpAssembler
+from pyparam.defaults import MAX_PAGE_WIDTH, MAX_OPT_WIDTH, OPT_UNSET_VALUE, OPT_POSITIONAL_NAME
+from pyparam.commands import Commands, CommandsParseError
+from pyparam.params import Param, Params, ParamsParseError, ParamsLoadError, ParamTypeError, ParamNameError
+from pyparam import params, commands
 
 def striphelp(msg):
 	msg = re.sub(r'\x1B\[[0-?]*[ -/]*[@-~]', '', msg.strip())
@@ -1202,6 +1202,7 @@ def test_commands_help(capsys):
 	commands.cmd1 = 'Comman 1'
 	commands.alongcommand = 'A long command'
 	commands.cmd2 = commands.cmd1
+	print(commands._help())
 	assert striphelp(commands._help()) == "Usage: program <command> [OPTIONS] Global optional options: -h, -H, --help - Show help message and exit. Available commands: cmd1 | cmd2 - Comman 1 alongcommand - A long command help [COMMAND] - Print help message for the command and exit."
 
 	commands._helpx = lambda items: items.add('Additional', HelpItems()).select('/Addi/').add('demo')
