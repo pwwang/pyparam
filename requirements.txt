@@ -1,5 +1,6 @@
 colorama
 completions
+diot
 pygments
 pytest
 pytest-cov

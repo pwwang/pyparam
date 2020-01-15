@@ -298,8 +298,8 @@ def test_param_desc():
 	assert param.desc == ['[No description]']
 
 	param = Param('name', 'default')
-	assert param.desc == ["Default: 'default'"]
-	assert param.desc == ["Default: 'default'"]
+	assert param.desc == ["Default: default"]
+	assert param.desc == ["Default: default"]
 
 
 
@@ -1053,7 +1053,7 @@ def test_params_help(capsys):
 
 	params.optional = 'default'
 	assert striphelp(params._help()) == 'Usage: program [OPTIONS] Optional options: --optional <STR> ' + \
-		"- Default: 'default' -h, -H, --help " + \
+		"- Default: default -h, -H, --help " + \
 		'- Show help message and exit.'
 	params.r.required = True
 	params.r.type = 'NoneType'
@@ -1068,28 +1068,28 @@ def test_params_help(capsys):
 	params.req722222222 = params.r
 	params.opt = params.optional
 	params.opt2 = 1
-	assert striphelp(params._help()) == "Usage: program <-r NONETYPE> <--req2 AUTO> [OPTIONS] Required options: -r, --req3, --req4, --req5, --req6, --req7, --req73333, --req722222, --req722222222 <NONETYPE> - [No description] --req2 <AUTO> - [No description] Optional options: --opt, --optional <STR> - Default: 'default' --opt2 <INT> - Default: 1 -h, -H, --help - Show help message and exit."
+	assert striphelp(params._help()) == "Usage: program <-r NONETYPE> <--req2 AUTO> [OPTIONS] Required options: -r, --req3, --req4, --req5, --req6, --req7, --req73333, --req722222, --req722222222 <NONETYPE> - [No description] --req2 <AUTO> - [No description] Optional options: --opt, --optional <STR> - Default: default --opt2 <INT> - Default: 1 -h, -H, --help - Show help message and exit."
 
 	params._usage = '{prog} <-this THIS> <-is IS> <-a A> <-very VERY> <-very VERY>' + \
 		' <-very VERY> <-very VERY> <-very VERY> <-very VERY> <-very VERY> <-long LONG>' + \
 		' <-usage Usage>'
-	assert striphelp(params._help()) == "Usage: program <-this THIS> <-is IS> <-a A> <-very VERY> <-very VERY> <-very VERY> <-very \\ VERY> <-very VERY> <-very VERY> <-very VERY> <-long LONG> <-usage Usage> Required options: -r, --req3, --req4, --req5, --req6, --req7, --req73333, --req722222, --req722222222 <NONETYPE> - [No description] --req2 <AUTO> - [No description] Optional options: --opt, --optional <STR> - Default: 'default' --opt2 <INT> - Default: 1 -h, -H, --help - Show help message and exit."
+	assert striphelp(params._help()) == "Usage: program <-this THIS> <-is IS> <-a A> <-very VERY> <-very VERY> <-very VERY> <-very \\ VERY> <-very VERY> <-very VERY> <-very VERY> <-long LONG> <-usage Usage> Required options: -r, --req3, --req4, --req5, --req6, --req7, --req73333, --req722222, --req722222222 <NONETYPE> - [No description] --req2 <AUTO> - [No description] Optional options: --opt, --optional <STR> - Default: default --opt2 <INT> - Default: 1 -h, -H, --help - Show help message and exit."
 
 	params._ = ['positional']
 	params._usage = []
-	assert striphelp(params._help()) == "Usage: program <-r NONETYPE> <--req2 AUTO> [OPTIONS] [POSITIONAL] Required options: -r, --req3, --req4, --req5, --req6, --req7, --req73333, --req722222, --req722222222 <NONETYPE> - [No description] --req2 <AUTO> - [No description] Optional options: --opt, --optional <STR> - Default: 'default' --opt2 <INT> - Default: 1 -h, -H, --help - Show help message and exit. POSITIONAL <LIST> - Default: ['positional']"
+	assert striphelp(params._help()) == "Usage: program <-r NONETYPE> <--req2 AUTO> [OPTIONS] [POSITIONAL] Required options: -r, --req3, --req4, --req5, --req6, --req7, --req73333, --req722222, --req722222222 <NONETYPE> - [No description] --req2 <AUTO> - [No description] Optional options: --opt, --optional <STR> - Default: default --opt2 <INT> - Default: 1 -h, -H, --help - Show help message and exit. POSITIONAL <LIST> - Default: ['positional']"
 
 	params._.required = True
 	params._desc = 'An example description'
-	assert striphelp(params._help()) == "Description: An example description Usage: program <-r NONETYPE> <--req2 AUTO> [OPTIONS] POSITIONAL Required options: -r, --req3, --req4, --req5, --req6, --req7, --req73333, --req722222, --req722222222 <NONETYPE> - [No description] --req2 <AUTO> - [No description] POSITIONAL <LIST> - Default: ['positional'] Optional options: --opt, --optional <STR> - Default: 'default' --opt2 <INT> - Default: 1 -h, -H, --help - Show help message and exit."
+	assert striphelp(params._help()) == "Description: An example description Usage: program <-r NONETYPE> <--req2 AUTO> [OPTIONS] POSITIONAL Required options: -r, --req3, --req4, --req5, --req6, --req7, --req73333, --req722222, --req722222222 <NONETYPE> - [No description] --req2 <AUTO> - [No description] POSITIONAL <LIST> - Default: ['positional'] Optional options: --opt, --optional <STR> - Default: default --opt2 <INT> - Default: 1 -h, -H, --help - Show help message and exit."
 
 	params._helpx = lambda items: items.add('helpx', HelpItems()).select('helpx').add('helpx demo')
-	assert striphelp(params._help(error = 'example error')) == "Error: example error Description: An example description Usage: program <-r NONETYPE> <--req2 AUTO> [OPTIONS] POSITIONAL Required options: -r, --req3, --req4, --req5, --req6, --req7, --req73333, --req722222, --req722222222 <NONETYPE> - [No description] --req2 <AUTO> - [No description] POSITIONAL <LIST> - Default: ['positional'] Optional options: --opt, --optional <STR> - Default: 'default' --opt2 <INT> - Default: 1 -h, -H, --help - Show help message and exit. Helpx: helpx demo"
+	assert striphelp(params._help(error = 'example error')) == "Error: example error Description: An example description Usage: program <-r NONETYPE> <--req2 AUTO> [OPTIONS] POSITIONAL Required options: -r, --req3, --req4, --req5, --req6, --req7, --req73333, --req722222, --req722222222 <NONETYPE> - [No description] --req2 <AUTO> - [No description] POSITIONAL <LIST> - Default: ['positional'] Optional options: --opt, --optional <STR> - Default: default --opt2 <INT> - Default: 1 -h, -H, --help - Show help message and exit. Helpx: helpx demo"
 
 	with pytest.raises(SystemExit):
 		params._help(print_and_exit = True)
 
-	assert striphelp(capsys.readouterr().err) == "Description: An example description Usage: program <-r NONETYPE> <--req2 AUTO> [OPTIONS] POSITIONAL Required options: -r, --req3, --req4, --req5, --req6, --req7, --req73333, --req722222, --req722222222 <NONETYPE> - [No description] --req2 <AUTO> - [No description] POSITIONAL <LIST> - Default: ['positional'] Optional options: --opt, --optional <STR> - Default: 'default' --opt2 <INT> - Default: 1 -h, -H, --help - Show help message and exit. Helpx: helpx demo"
+	assert striphelp(capsys.readouterr().err) == "Description: An example description Usage: program <-r NONETYPE> <--req2 AUTO> [OPTIONS] POSITIONAL Required options: -r, --req3, --req4, --req5, --req6, --req7, --req73333, --req722222, --req722222222 <NONETYPE> - [No description] --req2 <AUTO> - [No description] POSITIONAL <LIST> - Default: ['positional'] Optional options: --opt, --optional <STR> - Default: default --opt2 <INT> - Default: 1 -h, -H, --help - Show help message and exit. Helpx: helpx demo"
 
 	params1 = Params()
 	params1.v.type = 'verbose'

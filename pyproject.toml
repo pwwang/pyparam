@@ -18,6 +18,7 @@ python-simpleconf = "*"
 colorama = "*"
 completions = "*"
 pygments = "*"
+diot = "*"
 
 [tool.poetry.dev-dependencies]
 pytest = "*"

@@ -293,7 +293,7 @@ class Param(_Valuable):
             indent_index = -1 if indent_index is None else indent_index - 1
 
             if not found_default:
-                default = 'Default: %r' % self.default
+                default = 'Default: %s' % self.default
                 # insert default before the first indent desc line
                 if len(self._desc) == 1 and not self._desc[0]:
                     self._desc = [default]
