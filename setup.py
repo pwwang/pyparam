@@ -34,6 +34,6 @@ setup(
     packages=['pyparam'],
     package_dir={"": "."},
     package_data={},
-    install_requires=['colorama', 'completions', 'python-simpleconf'],
+    install_requires=['colorama', 'completions', 'pygments', 'python-simpleconf'],
     extras_require={"dev": ["pytest", "pytest-cov"]},
 )

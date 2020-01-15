@@ -21,14 +21,16 @@ THEMES = dict(
         default=colorama.Fore.MAGENTA,              # default values
         optname=colorama.Style.BRIGHT + colorama.Fore.GREEN,
         opttype=colorama.Fore.BLUE,
-        optdesc=''
+        codebg=colorama.Back.BLACK,
+        optdesc='',
     ),
 
     blue=dict(
         title=colorama.Style.BRIGHT + colorama.Fore.GREEN,
         prog=colorama.Style.BRIGHT + colorama.Fore.BLUE,
         optname=colorama.Style.BRIGHT + colorama.Fore.BLUE,
-        opttype=colorama.Style.BRIGHT
+        opttype=colorama.Style.BRIGHT,
+        codebg=colorama.Back.WHITE,
     ),
 
     plain=dict(
@@ -107,3 +109,4 @@ CMD_GLOBAL_OPTPROXY = '_'
 
 REQUIRED_OPT_TITLE = 'REQUIRED OPTIONS'
 OPTIONAL_OPT_TITLE = 'OPTIONAL OPTIONS'
+DEFAULTS = ['Default: ', 'DEFAULT: ']

@@ -3,8 +3,11 @@ import sys
 import re
 from os import path
 import colorama
+import pygments
+from pygments import lexers, formatters
 from diot import OrderedDiot
 from .defaults import (THEMES,
+                       DEFAULTS,
                        OPT_POSITIONAL_NAME,
                        MAX_PAGE_WIDTH,
                        MIN_OPTDESC_LEADING,
@@ -28,8 +31,8 @@ def _match(selector, item, regex=False):
     if isinstance(item, tuple):
         items = item[0].split(' | ') if ' | ' in item[0] \
                                      else item[0].split(', ')
-        items = [it.lower() for it in items] + [it.lstrip('-').lower()
-                                                for it in items]
+        items = [itm.lower() for itm in items] + \
+                [itm.lstrip('-').lower() for itm in items]
         return selector.lower() in items
     return selector.lower() in item.lower()
 
@@ -99,19 +102,19 @@ class HelpOptions(HelpItems):
     def __init__(self, *args, **kwargs):
         self.prefix = kwargs.pop('prefix', 'auto')
         super(HelpOptions, self).__init__()
-        options = self._tupleToOption(list(args))
+        options = self._tuple_to_option(list(args))
         self.add(options)
 
-    def _prefixName(self, name):
+    def _prefix_name(self, name):
         if name.startswith('-') or not self.prefix:
             return name
         if self.prefix != 'auto':
             return self.prefix + name
         return '-' + name if len(name) <= 1 or name[1] == '.' else '--' + name
 
-    def _tupleToOption(self, item):
+    def _tuple_to_option(self, item):
         if isinstance(item, list):
-            return [self._tupleToOption(it) for it in item]
+            return [self._tuple_to_option(itm) for itm in item]
         if not isinstance(item, tuple) or len(item) != 3:
             raise NotAnOptionException(
                 'Expect a 3-element tuple as an option item in help page.'
@@ -120,7 +123,7 @@ class HelpOptions(HelpItems):
             return (item[0], item[1], HelpOptionDescriptions(item[2]))
         return item
 
-    def addParam(self, param, aliases=None, ishelp=False):
+    def add_param(self, param, aliases=None, ishelp=False):
         """Add a param"""
         aliases = aliases or []
         aliases.append(param.name)
@@ -146,7 +149,7 @@ class HelpOptions(HelpItems):
             if not paramdesc[-1]:
                 del paramdesc[-1]
         return self.add((
-            ', '.join(self._prefixName(alias) if alias != OPT_POSITIONAL_NAME \
+            ', '.join(self._prefix_name(alias) if alias != OPT_POSITIONAL_NAME \
                                               else 'POSITIONAL'
                       for alias in sorted(aliases, key=lambda alia: (
                           0 if '|' in alia else len(alia),
@@ -157,7 +160,7 @@ class HelpOptions(HelpItems):
             paramtype,
             paramdesc))
 
-    def addCommand(self, params, aliases, ishelp=False):
+    def add_command(self, params, aliases, ishelp=False):
         """Add a set of params"""
         cmdtype = '[COMMAND]' if ishelp else ''
         return self.add((
@@ -167,18 +170,19 @@ class HelpOptions(HelpItems):
             params['_desc'] if ishelp else params._desc
         ))
 
-    def add(self, item, aliases=None, ishelp=False): # pylint: disable=arguments-differ
+    def add(self, item, aliases=None, ishelp=False):
+        # pylint: disable=arguments-differ
         from . import Param, Params
         if isinstance(item, Param):
-            self.addParam(item, aliases, ishelp)
+            self.add_param(item, aliases, ishelp)
         elif isinstance(item, (dict, Params)):
-            self.addCommand(item, aliases, ishelp)
+            self.add_command(item, aliases, ishelp)
         elif isinstance(item, list):
-            for it in item:
-                self.add(it)
+            for itm in item:
+                self.add(itm)
         else:
-            self.append(self._tupleToOption(item))
-        self.fixMixed()
+            self.append(self._tuple_to_option(item))
+        self.fix_mixed()
         return self
 
     def insert(self, index, item):
@@ -186,9 +190,9 @@ class HelpOptions(HelpItems):
         if isinstance(item, HelpOptions):
             self[index:index] = item
         elif isinstance(item, list):
-            self[index:index] = self._tupleToOption(item)
+            self[index:index] = self._tuple_to_option(item)
         else:
-            self[index:index] = [self._tupleToOption(item)]
+            self[index:index] = [self._tuple_to_option(item)]
         return self
 
     def after(self, selector, item, **kwargs):
@@ -202,7 +206,7 @@ class HelpOptions(HelpItems):
         return self.insert(index, item)
 
     @property
-    def isMixed(self):
+    def is_mixed(self):
         """Tell whether options are mixed with short and long ones
         check only if first option has a short name.
         """
@@ -215,7 +219,7 @@ class HelpOptions(HelpItems):
                           len(firstopts))
         return bool(mixed)
 
-    def fixMixed(self):
+    def fix_mixed(self):
         """
         Fix indention of mixed option names
         For example, fix this:
@@ -225,7 +229,7 @@ class HelpOptions(HelpItems):
           -o, --output <STR>     - The output file.
               --all [BOOL]       - Run all steps.
         """
-        if not self.isMixed:
+        if not self.is_mixed:
             return
         for i, item in enumerate(self):
             if not item[0].startswith('--'):
@@ -295,7 +299,9 @@ class Helps(OrderedDiot):
 
     remove = delete
 
-    def maxOptNameWidth(self, min_optdesc_leading=5, max_opt_width=36):
+    def max_optname_width(self,
+                          min_optdesc_leading=MIN_OPTDESC_LEADING,
+                          max_opt_width=MAX_OPT_WIDTH):
         """Calculate the width of option name and type"""
         ret = 0
 
@@ -306,9 +312,10 @@ class Helps(OrderedDiot):
             # 3 = <first 2 spaces: 2> +
             #     <gap between name and type: 1> +
             itemlens = [
-                len(it[0] + it[1]) + min_optdesc_leading + 3
-                for it in item
-                if len(it[0] + it[1]) + min_optdesc_leading + 3 <= max_opt_width
+                len(itm[0] + itm[1]) + min_optdesc_leading + 3
+                for itm in item
+                if len(itm[0] + itm[1]
+                       ) + min_optdesc_leading + 3 <= max_opt_width
             ]
             ret = ret if not itemlens else max(ret, max(itemlens))
         return ret or max_opt_width
@@ -393,6 +400,9 @@ class HelpAssembler:
         @params:
             `msg`: the message
         """
+        msg = re.sub(r'`([^`]+)`', r'%s \1 %s' % (self.theme['codebg'],
+                                                  colorama.Back.RESET),
+                     msg)
         return msg.replace('{prog}', self.prog(self.progname))
 
     def optname(self, msg, prefix='  '):
@@ -423,34 +433,28 @@ class HelpAssembler:
             colorend=colorama.Style.RESET_ALL
         ) + ' ' * (len(msg) - len(trimmedmsg))
 
-    @staticmethod
-    def defaultIndex(msg, defaults='DEFAULT: ,Default: ,default: '):
-        """Try to find the index of the default indicator"""
-        if not isinstance(defaults, list):
-            defaults = defaults.split(',')
-        for deft in defaults:
-            dindex = msg.rfind(deft)
-            if dindex != -1:
-                return dindex
-        return -1
-
-    def optdesc(self, msg, first=False, alldefault=False):
+    def optdesc(self, msg, alldefault=False):
         """
         Render the option descriptions
         @params:
             `msg`: the option descriptions
-            `alldefault`: If the whole msg is part of default
         """
+        msg = re.sub(r'`([^`]+)`', r'%s \1 %s' % (self.theme['codebg'],
+                                                  colorama.Back.RESET),
+                     msg)
         msg = msg.replace('{prog}', self.prog(self.progname))
         if alldefault:
-            return '{prefix}{colorstart}{msg}{colorend}'.format(
-                prefix='- ' if first else '  ',
+            return '{colorstart}{msg}{colorend}'.format(
                 colorstart=self.theme['default'],
                 msg=msg,
                 colorend=colorama.Style.RESET_ALL
             )
 
-        default_index = HelpAssembler.defaultIndex(msg)
+        default_index = -1
+        for default in DEFAULTS:
+            default_index = msg.rfind(default)
+            if default_index != -1:
+                break
 
         if default_index != -1:
             defaults = '{colorstart}{defaults}{colorend}'.format(
@@ -460,14 +464,100 @@ class HelpAssembler:
             )
             msg = msg[:default_index] + defaults
 
-        return '{prefix}{colorstart}{msg}{colorend}'.format(
-            prefix='- ' if first else '  ',
+        return '{colorstart}{msg}{colorend}'.format(
             colorstart=self.theme['optdesc'],
             msg=msg,
             colorend=colorama.Style.RESET_ALL
         )
 
-    def assemble(self, helps, min_optdesc_leading=5, max_opt_width=36):
+    @staticmethod
+    def _get_lexer_from_lang(lang):
+        """Get lexer from language name"""
+        # pylint: disable=no-member
+        if not lang:
+            return lexers.MIMELexer()
+
+        try:
+            return lexers.get_lexer_by_name(lang)
+        except pygments.util.ClassNotFound:
+            if '.' in lang:
+                lang = lang.split('.', 1)
+                lang[1] = lang[1].capitalize()
+            if not lang[1].endswith('Lexer'):
+                lang[1] += 'Lexer'
+            try:
+                lexers2 = __import__('pygments.lexers', fromlist=[lang[0]])
+                return getattr(getattr(lexers2, lang[0]), lang[1])()
+            except AttributeError:
+                pass
+            return lexers.MIMELexer()
+
+    def _highlight_codeblock(self, lines):
+        ret = []
+        codeblock = dict(lang=None,
+                         codes=[],
+                         indent='',
+                         ticks='')
+        for line in lines:
+            if not codeblock['ticks']:
+                match = re.match(r'^(\s*)(`{3,})([\w_.]*)$', line)
+                if match:
+                    ret.append('__codestart__')
+                    codeblock['lang'] = HelpAssembler._get_lexer_from_lang(
+                        match.group(3)
+                    )
+                    codeblock['ticks'] = match.group(2)
+                    codeblock['codes'] = []
+                    codeblock['indent'] = match.group(1)
+                else:
+                    ret.append(line)
+            elif line.strip() == codeblock['ticks']:
+                # highlight
+                codes = []
+                maxlen = 0
+                for code in codeblock['codes']:
+                    if not code.startswith(codeblock['indent']):
+                        raise ValueError('Codes in codeblock has different '
+                                         'indentation as first line.')
+                    codes.append(code[len(codeblock['indent']):])
+                    maxlen = max(maxlen, len(code) - len(codeblock['indent']))
+                lenspaces = [maxlen - len(code) for code in codes]
+                codes = pygments.highlight(
+                    '\n'.join(codes),
+                    codeblock['lang'],
+                    formatters.TerminalFormatter() #pylint: disable=no-member
+                )
+                ret.append('%s%s%s%s' % (codeblock['indent'],
+                                         self.theme['codebg'],
+                                         ' ' * (maxlen + 2),
+                                         colorama.Back.RESET))
+                ret.extend('%s%s %s%s%s%s %s' % (codeblock['indent'],
+                                                 self.theme['codebg'],
+                                                 line,
+                                                 colorama.Back.RESET,
+                                                 self.theme['codebg'],
+                                                 ' ' * lenspaces[i],
+                                                 colorama.Back.RESET)
+                           for i, line in enumerate(codes.splitlines()))
+                ret.append('%s%s%s%s' % (codeblock['indent'],
+                                         self.theme['codebg'],
+                                         ' ' * (maxlen + 2),
+                                         colorama.Back.RESET))
+                # end
+                ret.append('__codeend__')
+                codeblock['ticks'] = ''
+                codeblock['indent'] = ''
+                codeblock['codes'] = []
+                codeblock['lang'] = None
+            else:
+                codeblock['codes'].append(line.replace('\t', '    '))
+        return ret
+
+
+    def assemble(self,
+                 helps,
+                 min_optdesc_leading=MIN_OPTDESC_LEADING,
+                 max_opt_width=MAX_OPT_WIDTH):
         """
         Assemble the whole help page.
         @params:
@@ -479,70 +569,99 @@ class HelpAssembler:
         @returns:
             lines (`list`) of the help information.
         """
+        # pylint: disable=too-many-branches,too-many-locals
         ret = []
-        maxoptnamewith = helps.maxOptNameWidth(min_optdesc_leading,
-                                               max_opt_width)
+        maxoptnamewith = helps.max_optname_width(min_optdesc_leading,
+                                                 max_opt_width)
 
         for title, helpitems in helps.items():
             if not helpitems:
                 continue
             ret.append(self.title(title))
 
-            if isinstance(helpitems, HelpOptions):
-                for optname, opttype, optdescs in helpitems:
-                    descs = sum((wraptext(desc, MAX_PAGE_WIDTH - maxoptnamewith)
-                                 if not desc.endswith(' \\') else [desc]
-                                 for desc in optdescs), [])
-                    if descs:
-                        descs[-1] = descs[-1].rstrip(' \\')
-                    if len(
-                            optname + opttype
-                    ) + MIN_OPTDESC_LEADING + 3 > MAX_OPT_WIDTH:
-                        ret.append(
-                            self.optname(optname, prefix='  ') + \
-                            ' ' + \
-                            self.opttype(opttype)
+            if not isinstance(helpitems, HelpOptions): # HelpItems
+                codestart = False
+                for desc in self._highlight_codeblock(helpitems):
+                    if desc.strip() in ('__codestart__', '__codeend__'):
+                        codestart = desc.strip() == '__codestart__'
+                        continue
+                    if codestart:
+                        ret.append('  %s' % desc)
+                        continue
+
+                    ret.extend(self.plain(line)
+                               for line in wraptext(desc,
+                                                    MAX_PAGE_WIDTH,
+                                                    defaults=None,
+                                                    initial_indent='  '))
+                ret.append('')
+                continue
+
+            # HelpOptions
+            for optname, opttype, optdescs in helpitems:
+                optdescs = self._highlight_codeblock(optdescs)
+                descs = []
+                codestart = False
+                first = True
+                alldefault = False
+                #indent = 0
+                for desc in optdescs:
+                    if desc.strip() in ('__codestart__', '__codeend__'):
+                        codestart = desc.strip() == '__codestart__'
+                        continue
+                    if codestart:
+                        descs.append('%s %s' % ('-' if first else ' ',
+                                                desc))
+                        first = False
+                        continue
+
+                    for i, line in enumerate(wraptext(
+                            desc,
+                            MAX_PAGE_WIDTH - maxoptnamewith,
+                            defaults=DEFAULTS
+                    )):
+                        descs.append(
+                            #'%s%s %s' % ('-' if first and i == 0 else ' ',
+                            '%s %s' % ('-' if first and i == 0 else ' ',
+                                       # ' ' * indent,
+                                       self.optdesc(line,
+                                                    alldefault=alldefault))
                         )
-                        if descs:
-                            ret.append(
-                                ' ' * maxoptnamewith + \
-                                self.optdesc(descs[0], True)
-                            )
-                    else:
-                        to_append = self.optname(optname, prefix='  ') + \
-                                    ' ' + \
-                                    self.opttype(
-                                        opttype.ljust(
-                                            maxoptnamewith - len(optname) - 3
-                                        )
-                                    )
-                        if descs:
-                            to_append += self.optdesc(descs[0], True)
-                        ret.append(to_append)
+                        first = False
+
+                        if (not alldefault and
+                                any(default in line for default in DEFAULTS) and
+                                line.endswith(' \\')):
+                            # indent = [line.rfind(default) + len(default)
+                            #           for default in DEFAULTS
+                            #           if default in line][-1]
+                            alldefault = True
+                        elif alldefault and not line.endswith(' \\'):
+                            alldefault = False
+
+                if len(optname + opttype
+                       ) + min_optdesc_leading + 3 > max_opt_width:
+                    ret.append('%s %s' % (
+                        self.optname(optname, prefix='  '),
+                        self.opttype(opttype)
+                    ))
                     if descs:
-                        desc0 = descs.pop(0)
-                        default_index = HelpAssembler.defaultIndex(desc0)
-                        ends = desc0.endswith(' \\')
-                    for desc in descs:
-                        if default_index != -1 and ends:
-                            ret.append(' ' * maxoptnamewith +
-                                       self.optdesc(desc, alldefault=True))
-                        else:
-                            ret.append(
-                                ' ' * maxoptnamewith + self.optdesc(desc)
-                            )
-                            default_index = HelpAssembler.defaultIndex(desc)
-                            ends = desc.endswith(' \\')
-                ret.append('')
-            else: # HelpItems
-                for item in helpitems:
-                    if item.endswith(' \\'):
-                        ret.append('  ' + self.plain(item))
-                    else:
-                        ret.extend(self.plain(it)
-                                   for it in wraptext('  ' + item,
-                                                      MAX_PAGE_WIDTH))
-                ret.append('')
+                        ret.append('%s%s' % (
+                            ' ' * maxoptnamewith,
+                            descs.pop(0)
+                        ))
+                else:
+                    desc = '%s %s' % (
+                        self.optname(optname, prefix='  '),
+                        self.opttype(opttype.ljust(
+                            maxoptnamewith - len(optname) - 3
+                        ))
+                    )
+                    desc = desc + descs.pop(0) if descs else desc
+                    ret.append(desc)
+                ret.extend(' ' * maxoptnamewith + line
+                           for line in descs)
+            ret.append('')
 
         ret.append('')
         return ret

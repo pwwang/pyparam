@@ -5,8 +5,12 @@ import colorama
 from pyparam.help import Helps, HelpOptions, HelpItems, HelpAssembler
 from pyparam.defaults import MAX_PAGE_WIDTH, MAX_OPT_WIDTH, OPT_UNSET_VALUE, OPT_POSITIONAL_NAME
 from pyparam.commands import Commands, CommandsParseError
-from pyparam.params import Param, Params, ParamsParseError, ParamsLoadError, ParamTypeError, ParamNameError
+from pyparam.param import Param, ParamTypeError, ParamNameError
+from pyparam.params import Params, ParamsParseError, ParamsLoadError
 from pyparam import params, commands
+
+f = colorama.Fore
+s = colorama.Style
 
 def striphelp(msg):
 	msg = re.sub(r'\x1B\[[0-?]*[ -/]*[@-~]', '', msg.strip())
@@ -117,30 +121,15 @@ class TestHelpAssembler:
 	def test_opttype(self, msg, expt):
 		assert self.assembler.opttype(msg) == expt
 
-	@pytest.mark.parametrize('msg, first, alldefault, expt', [
-		('', False, False, '  {s.RESET_ALL}'.format(
-			f = colorama.Fore,
-			s = colorama.Style
-		)),
-		('DEfault: 1', True, False, '- DEfault: 1{s.RESET_ALL}'.format(
-			f = colorama.Fore,
-			s = colorama.Style
-		)),
-		('Default: 1', False, False, '  {f.MAGENTA}Default: 1{s.RESET_ALL}{s.RESET_ALL}'.format(
-			f = colorama.Fore,
-			s = colorama.Style
-		)),
-		('XDEFAULT: 1', True, False, '- X{f.MAGENTA}DEFAULT: 1{s.RESET_ALL}{s.RESET_ALL}'.format(
-			f = colorama.Fore,
-			s = colorama.Style
-		)),
-		('a DEFAULT: 1', False, True, '  {f.MAGENTA}a DEFAULT: 1{s.RESET_ALL}'.format(
-			f = colorama.Fore,
-			s = colorama.Style
-		)),
+	@pytest.mark.parametrize('msg,expt', [
+		('', f'{s.RESET_ALL}'),
+		('DEfault: 1', f'DEfault: 1{s.RESET_ALL}'),
+		('Default: 1', f'{f.MAGENTA}Default: 1{s.RESET_ALL}{s.RESET_ALL}'),
+		('XDEFAULT: 1', f'X{f.MAGENTA}DEFAULT: 1{s.RESET_ALL}{s.RESET_ALL}'),
+		('a DEFAULT: 1', f'a {f.MAGENTA}DEFAULT: 1{s.RESET_ALL}{s.RESET_ALL}'),
 	])
-	def test_optdesc(self, msg, first, alldefault, expt):
-		assert self.assembler.optdesc(msg, first, alldefault) == expt
+	def test_optdesc(self, msg, expt):
+		assert self.assembler.optdesc(msg) == expt
 
 	@pytest.mark.parametrize('helps, expt', [
 		({}, ['']),
@@ -173,9 +162,17 @@ class TestHelpAssembler:
 			'{f.MAGENTA}Default: 1{s.RESET_ALL}{s.RESET_ALL}'.format(
 				f = colorama.Fore, s = colorama.Style),
 			'', '']),
+		({'options': [('-nthreads', '<int>', ['Number of threads to use. Default: very very very very very very very very very very very very very very long default value'])]}, [
+			f'{s.BRIGHT}{f.CYAN}Options{s.RESET_ALL}:',
+			f'{s.BRIGHT}{f.GREEN}  -nthreads{s.RESET_ALL} '
+			f'{f.BLUE}<INT>{s.RESET_ALL}     - Number of threads to use. {s.RESET_ALL}',
+			f'                        {f.MAGENTA}Default: very very very very very very very very \\{s.RESET_ALL}{s.RESET_ALL}',
+			f'                        {f.MAGENTA}very very very very very very long default value{s.RESET_ALL}',
+			'', '']),
+		({'options': [('-nthreads', '<int>', ['Number of threads to use. Default: `very very very very very very very very very very very very very very long default value`'])]}, ['\x1b[1m\x1b[36mOptions\x1b[0m:', '\x1b[1m\x1b[32m  -nthreads\x1b[0m \x1b[34m<INT>\x1b[0m     - Number of ' 'threads to use. \x1b[35mDefault: \x1b[40m very very very very very very very ' 'very very very very very very very long default value \x1b[49m\x1b[0m\x1b[0m', '', '']),
 		({'options': [
 			('-nthreads', '<int>', ['Number of threads to use. Default: 1']),
-			('-opt1', '<str>', ['String options.', 'DEFAULT: "Hello world! \\', 'Not end"']),
+			('-opt1', '<str>', ['String options.', 'DEFAULT: "Hello world! Not end"']),
 			('-option, --very-very-long-option-name', '<int>', [
 				'Option descript without default value. And this is a long long long '
 				'long description'])]}, [ # expt
@@ -191,9 +188,7 @@ class TestHelpAssembler:
 			'{s.BRIGHT}{f.GREEN}  -opt1{s.RESET_ALL} {f.BLUE}<STR>{s.RESET_ALL}'
 			'         - String options.{s.RESET_ALL}'.format(f = colorama.Fore, s = colorama.Style),
 
-			'                        {f.MAGENTA}DEFAULT: "Hello world! \\{s.RESET_ALL}{s.RESET_ALL}'.format(
-				f = colorama.Fore, s = colorama.Style),
-			'                        {f.MAGENTA}Not end"{s.RESET_ALL}'.format(
+			'                        {f.MAGENTA}DEFAULT: "Hello world! Not end"{s.RESET_ALL}{s.RESET_ALL}'.format(
 				f = colorama.Fore, s = colorama.Style),
 
 			'{s.BRIGHT}{f.GREEN}  -option, --very-very-long-option-name{s.RESET_ALL} '
@@ -206,6 +201,13 @@ class TestHelpAssembler:
 			'                        description{s.RESET_ALL}'.format(
 				f = colorama.Fore, s = colorama.Style),
 			'', '']),
+		({'description': ['Single code: `abc` aaa',
+						  '```python', 'def func():',
+						  '    print(1)', '```',
+						  'codeblock'],
+		  'Options': [('-a', '<int>', ['abc `d` ef', '```shell.BashLexer', 'cat a.txt | wc -l', '```']),
+		  			  ('-b', '<str>', ['```', 'a', '```'])]},
+		 ['\x1b[1m\x1b[36mDescription\x1b[0m:', '  Single code: \x1b[40m abc \x1b[49m aaa', '  \x1b[40m              \x1b[49m', '  \x1b[40m \x1b[34mdef\x1b[39;49;00m \x1b[32mfunc\x1b[39;49;00m():\x1b[49m\x1b[40m  \x1b[49m', '  \x1b[40m     \x1b[36mprint\x1b[39;49;00m(\x1b[34m1\x1b[39;49;00m)\x1b[49m\x1b[40m \x1b[49m', '  \x1b[40m              \x1b[49m', '  codeblock', '', '\x1b[1m\x1b[36mOptions\x1b[0m:', '\x1b[1m\x1b[32m  -a\x1b[0m \x1b[34m<INT>\x1b[0m     - abc \x1b[40m d \x1b[49m ef\x1b[0m', '                 \x1b[40m                   \x1b[49m', '                 \x1b[40m \x1b[04m\x1b[91mc\x1b[39;49;00m\x1b[04m\x1b[91ma\x1b[39;49;00m\x1b[04m\x1b[91mt\x1b[39;49;00m\x1b[04m\x1b[91m \x1b[39;49;00m\x1b[04m\x1b[91ma\x1b[39;49;00m\x1b[04m\x1b[91m.\x1b[39;49;00m\x1b[04m\x1b[91mt\x1b[39;49;00m\x1b[04m\x1b[91mx\x1b[39;49;00m\x1b[04m\x1b[91mt\x1b[39;49;00m\x1b[04m\x1b[91m \x1b[39;49;00m\x1b[04m\x1b[91m|\x1b[39;49;00m\x1b[04m\x1b[91m \x1b[39;49;00m\x1b[04m\x1b[91mw\x1b[39;49;00m\x1b[04m\x1b[91mc\x1b[39;49;00m\x1b[04m\x1b[91m \x1b[39;49;00m\x1b[04m\x1b[91m-\x1b[39;49;00m\x1b[04m\x1b[91ml\x1b[39;49;00m\x1b[49m\x1b[40m \x1b[49m', '                 \x1b[40m                   \x1b[49m', '\x1b[1m\x1b[32m  -b\x1b[0m \x1b[34m<STR>\x1b[0m     - \x1b[40m   \x1b[49m', '                 \x1b[40m \x1b[04m\x1b[91ma\x1b[39;49;00m\x1b[49m\x1b[40m \x1b[49m', '                 \x1b[40m   \x1b[49m', '', ''])
 	])
 	def test_assemble(self, helps, expt):
 		hs = Helps()
@@ -213,7 +215,15 @@ class TestHelpAssembler:
 			hs.add(key, HelpOptions() if val and isinstance(val[0], tuple) else HelpItems())
 			for v in val:
 				hs.select(key).add(v)
+		# print('\n'.join(self.assembler.assemble(hs)))
+		# print('\n'.join(expt))
 		assert self.assembler.assemble(hs) == expt
+
+	def test_assemble_exception(self):
+		hs = Helps()
+		hs.add('section', sectype='plain').select('section').add(['x', '  ```', 'ddd', '  ```'])
+		with pytest.raises(ValueError):
+			self.assembler.assemble(hs)
 
 # region: test Param
 def test_param_init():
@@ -265,9 +275,9 @@ def test_param_value():
 	param.value = 1
 	assert param.value == 1
 	assert param.type == 'NoneType:'
-	assert param.setValue(2) is param
+	assert param.set_value(2) is param
 	assert param.value == 2
-	param.setValue(3, update_type = True)
+	param.set_value(3, update_type = True)
 	assert param.value == 3
 	assert param.type == 'int:'
 
@@ -276,10 +286,10 @@ def test_param_desc():
 	assert param.desc == ['Default: None']
 
 	param.value = 1
-	param.setDesc('option description.')
+	param.set_desc('option description.')
 	assert param.desc == ['option description. Default: 1']
-	param.setDesc('long long option description.')
-	assert param.desc == ['long long option description.', 'Default: 1']
+	param.set_desc('long long option description.')
+	assert param.desc == ['long long option description. Default: 1']
 
 	param = Param('name')
 	param.desc = []
@@ -298,23 +308,23 @@ def test_param_required():
 	assert param.required is False
 	param.required = True
 	assert param.required is True
-	param.setRequired(False)
+	param.set_required(False)
 	assert param.required is False
-	param.setRequired()
+	param.set_required()
 	assert param.required is True
 
-	param.setValue(True, True)
+	param.set_value(True, True)
 	with pytest.raises(ParamTypeError):
-		param.setRequired()
+		param.set_required()
 
 def test_param_show():
 	param = Param('name', 'value')
 	assert param.show is True
 	param.show = False
 	assert param.show is False
-	param.setShow()
+	param.set_show()
 	assert param.show is True
-	assert param.setShow(False) is param
+	assert param.set_show(False) is param
 	assert param.show is False
 
 def test_param_callback():
@@ -322,9 +332,9 @@ def test_param_callback():
 	assert param.callback is None
 	param.callback = lambda: None
 	assert callable(param.callback)
-	assert param.setCallback(lambda: None) is param
+	assert param.set_callback(lambda: None) is param
 	with pytest.raises(TypeError):
-		param.setCallback(1)
+		param.set_callback(1)
 
 def test_param_type():
 	param = Param('name', '1')
@@ -332,7 +342,7 @@ def test_param_type():
 	param.type = int
 	assert param.type == 'int:'
 	assert param.value == 1
-	assert param.setType(int, update_value = True) is param
+	assert param.set_type(int, update_value = True) is param
 	assert param.value == 1
 	with pytest.raises(ParamTypeError):
 		param.type = 'int:list'
@@ -378,7 +388,7 @@ def test_param_type():
 	('vv', 'verbose:', 3, 'v'),
 ])
 def test_param_forcetype(value, typename, expt, name):
-	assert Param._forceType(value, typename, name) == expt
+	assert Param._force_type(value, typename, name) == expt
 
 @pytest.mark.parametrize('value, typename, exception', [
 	('x', 'bool:', ParamTypeError),
@@ -389,7 +399,7 @@ def test_param_forcetype(value, typename, expt, name):
 ])
 def test_param_forcetype_exc(value, typename, exception):
 	with pytest.raises(exception):
-		Param._forceType(value, typename)
+		Param._force_type(value, typename)
 
 def test_param_repr():
 	param = Param('name', 'value')
@@ -447,7 +457,7 @@ def test_param_baseclass():
 	(OPT_UNSET_VALUE, None, 'auto:'),
 ])
 def test_param_typefromvalue(value, exptval, exptype):
-	assert Param._typeFromValue(value) == (exptval, exptype)
+	assert Param._type_from_value(value) == (exptval, exptype)
 
 @pytest.mark.parametrize('typename, exptype', [
 	(None, None),
@@ -478,7 +488,7 @@ def test_param_typefromvalue(value, exptval, exptype):
 	('array', 'list:'),
 ])
 def test_param_normalizetype(typename, exptype):
-	assert Param._normalizeType(typename) == exptype
+	assert Param._normalize_type(typename) == exptype
 
 @pytest.mark.parametrize('typename', [
 	'reset:a',
@@ -488,7 +498,7 @@ def test_param_normalizetype(typename, exptype):
 ])
 def test_param_normalizetype_exc(typename):
 	with pytest.raises(ParamTypeError):
-		Param._normalizeType(typename)
+		Param._normalize_type(typename)
 
 def test_param_push():
 	param = Param('name')
@@ -674,7 +684,7 @@ def test_param_checkout_list():
 	({'a': {'b': 2, 'c': 3}}, {'a': {'b': 1}}, {'a': {'b': 1, 'c': 3}}),
 ])
 def test_param_dictupdate(dorig, dup, expt):
-	assert Param._dictUpdate(dorig, dup) == expt
+	assert Param._dict_update(dorig, dup) == expt
 
 @pytest.mark.parametrize('param, expt', [
 	(Param('a.b.c', 1), {'b': {'c': 1}}),
@@ -712,7 +722,7 @@ def test_params_lock():
 	with pytest.raises(ParamNameError):
 		params.b.type = int
 	with pytest.raises(ParamNameError):
-		params.b.setCallback(lambda opt: None)
+		params.b.set_callback(lambda opt: None)
 
 def test_params_init():
 	import sys
@@ -735,35 +745,35 @@ def test_params_init():
 def test_params_props():
 	params = Params()
 	# theme
-	params._setTheme('plain')
+	params._set_theme('plain')
 	assert params._assembler.theme['error'] == ''
 	params._theme = 'default'
 	assert params._assembler.theme['error'] == colorama.Fore.RED
 
 	# usage
-	params._setUsage('a\nb')
+	params._set_usage('a\nb')
 	assert params._usage == ['a', 'b']
 	params._usage = ['1', '2']
 	assert params._usage == ['1', '2']
 
 	# desc
-	params._setDesc('a\nb')
+	params._set_desc('a\nb')
 	assert params._desc == ['a', 'b']
 	params._desc = ['1', '2']
 	assert params._desc == ['1', '2']
 
 	# hopts
-	params._setHopts('-h, --help')
+	params._set_hopts('-h, --help')
 	assert params._hopts == ['-h', '--help']
 	params._hopts = ['-H']
 	assert params._hopts == ['-H']
 	with pytest.raises(ValueError):
-		params._setHopts(None)
+		params._set_hopts(None)
 	with pytest.raises(ValueError):
-		params._setHopts('h.e.l.p')
+		params._set_hopts('h.e.l.p')
 
 	# prefix
-	params._setPrefix('--')
+	params._set_prefix('--')
 	assert params._prefix == '--'
 	assert params._prefixit('a') == '--a'
 	params._prefix = '-'
@@ -775,7 +785,7 @@ def test_params_props():
 
 
 	# hbald
-	params._setHbald()
+	params._set_hbald()
 	assert params._hbald is True
 	params._hbald = False
 	assert params._hbald is False
@@ -826,7 +836,7 @@ def test_params_preparse(mark, args, exptstacks, exptpendings):
 	params = Params()
 	params._prefix = '-'
 	params.b = Param('b', False)
-	parsed, pendings = params._preParse(args)
+	parsed, pendings = params._preparse(args)
 	assert pendings == exptpendings
 	assert {name: param.stacks for name, param in parsed.items()} == exptstacks
 
@@ -893,12 +903,12 @@ def test_params_parse(capsys):
 		params1._parse(['-h'])
 	assert 'help' in capsys.readouterr().err
 
-	params1.a.callback = lambda param: param.setValue(param.value + 1)
+	params1.a.callback = lambda param: param.set_value(param.value + 1)
 	params1._parse(['-a', '2'])
 	assert params1._dict() == {'H': False, 'h': False, 'help': False, 'a': 3}
 
 	params1.b = 10
-	params1.b.callback = lambda param, params: param.setValue(param.value * params.a.value)
+	params1.b.callback = lambda param, params: param.set_value(param.value * params.a.value)
 	params1._parse(['-a', '2'])
 	assert params1._dict() == {'H': False, 'h': False, 'help': False, 'a': 3, 'b': 30}
 
@@ -1096,7 +1106,7 @@ def test_params_hashable():
 
 def test_params_loaddict():
 	params = Params()
-	params._loadDict({})
+	params._load_dict({})
 	assert params._dict() == {'H': False, 'h': False, 'help': False, }
 
 	params._load({"a": 1})
@@ -1116,7 +1126,7 @@ def test_params_loadfile(tmp_path):
 		"a.required = py:False\n"
 	)
 	params = Params()
-	params._loadFile(tmpfile1.as_posix())
+	params._load_file(tmpfile1.as_posix())
 	assert isinstance(params.a, Param)
 	assert not params.a.required
 
@@ -1130,7 +1140,7 @@ def test_params_loadfile(tmp_path):
 		"a = 2\n"
 		"b.alias = a\n"
 	)
-	params._loadFile(tmpfile2.as_posix(), profile = 'profile')
+	params._load_file(tmpfile2.as_posix(), profile = 'profile')
 	assert params.a.value == 2
 	assert params.b is params.a
 
@@ -1145,7 +1155,7 @@ def test_params_loadfile(tmp_path):
 		"b.alias = c\n"
 	)
 	with pytest.raises(ParamsLoadError):
-		params._loadFile(tmpfile3.as_posix(), profile = 'profile')
+		params._load_file(tmpfile3.as_posix(), profile = 'profile')
 
 def test_params_completions():
 	params = Params()
@@ -1166,7 +1176,7 @@ def test_params_completions():
 def test_commands_init():
 	commands = Commands()
 	assert commands._prefix == 'auto'
-	commands._setPrefix('--')
+	commands._set_prefix('--')
 	commands._prefix == '--'
 	commands._._prefix == '--'
 	assert commands._desc == []
@@ -1175,19 +1185,19 @@ def test_commands_init():
 	assert commands._hcmd is commands._props['_hcmd']
 	commands._desc = 'a\nb'
 	assert commands._desc == ['a', 'b']
-	commands._setDesc('c\nd')
+	commands._set_desc('c\nd')
 	assert commands._desc == ['c', 'd']
-	commands._setHcmd('help,h')
+	commands._set_hcmd('help,h')
 	assert commands._hcmd == ['help', 'h']
 	assert commands._assembler.theme['error'] == colorama.Fore.RED
-	commands._setTheme('plain')
+	commands._set_theme('plain')
 	assert commands._assembler.theme['error'] == ''
 
 	commands.list = 'List all commands'
 	commands.show = commands.list
 	assert commands.show._prog.endswith('list|show')
 
-	commands._setInherit(False)
+	commands._set_inherit(False)
 	assert commands._inherit is False
 
 def test_commands_attr():

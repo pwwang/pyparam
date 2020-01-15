@@ -92,57 +92,60 @@ def test_helpoptions():
 	('ab', 'auto', '--ab'),
 ])
 def test_helpoptions_prefixname(name, prefix, expt):
-	assert HelpOptions(prefix = prefix)._prefixName(name) == expt
+	assert HelpOptions(prefix = prefix)._prefix_name(name) == expt
 
 @pytest.mark.parametrize("param, aliases, ishelp, prefix, expt", [
-	(Param('v', 0).setType('verbose'),
+	(Param('v', 0).set_type('verbose'),
 	 ['verbose'], False, 'auto',
 	 [('-v|vv|vvv, --verbose', '<VERBOSITY>', ['Default: 0'])]),
-	(Param('v', 0).setType('verbose'),
+	(Param('v', 0).set_type('verbose'),
 	 [], False, 'auto',
 	 [('-v|vv|vvv', '', ['Default: 0'])]),
 	(Param('a', False),
 	 ['auto'], False, 'auto',
 	 [('-a, --auto', '[BOOL]', ['Default: False'])]),
-	(Param('d', 1).setDesc('Whehter to show the description or not.'),
+	(Param('d', 1).set_desc(['Whehter to show the description or not. ', '  - abc  ']),
 	 ['desc'], False, 'auto',
-	 [('-d, --desc', '<INT>', ['Whehter to show the description or not.', 'Default: 1'])]),
-	(Param('help', False).setDesc('Show the help message for command.'),
+	 [('-d, --desc', '<INT>', ['Whehter to show the description or not. Default: 1', '  - abc'])]),
+	(Param('help', False).set_desc('Show the help message for command.'),
 	 [], True, 'auto',
 	 [('--help', '', ['Show the help message for command.'])]), # don't show default
+	(Param('a', False).set_desc('  Default: False'),
+	 ['auto'], True, 'auto',
+	 [('-a, --auto', '', [])]),
 ])
 def test_helpoptions_addparam(param, aliases, ishelp, prefix, expt):
 	ho = HelpOptions(prefix = prefix)
-	ho.addParam(param, aliases, ishelp)
+	ho.add_param(param, aliases, ishelp)
 	assert ho == expt
 
 @pytest.mark.parametrize("params, aliases, ishelp, expt", [
-	(Params()._setDesc('Command 1'),
+	(Params()._set_desc('Command 1'),
 	 ['cmd1'], False,
 	 [('cmd1', '', ['Command 1'])]),
-	(Params()._setDesc('Print help page and exit'),
+	(Params()._set_desc('Print help page and exit'),
 	 ['help'], True,
 	 [('help', '[COMMAND]', ['Print help page and exit'])]),
 ])
 def test_helpoptions_addcommand(params, aliases, ishelp, expt):
 	ho = HelpOptions()
-	ho.addCommand(params, aliases, ishelp)
+	ho.add_command(params, aliases, ishelp)
 	assert ho == expt
 
 @pytest.mark.parametrize("param, aliases, ishelp, prefix, expt", [
-	(Param('v', 0).setType('verbose'),
+	(Param('v', 0).set_type('verbose'),
 	 ['verbose'], False, 'auto',
 	 [('-v|vv|vvv, --verbose', '<VERBOSITY>', ['Default: 0'])]),
 	(Param('a', False),
 	 ['auto'], False, 'auto',
 	 [('-a, --auto', '[BOOL]', ['Default: False'])]),
-	(Param('d', 1).setDesc('Whehter to show the description or not.'),
+	(Param('d', 1).set_desc('Whehter to show the description or not.'),
 	 ['desc'], False, 'auto',
-	 [('-d, --desc', '<INT>', ['Whehter to show the description or not.', 'Default: 1'])]),
-	 (Params()._setDesc('Command 1'),
+	 [('-d, --desc', '<INT>', ['Whehter to show the description or not. Default: 1'])]),
+	 (Params()._set_desc('Command 1'),
 	 ['cmd1'], False, 'auto',
 	 [('cmd1', '', ['Command 1'])]),
-	(Params()._setDesc('Print help page and exit'),
+	(Params()._set_desc('Print help page and exit'),
 	 ['help'], True, 'auto',
 	 [('help', '[COMMAND]', ['Print help page and exit'])]),
 	(('-option', '<INT>', HelpOptionDescriptions("Description 1", "Description 2")),

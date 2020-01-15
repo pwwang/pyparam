@@ -1,5 +1,6 @@
 colorama
 completions
+pygments
 pytest
 pytest-cov
 python-simpleconf

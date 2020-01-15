@@ -5,7 +5,8 @@ from .defaults import (CMD_GLOBAL_OPTPROXY,
                        OPT_POSITIONAL_NAME,
                        OPTIONAL_OPT_TITLE,
                        REQUIRED_OPT_TITLE)
-from .params import Params, ParamsParseError, ParamNameError
+from .param import ParamNameError
+from .params import Params, ParamsParseError
 from .help import HelpAssembler, Helps, HelpOptions
 
 class CommandsParseError(Exception):
@@ -36,29 +37,29 @@ class Commands:
         self._cmds[CMD_GLOBAL_OPTPROXY]._prefix = prefix
         self._cmds[CMD_GLOBAL_OPTPROXY]._hbald = False
 
-        self._installHelpCommand()
+        self._install_help_command()
 
-    def _installHelpCommand(self):
+    def _install_help_command(self):
         helpcmd = Params(None, self._assembler.theme)
         helpcmd._desc = 'Print help message for the command and exit.'
         helpcmd._hbald = False
         helpcmd[OPT_POSITIONAL_NAME] = ''
         helpcmd[OPT_POSITIONAL_NAME].desc = 'The command.'
 
-        def helpPositionalCommandCallback(param):
+        def help_positional_command_callback(param):
             if not param.value or param.value in self._hcmd:
                 raise CommandsParseError('__help__')
             if param.value not in self._cmds:
                 raise CommandsParseError('No such command: %s' % param.value)
             self._cmds[param.value]._help(print_and_exit=True)
-        helpcmd[OPT_POSITIONAL_NAME].callback = helpPositionalCommandCallback
+        helpcmd[OPT_POSITIONAL_NAME].callback = help_positional_command_callback
         for hcmd in self._hcmd:
             self._cmds[hcmd] = helpcmd
 
-    def _setInherit(self, inherit):
+    def _set_inherit(self, inherit):
         self._inherit = inherit
 
-    def _setDesc(self, desc):
+    def _set_desc(self, desc):
         """
         Set the description
         @params:
@@ -67,7 +68,7 @@ class Commands:
         self._desc = desc
         return self
 
-    def _setHcmd(self, hcmd):
+    def _set_hcmd(self, hcmd):
         """
         Set the help command
         @params:
@@ -82,10 +83,10 @@ class Commands:
                                if isinstance(hcmd, str) \
                                else hcmd
 
-        self._installHelpCommand()
+        self._install_help_command()
         return self
 
-    def _setTheme(self, theme):
+    def _set_theme(self, theme):
         """
         Set the theme
         @params:
@@ -94,7 +95,7 @@ class Commands:
         self._theme = theme
         return self
 
-    def _setPrefix(self, prefix):
+    def _set_prefix(self, prefix):
         self._prefix = prefix
         return self
 
@@ -131,7 +132,7 @@ class Commands:
         elif name == '_theme':
             self._assembler = HelpAssembler(None, value)
         elif name == '_hcmd':
-            self._setHcmd(value)
+            self._set_hcmd(value)
         elif name == '_desc':
             self._props['_desc'] = value.splitlines() \
                                    if isinstance(value, str) \
@@ -157,7 +158,7 @@ class Commands:
     __getitem__ = __getattr__
     __setitem__ = __setattr__
 
-    def _inheritGlobalOptions(self):
+    def _inherit_global_options(self):
         if not self._inherit:
             return
 
@@ -197,9 +198,10 @@ class Commands:
             A `tuple` with first element the subcommand and
                 second the parameters being parsed.
         """
+        # pylint: disable=too-many-branches
         # check if inherit is True, then we should also
         # attach global options to commands
-        self._inheritGlobalOptions()
+        self._inherit_global_options()
         if arbi:
             for hcmd in self._hcmd:
                 self._cmds[hcmd][OPT_POSITIONAL_NAME].callback = None
@@ -231,14 +233,21 @@ class Commands:
             command_args = args[(cmdidx+1):]
             if (self._inherit and command not in self._hcmd):
                 command_opts = self._cmds[command]._parse(
-                    global_args + command_args, arbi, dict_wrapper)
+                    global_args + command_args,
+                    arbi,
+                    dict_wrapper
+                )
                 global_opts = self._cmds[CMD_GLOBAL_OPTPROXY]._dict(
                     wrapper=dict_wrapper
                 )
             else:
                 try:
                     global_opts = self._cmds[CMD_GLOBAL_OPTPROXY]._parse(
-                        global_args, arbi, dict_wrapper, raise_exc=True)
+                        global_args,
+                        arbi,
+                        dict_wrapper,
+                        raise_exc=True
+                    )
                 except ParamsParseError as exc:
                     raise CommandsParseError(str(exc))
                 command_opts = self._cmds[command]._parse(
@@ -251,9 +260,17 @@ class Commands:
 
         except CommandsParseError as exc:
             exc = str(exc)
-            if exc == '__help__':
-                exc = ''
+            exc = '' if exc == '__help__' else exc
             self._help(error=exc, print_and_exit=True)
+
+    @property
+    def _revcmds(self):
+        revcmds = OrderedDiot()
+        for name, command in self._cmds.items():
+            if name == CMD_GLOBAL_OPTPROXY:
+                continue
+            revcmds.setdefault(command, []).append(name)
+        return revcmds
 
     def _help(self, error='', print_and_exit=False):
         """
@@ -285,19 +302,13 @@ class Commands:
 
         helps.add('AVAILABLE COMMANDS', HelpOptions(prefix=''))
 
-        revcmds = OrderedDiot()
-        for name, command in self._cmds.items():
-            if name == CMD_GLOBAL_OPTPROXY:
-                continue
-            revcmds.setdefault(command, []).append(name)
-
-        for command, names in revcmds.items():
+        for command, names in self._revcmds.items():
             if self._hcmd[0] in names:
                 continue
             helps['AVAILABLE COMMANDS'].add(command, names)
 
         command_section = helps['AVAILABLE COMMANDS']
-        command_section.addCommand(self._cmds[self._hcmd[0]], self._hcmd)
+        command_section.add_command(self._cmds[self._hcmd[0]], self._hcmd)
         command_help_index = command_section.query(self._hcmd[0])
         command_help = command_section[command_help_index]
         command_section[command_help_index] = (
@@ -321,7 +332,7 @@ class Commands:
         sys.stderr.write('\n'.join(ret))
         sys.exit(1)
 
-    def _complete(self,
+    def _complete(self, # pylint: disable=too-many-arguments
                   shell,
                   auto=False,
                   inherit=True,
@@ -331,30 +342,31 @@ class Commands:
         from completions import Completions
         completions = Completions(inherit=inherit,
                                   desc=self._desc and self._desc[0] or '')
-        revcmds = OrderedDiot()
-        for key, val in self._cmds.items():
-            if key == CMD_GLOBAL_OPTPROXY:
-                continue
-            revcmds.setdefault(val, []).append(key)
 
         if CMD_GLOBAL_OPTPROXY in self._cmds:
-            self._cmds[CMD_GLOBAL_OPTPROXY]._addToCompletions(
-                completions, withtype, alias, showonly)
+            self._cmds[CMD_GLOBAL_OPTPROXY]._add_to_completions(
+                completions,
+                withtype,
+                alias,
+                showonly
+            )
 
         helpoptions = {
             cmdname: (command._desc and command._desc[0] or '')
             for cmdname, command in self._cmds.items()
             if cmdname not in self._hcmd and cmdname != CMD_GLOBAL_OPTPROXY
         }
-        for command, names in revcmds.items():
+        for command, names in self._revcmds.items():
             if not alias:
                 names = [list(sorted(names, key=len))[-1]]
             compdesc = command._desc[0] if command._desc else ''
             for name in names:
                 if name in self._hcmd:
-                    completions.addCommand(name, compdesc, helpoptions)
+                    completions.add_command(name, compdesc, helpoptions)
                 else:
-                    completions.addCommand(name, compdesc)
-                    command._addToCompletions(
-                        completions.command(name), withtype, alias, showonly)
+                    completions.add_command(name, compdesc)
+                    command._add_to_completions(completions.command(name),
+                                                withtype,
+                                                alias,
+                                                showonly)
         return completions.generate(shell, auto)

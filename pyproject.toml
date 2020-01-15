@@ -17,6 +17,7 @@ python = "^3.5"
 python-simpleconf = "*"
 colorama = "*"
 completions = "*"
+pygments = "*"
 
 [tool.poetry.dev-dependencies]
 pytest = "*"

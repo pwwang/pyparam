@@ -122,9 +122,12 @@ class _Hashable:
         """
         return not self.__eq__(other)
 
-def wraptext(text, width=70, **kwargs):
-    """Wrap a text"""
-    width -= 2 # for ending ' \'
+def wraptext(text,
+             width=70,
+             defaults=("Default: ", "DEFAULT:"),
+             break_long_words=False,
+             **kwargs):
+    """Wrap a text
     # keep the indentation
     # '  - hello world' =>
     # '  - hello \'
@@ -132,10 +135,52 @@ def wraptext(text, width=70, **kwargs):
     # '  1. hello world' =>
     # '  1. hello \'
     # '     world'
+    """
+    width -= 2 # for ending ' \'
     match = re.match(r'\s*(?:[-*#]|\w{1,2}\.)?\s+', text)
     prefix = ' ' * len(match.group(0)) if match else ''
+    kwargs['subsequent_indent'] = prefix + \
+                                  kwargs.get('initial_indent', '') + \
+                                  kwargs.get('subsequent_indent', '')
 
-    kwargs['subsequent_indent'] = prefix + kwargs.get('subsequent_indent', '')
-    wraps = textwrap.wrap(text, width, **kwargs)
-    return [line + ' \\' if i < len(wraps) - 1 else line
-            for i, line in enumerate(wraps)]
+    codes = re.findall(r'`[^`]+`', text)
+    placeholders = {}
+    for i, line in enumerate(codes):
+        text = text.replace(line, '__code_%d__' % i)
+        placeholders['__code_%d__' % i] = line
+
+    if text.endswith(' \\'):
+        return (kwargs.get('initial_indent', '') + text).splitlines()
+
+    codes = textwrap.wrap(text,
+                          width,
+                          break_long_words=break_long_words,
+                          **kwargs)
+
+    if not codes:
+        return codes
+
+    default_index = None
+    for i, line in enumerate(codes):
+        for placeholder, origin in placeholders.items():
+            line = line.replace(placeholder, origin)
+        codes[i] = line
+        if defaults and any(default in line for default in defaults):
+            default_index = i
+
+    # put default in a separate line
+    if (default_index is not None and
+            default_index < len(codes) - 1 and
+            defaults and
+            not any(codes[default_index].startswith(default)
+                    for default in defaults)):
+        line_default_index = [codes[default_index].rfind(default)
+                              for default in defaults
+                              if default in codes[default_index]][0]
+        codes.insert(default_index+1, codes[default_index][line_default_index:])
+        codes[default_index] = codes[default_index][:line_default_index]
+
+    return [(line + ' \\')
+            if i not in (len(codes)-1, default_index)
+            else line
+            for i, line in enumerate(codes)]
