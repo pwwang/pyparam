@@ -13,7 +13,7 @@ homepage = "https://github.com/pwwang/pyparam"
 repository = "https://github.com/pwwang/pyparam"
 
 [tool.poetry.dependencies]
-python = "^3.5"
+python = "^3.6"
 python-simpleconf = "*"
 colorama = "*"
 completions = "*"

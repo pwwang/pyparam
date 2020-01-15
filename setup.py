@@ -26,7 +26,7 @@ setup(
     name='pyparam',
     version='0.2.4',
     description='Powerful parameter processing.',
-    python_requires='==3.*,>=3.5.0',
+    python_requires='==3.*,>=3.6.0',
     project_urls={"homepage": "https://github.com/pwwang/pyparam", "repository": "https://github.com/pwwang/pyparam"},
     author='pwwang',
     author_email='pwwang@pwwang.com',
