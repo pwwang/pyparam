@@ -24,7 +24,7 @@ if os.path.exists(readme_path):
 setup(
     long_description=readme,
     name='pyparam',
-    version='0.2.4',
+    version='0.2.5',
     description='Powerful parameter processing.',
     python_requires='==3.*,>=3.6.0',
     project_urls={"homepage": "https://github.com/pwwang/pyparam", "repository": "https://github.com/pwwang/pyparam"},
@@ -33,7 +33,7 @@ setup(
     license='MIT',
     packages=['pyparam'],
     package_dir={"": "."},
-    package_data={},
+    package_data={"pyparam": ["*.bak"]},
     install_requires=['colorama', 'completions', 'diot', 'pygments', 'python-simpleconf'],
     extras_require={"dev": ["pytest", "pytest-cov"]},
 )
