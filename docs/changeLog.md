@@ -1,3 +1,6 @@
+## 0.2.5
+- Change API to camel_case style
+
 ## 0.2.4
 - Add lock for params.
 
