@@ -1,186 +1,357 @@
-"""
-Utililities for pyparam
-"""
-import re
-import textwrap
+"""Utilities for pyparam"""
+import logging
+import ast
+import json
+import builtins
+from functools import lru_cache
+from argparse import Namespace as APNamespace
+from pathlib import Path
+from rich.logging import RichHandler
+from rich.padding import Padding
+from rich.syntax import Syntax
+from .defaults import TYPE_NAMES
+from .exceptions import PyParamTypeError
 
-class _Valuable:
+class Namespace(APNamespace):
+    """Subclass of argparse.Namespace with __getitem__ avaiable"""
+    __command__ = None
 
-    STR_METHODS = ('capitalize',
-                   'center',
-                   'count',
-                   'decode',
-                   'encode',
-                   'endswith',
-                   'expandtabs',
-                   'find',
-                   'format',
-                   'index',
-                   'isalnum',
-                   'isalpha',
-                   'isdigit',
-                   'islower',
-                   'isspace',
-                   'istitle',
-                   'isupper',
-                   'join',
-                   'ljust',
-                   'lower',
-                   'lstrip',
-                   'partition',
-                   'replace',
-                   'rfind',
-                   'rindex',
-                   'rjust',
-                   'rpartition',
-                   'rsplit',
-                   'rstrip',
-                   'split',
-                   'splitlines',
-                   'startswith',
-                   'strip',
-                   'swapcase',
-                   'title',
-                   'translate',
-                   'upper',
-                   'zfill')
+    def __getitem__(self, name):
+        return getattr(self, name)
 
-    def __str__(self):
-        return str(self.value)
+    def __setitem__(self, name, value):
+        setattr(self, name, value)
 
-    def str(self):
-        """Return the value in str type"""
-        return str(self.value)
+    def __len__(self):
+        return len(vars(self))
 
-    def int(self, raise_exc=True):
-        """Return the value in int type"""
-        try:
-            return int(self.value)
-        except (ValueError, TypeError):
-            if raise_exc:
-                raise
-            return None
+    def __nonzero__(self):
+        return len(self) > 0
 
-    def float(self, raise_exc=True):
-        """Return the value in float type"""
-        try:
-            return float(self.value)
-        except (ValueError, TypeError):
-            if raise_exc:
-                raise
-            return None
+    def __contains__(self, name):
+        return hasattr(self, name)
 
-    def bool(self):
-        """Return the value in bool type"""
-        return bool(self.value)
+class Codeblock:
+    """A code block, will be rendered as rich.syntax.Syntax"""
 
-    def __getattr__(self, item):
-        # attach str methods
-        if item in _Valuable.STR_METHODS:
-            return getattr(str(self.value), item)
-        raise AttributeError(
-            'Class %r: No such attribute: %r' % (self.__class__.__name__, item)
+    @classmethod
+    def scan_texts(cls, texts, check_default=False):
+        """Scan multiple texts for code blocks
+
+        Args:
+            cls (Codeblock class): The class
+            texts (list): a list of texts
+            check_default (bool): Check if there is default in maybe_codeblock.
+                Defaults should not be scanned as code blocks
+
+        Returns:
+            list: mixed text and code blocks
+        """
+
+        ret = []
+        ret_extend = ret.extend
+        codeblock = None
+        for text in texts:
+            if not codeblock:
+                scanned, codeblock = cls.scan(text, check_default=check_default)
+                ret_extend(scanned)
+                continue
+            # if we hit an unclosed codeblock
+            lines = text.splitlines()
+            for i, line in enumerate(lines):
+                if codeblock.is_end(line):
+                    scanned, codeblock = cls.scan(
+                        '\n'.join(
+                            lines[(i if codeblock.opentag == '>>>' else i+1):]
+                        ),
+                        check_default=check_default
+                    )
+                    ret_extend(scanned)
+                    break
+            else:
+                codeblock.add_code(text)
+
+        return ret
+
+    @classmethod
+    def scan(cls, maybe_codeblock, check_default=False):
+        """Scan and try to create codeblock objects from maybe_codeblock
+
+        Args:
+            cls (Codeblock class): The class
+            maybe_codeblock (str): Maybe a code block start
+                It can be a text block, we have to scan if it has code blocks
+                inside.
+            check_default (bool): Check if there is default in maybe_codeblock.
+                Defaults should not be scanned as code blocks
+
+        Returns:
+            tuple (list, Codeblock): mixed text and unclosed code blocks
+        """
+        sep = ('Default:' if 'Default:' in maybe_codeblock
+               else 'DEFAULT:' if 'DEFAULT:' in maybe_codeblock
+               else None)
+
+        default_to_append = None
+        if check_default and sep:
+            parts = maybe_codeblock.split(sep, 1)
+            default_to_append = sep + parts[1]
+            lines = parts[0].splitlines()
+        else:
+            lines = maybe_codeblock.splitlines() or ['']
+
+        ret = []
+        ret_append = ret.append
+        codeblock = None
+
+        for line in lines:
+            if not codeblock:
+                line_lstripped = line.lstrip()
+                if line_lstripped.startswith('>>>'):
+                    codeblock = cls('>>>',
+                                    'pycon',
+                                    len(line) - len(line_lstripped),
+                                    [line_lstripped])
+                    ret_append(codeblock)
+                elif line_lstripped.startswith('```'):
+                    codeblock = cls(
+                        line_lstripped[
+                            :(len(line_lstripped) -
+                            len(line_lstripped.lstrip('`')))
+                        ],
+                        line_lstripped.lstrip('`').strip() or 'text',
+                        len(line) - len(line_lstripped)
+                    )
+                    ret_append(codeblock)
+                else:
+                    ret_append(line)
+            elif codeblock.is_end(line):
+                if codeblock.opentag == '>>>':
+                    ret.append(line)
+                codeblock = None
+            else:
+                codeblock.add_code(line)
+
+        if default_to_append:
+            ret.append(default_to_append)
+        return ret, codeblock
+
+
+    def __init__(self, opentag, lang, indent, codes=None):
+        self.opentag = opentag
+        self.lang = lang
+        self.indent = indent
+        self.codes = codes or []
+
+    def add_code(self, code):
+        """Add code to code block
+
+        Args:
+            code (str): code to add
+                It can be multiple lines, each of which will be dedented
+        """
+        for line in code.splitlines():
+            self.codes.append(line[self.indent:])
+
+    def is_end(self, line):
+        """Tell if the line is the end of the code block
+
+        Args:
+            line (str): line to check
+
+        Returns:
+            bool: True if it is the end otherwise False
+        """
+        if self.opentag == '>>>' and not line[self.indent:].startswith('>>>'):
+            return True
+        if '`' in self.opentag and line[self.indent:].rstrip() == self.opentag:
+            return True
+        return False
+
+    def render(self):
+        """Render the code block to a rich.syntax.Syntax
+
+        Returns:
+            Padding: A padding of rich.syntax.Syntax
+        """
+        return Padding(
+            Syntax('\n'.join(self.codes), self.lang),
+            (0, 0, 0, self.indent)
         )
 
-    def __add__(self, other):
-        return self.value + other
+def always_list(str_or_list, strip=True, split=True):
+    """Convert a string (comma separated) or a list to a list
 
-    def __contains__(self, other):
-        return other in self.value
+    Args:
+        str_or_list (str|list): string or list
+        strip (bool): Whether to strip each element or not
 
-    def __hash__(self): # pragma: no cover
-        """
-        Use id as identifier for hash
-        """
-        return id(self)
-
-    def __eq__(self, other): # pragma: no cover
-        return self.value == other
-
-    def __ne__(self, other):
-        return not self.__eq__(other)
-
-class _Hashable:
+    Return:
+        list: list of strings
     """
-    A class for object that can be hashable
+    if isinstance(str_or_list, (list, tuple)):
+        return list(str_or_list)
+    if split:
+        return [elem.strip() if strip else elem
+                for elem in str_or_list.split(',')]
+    return [str_or_list]
+
+def parse_type(typestr):
+    """Parse the type string
+
+    Examples:
+        >>> parse_type(None)    # None, None
+        >>> parse_type("array") # list, None
+        >>> parse_type("a:i")   # list, int
+        >>> parse_type("j")     # json, None
+        >>> parse_type("list")  # list, None
+
+    Args:
+        typestr (str): string of type to parse
+
+    Returns:
+        tuple: Main type and subtype
+
+    Raises:
+        PyParamTypeError: When a type cannot be parsed
     """
-    def __hash__(self):
-        """
-        Use id as identifier for hash
-        """
-        return id(self)
+    if typestr is None:
+        return None, None
 
-    def __eq__(self, other):
-        """
-        How to compare the hash keys
-        """
-        return id(self) == id(other)
+    parts = typestr.split(':', 1)
+    for i, part in enumerate(parts):
+        if part not in TYPE_NAMES:
+            raise PyParamTypeError("Unknown type: %s" % typestr)
+        parts[i] = TYPE_NAMES[part]
 
-    def __ne__(self, other):
-        """
-        Compare hash keys
-        """
-        return not self.__eq__(other)
+    parts.append(None)
+    return parts[:2]
 
-def wraptext(text,
-             width=70,
-             defaults=("Default: ", "DEFAULT:"),
-             break_long_words=False,
-             **kwargs):
-    """Wrap a text
-    # keep the indentation
-    # '  - hello world' =>
-    # '  - hello \'
-    # '    world'
-    # '  1. hello world' =>
-    # '  1. hello \'
-    # '     world'
+@lru_cache()
+def parse_potential_argument(arg, prefix, allow_attached=False):
+    """Parse a potential argument with given prefix
+
+    Args:
+        arg (str): a potential argument. Such as:
+            -a, --def, -b=1, --abc=value, -b1 (for argument -b with value 1)
+            with types:
+            -a:int --def:list -b:str=1 --abs:str=value -b:bool
+            It is usually one element of the sys.argv
+        prefix (str): The prefix for the argument names
+        allow_attached (bool): Whether to detect item like '-b1' for argument
+            '-b' with value '1' or the entire one is parsed as argument '-b1'
+
+    Returns:
+        tuple (str, str, str): the argument name, type and value
+            When arg cannot be parsed as an argument, argument name and type
+            will both be None. arg will be returned as argument value.
     """
-    width -= 2 # for ending ' \'
-    match = re.match(r'\s*(?:[-*#]|\w{1,2}\.)?\s+', text)
-    prefix = ' ' * len(match.group(0)) if match else ''
-    kwargs['subsequent_indent'] = prefix + \
-                                  kwargs.get('initial_indent', '') + \
-                                  kwargs.get('subsequent_indent', '')
+    if not arg.startswith('-' if prefix == 'auto' else prefix):
+        return None, None, arg
 
-    codes = re.findall(r'`[^`]+`', text)
-    placeholders = {}
-    for i, line in enumerate(codes):
-        text = text.replace(line, '__code_%d__' % i)
-        placeholders['__code_%d__' % i] = line
+    # fill a tuple to length of 2 with None
+    fill2_none = lambda alist: (
+        (alist[0], None) if len(alist) == 1 or not alist[1] else alist[:2]
+    )
 
-    if text.endswith(' \\'):
-        return (kwargs.get('initial_indent', '') + text).splitlines()
+    item_nametype, item_value = fill2_none(arg.split('=', 1))
+    item_name, item_type = fill2_none(item_nametype.split(':', 1))
 
-    codes = textwrap.wrap(text,
-                          width,
-                          break_long_words=break_long_words,
-                          **kwargs)
+    # detach the value for -b1
+    if allow_attached:
+        if (item_type is None and item_value is None and (
+            (prefix == 'auto' and item_name[:1] == '-' and
+             item_name[:2] != '--') or
+            (len(prefix) == 1 and
+             item_name[1:2] != prefix )
+        )):
+            item_name, item_value = item_name[:2], item_name[2:]
 
-    if not codes:
-        return codes
+    # remove prefix in item_name
+    if prefix == 'auto':
+        prefix = '-' if len(item_name) <= 2 else '--'
+    item_name = item_name[len(prefix):]
 
-    default_index = None
-    for i, line in enumerate(codes):
-        for placeholder, origin in placeholders.items():
-            line = line.replace(placeholder, origin)
-        codes[i] = line
-        if defaults and any(default in line for default in defaults):
-            default_index = i
+    item_type, item_subtype = parse_type(item_type)
+    item_type = f"{item_type}:{item_subtype}" if item_subtype else item_type
 
-    # put default in a separate line
-    if (default_index is not None and
-            default_index < len(codes) - 1 and
-            defaults and
-            not any(codes[default_index].startswith(default)
-                    for default in defaults)):
-        line_default_index = [codes[default_index].rfind(default)
-                              for default in defaults
-                              if default in codes[default_index]][0]
-        codes.insert(default_index+1, codes[default_index][line_default_index:])
-        codes[default_index] = codes[default_index][:line_default_index]
+    return item_name, item_type, item_value
 
-    return [(line + ' \\')
-            if i not in (len(codes)-1, default_index)
-            else line
-            for i, line in enumerate(codes)]
+def type_from_value(value):
+    """Detect parameter type from a value
+
+    Args:
+        value (any): The value
+
+    Returns:
+        str: The name of the type
+    """
+    typename = type(value).__name__
+    if typename in ('int', 'float', 'str', 'bool', 'list'):
+        return typename
+    if isinstance(value, dict):
+        return 'json'
+    if isinstance(value, Path):
+        return 'path'
+    return 'auto'
+
+def _cast_auto(value):
+    """Cast value automatically
+
+    Args:
+        value (any): value to cast
+
+    Returns:
+        any: value casted
+    """
+    if value in ("True", "TRUE", "true"):
+        return True
+    if value in ("False", "FALSE", "false"):
+        return False
+
+    try:
+        return int(value)
+    except (TypeError, ValueError):
+        pass
+
+    try:
+        return float(value)
+    except (TypeError, ValueError):
+        pass
+
+    try:
+        return json.loads(value)
+    except (TypeError, ValueError, json.JSONDecodeError):
+        pass
+
+    return value
+
+def cast_to(value, to_type):
+    """Cast a value to a given type
+
+    Args:
+        value (any): value to cast
+        to_type (str): type to cast
+
+    Returns:
+        any: casted value
+
+    Raises:
+        PyParamTypeError: if value is not able to be casted
+    """
+    if to_type in ('int', 'float', 'bool', 'str'):
+        return getattr(builtins, to_type)(value)
+    if to_type == 'path':
+        return Path(value)
+    if to_type == 'py':
+        return ast.literal_eval(str(value))
+    if to_type == 'json':
+        return json.loads(str(value))
+    if to_type in (None, 'auto'):
+        return _cast_auto(value)
+    raise PyParamTypeError(f"Cannot cast {value} to {to_type}")
+
+
+logger = logging.getLogger(__name__)
+logger.setLevel(logging.INFO)
+logger.addHandler(RichHandler(show_time=False, show_path=False))

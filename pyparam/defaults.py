@@ -1,4 +1,46 @@
-"""Constants for pyparam"""
+"""Defaults for pyparam"""
+
+POSITIONAL = ''
+
+# - Single value types:
+#     auto, int, str, float, bool, count, py, json
+# - Complex value types:
+#     list[<single/complex value type>], ns
+TYPE_NAMES = dict(
+    i='int',
+    s='str',
+    f='float',
+    b='bool',
+    c='count',
+    p='path',
+    j='json',
+    a='list',
+    array='list',
+    l='list',
+    r='reset',
+    n='ns',
+    auto='auto',
+    int='int',
+    str='str',
+    float='float',
+    bool='bool',
+    count='count',
+    py='py',
+    json='json',
+    list='list',
+    path='path',
+    ns='ns',
+    reset='reset'
+)
+
+CONSOLE_WIDTH = 80
+# indention for each section
+HELP_SECTION_INDENT = 2
+# The width of the options in help
+HELP_OPTION_WIDTH = 34
+
+
+
 
 import colorama
 
