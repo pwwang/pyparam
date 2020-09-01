@@ -53,6 +53,9 @@ class Codeblock:
         codeblock = None
         for text in texts:
             if not codeblock:
+                if not text:
+                    ret.append(text)
+                    continue
                 scanned, codeblock = cls.scan(text, check_default=check_default)
                 ret_extend(scanned)
                 continue
@@ -70,7 +73,6 @@ class Codeblock:
                     break
             else:
                 codeblock.add_code(text)
-
         return ret
 
     @classmethod
@@ -98,12 +100,11 @@ class Codeblock:
             default_to_append = sep + parts[1]
             lines = parts[0].splitlines()
         else:
-            lines = maybe_codeblock.splitlines() or ['']
+            lines = maybe_codeblock.splitlines()
 
         ret = []
         ret_append = ret.append
         codeblock = None
-
         for line in lines:
             if not codeblock:
                 line_lstripped = line.lstrip()
@@ -133,7 +134,10 @@ class Codeblock:
                 codeblock.add_code(line)
 
         if default_to_append:
-            ret.append(default_to_append)
+            if not ret or isinstance(ret[-1], Codeblock):
+                ret.append(default_to_append)
+            else:
+                ret[-1] += default_to_append
         return ret, codeblock
 
 
@@ -142,6 +146,10 @@ class Codeblock:
         self.lang = lang
         self.indent = indent
         self.codes = codes or []
+
+    def __repr__(self):
+        return (f"<Codeblock (tag={self.opentag}, lang={self.lang}, "
+                f"codes={self.codes[:1]} ...)")
 
     def add_code(self, code):
         """Add code to code block
@@ -272,6 +280,10 @@ def parse_potential_argument(arg, prefix, allow_attached=False):
         prefix = '-' if len(item_name) <= 2 else '--'
     item_name = item_name[len(prefix):]
 
+    # not doing --a => a
+    if prefix == '--' and len(item_name) < 2:
+        return None, None, arg
+
     item_type, item_subtype = parse_type(item_type)
     item_type = f"{item_type}:{item_subtype}" if item_subtype else item_type
 
@@ -339,19 +351,32 @@ def cast_to(value, to_type):
     Raises:
         PyParamTypeError: if value is not able to be casted
     """
-    if to_type in ('int', 'float', 'bool', 'str'):
-        return getattr(builtins, to_type)(value)
-    if to_type == 'path':
-        return Path(value)
-    if to_type == 'py':
-        return ast.literal_eval(str(value))
-    if to_type == 'json':
-        return json.loads(str(value))
-    if to_type in (None, 'auto'):
-        return _cast_auto(value)
+    try:
+        if to_type in ('int', 'float', 'str'):
+            return getattr(builtins, to_type)(value)
+        if to_type == 'bool':
+            if value in ('true', 'TRUE', 'True', '1'):
+                return True
+            if value in ('false', 'FALSE', 'False', '0'):
+                return False
+            raise ValueError(
+                'Expecting one of [true, TRUE, True, 1, false, FALSE, False, 0]'
+            )
+        if to_type == 'path':
+            return Path(value)
+        if to_type == 'py':
+            return ast.literal_eval(str(value))
+        if to_type == 'json':
+            return json.loads(str(value))
+        if to_type in (None, 'auto'):
+            return _cast_auto(value)
+    except (TypeError, ValueError, json.JSONDecodeError) as cast_exc:
+        raise PyParamTypeError(
+            f"Cannot cast {value} to {to_type}: {cast_exc}"
+        ) from cast_exc
     raise PyParamTypeError(f"Cannot cast {value} to {to_type}")
 
 
 logger = logging.getLogger(__name__)
-logger.setLevel(logging.INFO)
+logger.setLevel(logging.DEBUG)
 logger.addHandler(RichHandler(show_time=False, show_path=False))

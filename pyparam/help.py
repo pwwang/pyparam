@@ -67,7 +67,7 @@ class HelpSection(list):
         scanned = Codeblock.scan_texts(self)
         for item in scanned:
             if isinstance(item, Codeblock):
-                yield item.render()
+                yield Padding(item.render(), (0, 0, 0, HELP_SECTION_INDENT))
             else:
                 yield Padding(
                     Columns([self._highlight(item,
@@ -135,11 +135,12 @@ class HelpSectionOption(HelpSection):
         hillight_inline_code = lambda text: re.sub(r'(`+)(.+?)\1',
                                                    r'[code]\2[/code]',
                                                    text)
+
         descs = Codeblock.scan_texts(descs, check_default=True)
         def wrap_normal(text):
             for line in textwrap.wrap(
                     text,
-                    drop_whitespace=False,
+                    drop_whitespace=True,
                     width=CONSOLE_WIDTH - HELP_OPTION_WIDTH - 2
             ):
                 yield self._highlight(hillight_inline_code(line))
@@ -182,6 +183,8 @@ class HelpSectionOption(HelpSection):
                                 ),
                                 default_highlighter
                             )
+                elif not desc:
+                    yield ''
                 else:
                     yield from wrap_normal(desc)
 

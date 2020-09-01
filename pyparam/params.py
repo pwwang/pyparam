@@ -122,7 +122,8 @@ class Params:
                   required=False,
                   callback=None,
                   group=None,
-                  force=False):
+                  force=False,
+                  **kwargs):
         """Add an argument
 
         Args:
@@ -149,6 +150,7 @@ class Params:
         Return:
             Param: The added parameter
         """
+        # TODO: check if names have been registered
         if type is None:
             type = type_from_value(default)
 
@@ -171,7 +173,8 @@ class Params:
             show=show,
             required=required,
             subtype=subtype,
-            callback=callback
+            callback=callback,
+            **kwargs
         )
 
         for name in names:
@@ -336,7 +339,7 @@ class Params:
         ret = {}
         for param_name, param in self.params.items():
             try:
-                value = param.value()
+                value = param.value
             except PyParamValueError as pve:
                 logger.error(str(pve))
                 self.print_help()
@@ -349,85 +352,6 @@ class Params:
                     ret[param_name] = value
         return None if namespace else ret
 
-    def _clearup_prev_param(self,
-                            prev_param,
-                            param_name,
-                            param_type,
-                            param_value,
-                            prev_first_hit):
-        """Clear up the previous parameter and try to create a new one
-        And do proper stuff with the type and value"""
-        if not prev_param and not param_name:
-            logger.debug("  No previous argument and not an argument at %r",
-                         param_value)
-            return None, None
-
-        if prev_param and param_name:
-            param = None
-            first_hit = True
-            logger.debug("  Hit another argument: %r", param_name)
-            # previous parameter is bool and can take value, but this value
-            # cannot be taken, so give it True
-            if prev_param.type == 'bool' and prev_first_hit:
-                logger.debug("  * Setting previous parameter to True")
-                prev_param.push('true')
-            # we hit the same argument
-            elif param_name in prev_param.names:
-                if param_type == 'reset' and prev_param.type == 'list':
-                    logger.debug("  * Resetting previous list parameter: %r",
-                                 prev_param.namestr())
-                    prev_param._stack = []
-                    param = prev_param
-                    first_hit = 'reset'
-                elif prev_param.type != param_type:
-                    logger.warning("Type changed from %r to %r for argument %r",
-                                   prev_param.type,
-                                   param_type,
-                                   prev_param.namestr())
-                    param = prev_param.to(param_type)
-                    for name in param.names:
-                        self.params[name] = param
-                else:
-                    param = prev_param
-            # different argument hit
-            if not param:
-                if self.arbitrary and param_name not in self.params:
-                    self.add_param(param_name, type=param_type)
-                param = self.params[param_name]
-
-            if param_value is not None:
-                param.push(param_value, first=first_hit)
-                first_hit = False
-
-            return param, first_hit
-
-        if prev_param: # didn't hit new argument
-            # When should we consume the value?
-            # If prev_first_hit is True, we should clear previous stack
-            # and warn
-            # But we should not do it for list parameter
-            if prev_first_hit and prev_param.type != 'list':
-                if prev_param._stack:
-                    logger.warning("Value of previous argument %r lost",
-                                   prev_param.namestr())
-                prev_param._stack = []
-
-            if prev_param.should_consume(param_value):
-                prev_param.push(param_value, first=prev_first_hit)
-                return prev_param, False
-            return None, None
-
-        # if param_name:
-        if self.arbitrary and param_name not in self.params:
-            self.add_param(param_name, type=param_type)
-        param = self.params[param_name]
-
-        if param_value is not None:
-            param.push(param_value, first=True)
-            return param, False
-
-        return param, True
-
     def _parse(self, args, namespace):
         """Parse the arguments from the command line
 
@@ -438,140 +362,195 @@ class Params:
         """
         logger.debug("Parsing %r", args)
 
-        if not args:
+        if not args: # help_on_void = False
             return
 
-        param = None
-        first_hit = False
+        prev_param = None
         for i, arg in enumerate(args):
             logger.debug("- Parsing item %r", arg)
-            param_name, param_type, param_value = self._match_param(arg)
-            # unmatched argument
-            if (not self.arbitrary and param_name is None and
-                    param_value is None):
-                continue
 
-            # if we hit help keys anyway
-            if param_name in self.help_keys:
-                self.print_help()
-
-            param, first_hit = self._clearup_prev_param(
-                param,
-                param_name,
-                param_type,
-                param_value,
-                first_hit
-            )
-
-            # we have cleared up this arg
+            # Match the arg with defined parameters
+            # If arbitrary, non-existing parameters will be created on the fly
+            # This means
+            # 1. if param_name is None
+            #    arg is not a parameter-like format (ie. -a, --arg)
+            #    then param_value == arg
+            # 2. if param_name is not None, arg is parameter-like
+            #    With arbitrary = True, parameter will be created on the fly
+            # 3. if arg is like --arg=1, then param_value 1 is pushed to param.
+            param, param_name, param_type, param_value = self.match_param(arg)
             if param:
-                continue
+                logger.debug("  Hit argument: %r (name=%s, type=%s, value=%r)",
+                             param.namestr(),
+                             param_name, param_type, param_value)
 
-            # we didn't hit any argument for arg
+            if prev_param and param:
+                prev_param = prev_param.close(param, param_name, param_type)
+                # when the type is overwritten
+                # a new parameter instance has been created
+                # we need to update in the pool as well
+                if (prev_param and
+                        prev_param is not self.params[prev_param.names[0]]):
+                    for name in prev_param.names:
+                        self.params[name] = prev_param
 
-            # this is a pending value
-            # let's see if this is the starting of positional arguments
-            # otherwise, this should be a subcommand
-            if arg in self.commands:
-                logger.debug("  Hit command: %r", arg)
-                namespace.__command__ = arg
-                namespace[arg] = self.commands[arg].parse(args[(i+1):])
-                break
-
-            if not self.arbitrary:
-
-                if (POSITIONAL in self.params and
-                        self._maybe_positional(args[(i+1):])):
-                    logger.debug("  Hit the start %r "
-                                 "of the POSITIONAL argument", arg)
-
-                    param = self.params[POSITIONAL]
-                    param.push(param_value, first=True)
-                    first_hit = False
+            elif prev_param: # No param
+                if param_name is not None:
+                    logger.warning("Unknown argument: %s, skipped", arg)
+                elif not prev_param.consume(param_value):
+                    # If value cannot be consumed, let's see if it
+                    # 1. hits a command
+                    # 2. hits the start of positional arguments
+                    prev_param, matched = self.match_command_or_positional(
+                        prev_param, param_value, args[(i+1):], namespace
+                    )
+                    if matched == 'command':
+                        break
+                    if matched == 'positional':
+                        continue
+                    logger.warning("Unknown value: %s, skipped", param_value)
                 else:
-                    logger.warning("Unmatched value: %r", arg)
-            else:
+                    logger.debug("  Param %r consumes %r",
+                                 prev_param.namestr(), param_value)
 
-                if self._maybe_positional(args[(i+1):]):
-                    logger.debug("  Hit the start %r "
-                                "of the POSITIONAL argument", arg)
-                    if POSITIONAL not in self.params:
-                        self.add_param(POSITIONAL, type='list')
-                    param = self.params[POSITIONAL]
-                    param.push(param_value, first=True)
-                    first_hit = False
-                else:
-                    logger.debug("  Hit subcommand %r", arg)
-                    if arg not in self.commands:
-                        self.commands[arg] = Params(
-                            prog=f'{self.prog} {arg}',
-                            help_keys=self.help_keys,
-                            help_on_void=self.help_on_void,
-                            arbitrary=True
-                        )
-                    namespace.__command__ = arg
-                    namespace[arg] = self.commands[arg].parse(args[(i+1):])
+            elif param: # no prev_param
+                prev_param = param
+
+            else: # neither
+                prev_param, matched = self.match_command_or_positional(
+                    prev_param, param_value, args[(i+1):], namespace
+                )
+                if matched == 'command':
                     break
+                if matched == 'positional':
+                    continue
+                logger.warning("Unknown value: %s, skipped", param_value)
 
+        if prev_param:
+            prev_param.close_end()
 
         self.values(namespace)
 
-    def _maybe_positional(self, rest):
-        """See if we start to hit positional arguments"""
-        for arg in rest:
-            if self.prefix != 'auto' and arg.startswith(self.prefix):
-                return False
+    def match_command_or_positional(self,
+                                    prev_param,
+                                    arg,
+                                    rest_args,
+                                    namespace):
+        """Check if arg hits a command or a positional argument start
 
-            if self.prefix == 'auto' and arg[:1] == '-':
-                if len(arg) <= 2 or (arg[:2] == '--' and len(arg) > 3):
-                    return False
-        else:
-            return True
+        Args:
+            prev_param (Param): The previous parameter
+            arg (str): The current argument item
+            rest_args (list): The remaining argument items
 
-    def _match_param(self, arg):
-        """Check if arg matches any predefined parameters
+        Returns:
+            tuple (Param, str):
+                - A parameter if we create a new one here
+                    (ie, a positional parameter)
+                - 'command' when arg hits a command or 'positional' when it hits
+                    the start of a positional argument. Otherwise, None.
+        """
+        if prev_param and prev_param.is_positional:
+            logger.debug("  Hit positional argument")
+            prev_param.push(arg)
+            return prev_param, 'positional'
+
+        if arg not in self.commands:
+            # any of the rest args matches is argument-like then
+            # this should not hit the start of positional argument
+            for rest_arg in rest_args:
+                if self.prefix != 'auto' and rest_arg.startswith(self.prefix):
+                    break
+
+                if self.prefix == 'auto' and rest_arg[:1] == '-':
+                    if len(rest_arg) <= 2 or (
+                            rest_arg[:2] == '--' and len(rest_arg) > 3
+                    ):
+                        break
+            else:
+                logger.debug("  Hit start of positional argument")
+                if self.arbitrary and POSITIONAL not in self.params:
+                    self.add_param(POSITIONAL, type=list)
+                if POSITIONAL in self.params:
+                    self.params[POSITIONAL].set_first_hit('true')
+                    self.params[POSITIONAL].push(arg)
+                    return self.params[POSITIONAL], 'positional'
+
+        if prev_param:
+            prev_param.close_end()
+
+        if self.arbitrary and arg not in self.commands:
+            self.add_command(arg)
+
+        if arg not in self.commands:
+            return None, None
+
+        logger.debug("  Hit command: %r", arg)
+        command = self.commands[arg]
+        namespace.__command__ = arg
+        parsed = command.parse(rest_args)
+        for name in command.names:
+            namespace[name] = parsed
+
+        return None, 'command'
+
+    def match_param(self, arg):
+        """Check if arg matches any predefined parameters. With
+        arbitrary = True, parameters will be defined on the fly.
+
+        When there is a value attached, it should be pushed to matched parameter
 
         Args:
             arg (str): arg to check
 
         Returns:
-            tuple (str, str, str): The matched parameter name,
-                type and unpushed value.
-                if matched. Otherwise, None, None and arg itself.
+            tuple (Param, str, str, str): The matched parameter, parameter name,
+                type and unpushed value if matched.
+                Otherwise, None, param_name, param_type and arg itself.
         """
 
         param_name, param_type, param_value = parse_potential_argument(
             arg, self.prefix
         )
-        if self.arbitrary:
-            return param_name, param_type, param_value
 
-        if param_name is None:
-            return None, None, arg
-
-        if param_name not in self.params:
-            # try argument with attached value
-            param_name2, param_type2, param_value2 = parse_potential_argument(
-                arg, self.prefix
+        # parse -arg as -a rg only applicable with prefix auto and -
+        # When we didn't match any argument-like
+        # with allow_attached=False
+        # Or we matched but it is not defined
+        if (
+            self.prefix in ('auto', '-') and
+            not param_type and
+            param_value and
+            param_value[:1] == '-' and
+            (param_name is None or (not self.arbitrary and
+                                    param_name not in self.params))
+        ):
+            # parsed '-arg' as '-a rg'
+            param_name2, param_type2, param_value2 = (
+                parse_potential_argument(
+                    arg, self.prefix, allow_attached=True
+                )
             )
-            if param_name2 is not None and param_name2 in self.params:
+            if param_name2 is not None and (
+                param_name is None or (not self.arbitrary and
+                                       param_name2 in self.params)):
                 param_name, param_type, param_value = (
                     param_name2, param_type2, param_value2
                 )
 
+        if self.arbitrary and param_name is not None:
+            self.add_param(param_name, type=param_type)
+
         if param_name not in self.params:
-            logger.warning("Unknown argument: %s", param_name)
-            # skip this item
-            return None, None, None
+            return None, param_name, param_type, param_value
 
         param = self.params[param_name]
-        if param_type and param_type != param.type and param_type != 'reset':
-            logger.warning("Type changed of argument %r from %r to %r",
-                           param.namestr(), param.type, param_type)
-            new_param = param.to(param_type)
-            for name in param.names:
-                self.params[name] = new_param
-        return param_name, param_type, param_value
+        param.set_first_hit(param_type)
+
+        if param_value is not None:
+            param.push(param_value)
+
+        return param, param_name, param_type, param_value
 
 # pylint: disable=invalid-name
 params = Params()
