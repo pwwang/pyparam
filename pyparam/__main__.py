@@ -26,10 +26,10 @@ predefined = params.add_command([
     "p", "pred", "pd", "pdf", "predef", "predefined", "pre-defined",
     "pre-defined-args"
 ], desc="Some predefined arguments.", usage="""\
-{prog} -i-1
-{prog} --int=-1 -f.1 -ccc
-{prog} --int=-1 --float 0.1 --count 2
-{prog} --int=-1 -b --float 0.1 --in ./
+{prog} -i-1 --in . --py 1
+{prog} --int=-1 --in . --py "(1,2,3)" -f.1 -ccc
+{prog} --int=-1 --in . --py "[1,2,3]" --float 0.1 --count 2
+{prog} --int=-1 --in . --py True -b true --float 0.1
 {prog} -i0 -b1 --choice=large
 {prog} --int=-1 --bool false --float 0.1 --auto \
 "{{\\\"a\\\": 1}}" --py "{{1, 2, 3}}" """)
@@ -41,9 +41,11 @@ predefined.add_param('i, int', required=True, type=int, desc=[
     "`-i-1` or `--int=-1`",
     "Same for other values starting with `-`"
 ])
-predefined.add_param('f, float', default=0.0, type=float, desc=[
+predefined.add_param('f, float', type_frozen=False, type=float, desc=[
     "An argument whose value will be casted into float.",
-    "You can even try `--float=1e-3`"
+    "You can also try `--float=1e-3`",
+    "You can even overwrite the type of the argument from command line by "
+    "`--float:int 1`"
 ])
 predefined.add_param('b, bool', type=bool, desc=[
     "A boolean/flag argument. ",
@@ -107,7 +109,16 @@ predefined.add_param("choice", type="choice", desc=[
     "small", "medium", "large"
 ], default="medium", callback=(lambda value, all_values:
                                f"{value} {all_values.str}"))
-
+predefined.add_param("list", default=[1,2,3], type=list, desc=[
+    "List/Array argument.",
+    "You can pass the values one by one like this: `--list 1 2 3`.",
+    "Or like this: `--list 1 --list 2 --list 3`.",
+    "List argument is incremental, meaning the values will be added to "
+    "the values. To stop doing that, you can direct users to reset it using "
+    "`--list:reset 4 5 6` or `--list:reset 4 --list 5 --list 6`",
+    "You can also set a subtype for list elements, including the scalar types. "
+    "For exapmle: `--list:list:bool 0 1 0` will produce `[False, True, False]`."
+])
 
 params.add_command("a, arbi, arbitrary",
                     desc="No predefined arguments, but you can "
@@ -125,9 +136,9 @@ For example, a toml file:
 [params.arg]
 desc = "An argument"
 ```""")
-fromfile.add_param("json", type="json", default="{}", desc=[
+fromfile.add_param("json", type="json", type_frozen=False, default="{}", desc=(
     "Value will be converted using `json.loads`"
-])
+))
 
 def vars_ns(ns, depth=None):
     """Get the vars of a namespace"""

@@ -19,6 +19,10 @@ class Param: # pylint: disable=too-many-instance-attributes
     type: Optional[str] = None
     type_aliases: List[str] = []
 
+    @classmethod
+    def on_register(cls):
+        """Opens opportunity to do something when a parameter is registered"""
+
     def __init__(self,
                  names: List[str],
                  default: Any,
@@ -27,6 +31,7 @@ class Param: # pylint: disable=too-many-instance-attributes
                  show: bool = True,
                  required: bool = False,
                  subtype: Optional[bool] = None,
+                 type_frozen: bool = True,
                  callback: Optional[Callable] = None,
                  **kwargs: Dict[str, Any]):
         self.names: List[str] = names
@@ -36,6 +41,7 @@ class Param: # pylint: disable=too-many-instance-attributes
         self.show: bool = show
         self.required: bool = required
         self.subtype: Optional[str] = subtype
+        self.type_frozen: bool = type_frozen
         self.callback: Optional[Callable] = callback
         self._stack: List[Any] = []
         self._value_cached: Optional[Any] = None
@@ -75,7 +81,6 @@ class Param: # pylint: disable=too-many-instance-attributes
 
     def close(self,
               next_param: Type['Param'],
-              param_name: str,
               param_type: str) -> Type['Param']:
         """Close up this parameter while scanning the command line
 
@@ -90,12 +95,19 @@ class Param: # pylint: disable=too-many-instance-attributes
         """
         logger.debug("  Closing argument: %r", self.namestr())
         # if they are the same parameter
-        if param_name in self.names and param_type != self.type:
+        if param_type and param_type != next_param.typestr():
+            if not self.type_frozen:
+                raise PyParamTypeError(
+                    f"Type of argument {next_param.namestr()!r} "
+                    "is not overwritable"
+                )
             logger.warning("Type changed from %r to %r for argument %r",
-                            self.type,
+                            next_param.typestr(),
                             param_type,
-                            self.namestr())
-            return self.to(param_type)
+                            next_param.namestr())
+
+            next_param = next_param.to(param_type)
+        next_param.set_first_hit(param_type)
         return next_param
 
     def close_end(self) -> None:
@@ -189,7 +201,7 @@ class Param: # pylint: disable=too-many-instance-attributes
         klass: Callable = PARAM_MAPPINGS[main_type]
         return klass(
             names=self.names,
-            default=self.default,
+            default=None,
             desc=self.desc,
             prefix=self.prefix,
             show=self.show,
@@ -237,7 +249,8 @@ class Param: # pylint: disable=too-many-instance-attributes
         self._first_hit = False
 
     def __repr__(self):
-        return f'<{self.__class__.__name__}({self.namestr()}) @ {id(self)}>'
+        return (f'<{self.__class__.__name__}({self.namestr()} :: '
+                f'{self.typestr()}) @ {id(self)}>')
 
     def _value(self):
         """Get the organized value of this parameter
@@ -305,6 +318,10 @@ class ParamInt(Param):
     type = 'int'
     type_aliases = ['i']
 
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.default = self.default or 0
+
     def _value(self):
         return int(super()._value())
 
@@ -312,6 +329,10 @@ class ParamFloat(Param):
     """A float parameter whose value is automatically casted into a float"""
     type = 'float'
     type_aliases = ['f']
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.default = self.default or 0.0
 
     def _value(self):
         return float(super()._value())
@@ -321,37 +342,30 @@ class ParamStr(Param):
     type = 'str'
     type_aliases = ['s']
 
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.default = self.default or ''
+
 class ParamBool(Param):
     """A bool parameter whose value is automatically casted into a bool"""
     type = 'bool'
     type_aliases = ['b']
 
-    def __init__(self,
-                 names: List[str],
-                 default: Any,
-                 desc: List[str],
-                 prefix: str = 'auto',
-                 show: bool = True,
-                 required: bool = False,
-                 subtype: Optional[bool] = None,
-                 callback: Optional[Callable] = None,
-                 **kwargs: Dict[str, Any]):
-        default = default or False
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.default = self.default or False
         try:
-            cast_to(str(default), 'bool')
+            cast_to(str(self.default), 'bool')
         except (PyParamValueError, PyParamTypeError):
             raise PyParamValueError(
                 "Default value of a count argument must be a bool value or "
                 "a value that can be casted to a bool value."
             ) from None
 
-        super().__init__(names, default, desc, prefix, show, required,
-                         subtype, callback, **kwargs)
 
-    def close(self, next_param, param_name, param_type):
-        logger.debug("  Closing argument: %r", self.namestr())
+    def close(self, next_param, param_type):
         self.push('true')
-        return next_param
+        return super().close(next_param, param_type)
 
     def close_end(self):
 
@@ -385,40 +399,32 @@ class ParamCount(Param):
     """A bool parameter whose value is automatically casted into a bool"""
     type = 'count'
 
-    def __init__(self,
-                 names: List[str],
-                 default: Any,
-                 desc: List[str],
-                 prefix: str = 'auto',
-                 show: bool = True,
-                 required: bool = False,
-                 subtype: Optional[bool] = None,
-                 callback: Optional[Callable] = None,
-                 **kwargs: Dict[str, Any]):
-        default = default or 0
-        if default != 0:
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        self.default = self.default or 0
+        if self.default != 0:
             raise PyParamValueError(
                 "Default value of a count argument must be 0"
             )
 
-        if 1 not in (len(name) for name in names):
+        if len(self.name('short', with_prefix=False)) != 1:
             raise PyParamValueError(
                 "Count argument must have a short name."
             )
 
-        if 'max' in kwargs and (not isinstance(kwargs['max'], int) or
-                                kwargs['max'] <= 0):
+        if 'max' in self._kwargs and (
+                not isinstance(self._kwargs['max'], int) or
+                self._kwargs['max'] <= 0
+        ):
             raise PyParamValueError(
                 "Argument 'max' for count argument must be a positive integer"
             )
 
-        super().__init__(names, default, desc, prefix, show, required,
-                         subtype, callback, **kwargs)
 
-    def close(self, next_param, param_name, param_type):
-        logger.debug("  Closing argument: %r", self.namestr())
+    def close(self, next_param, param_type):
         self.push('1')
-        return next_param
+        return super().close(next_param, param_type)
 
     def close_end(self):
         if self._first_hit is True:
@@ -493,9 +499,28 @@ class ParamList(Param):
     type = 'list'
     type_aliases = ['l', 'a', 'array']
 
-    def close(self, next_param, param_name, param_type):
-        logger.debug("  Closing argument: %r", self.namestr())
-        return next_param
+    @classmethod
+    def on_register(cls):
+        """Also register reset type"""
+        name = 'reset'
+        aliases = ['r']
+        all_names = [name] + aliases
+        if any(name in TYPE_NAMES for name in all_names):
+            raise PyParamValueError("Types 'r, reset' are reserved "
+                                    "for ParamList")
+        for nam in all_names:
+            TYPE_NAMES[nam] = name
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.default = self.default or []
+        self._stack.append(self.default)
+
+    def close(self, next_param, param_type):
+        if param_type == 'reset':
+            return next_param
+
+        return super().close(next_param, param_type)
 
     def consume(self, value):
         """Should I consume given parameter?"""
@@ -507,7 +532,11 @@ class ParamList(Param):
         if self._first_hit == 'reset':
             self._stack = []
             self._first_hit = True
-        super().push(item)
+
+        if self._first_hit or not self._stack:
+            self._stack.append([])
+        self._stack[-1].append(item)
+        self._first_hit = False
 
     def _value(self):
         """Get the value a list parameter"""
@@ -524,30 +553,18 @@ class ParamChoice(Param):
     type = 'choice'
     type_aliases = ['c']
 
-    def __init__(self,
-                 names: List[str],
-                 default: Any,
-                 desc: List[str],
-                 prefix: str = 'auto',
-                 show: bool = True,
-                 required: bool = False,
-                 subtype: Optional[bool] = None,
-                 callback: Optional[Callable] = None,
-                 **kwargs: Dict[str, Any]):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
 
-        if 'choices' not in kwargs:
+        if 'choices' not in self._kwargs:
             raise PyParamValueError(
                 "Argument 'choices' is required for ParamChoice."
             )
 
-        if not isinstance(kwargs['choices'], (list, tuple)):
+        if not isinstance(self._kwargs['choices'], (list, tuple)):
             raise PyParamValueError(
                 "Argument 'choices' must be a list or a tuple."
             )
-
-        super().__init__(names, default, desc, prefix, show, required,
-                         subtype, callback, **kwargs)
-
 
     def _value(self):
         val = super()._value()
@@ -575,6 +592,8 @@ def register_param(param: Param) -> None:
         TYPE_NAMES[alias] = param.type
 
     PARAM_MAPPINGS[param.type] = param
+
+    param.on_register()
 
 register_param(ParamAuto)
 register_param(ParamInt)

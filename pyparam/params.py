@@ -13,7 +13,6 @@ from .defaults import POSITIONAL
 from .param import PARAM_MAPPINGS
 from .help import HelpAssembler
 from .exceptions import (
-    PyParamUnsupportedParamType,
     PyParamAlreadyExists,
     PyParamValueError,
     PyParamTypeError
@@ -123,6 +122,7 @@ class Params:
                   callback=None,
                   group=None,
                   force=False,
+                  type_fronzen=True,
                   **kwargs):
         """Add an argument
 
@@ -158,7 +158,7 @@ class Params:
                                        else type)
 
         if maintype not in PARAM_MAPPINGS:
-            raise PyParamUnsupportedParamType(
+            raise PyParamTypeError(
                 f"Param type {type} is not supported."
             )
 
@@ -172,6 +172,7 @@ class Params:
             show=show,
             required=required,
             subtype=subtype,
+            type_fronzen=type_fronzen,
             callback=callback,
             **kwargs
         )
@@ -184,7 +185,7 @@ class Params:
                 )
             self.params[name] = param
 
-        group = group or (f"{'REQUIRED' if required else 'OPTIONAL'} OPTIONS:")
+        group = group or (f"{'REQUIRED' if required else 'OPTIONAL'} OPTIONS")
         self.param_groups.setdefault(group, []).append(param)
 
         return param
@@ -404,7 +405,7 @@ class Params:
                              param_name, param_type, param_value)
 
             if prev_param and param:
-                prev_param = prev_param.close(param, param_name, param_type)
+                prev_param = prev_param.close(param, param_type)
                 # when the type is overwritten
                 # a new parameter instance has been created
                 # we need to update in the pool as well
@@ -415,7 +416,7 @@ class Params:
 
             elif prev_param: # No param
                 if param_name is not None:
-                    logger.warning("Unknown argument: %s, skipped", arg)
+                    logger.warning("Unknown argument: %r, skipped", arg)
                 elif not prev_param.consume(param_value):
                     # If value cannot be consumed, let's see if it
                     # 1. hits a command
@@ -427,7 +428,7 @@ class Params:
                         break
                     if matched == 'positional':
                         continue
-                    logger.warning("Unknown value: %s, skipped", param_value)
+                    logger.warning("Unknown value: %r, skipped", param_value)
                 else:
                     logger.debug("  Param %r consumes %r",
                                  prev_param.namestr(), param_value)
@@ -443,7 +444,7 @@ class Params:
                     break
                 if matched == 'positional':
                     continue
-                logger.warning("Unknown value: %s, skipped", param_value)
+                logger.warning("Unknown value: %r, skipped", param_value)
 
         if prev_param:
             prev_param.close_end()

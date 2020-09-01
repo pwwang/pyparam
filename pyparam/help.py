@@ -19,7 +19,8 @@ THEMES = dict(
         prog="bold green",
         default="magenta",
         optname="bright_green",
-        opttype="blue",
+        opttype="blue italic",
+        opttype_frozen="blue"
     )),
 )
 
@@ -43,7 +44,10 @@ class OptnameHighlighter(RegexHighlighter):
 class OpttypeHighlighter(RegexHighlighter):
     """Apply style to anything that looks like a option type."""
 
-    highlights = [r"(?P<opttype>[\[\<].+?[\]\>])"]
+    highlights = [
+        r"(?P<opttype_frozen>[\[\<][A-Z:]+[\]\>])",
+        r"(?P<opttype>[\[\<][a-z:]+[\]\>])",
+    ]
 
 class DefaultHighlighter(RegexHighlighter):
     """Apply style to anything that looks like default value in option desc."""
@@ -307,9 +311,11 @@ class HelpAssembler:
                 ([
                     f"{param.namestr()}*" +
                     ('' if param.names == params.help_keys
-                     else '[BOOL]'
+                     else f'[{"BOOL" if param.type_frozen else "bool"}]'
                      if param.type == 'bool'
-                     else f'<{param.typestr().upper()}>')
+                     else f'<{param.typestr().upper()}>'
+                     if param.type_frozen
+                     else f'<{param.typestr()}>')
                  ],
                  param.desc
                  if param.names == params.help_keys
@@ -360,7 +366,8 @@ class HelpAssembler:
 
         for title, section in assembled.items():
             self._assembled.append(Text(end="\n"))
-            self._assembled.append(Text(title, style="title", justify="left"))
+            self._assembled.append(Text(title + ':', style="title",
+                                        justify="left"))
             self._assembled.append(section)
 
         if printout:

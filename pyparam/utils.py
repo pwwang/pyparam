@@ -366,9 +366,9 @@ def cast_to(value, to_type):
         if to_type in ('int', 'float', 'str'):
             return getattr(builtins, to_type)(value)
         if to_type == 'bool':
-            if value in ('true', 'TRUE', 'True', '1'):
+            if value in ('true', 'TRUE', 'True', '1', 1, True):
                 return True
-            if value in ('false', 'FALSE', 'False', '0'):
+            if value in ('false', 'FALSE', 'False', '0', 0, False):
                 return False
             raise ValueError(
                 'Expecting one of [true, TRUE, True, 1, false, FALSE, False, 0]'
