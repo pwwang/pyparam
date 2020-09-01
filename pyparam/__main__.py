@@ -1,8 +1,133 @@
 """For users to test arbitrary parsing"""
 import logging
 from rich import print # pylint: disable=redefined-builtin
+from . import defaults
 from . import Params, Namespace
 from .utils import logger
+
+defaults.CONSOLE_WIDTH = 100
+
+params = Params(prog='python -m pyparam', desc="""\
+An exhibition showing all supported types of parameters and \
+some features by running {prog}.
+
+```python,
+# We can also insert code block in the description.
+print('Hello pyparam!')
+```
+
+>>> # This is another example of code block using python console
+>>> print('Hello pyparam!')""")
+
+params.add_param('d,debug', False,
+                 desc='Show the debug logging of the parsing process?')
+
+predefined = params.add_command([
+    "p", "pred", "pd", "pdf", "predef", "predefined", "pre-defined",
+    "pre-defined-args"
+], desc="Some predefined arguments.", usage="""\
+{prog} -i-1
+{prog} --int=-1 -f.1 -ccc
+{prog} --int=-1 --float 0.1 --count 2
+{prog} --int=-1 -b --float 0.1 --in ./
+{prog} -i0 -b1 --choice=large
+{prog} --int=-1 --bool false --float 0.1 --auto \
+"{{\\\"a\\\": 1}}" --py "{{1, 2, 3}}" """)
+
+predefined.add_param('i, int', required=True, type=int, desc=[
+    "An argument whose value will be casted into an integer.",
+    "You can also try the short name with attached value: `-i1`.",
+    "Negative values should be passed using `=`: ",
+    "`-i-1` or `--int=-1`",
+    "Same for other values starting with `-`"
+])
+predefined.add_param('f, float', default=0.0, type=float, desc=[
+    "An argument whose value will be casted into float.",
+    "You can even try `--float=1e-3`"
+])
+predefined.add_param('b, bool', type=bool, desc=[
+    "A boolean/flag argument. ",
+    "If it is hit by itself, `True` will be used. However, it can consume "
+    "one of following values: [true, TRUE, True, 1, false, FALSE, False, 0]"
+])
+predefined.add_param('c, count', max=3, type='count', desc=[
+    "A count argument, you can do -c, -cc, -ccc, etc.",
+    "It must have a short name (`c` here for example). ",
+    "You can also use it like an integer argument with long name. "
+    "For example: `--count 3`",
+    "The default value has to be `0` if specified. A max value can also "
+    "be defined while adding this argument."
+])
+predefined.add_param('auto', desc=[
+    "An argument whose value will be automatically casted.",
+    "```python",
+    "# Value received => Value/Type casted into",
+    "'True', 'TRUE', 'true' => True",
+    "'False', 'FALSE', 'false' => False",
+    "'1', '2', '-1' => int",
+    "'1.1', '2.0', '-1.0' => float",
+    "'{\"a\": 1}' => {\"a\": 1} # json",
+    "```",
+    "If you don't want the value to be casted. Declare the argument with "
+    "type `str`"
+])
+predefined.add_param('in', type='path', required=True, desc=[
+    "An argument whose value will be casted into `pathlib.Path`.",
+    "Since the argument name is a python keyword, you may not be able to "
+    "fetch the value by:",
+    "```python",
+    "parsed = params.parse()",
+    "parsed.in",
+    "# you can do parsed['in'] instead.",
+    "```",
+    "You can use a callback here to check if the path exists:",
+    ">>> def callback(path):",
+    ">>>    if not path.exists():",
+    ">>>        # You can also return the error using lambda",
+    ">>>        raise ValueError('Path does not exist.')",
+    ">>>    return path"
+], callback=(lambda path: ValueError("Path does not exist.")
+             if not path.exists() else path))
+predefined.add_param("py", required=True, type="py", desc=[
+    "Value will be evaluated using `ast.literal_eval`"
+])
+predefined.add_param("str", default='size', type="str", desc=[
+    "Value will be kept anyway as a string."
+])
+predefined.add_param("json", type="json", default="{}", desc=[
+    "Value will be converted using `json.loads`"
+])
+predefined.add_param("choice", type="choice", desc=[
+    "One of the choices: small, medium and large.",
+    "Callback can also be apply to modify the value:",
+    ">>> def callback(value, all_values):",
+    ">>>    # Use the value of argument '--str'",
+    ">>>    return f'{value} {all_values.str}'"
+], choices=[
+    "small", "medium", "large"
+], default="medium", callback=(lambda value, all_values:
+                               f"{value} {all_values.str}"))
+
+
+params.add_command("a, arbi, arbitrary",
+                    desc="No predefined arguments, but you can "
+                    "pass arbitrary arguments and see how "
+                    "`pyparam` parses them",
+                    arbitrary=True)
+
+fromfile = params.add_command("f, fromfile", desc="""\
+Load parameter definition from file.
+You can load parameter definitions from any file type that \
+`python-simpleconf` supports.
+For example, a toml file:
+
+```toml
+[params.arg]
+desc = "An argument"
+```""")
+fromfile.add_param("json", type="json", default="{}", desc=[
+    "Value will be converted using `json.loads`"
+])
 
 def vars_ns(ns, depth=None):
     """Get the vars of a namespace"""
@@ -12,60 +137,8 @@ def vars_ns(ns, depth=None):
             ret[key] = vars_ns(val, None if depth is None else depth - 1)
     return ret
 
-
-
 def main():
     """Main entry"""
-    params = Params(
-        prog='python -m pyparam',
-        desc=["An exhibition showing all supported types of parameters "
-              "and some features by running {prog}.",
-              "",
-              "```python",
-              "# We can also insert code block in the description.",
-              "print('Hello pyparam!')",
-              "```",
-              "",
-              ">>> # This is another example of code block "
-              "using python console",
-              ">>> print('Hello pyparam!')"
-             ]
-    )
-    params.add_param('d,debug', False,
-                     desc='Show the debug logging of the parsing process?')
-    predefined = params.add_command("p, pred, pd, pdf, predef, predefined, "
-                                  "pre-defined, pre-defined-args",
-                                  "Some predefined arguments.")
-    predefined.add_param('i, int', required=True, type=int, desc=[
-        "An argument whose value will be casted into an integer.",
-        "You can also try the short name with attached value: `-i1`"
-    ])
-    predefined.add_param('b, bool', type=bool, desc=[
-        "A boolean/flag argument. ",
-        "If it is hit by itself, `True` will be used. However, it can consume "
-        "one of following values: [true, TRUE, True, 1, false, FALSE, False, 0]"
-    ])
-
-    params.add_command("a, arbi, arbitrary",
-                       desc="No predefined arguments, but you can "
-                       "pass arbitrary arguments and see how "
-                       "`pyparam` parses them",
-                       arbitrary=True)
-
-    fromfile = params.add_command(
-        "f, fromfile", desc=[
-            "Load parameter definition from file.",
-            "You can load parameter definitions from any file type that "
-            "`python-simpleconf` supports. "
-            "For example, a toml file:",
-            "",
-            "```toml",
-            "[params.arg]",
-            "desc = \"An argument\"",
-            "```",
-        ]
-    )
-
     parsed = params.parse()
 
     if parsed.debug:

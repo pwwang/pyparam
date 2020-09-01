@@ -15,7 +15,8 @@ from .help import HelpAssembler
 from .exceptions import (
     PyParamUnsupportedParamType,
     PyParamAlreadyExists,
-    PyParamValueError
+    PyParamValueError,
+    PyParamTypeError
 )
 
 class Params:
@@ -64,7 +65,7 @@ class Params:
         self.help_cmds = always_list(help_cmds)
         self.help_on_void = help_on_void
         self.usage = (None if usage is None
-                      else always_list(usage, strip=False, split=False))
+                      else always_list(usage, strip=True, split='\n'))
         self.prefix = prefix
         self.arbitrary = arbitrary
         self.theme = theme
@@ -76,7 +77,7 @@ class Params:
         self.param_groups = OrderedDiot()
         self.command_groups = OrderedDiot()
 
-        self.assembler = HelpAssembler(prog, theme, prefix, help_callback)
+        self.assembler = HelpAssembler(prog, theme, help_callback)
 
     def name(self, which='short'):
         """Get the shortest/longest name of the parameter
@@ -103,14 +104,13 @@ class Params:
         Returns:
             str: the connected names
         """
-        names = [name
-                 for name in (
-                     self.names
-                     if not sort
-                     else sorted(self.names, key=len)
-                     if sort == 'asc'
-                     else sorted(self.names, key=lambda x: -len(x))
-                 )]
+        names = (
+                    self.names
+                    if not sort
+                    else sorted(self.names, key=len)
+                    if sort == 'asc'
+                    else sorted(self.names, key=lambda x: -len(x))
+                )
         return sep.join(names)
 
     def add_param(self,
@@ -150,7 +150,6 @@ class Params:
         Return:
             Param: The added parameter
         """
-        # TODO: check if names have been registered
         if type is None:
             type = type_from_value(default)
 
@@ -191,7 +190,7 @@ class Params:
         return param
 
     def add_command(self,
-                    commands,
+                    names,
                     desc='No description',
                     help_keys='__inherit__',
                     help_cmds='__inherit__',
@@ -206,7 +205,7 @@ class Params:
         """Add a sub-command
 
         Args:
-            commands (list): list of names of this command
+            names (list): list of names of this command
             desc (str|list): description of this command
             help_keys (str|list): help key for bring up help for this command
             help_cmds (str|list): help command for printing help for other
@@ -223,10 +222,11 @@ class Params:
         Returns:
             Params: The added command
         """
-        commands = always_list(commands)
+        commands = always_list(names)
         command = Params(
             desc=desc,
-            prog=f"{self.prog} {commands[0]}",
+            prog=(f"{self.prog}{' [OPTIONS]' if self.params else ''} "
+                  f"{commands[0]}"),
             help_keys=(self.help_keys if help_keys == '__inherit__'
                        else help_keys),
             help_cmds=(self.help_cmds if help_cmds == '__inherit__'
@@ -326,31 +326,46 @@ class Params:
             sys.exit(exit_code)
 
     def values(self, namespace=None):
-        """Get a dict of paramter name => value pairs or attach them to the
-        given namespace
+        """Get a namespace of all paramter name => value pairs or attach them
+        to the given namespace
 
         Args:
             namespace (Namespace): The namespace for the values to attach to.
 
         Returns:
-            dict|NoneType: None if namespace is specified otherwise dict of
+            Namespace: the namespace with values of all parameter
                 name-value pairs
         """
-        ret = {}
+        ns_no_callback = Namespace()
         for param_name, param in self.params.items():
+            if param_name in self.help_keys or param_name in ns_no_callback:
+                continue
             try:
                 value = param.value
             except PyParamValueError as pve:
-                logger.error(str(pve))
+                logger.error("%s: %s", param.namestr(), pve)
                 self.print_help()
             else:
-                if param_name in self.help_keys:
-                    continue
-                if namespace is not None:
-                    setattr(namespace, param_name, value)
-                else:
-                    ret[param_name] = value
-        return None if namespace else ret
+                for name in param.names:
+                    ns_no_callback[name] = value
+
+        if namespace is None:
+            namespace = Namespace()
+
+        for param_name, param in self.params.items():
+            if param_name in self.help_keys or param_name in namespace:
+                continue
+
+            try:
+                value = param.apply_callback(ns_no_callback)
+            except PyParamTypeError as pte:
+                logger.error("%s: %s", param.namestr(), pte)
+                self.print_help()
+            else:
+                for name in param.names:
+                    setattr(namespace, name, value)
+
+        return namespace
 
     def _parse(self, args, namespace):
         """Parse the arguments from the command line
@@ -379,6 +394,10 @@ class Params:
             #    With arbitrary = True, parameter will be created on the fly
             # 3. if arg is like --arg=1, then param_value 1 is pushed to param.
             param, param_name, param_type, param_value = self.match_param(arg)
+            # as long as the help argument hit
+            if param_name in self.help_keys:
+                self.print_help()
+
             if param:
                 logger.debug("  Hit argument: %r (name=%s, type=%s, value=%r)",
                              param.namestr(),
@@ -485,7 +504,7 @@ class Params:
         if arg not in self.commands:
             return None, None
 
-        logger.debug("  Hit command: %r", arg)
+        logger.debug("* Hit command: %r", arg)
         command = self.commands[arg]
         namespace.__command__ = arg
         parsed = command.parse(rest_args)

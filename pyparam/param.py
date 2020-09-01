@@ -3,14 +3,21 @@ import ast
 import json
 from typing import Optional, List, Any, Callable, Type, Dict
 from pathlib import Path
-from .utils import cast_to, parse_type, logger
+from .utils import cast_to, parse_type, logger, TYPE_NAMES
 from .defaults import POSITIONAL
-from .exceptions import PyParamValueError, PyParamTypeError
+from .exceptions import (
+    PyParamValueError,
+    PyParamTypeError,
+    PyParamAlreadyExists
+)
+
+PARAM_MAPPINGS = {}
 
 class Param: # pylint: disable=too-many-instance-attributes
     """Base class for parameter"""
 
     type: Optional[str] = None
+    type_aliases: List[str] = []
 
     def __init__(self,
                  names: List[str],
@@ -106,8 +113,10 @@ class Param: # pylint: disable=too-many-instance-attributes
         Returns:
             bool: True if value was consumed, otherwise False
         """
-        self.push(value)
-        return True
+        if self._first_hit is True or not self._stack:
+            self.push(value)
+            return True
+        return False
 
     def name(self, which: str, with_prefix: bool = True) -> str:
         """Get the shortest/longest name of the parameter
@@ -239,9 +248,7 @@ class Param: # pylint: disable=too-many-instance-attributes
 
         if not self._stack:
             if self.required:
-                raise PyParamValueError(
-                    f"Argument {','.join(self.names)} is required."
-                )
+                raise PyParamValueError("Argument is required.")
             return self.default
         ret = self._stack[-1][0]
         self._stack = []
@@ -261,8 +268,29 @@ class Param: # pylint: disable=too-many-instance-attributes
         return self._value_cached
 
 
-    def _apply_callback(self, val):
-        return self.callback(val) if callable(self.callback) else val
+    def apply_callback(self, all_values):
+        """Apply the callback function to the value
+
+        Args:
+            all_values (Namespace): The namespace of values of all parameters
+
+        Returns:
+            Any: The value after the callback applied
+        """
+        if not callable(self.callback):
+            return self.value
+
+        try:
+            try:
+                val = self.callback(self.value, all_values)
+            except TypeError:
+                val = self.callback(self.value)
+        except Exception as exc:
+            raise PyParamTypeError(str(exc)) from None
+
+        if isinstance(val, Exception):
+            raise PyParamTypeError(str(val))
+        return val
 
 class ParamAuto(Param):
     """An auto parameter whose value is automatically casted"""
@@ -270,32 +298,33 @@ class ParamAuto(Param):
     type = 'auto'
 
     def _value(self):
-        return self._apply_callback(cast_to(super()._value(), 'auto'))
+        return cast_to(super()._value(), 'auto')
 
 class ParamInt(Param):
     """An int parameter whose value is automatically casted into an int"""
     type = 'int'
+    type_aliases = ['i']
 
     def _value(self):
-        return self._apply_callback(int(super()._value()))
+        return int(super()._value())
 
 class ParamFloat(Param):
     """A float parameter whose value is automatically casted into a float"""
     type = 'float'
+    type_aliases = ['f']
 
     def _value(self):
-        return self._apply_callback(float(super()._value()))
+        return float(super()._value())
 
 class ParamStr(Param):
     """A str parameter whose value is automatically casted into a str"""
     type = 'str'
-
-    def _value(self):
-        return self._apply_callback(super()._value())
+    type_aliases = ['s']
 
 class ParamBool(Param):
     """A bool parameter whose value is automatically casted into a bool"""
     type = 'bool'
+    type_aliases = ['b']
 
     def __init__(self,
                  names: List[str],
@@ -346,9 +375,9 @@ class ParamBool(Param):
 
     def _value(self):
         if not self._stack:
-            return self._apply_callback(False)
+            return False
 
-        ret = self._apply_callback(cast_to(self._stack[-1][0], 'bool'))
+        ret = cast_to(self._stack[-1][0], 'bool')
         self._stack = []
         return ret
 
@@ -370,6 +399,17 @@ class ParamCount(Param):
         if default != 0:
             raise PyParamValueError(
                 "Default value of a count argument must be 0"
+            )
+
+        if 1 not in (len(name) for name in names):
+            raise PyParamValueError(
+                "Count argument must have a short name."
+            )
+
+        if 'max' in kwargs and (not isinstance(kwargs['max'], int) or
+                                kwargs['max'] <= 0):
+            raise PyParamValueError(
+                "Argument 'max' for count argument must be a positive integer"
             )
 
         super().__init__(names, default, desc, prefix, show, required,
@@ -398,43 +438,60 @@ class ParamCount(Param):
 
     def _value(self):
         val = super()._value()
-        if val.isdigit():
-            return self._apply_callback(int(val))
 
-        for name in self.names:
-            if name * len(val) == val:
-                # -vvv => name: v, value: vv
-                # len(vv) = 2, but value should be 3
-                return self._apply_callback(len(val) + 1)
+        retval = None
+        if str(val).isdigit():
+            retval = int(val)
+        else:
+            for name in self.names:
+                if len(name) != 1:
+                    continue
+                if name * len(val) == val:
+                    # -vvv => name: v, value: vv
+                    # len(vv) = 2, but value should be 3
+                    retval = len(val) + 1
+                    break
+        if retval is None:
+            raise PyParamValueError(
+                "Expect repeated short names or an integer "
+                "as count argument value."
+            )
+        if self._kwargs['max'] and retval > self._kwargs['max']:
+            raise PyParamValueError(
+                f"{retval} is greater than the max of "
+                f"{self._kwargs['max']}."
+            )
 
-        raise PyParamValueError("Expect repeated short names or an integer "
-                                "as count argument value.")
+        return retval
 
 class ParamPath(Param):
     """A path parameter whose value is automatically casted into a pathlib.Path
     """
     type = 'path'
+    type_aliases = ['p']
 
     def _value(self):
-        return self._apply_callback(Path(super()._value()))
+        return Path(super()._value())
 
 class ParamPy(Param):
     """A parameter whose value will be ast.literal_eval'ed"""
     type = 'py'
 
     def _value(self):
-        return self._apply_callback(ast.literal_eval(super()._value()))
+        return ast.literal_eval(super()._value())
 
 class ParamJson(Param):
     """A parameter whose value will be parsed as json"""
     type = 'json'
+    type_aliases = ['j']
 
     def _value(self):
-        return self._apply_callback(json.loads(super()._value()))
+        return json.loads(super()._value())
 
 class ParamList(Param):
     """A parameter whose value is a list"""
     type = 'list'
+    type_aliases = ['l', 'a', 'array']
 
     def close(self, next_param, param_name, param_type):
         logger.debug("  Closing argument: %r", self.namestr())
@@ -454,23 +511,79 @@ class ParamList(Param):
 
     def _value(self):
         """Get the value a list parameter"""
-        ret = self._apply_callback([
+        ret = [
             cast_to(val, self.subtype)
             for sublist in self._stack
             for val in sublist
-        ])
+        ]
         self._stack = []
         return ret
 
-PARAM_MAPPINGS = dict(
-    auto=ParamAuto,
-    int=ParamInt,
-    str=ParamStr,
-    float=ParamFloat,
-    bool=ParamBool,
-    count=ParamCount,
-    path=ParamPath,
-    py=ParamPy,
-    json=ParamJson,
-    list=ParamList
-)
+class ParamChoice(Param):
+    """A bool parameter whose value is automatically casted into a bool"""
+    type = 'choice'
+    type_aliases = ['c']
+
+    def __init__(self,
+                 names: List[str],
+                 default: Any,
+                 desc: List[str],
+                 prefix: str = 'auto',
+                 show: bool = True,
+                 required: bool = False,
+                 subtype: Optional[bool] = None,
+                 callback: Optional[Callable] = None,
+                 **kwargs: Dict[str, Any]):
+
+        if 'choices' not in kwargs:
+            raise PyParamValueError(
+                "Argument 'choices' is required for ParamChoice."
+            )
+
+        if not isinstance(kwargs['choices'], (list, tuple)):
+            raise PyParamValueError(
+                "Argument 'choices' must be a list or a tuple."
+            )
+
+        super().__init__(names, default, desc, prefix, show, required,
+                         subtype, callback, **kwargs)
+
+
+    def _value(self):
+        val = super()._value()
+
+        if val not in self._kwargs['choices']:
+            raise PyParamValueError(f"{val} is not "
+                                    f"one of {self._kwargs['choices']}")
+
+        self._stack = []
+        return val
+
+def register_param(param: Param) -> None:
+    """Register a parameter class
+
+    Args:
+        param (Param): The param to register
+            A param class should include a type
+            You can also define type alias for a param type
+    """
+    for alias in param.type_aliases + [param.type]:
+        if alias in TYPE_NAMES:
+            raise PyParamAlreadyExists(
+                f'Type name has already been registered: {alias}'
+            )
+        TYPE_NAMES[alias] = param.type
+
+    PARAM_MAPPINGS[param.type] = param
+
+register_param(ParamAuto)
+register_param(ParamInt)
+register_param(ParamStr)
+register_param(ParamFloat)
+register_param(ParamBool)
+register_param(ParamCount)
+register_param(ParamPath)
+register_param(ParamPy)
+register_param(ParamJson)
+register_param(ParamList)
+register_param(ParamChoice)

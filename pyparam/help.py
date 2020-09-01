@@ -10,7 +10,7 @@ from rich.console import Console
 from rich.theme import Theme
 from rich.text import Text
 from rich.highlighter import RegexHighlighter
-from .defaults import CONSOLE_WIDTH, HELP_SECTION_INDENT, HELP_OPTION_WIDTH
+from . import defaults
 from .utils import Codeblock
 
 THEMES = dict(
@@ -67,12 +67,13 @@ class HelpSection(list):
         scanned = Codeblock.scan_texts(self)
         for item in scanned:
             if isinstance(item, Codeblock):
-                yield Padding(item.render(), (0, 0, 0, HELP_SECTION_INDENT))
+                yield Padding(item.render(), (0, 0, 0,
+                                              defaults.HELP_SECTION_INDENT))
             else:
                 yield Padding(
                     Columns([self._highlight(item,
                                              console.meta.highlighters.prog)]),
-                    (0, 0, 0, HELP_SECTION_INDENT)
+                    (0, 0, 0, defaults.HELP_SECTION_INDENT)
                 )
 
 class HelpSectionPlain(HelpSection):
@@ -84,9 +85,10 @@ class HelpSectionUsage(HelpSectionPlain):
     def _wrap_usage(self, usage, prog, *highlighters):
         for line in textwrap.wrap(
                 usage,
-                width=CONSOLE_WIDTH,
-                initial_indent=' ' * HELP_SECTION_INDENT,
-                subsequent_indent=' ' * (HELP_SECTION_INDENT + len(prog) + 1),
+                width=defaults.CONSOLE_WIDTH,
+                initial_indent=' ' * defaults.HELP_SECTION_INDENT,
+                subsequent_indent=' ' * (defaults.HELP_SECTION_INDENT +
+                                         len(prog) + 1),
                 break_long_words=False,
                 break_on_hyphens=False
         ):
@@ -107,10 +109,11 @@ class HelpSectionOption(HelpSection):
         for opt in opts:
             for line in textwrap.wrap(
                     opt,
-                    width=HELP_OPTION_WIDTH,
-                    initial_indent=' ' * HELP_SECTION_INDENT,
+                    width=defaults.HELP_OPTION_WIDTH,
+                    initial_indent=' ' * defaults.HELP_SECTION_INDENT,
                     subsequent_indent=' ' * (
-                        HELP_SECTION_INDENT + len(opt.split(",")[0]) + 2
+                        defaults.HELP_SECTION_INDENT +
+                        len(opt.split(",")[0]) + 2
                     ),
                     break_long_words=False,
                     break_on_hyphens=False
@@ -141,7 +144,8 @@ class HelpSectionOption(HelpSection):
             for line in textwrap.wrap(
                     text,
                     drop_whitespace=True,
-                    width=CONSOLE_WIDTH - HELP_OPTION_WIDTH - 2
+                    width=(defaults.CONSOLE_WIDTH -
+                           defaults.HELP_OPTION_WIDTH - 2)
             ):
                 yield self._highlight(hillight_inline_code(line))
 
@@ -168,18 +172,23 @@ class HelpSectionOption(HelpSection):
                                 yield Text(" " * (len(sep) + 1) + line,
                                            style="default")
                     else:
+                        # use * to connect to avoid default to be wrapped
                         parts[0] += sep + '*' * len(parts[1])
+
                         # wrap default
                         for line in textwrap.wrap(
                                 parts[0],
-                                width=CONSOLE_WIDTH - HELP_OPTION_WIDTH - 2,
+                                width=(defaults.CONSOLE_WIDTH -
+                                       defaults.HELP_OPTION_WIDTH - 2),
                                 break_long_words=False,
                                 break_on_hyphens=False
                         ):
                             yield self._highlight(
-                                hillight_inline_code(line).replace(
-                                    sep + '*' * len(parts[1]),
-                                    sep + parts[1]
+                                Text.from_markup(
+                                    hillight_inline_code(line).replace(
+                                        sep + '*' * len(parts[1]),
+                                       sep + parts[1].replace('[', r'\[')
+                                    )
                                 ),
                                 default_highlighter
                             )
@@ -189,7 +198,7 @@ class HelpSectionOption(HelpSection):
                     yield from wrap_normal(desc)
 
     def __rich_console__(self, console, _):
-        table = Table(width=CONSOLE_WIDTH,
+        table = Table(width=defaults.CONSOLE_WIDTH,
                       show_header=False,
                       show_lines=False,
                       show_edge=False,
@@ -197,9 +206,10 @@ class HelpSectionOption(HelpSection):
                       expand=True,
                       pad_edge=False,
                       padding=(0,0,0,0))
-        table.add_column(width=HELP_OPTION_WIDTH)
+        table.add_column(width=defaults.HELP_OPTION_WIDTH)
         table.add_column(width=1)
-        table.add_column(width=CONSOLE_WIDTH - HELP_OPTION_WIDTH - 1)
+        table.add_column(width=defaults.CONSOLE_WIDTH -
+                         defaults.HELP_OPTION_WIDTH - 1)
         for param_opts, param_descs in self:
             table.add_row(
                 Columns(self._wrap_opts(
@@ -222,7 +232,7 @@ class HelpAssembler:
         console (Console): The console to print the help page
     """
 
-    def __init__(self, prog, theme, prefix, callback):
+    def __init__(self, prog, theme, callback):
         """Constructor
 
         Args:
@@ -232,7 +242,9 @@ class HelpAssembler:
         theme = (theme if isinstance(theme, Theme)
                  else THEMES.get(theme, 'default'))
 
-        self.console = Console(theme=theme, width=CONSOLE_WIDTH, tab_size=4)
+        self.console = Console(theme=theme,
+                               width=defaults.CONSOLE_WIDTH,
+                               tab_size=4)
         self.callback = callback
         self._assembled = None
 
@@ -261,8 +273,6 @@ class HelpAssembler:
             usage = ['{prog}']
             has_optional = False
 
-            if params.commands:
-                usage.append('COMMAND')
 
             for group in params.param_groups.values():
                 for param in group:
@@ -276,6 +286,10 @@ class HelpAssembler:
                         has_optional = True
             if has_optional:
                 usage.append('[OPTIONS]')
+
+            if params.commands:
+                usage.append('COMMAND [OPTIONS]')
+
             params.usage = [" ".join(usage)]
 
         return HelpSectionUsage(

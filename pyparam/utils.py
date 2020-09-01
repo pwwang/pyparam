@@ -187,12 +187,12 @@ class Codeblock:
             (0, 0, 0, self.indent)
         )
 
-def always_list(str_or_list, strip=True, split=True):
+def always_list(str_or_list, strip=True, split=','):
     """Convert a string (comma separated) or a list to a list
 
     Args:
         str_or_list (str|list): string or list
-        strip (bool): Whether to strip each element or not
+        strip (bool|str): Delimiter for split or False to not split
 
     Return:
         list: list of strings
@@ -201,7 +201,7 @@ def always_list(str_or_list, strip=True, split=True):
         return list(str_or_list)
     if split:
         return [elem.strip() if strip else elem
-                for elem in str_or_list.split(',')]
+                for elem in str_or_list.split(split)]
     return [str_or_list]
 
 def parse_type(typestr):
@@ -238,6 +238,15 @@ def parse_type(typestr):
 @lru_cache()
 def parse_potential_argument(arg, prefix, allow_attached=False):
     """Parse a potential argument with given prefix
+
+    Examples:
+        >>> # prefix == 'auto
+        >>> parse_potential_argument("-a")     # a, None, None
+        >>> parse_potential_argument("--arg")  # arg, None, None
+        >>> parse_potential_argument("--a")    # None, None, a
+        >>> parse_potential_argument("-abc")   # None, None, -abc
+        >>> parse_potential_argument("-abc", allow_attached=True)
+        >>> # -a, None, bc
 
     Args:
         arg (str): a potential argument. Such as:
@@ -277,11 +286,13 @@ def parse_potential_argument(arg, prefix, allow_attached=False):
 
     # remove prefix in item_name
     if prefix == 'auto':
-        prefix = '-' if len(item_name) <= 2 else '--'
-    item_name = item_name[len(prefix):]
+        prefix = ('-' if len(item_name) <= 2
+                  else '--' if len(item_name) >= 4
+                  else None)
 
-    # not doing --a => a
-    if prefix == '--' and len(item_name) < 2:
+    if prefix and item_name.startswith(prefix):
+        item_name = item_name[len(prefix):]
+    else:
         return None, None, arg
 
     item_type, item_subtype = parse_type(item_type)
@@ -378,5 +389,5 @@ def cast_to(value, to_type):
 
 
 logger = logging.getLogger(__name__)
-logger.setLevel(logging.DEBUG)
+logger.setLevel(logging.INFO)
 logger.addHandler(RichHandler(show_time=False, show_path=False))
