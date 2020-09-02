@@ -1,19 +1,28 @@
 """Help assembler for pyparam"""
 import re
 import textwrap
+from typing import (
+    Dict,
+    List,
+    Optional,
+    Type,
+    Union,
+    Callable,
+    Tuple
+)
 from diot import OrderedDiot, Diot
 from rich import box
 from rich.table import Table
 from rich.columns import Columns
 from rich.padding import Padding
-from rich.console import Console
+from rich.console import Console, RenderResult
 from rich.theme import Theme
 from rich.text import Text
 from rich.highlighter import RegexHighlighter
 from . import defaults
 from .utils import Codeblock
 
-THEMES = dict(
+THEMES: Dict[str, Theme] = dict(
     default=Theme(dict(
         title="bold cyan",
         prog="bold green",
@@ -27,7 +36,7 @@ THEMES = dict(
 class ProgHighlighter(RegexHighlighter):
     """Apply style to anything that looks like a program name."""
 
-    def __init__(self, prog):
+    def __init__(self, prog: str):
         super().__init__()
         prog = re.escape(prog)
         self.highlights = [rf"(?P<prog>\b{prog}\b)"]
@@ -39,12 +48,12 @@ class OptnameHighlighter(RegexHighlighter):
     `i, install`
     """
 
-    highlights = [r"(?P<optname>[^\[<][^,\s]+)"]
+    highlights: List[str] = [r"(?P<optname>[^\[<][^,\s]+)"]
 
 class OpttypeHighlighter(RegexHighlighter):
     """Apply style to anything that looks like a option type."""
 
-    highlights = [
+    highlights: List[str]= [
         r"(?P<opttype_frozen>[\[\<][A-Z:]+[\]\>])",
         r"(?P<opttype>[\[\<][a-z:]+[\]\>])",
     ]
@@ -52,12 +61,17 @@ class OpttypeHighlighter(RegexHighlighter):
 class DefaultHighlighter(RegexHighlighter):
     """Apply style to anything that looks like default value in option desc."""
 
-    highlights = [r"(?P<default>D(?:efault|EFAULT):.+$)"]
+    highlights: List[str] = [r"(?P<default>D(?:efault|EFAULT):.+$)"]
 
 class HelpSection(list):
     """Base class for all help sections."""
 
-    def _highlight(self, string, highlighters=None):
+    def _highlight(
+        self,
+        string: str,
+        highlighters: Optional[List[Type[RegexHighlighter]]] = None
+    ) -> Union[Text, str]:
+        """Highlight the string using given highlighters"""
         if not highlighters:
             return string
         if not isinstance(highlighters, (tuple, list)):
@@ -67,7 +81,8 @@ class HelpSection(list):
 
         return string
 
-    def __rich_console__(self, console, _):
+    def __rich_console__(self, console: Console, _) -> RenderResult:
+        """Implement API from rich to print the help page"""
         scanned = Codeblock.scan_texts(self)
         for item in scanned:
             if isinstance(item, Codeblock):
@@ -86,7 +101,11 @@ class HelpSectionPlain(HelpSection):
 class HelpSectionUsage(HelpSectionPlain):
     """Usage section in help"""
 
-    def _wrap_usage(self, usage, prog, *highlighters):
+    def _wrap_usage(self,
+                    usage: str,
+                    prog: str,
+                    *highlighters) -> Union[Text, str]:
+        """Wrap usage line"""
         for line in textwrap.wrap(
                 usage,
                 width=defaults.CONSOLE_WIDTH,
@@ -98,7 +117,8 @@ class HelpSectionUsage(HelpSectionPlain):
         ):
             yield self._highlight(line.replace('*', ' '), highlighters)
 
-    def __rich_console__(self, console, _):
+    def __rich_console__(self, console: Console, _) -> RenderResult:
+        """Implement API from rich to print the help page"""
         for line in self:
             usages = self._wrap_usage(line,
                                       console.meta.prog,
@@ -109,7 +129,8 @@ class HelpSectionUsage(HelpSectionPlain):
 class HelpSectionOption(HelpSection):
     """Options section in help"""
 
-    def _wrap_opts(self, opts, *highlighters):
+    def _wrap_opts(self, opts: List[str], *highlighters) -> Union[Text, str]:
+        """Wrap the option names and types"""
         for opt in opts:
             for line in textwrap.wrap(
                     opt,
@@ -124,9 +145,11 @@ class HelpSectionOption(HelpSection):
             ):
                 yield self._highlight(line.replace('*', ' '), highlighters)
 
-    def _wrap_descs(self,
-                    descs,
-                    default_highlighter):
+    def _wrap_descs(
+        self,
+        descs: List[str],
+        default_highlighter: DefaultHighlighter
+    ) -> Union[Text, str]:
         """wrap option descriptions.
 
         Highlight default value, inline code and code blocks
@@ -139,9 +162,9 @@ class HelpSectionOption(HelpSection):
         Or a python console style:
         >>> print('Hello world!')
         """
-        hillight_inline_code = lambda text: re.sub(r'(`+)(.+?)\1',
-                                                   r'[code]\2[/code]',
-                                                   text)
+        hillight_inline_code: Callable = (
+            lambda text: re.sub(r'(`+)(.+?)\1', r'[code]\2[/code]', text)
+        )
 
         descs = Codeblock.scan_texts(descs, check_default=True)
         def wrap_normal(text):
@@ -158,12 +181,14 @@ class HelpSectionOption(HelpSection):
                 yield desc.render()
 
             else:
-                sep = ('Default:' if 'Default:' in desc
-                       else 'DEFAULT:' if 'DEFAULT:' in desc
-                       else None)
+                sep: Optional[str] = (
+                    'Default:' if 'Default:' in desc
+                    else 'DEFAULT:' if 'DEFAULT:' in desc
+                    else None
+                )
 
                 if sep:
-                    parts = desc.split(sep, 1)
+                    parts: List[str] = desc.split(sep, 1)
                     # if default is multiline, put it in new line
                     if "\n" in parts[1]:
                         yield from wrap_normal(parts[0])
@@ -201,7 +226,8 @@ class HelpSectionOption(HelpSection):
                 else:
                     yield from wrap_normal(desc)
 
-    def __rich_console__(self, console, _):
+    def __rich_console__(self, console: Console, _) -> RenderResult:
+        """Implement API from rich to print the help page"""
         table = Table(width=defaults.CONSOLE_WIDTH,
                       show_header=False,
                       show_lines=False,
@@ -234,9 +260,13 @@ class HelpAssembler:
 
     Attributes:
         console (Console): The console to print the help page
+        callback (Callable): The callback to modify the help page
     """
 
-    def __init__(self, prog, theme, callback):
+    def __init__(self,
+                 prog: str,
+                 theme: Union[str, Theme],
+                 callback: Optional[Callable]):
         """Constructor
 
         Args:
@@ -246,11 +276,11 @@ class HelpAssembler:
         theme = (theme if isinstance(theme, Theme)
                  else THEMES.get(theme, 'default'))
 
-        self.console = Console(theme=theme,
-                               width=defaults.CONSOLE_WIDTH,
-                               tab_size=4)
-        self.callback = callback
-        self._assembled = None
+        self.console: Console = Console(
+            theme=theme, width=defaults.CONSOLE_WIDTH, tab_size=4
+        )
+        self.callback: Optional[Callable]= callback
+        self._assembled: Optional[List[RenderResult]] = None
 
         self.console.meta = Diot()
         self.console.meta.prog = prog
@@ -260,7 +290,8 @@ class HelpAssembler:
         self.console.meta.highlighters.opttype = OpttypeHighlighter()
         self.console.meta.highlighters.default = DefaultHighlighter()
 
-    def _assemble_description(self, params):
+    def _assemble_description(self,
+                              params: "Params") -> Optional[HelpSectionPlain]:
         """Assemble the description section"""
         if not params.desc:
             return None
@@ -269,23 +300,19 @@ class HelpAssembler:
             desc.format(prog=params.prog) for desc in params.desc
         )
 
-    def _assemble_usage(self, params):
+    def _assemble_usage(self, params: "Params") -> HelpSectionUsage:
         """Assemble the usage section"""
         if not params.usage:
             # default usage
             # gather required Arguments
-            usage = ['{prog}']
+            usage: List[str] = ['{prog}']
             has_optional = False
 
 
             for group in params.param_groups.values():
                 for param in group:
                     if param.required and param.show:
-                        item = param.name('long')
-                        if param.type != 'bool':
-                            # make sure it's not wrapped
-                            item = f"{item}*{param.typestr().upper()}"
-                        usage.append(item)
+                        usage.append(param.usagestr())
                     elif param.show:
                         has_optional = True
             if has_optional:
@@ -300,7 +327,10 @@ class HelpAssembler:
             usage.format(prog=params.prog) for usage in params.usage
         )
 
-    def _assemble_param_groups(self, params):
+    def _assemble_param_groups(
+        self,
+        params: "Params"
+    ) -> Tuple[str, HelpSectionOption]:
         """Assemble the parameter groups"""
 
         for group, param_list in params.param_groups.items():
@@ -308,22 +338,15 @@ class HelpAssembler:
                 continue
 
             yield group, HelpSectionOption(
-                ([
-                    f"{param.namestr()}*" +
-                    ('' if param.names == params.help_keys
-                     else f'[{"BOOL" if param.type_frozen else "bool"}]'
-                     if param.type == 'bool'
-                     else f'<{param.typestr().upper()}>'
-                     if param.type_frozen
-                     else f'<{param.typestr()}>')
-                 ],
-                 param.desc
-                 if param.names == params.help_keys
-                 else param.desc_with_default)
+                ([param.optstr()],
+                 param.desc_with_default)
                 for param in param_list if param.show
             )
 
-    def _assemble_command_groups(self, params):
+    def _assemble_command_groups(
+        self,
+        params: "Params"
+    ) -> Tuple[str, HelpSectionOption]:
         """Assemble the command groups"""
         # command groups
         for group, cmd_list in params.command_groups.items():
@@ -334,7 +357,9 @@ class HelpAssembler:
                 for command in cmd_list
             )
 
-    def assemble(self, params, printout=False):
+    def assemble(self,
+                 params: "Params",
+                 printout: bool = False) -> Optional[List[RenderResult]]:
         """Assemble the help page
 
         Args:
@@ -346,13 +371,15 @@ class HelpAssembler:
         """
         self._assembled = []
 
-        assembled = OrderedDiot()
+        assembled: OrderedDiot = OrderedDiot()
 
-        assembled_description = self._assemble_description(params)
+        assembled_description: Optional[HelpSectionPlain] = (
+            self._assemble_description(params)
+        )
         if assembled_description:
             assembled.DESCRIPTION = assembled_description
 
-        assembled_usage = self._assemble_usage(params)
+        assembled_usage: HelpSectionPlain = self._assemble_usage(params)
         assembled.USAGE = assembled_usage
 
         for group, section in self._assemble_param_groups(params):
@@ -366,13 +393,15 @@ class HelpAssembler:
 
         for title, section in assembled.items():
             self._assembled.append(Text(end="\n"))
-            self._assembled.append(Text(title + ':', style="title",
+            self._assembled.append(Text(title.upper() + ':', style="title",
                                         justify="left"))
             self._assembled.append(section)
 
         if printout:
             self.printout()
 
-    def printout(self):
+        return self._assembled
+
+    def printout(self) -> None:
         """Print the help page"""
         self.console.print(*self._assembled)

@@ -27,7 +27,7 @@ predefined = params.add_command([
     "pre-defined-args"
 ], desc="Some predefined arguments.", usage="""\
 {prog} -i-1 --in . --py 1
-{prog} --int=-1 --in . --py "(1,2,3)" -f.1 -ccc
+{prog} --int=-1 --in . --py "(1,2,3)" -f0.1 -ccc
 {prog} --int=-1 --in . --py "[1,2,3]" --float 0.1 --count 2
 {prog} --int=-1 --in . --py True -b true --float 0.1
 {prog} -i0 -b1 --choice=large
@@ -119,6 +119,37 @@ predefined.add_param("list", default=[1,2,3], type=list, desc=[
     "You can also set a subtype for list elements, including the scalar types. "
     "For exapmle: `--list:list:bool 0 1 0` will produce `[False, True, False]`."
 ])
+
+nsparams = params.add_command(
+    'n, nsparams',
+    help_on_void=False,
+    desc=[
+        "Namespace parameters. ",
+        "No required arguments under this command, "
+        "`help_on_void` is set to False.",
+        "To bring up the help page, try arguments `-h/--help/-H`"
+    ])
+nsparams.add_param("config.nlayers", type='int', default=8, desc=[
+    "Number of layers."
+])
+nsparams.add_param("config.num-heads", type='int', default=8, desc=[
+    "Number of heads."
+])
+# give some description to put it on help page
+nsparams.add_param(
+    "config.nested",
+    type='ns',
+    desc='Nested configurations under config',
+    callback=(
+        lambda value, all_values: setattr(
+            value, 'gpus', value.gpus + all_values.config.nlayers
+        ) or value
+    )
+)
+nsparams.add_param("config.nested.gpus", type='int', default=1, desc=[
+    "Number of GPUs to use."
+])
+
 
 params.add_command("a, arbi, arbitrary",
                     desc="No predefined arguments, but you can "

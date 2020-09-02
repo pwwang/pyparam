@@ -273,7 +273,6 @@ def parse_potential_argument(arg, prefix, allow_attached=False):
 
     item_nametype, item_value = fill2_none(arg.split('=', 1))
     item_name, item_type = fill2_none(item_nametype.split(':', 1))
-
     # detach the value for -b1
     if allow_attached:
         if (item_type is None and item_value is None and (
@@ -286,8 +285,9 @@ def parse_potential_argument(arg, prefix, allow_attached=False):
 
     # remove prefix in item_name
     if prefix == 'auto':
-        prefix = ('-' if len(item_name) <= 2
-                  else '--' if len(item_name) >= 4
+        item_name_first = item_name.split('.')[0]
+        prefix = ('-' if len(item_name_first) <= 2
+                  else '--' if len(item_name_first) >= 4
                   else None)
 
     if prefix and item_name.startswith(prefix):

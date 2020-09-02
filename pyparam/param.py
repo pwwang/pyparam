@@ -1,20 +1,53 @@
 """Definition of a single parameter"""
 import ast
 import json
-from typing import Optional, List, Any, Callable, Type, Dict
+from typing import (
+    Optional,
+    List,
+    Any,
+    Callable,
+    Type,
+    Dict,
+    Set,
+    Tuple,
+    Union
+)
+from itertools import product
 from pathlib import Path
-from .utils import cast_to, parse_type, logger, TYPE_NAMES
+from diot import OrderedDiot
+from .utils import cast_to, parse_type, logger, TYPE_NAMES, Namespace
 from .defaults import POSITIONAL
 from .exceptions import (
     PyParamValueError,
     PyParamTypeError,
+    PyParamNameError,
     PyParamAlreadyExists
 )
 
-PARAM_MAPPINGS = {}
+PARAM_MAPPINGS: Dict[str, Type['Param']] = {}
 
 class Param: # pylint: disable=too-many-instance-attributes
-    """Base class for parameter"""
+    """Base class for parameter
+
+    Attributes:
+        names (list): The names of the parameter
+        desc (list): The description of the parameter
+        default (any): The default value
+        prefix (str): The prefix of the parameter on the command line
+        show (bool): Whether this parameter should show on help page
+        required (bool): Whether this parameter is required
+        subtype (str): The subtype of the parameter if this is a complex type
+        type_frozen (bool): Whether the type is frozen
+            (not allowing overwritting from command line)
+        callback (Callable): The callback to modify the final value
+        _stack (list): The stack to push the values
+        _value_cached (any): The cached value calculated from the stack
+        _first_hit (str|bool): Whether the parameter is just hit
+        _kwargs (dict): other kwargs
+        _is_help (bool): Whether this is a help parameter
+        _ns_param (ParamNamespace): The namespace parameter where this parameter
+            is under
+    """
 
     type: Optional[str] = None
     type_aliases: List[str] = []
@@ -34,9 +67,26 @@ class Param: # pylint: disable=too-many-instance-attributes
                  type_frozen: bool = True,
                  callback: Optional[Callable] = None,
                  **kwargs: Dict[str, Any]):
+        """Constructor
+
+        Args:
+            names (list): The names of the parameter
+            default (any): The default value
+            desc (list): The description of the parameter
+            prefix (str): The prefix of the parameter on the command line
+            show (bool): Whether this parameter should show on help page
+            required (bool): Whether this parameter is required
+            subtype (str): The subtype of the parameter if
+                this is a complex type
+            type_frozen (bool): Whether the type is frozen
+                (not allowing overwritting from command line)
+            callback (Callable): The callback to modify the final value
+            **kwargs: Additional keyword arguments
+        """
         self.names: List[str] = names
+
         self.default: Any = default
-        self.desc: List[str] = desc
+        self.desc: List[str] = desc or ['No description.']
         self.prefix: str = prefix
         self.show: bool = show
         self.required: bool = required
@@ -46,7 +96,33 @@ class Param: # pylint: disable=too-many-instance-attributes
         self._stack: List[Any] = []
         self._value_cached: Optional[Any] = None
         self._first_hit: Optional[bool, str] = False
-        self._kwargs = kwargs
+        self._kwargs: Dict[Any] = kwargs
+        self._is_help: bool = False
+        self._ns_param: Optional["ParamNamespace"] = None
+
+        # check if I am under a namespace
+        # type: Tuple[List[List[str]], List[str]]
+        self._namespaces, self.terminals = self._extract_namespaces()
+
+    def _extract_namespaces(self) -> Tuple[List[List[str]], List[str]]:
+        """Extract the namespace and terminal names"""
+        nparts: Set[int] = set()
+        namespaces: List[Set[str]] = []
+        terminals: Set[str] = set()
+        for name in self.names:
+            parts: List[str] = name.split('.')
+            nparts.add(len(parts))
+            if len(nparts) > 1:
+                raise PyParamNameError(
+                    "Parameter names must have the same number of namespaces."
+                )
+            if not namespaces:
+                namespaces = [{part} for part in parts[:-1]]
+            else:
+                for i, part in enumerate(parts[:-1]):
+                    parts[i].add(part)
+            terminals.add(parts[-1])
+        return [list(ns) for ns in namespaces], list(terminals)
 
     def _prefix_name(self, name:str) -> str:
         """Add prefix to a name
@@ -60,6 +136,75 @@ class Param: # pylint: disable=too-many-instance-attributes
         if self.prefix == 'auto':
             return f"-{name}" if len(name) <= 1 else f"--{name}"
         return f"{self.prefix}{name}"
+
+    def namespaces(self,
+                   index: Union[int, str] = 'len') -> Union[List[str], int]:
+        """Get the namespaces at the given index or number of namespaces
+
+        Args:
+            index (int|str): The index or a length indicator
+
+        Returns:
+            int|list: The length of the namespaces or the namespaces at index.
+        """
+        if index == 'len':
+            return len(self._namespaces)
+        try:
+            return self._namespaces[index]
+        except IndexError:
+            return []
+
+    def full_names(self) -> List[str]:
+        """make the names with full combinations of namespaces and terminals
+
+        Since one can define a parameter like `n.arg` but namespace `n` can
+        have aliases (i.e. `ns`). This makes sure the names of `n.arg` expands
+        to `n.arg` and `ns.arg`
+
+        Returns:
+            list: The names with full combinations of namespaces and terminals
+        """
+        self.names = ['.'.join(prod)
+                      for prod in product(*self._namespaces, self.terminals)]
+
+    @property
+    def is_help(self) -> bool:
+        """Tell if this parameter is a help parameter
+
+        Returns:
+            bool: True if this parameter is a help parameter or False
+        """
+        return self._is_help
+
+    @is_help.setter
+    def is_help(self, value: bool) -> None:
+        """Set if this parameter is a help parameter
+
+        Args:
+            value (bool): True if this parameter is a help parameter
+                otherwise False
+        """
+        self._is_help = value
+
+    @property
+    def ns_param(self) -> Optional["ParamNamespace"]:
+        """Get the namespace parameter
+
+        Returns:
+            ParamNamespace: The namespace parameter where this parameter
+                is under
+        """
+        return self._ns_param
+
+    @ns_param.setter
+    def ns_param(self, value: Optional["ParamNamespace"]) -> None:
+        """Set the namespace parameter
+
+        Args:
+            value (ParamNamespace): The namespace parameter where this parameter
+                is under
+        """
+        self._ns_param = value
 
     @property
     def is_positional(self) -> bool:
@@ -81,13 +226,15 @@ class Param: # pylint: disable=too-many-instance-attributes
 
     def close(self,
               next_param: Type['Param'],
-              param_type: str) -> Type['Param']:
+              param_type: Optional[str],
+              param_value: Optional[str]) -> Type['Param']:
         """Close up this parameter while scanning the command line
 
         Args:
             next_param (Param): Next matched parameter
             param_name (str): Name of the next matched parameter
             param_type (str): Type of the next matched parameter
+            param_value (str): The value attached to the next matched parameter
 
         Returns:
             Param: next_param is this parameter is closed otherwise this
@@ -107,7 +254,12 @@ class Param: # pylint: disable=too-many-instance-attributes
                             next_param.namestr())
 
             next_param = next_param.to(param_type)
-        next_param.set_first_hit(param_type)
+
+        if param_value is None:
+            # only set when no attached value
+            # since if there is attached value, it's already set
+            # in Params.match_param
+            next_param.set_first_hit(param_type)
         return next_param
 
     def close_end(self) -> None:
@@ -188,6 +340,33 @@ class Param: # pylint: disable=too-many-instance-attributes
             return self.type
         return f"{self.type}:{self.subtype}"
 
+    def usagestr(self) -> str:
+        """Get the string representation of the parameter in the default usage
+        constructor
+
+        Returns:
+            str: the string representation of the parameter in the default usage
+        """
+        # * makes sure it's not wrapped
+        ret: str = self.name('long') + "*"
+        ret += self.typestr().upper() if self.type_frozen else self.typestr()
+        return ret
+
+    def optstr(self) -> str:
+        """Get the string representation of the parameter names and types
+        in the optname section in help page
+
+        Returns:
+            str: the string representation of the parameter names and types
+                in the optname section in help page
+        """
+        if self.is_help:
+            return self.namestr()
+        typestr: str = (self.typestr().upper()
+                        if self.type_frozen else self.typestr())
+        # * makes sure it's not wrapped'
+        return f"{self.namestr()}*<{typestr}>"
+
     def to(self, to_type: str) -> Type['Param']:
         """Generate a different type of parameter using current settings
 
@@ -197,9 +376,10 @@ class Param: # pylint: disable=too-many-instance-attributes
         Returns:
             Param: the generated parameter with different type
         """
+        # Type: Optional[str], Optional[str]
         main_type, sub_type = parse_type(to_type)
         klass: Callable = PARAM_MAPPINGS[main_type]
-        return klass(
+        param: Type['Param'] = klass(
             names=self.names,
             default=None,
             desc=self.desc,
@@ -209,11 +389,32 @@ class Param: # pylint: disable=too-many-instance-attributes
             subtype=sub_type,
             callback=self.callback
         )
+        param.ns_param = self.ns_param
+        return param
+
+    @property
+    def default_group(self) -> str:
+        """Get the default group of the parameter
+
+        Returns:
+            str: the default group name
+        """
+        ret: str = "REQUIRED OPTIONS" if self.required else "OPTIONAL OPTIONS"
+        if not self.ns_param:
+            return ret
+        return f"{ret} UNDER {self.ns_param.name('long', with_prefix=False)}"
 
     @property
     def desc_with_default(self) -> Optional[List[str]]:
         """If default is not specified in desc, just to add with the default
-        value"""
+        value
+
+        Returns:
+            list: list of descriptions with default value added
+        """
+        if self.is_help:
+            return self.desc
+
         if (
                 self.required or
                 self.default is None or (
@@ -235,7 +436,11 @@ class Param: # pylint: disable=too-many-instance-attributes
         return desc
 
     def push(self, item: Any) -> None:
-        """Push a value into the stack for calculating"""
+        """Push a value into the stack for calculating
+
+        Returns:
+            item (any): The item to be pushed
+        """
         if self._first_hit is True and self._stack:
             logger.warning(
                 "Previous value of argument %r is overwritten with %r.",
@@ -248,11 +453,11 @@ class Param: # pylint: disable=too-many-instance-attributes
         self._stack[-1].append(item)
         self._first_hit = False
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return (f'<{self.__class__.__name__}({self.namestr()} :: '
                 f'{self.typestr()}) @ {id(self)}>')
 
-    def _value(self):
+    def _value(self) -> Any:
         """Get the organized value of this parameter
 
         Returns:
@@ -268,7 +473,7 @@ class Param: # pylint: disable=too-many-instance-attributes
         return ret
 
     @property
-    def value(self):
+    def value(self) -> Any:
         """Return the cached value if possible, otherwise calcuate one
 
         @Returns:
@@ -281,7 +486,7 @@ class Param: # pylint: disable=too-many-instance-attributes
         return self._value_cached
 
 
-    def apply_callback(self, all_values):
+    def apply_callback(self, all_values: Namespace) -> Any:
         """Apply the callback function to the value
 
         Args:
@@ -289,15 +494,18 @@ class Param: # pylint: disable=too-many-instance-attributes
 
         Returns:
             Any: The value after the callback applied
+
+        Raises:
+            PyParamTypeError: When exceptions raised or returned from callback
         """
         if not callable(self.callback):
             return self.value
 
         try:
             try:
-                val = self.callback(self.value, all_values)
+                val: Any = self.callback(self.value, all_values)
             except TypeError:
-                val = self.callback(self.value)
+                val: Any = self.callback(self.value)
         except Exception as exc:
             raise PyParamTypeError(str(exc)) from None
 
@@ -308,39 +516,40 @@ class Param: # pylint: disable=too-many-instance-attributes
 class ParamAuto(Param):
     """An auto parameter whose value is automatically casted"""
 
-    type = 'auto'
+    type: str = 'auto'
 
-    def _value(self):
+    def _value(self) -> Any:
+        """Cast value automatically"""
         return cast_to(super()._value(), 'auto')
 
 class ParamInt(Param):
     """An int parameter whose value is automatically casted into an int"""
-    type = 'int'
-    type_aliases = ['i']
+    type: str = 'int'
+    type_aliases: List[str] = ['i']
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.default = self.default or 0
 
-    def _value(self):
+    def _value(self) -> int:
         return int(super()._value())
 
 class ParamFloat(Param):
     """A float parameter whose value is automatically casted into a float"""
-    type = 'float'
-    type_aliases = ['f']
+    type: str = 'float'
+    type_aliases: List[str]= ['f']
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.default = self.default or 0.0
 
-    def _value(self):
+    def _value(self) -> float:
         return float(super()._value())
 
 class ParamStr(Param):
     """A str parameter whose value is automatically casted into a str"""
-    type = 'str'
-    type_aliases = ['s']
+    type: str= 'str'
+    type_aliases: List[str]= ['s']
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -348,8 +557,8 @@ class ParamStr(Param):
 
 class ParamBool(Param):
     """A bool parameter whose value is automatically casted into a bool"""
-    type = 'bool'
-    type_aliases = ['b']
+    type: str = 'bool'
+    type_aliases: List[str]= ['b']
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -362,18 +571,43 @@ class ParamBool(Param):
                 "a value that can be casted to a bool value."
             ) from None
 
+    def usagestr(self) -> str:
+        """Get the string representation of the parameter in the default usage
+        constructor
 
-    def close(self, next_param, param_type):
+        Returns:
+            str: the string representation of the parameter in the default usage
+        """
+        return self.name('long')
+
+    def optstr(self) -> str:
+        """Get the string representation of the parameter names and types
+        in the optname section in help page
+
+        Returns:
+            str: the string representation of the parameter names and types
+                in the optname section in help page
+        """
+        if self.is_help:
+            return self.namestr()
+        typestr: str = (self.typestr().upper()
+                        if self.type_frozen else self.typestr())
+        # * makes sure it's not wrapped'
+        return f"{self.namestr()}*[{typestr}]"
+
+    def close(self,
+              next_param: Type['Param'],
+              param_type: Optional[str],
+              param_value: Optional[str]):
         self.push('true')
-        return super().close(next_param, param_type)
+        return super().close(next_param, param_type, param_value)
 
     def close_end(self):
-
         if self._first_hit is True:
             logger.debug("  Closing ending argument: %r", self.namestr())
             self.push('true')
 
-    def consume(self, value):
+    def consume(self, value: str) -> bool:
         """Should I consume given parameter?"""
         if not self._first_hit:
             return False
@@ -387,7 +621,7 @@ class ParamBool(Param):
             self.push(value)
             return True
 
-    def _value(self):
+    def _value(self) -> bool:
         if not self._stack:
             return False
 
@@ -397,7 +631,7 @@ class ParamBool(Param):
 
 class ParamCount(Param):
     """A bool parameter whose value is automatically casted into a bool"""
-    type = 'count'
+    type: str = 'count'
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -422,16 +656,19 @@ class ParamCount(Param):
             )
 
 
-    def close(self, next_param, param_type):
+    def close(self,
+              next_param: Type['Param'],
+              param_type: Optional[str],
+              param_value: Optional[str]):
         self.push('1')
-        return super().close(next_param, param_type)
+        return super().close(next_param, param_type, param_value)
 
     def close_end(self):
         if self._first_hit is True:
             logger.debug("  Closing ending argument: %r", self.namestr())
             self.push('1')
 
-    def consume(self, value):
+    def consume(self, value: str) -> bool:
         """Should I consume given parameter?"""
         if not self._first_hit:
             return False
@@ -442,7 +679,7 @@ class ParamCount(Param):
 
         return False
 
-    def _value(self):
+    def _value(self) -> int:
         val = super()._value()
 
         retval = None
@@ -473,31 +710,31 @@ class ParamCount(Param):
 class ParamPath(Param):
     """A path parameter whose value is automatically casted into a pathlib.Path
     """
-    type = 'path'
-    type_aliases = ['p']
+    type: str = 'path'
+    type_aliases: List[str] = ['p']
 
-    def _value(self):
+    def _value(self) -> Path:
         return Path(super()._value())
 
 class ParamPy(Param):
     """A parameter whose value will be ast.literal_eval'ed"""
-    type = 'py'
+    type: str = 'py'
 
-    def _value(self):
+    def _value(self) -> Any:
         return ast.literal_eval(super()._value())
 
 class ParamJson(Param):
     """A parameter whose value will be parsed as json"""
-    type = 'json'
-    type_aliases = ['j']
+    type: str = 'json'
+    type_aliases: List[str] = ['j']
 
-    def _value(self):
+    def _value(self) -> Any:
         return json.loads(super()._value())
 
 class ParamList(Param):
     """A parameter whose value is a list"""
-    type = 'list'
-    type_aliases = ['l', 'a', 'array']
+    type: str = 'list'
+    type_aliases: List[str]= ['l', 'a', 'array']
 
     @classmethod
     def on_register(cls):
@@ -516,18 +753,21 @@ class ParamList(Param):
         self.default = self.default or []
         self._stack.append(self.default)
 
-    def close(self, next_param, param_type):
+    def close(self,
+              next_param: Type['Param'],
+              param_type: Optional[str],
+              param_value: Optional[str]):
         if param_type == 'reset':
             return next_param
 
-        return super().close(next_param, param_type)
+        return super().close(next_param, param_type, param_value)
 
-    def consume(self, value):
+    def consume(self, value:str) -> bool:
         """Should I consume given parameter?"""
         self.push(value)
         return True
 
-    def push(self, item):
+    def push(self, item: str):
         """Push a value into the stack for calculating"""
         if self._first_hit == 'reset':
             self._stack = []
@@ -538,7 +778,7 @@ class ParamList(Param):
         self._stack[-1].append(item)
         self._first_hit = False
 
-    def _value(self):
+    def _value(self) -> List[Any]:
         """Get the value a list parameter"""
         ret = [
             cast_to(val, self.subtype)
@@ -550,8 +790,8 @@ class ParamList(Param):
 
 class ParamChoice(Param):
     """A bool parameter whose value is automatically casted into a bool"""
-    type = 'choice'
-    type_aliases = ['c']
+    type: str = 'choice'
+    type_aliases: List[str]= ['c']
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -566,7 +806,7 @@ class ParamChoice(Param):
                 "Argument 'choices' must be a list or a tuple."
             )
 
-    def _value(self):
+    def _value(self) -> Any:
         val = super()._value()
 
         if val not in self._kwargs['choices']:
@@ -574,6 +814,134 @@ class ParamChoice(Param):
                                     f"one of {self._kwargs['choices']}")
 
         self._stack = []
+        return val
+
+class ParamNamespace(Param):
+    """A pseudo parameter serving as a namespace for parameters under it
+
+    So that it is possible to do:
+    ```shell
+    prog --namespace.arg1 1 --namespace.arg2 2
+    ```
+    """
+    type: str = 'namespace'
+    type_aliases: List[str] = ['ns']
+
+    def __init__(self, *args, **kwargs):
+        kwargs['desc'] = kwargs.get('desc') or [
+            "Works as a namespace for other arguments.",
+            "Never pass a value directly to it."
+        ]
+        kwargs['default'] = None
+        super().__init__(*args, **kwargs)
+        # for my params
+        self._stack = OrderedDiot()
+
+    @property
+    def default_group(self) -> str:
+        """Get the default group of the parameter"""
+        if any(param.required for param in self._stack.values()):
+            ret: str = 'REQUIRED'
+        else:
+            ret: str = 'OPTIONAL'
+        if not self.ns_param:
+            return f'{ret} OPTIONS'
+        return (f'{ret} OPTIONS UNDER '
+                f'{self.ns_param.name("long", with_prefix=False)}')
+
+    def consume(self, value: str) -> bool:
+        """Should I consume given parameter?"""
+        return False
+
+    def get_param(self, name: str, depth: int = 0) -> Optional[Type["Param"]]:
+        """Get the paraemeter by given name
+
+        This parameter is like '-a', and the name can be 'a.b.c.d'
+
+        Args:
+            name (str): The name of the parameter to get
+            depth (int): The depth
+
+        Returns:
+            Param: The parameter we get with the given name
+        """
+        parts: List[str] = name.split('.')
+        if depth < len(parts) - 1:
+            part = parts[depth + 1]
+            if part not in self._stack:
+                return None
+            if not isinstance(self._stack[part], ParamNamespace):
+                return self._stack[part]
+            return self._stack[part].get_param(name, depth + 1)
+        return None
+
+    # pylint: disable=arguments-differ
+    def push(self, item: Type["Param"], depth: int = 0) -> None:
+
+        """Push the parameter under this namespace.
+
+        We are not pushing any values to this namespace, but pushing
+        parameters that are under it.
+        """
+        # check if item's namespaces at depth contain only names of this
+        # ns parameter
+        if set(item.namespaces(depth)) - set(self.terminals):
+            raise PyParamValueError(
+                "Parameter names should only contain namespace names "
+                "that belong to the same namespace parameter."
+            )
+
+        # set the names with all possible combination
+        item._namespaces[depth] = self.terminals #[:]
+        item.full_names()
+
+        # check if we have nested namespaces
+        if depth >= 0 and depth < item.namespaces('len') - 1:
+            subns = ParamNamespace([
+                '.'.join(prod) for prod in product(
+                    *(item.namespaces(i) for i in range(depth+2))
+                )
+            ])
+            subns.push(item, depth + 1)
+            subns.ns_param = self
+            for name in subns.terminals:
+                self._stack[name] = subns
+        else:
+            item.ns_param = self
+            for term in item.terminals:
+                self._stack[term] = item
+    # pylint: enable=arguments-differ
+
+    def _value(self) -> Namespace:
+        val = Namespace()
+        for param_name, param in self._stack.items():
+            if param_name not in val:
+                for name in param.terminals:
+                    val[name] = param.value
+
+        return val
+
+    def apply_callback(self, all_values: Namespace) -> Any:
+
+        ns_callback_applied = Namespace()
+        for param_name, param in self._stack.items():
+            if param_name not in ns_callback_applied:
+                for name in param.terminals:
+                    ns_callback_applied[name] = param.apply_callback(all_values)
+
+        if not callable(self.callback):
+            return ns_callback_applied
+
+        try:
+            try:
+                val = self.callback(ns_callback_applied, all_values)
+            except TypeError:
+                val = self.callback(ns_callback_applied)
+        except Exception as exc:
+            raise PyParamTypeError(str(exc)) from None
+
+        if isinstance(val, Exception):
+            raise PyParamTypeError(str(val))
         return val
 
 def register_param(param: Param) -> None:
@@ -606,3 +974,4 @@ register_param(ParamPy)
 register_param(ParamJson)
 register_param(ParamList)
 register_param(ParamChoice)
+register_param(ParamNamespace)
