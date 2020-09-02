@@ -3,6 +3,14 @@ import logging
 import ast
 import json
 import builtins
+from typing import (
+    Any,
+    List,
+    Union,
+    Callable,
+    Optional,
+    Tuple
+)
 from functools import lru_cache
 from argparse import Namespace as APNamespace
 from pathlib import Path
@@ -16,26 +24,28 @@ class Namespace(APNamespace):
     """Subclass of argparse.Namespace with __getitem__ avaiable"""
     __command__ = None
 
-    def __getitem__(self, name):
+    def __getitem__(self, name: str) -> Any:
         return getattr(self, name)
 
-    def __setitem__(self, name, value):
+    def __setitem__(self, name: str, value: Any) -> None:
         setattr(self, name, value)
 
-    def __len__(self):
+    def __len__(self) -> int:
         return len(vars(self))
 
-    def __nonzero__(self):
-        return len(self) > 0
-
-    def __contains__(self, name):
+    def __contains__(self, name: str) -> bool:
         return hasattr(self, name)
 
 class Codeblock:
     """A code block, will be rendered as rich.syntax.Syntax"""
 
     @classmethod
-    def scan_texts(cls, texts, check_default=False):
+    def scan_texts(
+        cls,
+        texts:
+        List[str],
+        check_default: bool = False
+    ) -> List[Union[str, 'Codeblock']]:
         """Scan multiple texts for code blocks
 
         Args:
@@ -48,21 +58,25 @@ class Codeblock:
             list: mixed text and code blocks
         """
 
-        ret = []
-        ret_extend = ret.extend
-        codeblock = None
+        ret: List[Union[str, 'Codeblock']] = []
+        ret_extend: Callable = ret.extend
+        codeblock: Optional['Codeblock'] = None
+        # Type: Union[str, Codeblock]
         for text in texts:
             if not codeblock:
                 if not text:
                     ret.append(text)
                     continue
+                # Type: List[Union[str, Codeblock]], Optional[Codeblock]
                 scanned, codeblock = cls.scan(text, check_default=check_default)
                 ret_extend(scanned)
                 continue
             # if we hit an unclosed codeblock
-            lines = text.splitlines()
+            lines: List[str] = text.splitlines()
+            # Type: int, str
             for i, line in enumerate(lines):
                 if codeblock.is_end(line):
+                    # Type: List[Union[str, Codeblock]], Optional[Codeblock]
                     scanned, codeblock = cls.scan(
                         '\n'.join(
                             lines[(i if codeblock.opentag == '>>>' else i+1):]
@@ -76,7 +90,11 @@ class Codeblock:
         return ret
 
     @classmethod
-    def scan(cls, maybe_codeblock, check_default=False):
+    def scan(
+        cls,
+        maybe_codeblock: str,
+        check_default: bool = False
+    ) -> Tuple[List[Union[str, 'Codeblock']], Optional['Codeblock']]:
         """Scan and try to create codeblock objects from maybe_codeblock
 
         Args:
@@ -90,32 +108,37 @@ class Codeblock:
         Returns:
             tuple (list, Codeblock): mixed text and unclosed code blocks
         """
-        sep = ('Default:' if 'Default:' in maybe_codeblock
-               else 'DEFAULT:' if 'DEFAULT:' in maybe_codeblock
-               else None)
+        sep: Optional[str] = (
+            'Default:' if 'Default:' in maybe_codeblock
+            else 'DEFAULT:' if 'DEFAULT:' in maybe_codeblock
+            else None
+        )
 
-        default_to_append = None
+        default_to_append: Optional[str] = None
         if check_default and sep:
-            parts = maybe_codeblock.split(sep, 1)
+            parts: List[str] = maybe_codeblock.split(sep, 1)
             default_to_append = sep + parts[1]
-            lines = parts[0].splitlines()
+            lines: List[str] = parts[0].splitlines()
         else:
-            lines = maybe_codeblock.splitlines()
+            lines: List[str] = maybe_codeblock.splitlines()
 
-        ret = []
-        ret_append = ret.append
-        codeblock = None
+        ret: List[Union[str, 'Codeblock']] = []
+        ret_append: Callable = ret.append
+        codeblock: Optional['Codeblock'] = None
+        # Type: str
         for line in lines:
             if not codeblock:
-                line_lstripped = line.lstrip()
+                line_lstripped: str = line.lstrip()
                 if line_lstripped.startswith('>>>'):
-                    codeblock = cls('>>>',
-                                    'pycon',
-                                    len(line) - len(line_lstripped),
-                                    [line_lstripped])
+                    codeblock: 'Codeblock' = cls(
+                        '>>>',
+                        'pycon',
+                        len(line) - len(line_lstripped),
+                        [line_lstripped]
+                    )
                     ret_append(codeblock)
                 elif line_lstripped.startswith('```'):
-                    codeblock = cls(
+                    codeblock: 'Codeblock' = cls(
                         line_lstripped[
                             :(len(line_lstripped) -
                             len(line_lstripped.lstrip('`')))
@@ -134,34 +157,47 @@ class Codeblock:
                 codeblock.add_code(line)
 
         if default_to_append:
-            if not ret or isinstance(ret[-1], Codeblock):
+            if not ret or isinstance(ret[-1], 'Codeblock'):
                 ret.append(default_to_append)
             else:
                 ret[-1] += default_to_append
         return ret, codeblock
 
+    def __init__(self,
+                 opentag: str,
+                 lang: str,
+                 indent: int,
+                 codes: Optional[List[str]] = None) -> None:
+        """Constructor
 
-    def __init__(self, opentag, lang, indent, codes=None):
-        self.opentag = opentag
-        self.lang = lang
-        self.indent = indent
-        self.codes = codes or []
+        Args:
+            opentag (str): The opentag for the code block.
+                One of '>>>', '```<lang>', '````<lang>', ...
+            lang (str): The language name
+            indent (int): The indentation level
+            codes (list): The lines of code
+        """
+        self.opentag: str = opentag
+        self.lang: str = lang
+        self.indent: int = indent
+        self.codes: List[str] = codes or []
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return (f"<Codeblock (tag={self.opentag}, lang={self.lang}, "
                 f"codes={self.codes[:1]} ...)")
 
-    def add_code(self, code):
+    def add_code(self, code: str) -> None:
         """Add code to code block
 
         Args:
             code (str): code to add
                 It can be multiple lines, each of which will be dedented
         """
+        # Type: str
         for line in code.splitlines():
             self.codes.append(line[self.indent:])
 
-    def is_end(self, line):
+    def is_end(self, line: str) -> bool:
         """Tell if the line is the end of the code block
 
         Args:
@@ -176,7 +212,7 @@ class Codeblock:
             return True
         return False
 
-    def render(self):
+    def render(self) -> Padding:
         """Render the code block to a rich.syntax.Syntax
 
         Returns:
@@ -187,12 +223,15 @@ class Codeblock:
             (0, 0, 0, self.indent)
         )
 
-def always_list(str_or_list, strip=True, split=','):
+def always_list(str_or_list: Union[str, List[str]],
+                strip: bool = True,
+                split: Union[str, bool] = ',') -> List[str]:
     """Convert a string (comma separated) or a list to a list
 
     Args:
         str_or_list (str|list): string or list
-        strip (bool|str): Delimiter for split or False to not split
+        strip (bool): whether to strip the elements in result list
+        split (bool|str): Delimiter for split or False to not split
 
     Return:
         list: list of strings
@@ -204,7 +243,7 @@ def always_list(str_or_list, strip=True, split=','):
                 for elem in str_or_list.split(split)]
     return [str_or_list]
 
-def parse_type(typestr):
+def parse_type(typestr: str) -> List[Optional[str]]:
     """Parse the type string
 
     Examples:
@@ -218,15 +257,16 @@ def parse_type(typestr):
         typestr (str): string of type to parse
 
     Returns:
-        tuple: Main type and subtype
+        list: Main type and subtype
 
     Raises:
         PyParamTypeError: When a type cannot be parsed
     """
     if typestr is None:
-        return None, None
+        return [None, None]
 
-    parts = typestr.split(':', 1)
+    parts: List[str] = typestr.split(':', 1)
+    # Type: int, str
     for i, part in enumerate(parts):
         if part not in TYPE_NAMES:
             raise PyParamTypeError("Unknown type: %s" % typestr)
@@ -236,7 +276,11 @@ def parse_type(typestr):
     return parts[:2]
 
 @lru_cache()
-def parse_potential_argument(arg, prefix, allow_attached=False):
+def parse_potential_argument(
+    arg: str,
+    prefix: str,
+    allow_attached: bool = False
+) -> Tuple[Optional[str], Optional[str], Optional[str]]:
     """Parse a potential argument with given prefix
 
     Examples:
@@ -267,25 +311,30 @@ def parse_potential_argument(arg, prefix, allow_attached=False):
         return None, None, arg
 
     # fill a tuple to length of 2 with None
-    fill2_none = lambda alist: (
+    fill2_none: Callable = lambda alist: (
         (alist[0], None) if len(alist) == 1 or not alist[1] else alist[:2]
     )
 
+    # Type: str, Optional[str]
     item_nametype, item_value = fill2_none(arg.split('=', 1))
+    # Type: str, Optional[str]
     item_name, item_type = fill2_none(item_nametype.split(':', 1))
+
     # detach the value for -b1
     if allow_attached:
+        # pylint: disable=too-many-boolean-expressions
         if (item_type is None and item_value is None and (
             (prefix == 'auto' and item_name[:1] == '-' and
              item_name[:2] != '--') or
             (len(prefix) == 1 and
              item_name[1:2] != prefix )
         )):
+            # Type: str, str
             item_name, item_value = item_name[:2], item_name[2:]
 
     # remove prefix in item_name
     if prefix == 'auto':
-        item_name_first = item_name.split('.')[0]
+        item_name_first: str = item_name.split('.')[0]
         prefix = ('-' if len(item_name_first) <= 2
                   else '--' if len(item_name_first) >= 4
                   else None)
@@ -295,12 +344,13 @@ def parse_potential_argument(arg, prefix, allow_attached=False):
     else:
         return None, None, arg
 
+    # Type: str, Optional[str]
     item_type, item_subtype = parse_type(item_type)
     item_type = f"{item_type}:{item_subtype}" if item_subtype else item_type
 
     return item_name, item_type, item_value
 
-def type_from_value(value):
+def type_from_value(value: Any) -> str:
     """Detect parameter type from a value
 
     Args:
@@ -309,7 +359,7 @@ def type_from_value(value):
     Returns:
         str: The name of the type
     """
-    typename = type(value).__name__
+    typename: str = type(value).__name__
     if typename in ('int', 'float', 'str', 'bool', 'list'):
         return typename
     if isinstance(value, dict):
@@ -318,7 +368,7 @@ def type_from_value(value):
         return 'path'
     return 'auto'
 
-def _cast_auto(value):
+def _cast_auto(value: Any) -> Any:
     """Cast value automatically
 
     Args:
@@ -327,9 +377,10 @@ def _cast_auto(value):
     Returns:
         any: value casted
     """
-    if value in ("True", "TRUE", "true"):
+    # pylint: disable=too-many-return-statements
+    if value in ("True", "TRUE", "true", 1, True):
         return True
-    if value in ("False", "FALSE", "false"):
+    if value in ("False", "FALSE", "false", 0, False):
         return False
 
     try:
@@ -349,7 +400,7 @@ def _cast_auto(value):
 
     return value
 
-def cast_to(value, to_type):
+def cast_to(value: Any, to_type: str) -> Any:
     """Cast a value to a given type
 
     Args:
@@ -386,7 +437,6 @@ def cast_to(value, to_type):
             f"Cannot cast {value} to {to_type}: {cast_exc}"
         ) from cast_exc
     raise PyParamTypeError(f"Cannot cast {value} to {to_type}")
-
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)

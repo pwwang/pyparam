@@ -1,2 +1,2 @@
 [run]
-omit = pyparam/utils.py
+omit = pyparam/__main__.py

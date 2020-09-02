@@ -11,7 +11,7 @@ params = Params(prog='python -m pyparam', desc="""\
 An exhibition showing all supported types of parameters and \
 some features by running {prog}.
 
-```python,
+```python
 # We can also insert code block in the description.
 print('Hello pyparam!')
 ```
@@ -178,10 +178,11 @@ For example, a toml file:
 ```toml
 [params.arg]
 desc = "An argument"
-```""")
-fromfile.add_param("json", type="json", type_frozen=False, default="{}", desc=(
-    "Value will be converted using `json.loads`"
-))
+```
+
+See `example.toml` in the repo.
+""")
+fromfile.from_arg("file", desc="The file to load parameters from.")
 
 def vars_ns(ns, depth=None):
     """Get the vars of a namespace"""

@@ -15,9 +15,7 @@ repository = "https://github.com/pwwang/pyparam"
 [tool.poetry.dependencies]
 python = "^3.6"
 python-simpleconf = "*"
-colorama = "*"
-completions = "*"
-pygments = "*"
+rich = "^6.0"
 diot = "*"
 
 [tool.poetry.dev-dependencies]

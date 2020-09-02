@@ -7,10 +7,13 @@ from typing import (
     List,
     Callable,
     Any,
-    Tuple
+    Tuple,
+    Dict
 )
+from pathlib import Path
 from diot import OrderedDiot
 import rich
+from simpleconf import Config, LOADERS
 from .utils import (
     always_list,
     Namespace,
@@ -27,7 +30,7 @@ from .exceptions import (
     PyParamTypeError
 )
 
-class Params:
+class Params: # pylint: disable=too-many-instance-attributes
     """Params, served as root params or subcommands
 
     Attributes:
@@ -53,7 +56,7 @@ class Params:
         asssembler (HelpAssembler): The asssembler to assemble the help page
     """
 
-    def __init__(self,
+    def __init__(self, # pylint: disable=too-many-arguments
                  desc: Optional[Union[List[str], str]] = 'No description',
                  prog: str = sys.argv[0],
                  help_keys: Union[str, List[str]] = 'h,help,H',
@@ -144,7 +147,7 @@ class Params:
         )
         return sep.join(names)
 
-    def get_param(self, name: Optional[str]) -> Optional[Type["Param"]]:
+    def _get_param(self, name: Optional[str]) -> Optional[Type["Param"]]:
         """Get the parameter by name
 
         If the parameter is under a namespace, try to get it via the namespace
@@ -161,7 +164,7 @@ class Params:
             return None
         return ns_param.get_param(name)
 
-    def set_param(self, param: Type["Param"]) -> None:
+    def _set_param(self, param: Type["Param"]) -> None:
         """Set the parameter
 
         When a paraemeter's type is overwritten, we need to replace it with
@@ -174,7 +177,7 @@ class Params:
             for name in param.names:
                 self.params[name] = param
 
-    def add_param(self,
+    def add_param(self, # pylint: disable=too-many-arguments
                   names: Union[str, List[str]],
                   default: Any = None,
                   # pylint: disable=redefined-builtin
@@ -223,6 +226,7 @@ class Params:
         Return:
             Param: The added parameter
         """
+        # pylint: disable=too-many-locals
         if type is None:
             type = type_from_value(default)
 
@@ -274,10 +278,14 @@ class Params:
         group = group or param.default_group
         # leave the parameters here under namespace to have flexibility
         # assigning different groups
-        self.param_groups.setdefault(group, []).append(param)
+        groups: List[Type['Param']] = self.param_groups.setdefault(group, [])
+
+        # any parameter with param.names hasn't been added
+        if not any(set(param.names) & set(prm.names) for prm in groups):
+            groups.append(param)
         return param
 
-    def add_command(self,
+    def add_command(self, # pylint: disable=too-many-arguments
                     names: Union[str, List[str]],
                     desc: Optional[Union[str, List[str]]] = 'No description',
                     help_keys: Union[str, List[str]] = '__inherit__',
@@ -310,11 +318,12 @@ class Params:
         Returns:
             Params: The added command
         """
+        # pylint: disable=too-many-locals
         commands: List[str]= always_list(names)
         command: "Params" = Params(
             desc=desc,
             prog=(f"{self.prog}{' [OPTIONS]' if self.params else ''} "
-                  f"{commands[0]}"),
+                  f"{sorted(commands, key=len)[-1]}"),
             help_keys=(self.help_keys if help_keys == '__inherit__'
                        else help_keys),
             help_cmds=(self.help_cmds if help_cmds == '__inherit__'
@@ -341,16 +350,23 @@ class Params:
             self.commands[cmd] = command
 
         group = group or "COMMANDS"
-        self.command_groups.setdefault(group, []).append(command)
+        groups: List['Params'] = self.command_groups.setdefault(group, [])
 
+        if not any(set(command.names) & set(cmd.names) for cmd in groups):
+            groups.append(command)
         return command
 
-    def print_help(self, exit_code: int = 1) -> None:
+    def _print_help(self, just_try: bool = False, exit_code: int = 1) -> None:
         """Print the help information and exit
 
         Args:
+            just_try (bool): Whether we are just trying parsing, don't exit
+                nor print help.
             exit_code (int|bool): The exit code or False to not exit
         """
+        if just_try:
+            return
+
         self.assembler.assemble(self, printout=True)
         if exit_code is not False:
             sys.exit(exit_code)
@@ -375,7 +391,7 @@ class Params:
                 value: Any = param.value
             except (TypeError, ValueError) as pve:
                 logger.error("%r: %s", param.namestr(), pve)
-                self.print_help()
+                self._print_help()
             else:
                 for name in param.names:
                     ns_no_callback[name] = value
@@ -391,18 +407,22 @@ class Params:
                 value: Any = param.apply_callback(ns_no_callback)
             except PyParamTypeError as pte:
                 logger.error("%r: %s", param.namestr(), pte)
-                self.print_help()
+                self._print_help()
             else:
                 for name in param.names:
                     setattr(namespace, name, value)
 
         return namespace
 
-    def parse(self, args: Optional[List[str]] = None) -> Namespace:
+    def parse(self,
+              args: Optional[List[str]] = None,
+              just_try: bool = False) -> Namespace:
         """Parse the arguments from the command line
 
         Args:
             args (list): The arguments to parse
+            just_try (bool): Just try parsing, don't exit nor print the help.
+                See what we can get from the command line
 
         Return:
             Namespace: The namespace of parsed arguments
@@ -430,14 +450,14 @@ class Params:
         args = sys.argv[1:] if args is None else args
 
         if not args and self.help_on_void:
-            self.print_help()
+            self._print_help(just_try)
 
         namespace: Namespace = Namespace()
-        self._parse(args, namespace)
+        self._parse(args, namespace, just_try)
 
         if self.commands and not namespace.__command__:
             logger.error('No command given.')
-            self.print_help()
+            self._print_help(just_try)
         # run help subcommand
         elif (
                 namespace.__command__ in self.help_cmds and
@@ -445,21 +465,25 @@ class Params:
         ):
             command_passed = namespace[namespace.__command__][POSITIONAL]
             if not command_passed:
-                self.print_help()
+                self._print_help(just_try)
             elif command_passed not in self.commands:
                 logger.error('Unknown command: %r', command_passed)
-                self.print_help()
+                self._print_help(just_try)
             else:
-                self.commands[command_passed].print_help()
+                self.commands[command_passed]._print_help(just_try)
         return namespace
 
-    def _parse(self, args: List[str], namespace: Namespace) -> None:
+    def _parse(self, # pylint: disable=too-many-branches
+               args: List[str],
+               namespace: Namespace,
+               just_try: bool = False) -> None:
         """Parse the arguments from the command line
 
         Args:
             args (list): The arguments to parse
             namespace (Namespace): The namespace for parsed arguments to
                 attach to.
+            just_try (bool): Just try parsing, don't print help nor exit
         """
         logger.debug("Parsing %r", args)
 
@@ -481,13 +505,13 @@ class Params:
             #    With arbitrary = True, parameter will be created on the fly
             # 3. if arg is like --arg=1, then param_value 1 is pushed to param.
             # Type: Optional[Type['Param']], Optional[str], Optional[str], Any
-            param, param_name, param_type, param_value = self.match_param(arg)
+            param, param_name, param_type, param_value = self._match_param(arg)
             logger.debug("  Previous: %r", prev_param)
             logger.debug("  Matched: %r, name=%s, type=%s, value=%r",
                          param, param_name, param_type, param_value)
             # as long as the help argument hit
             if param_name in self.help_keys or (param and param.is_help):
-                self.print_help()
+                self._print_help(just_try)
 
             if prev_param and param:
                 prev_param = prev_param.close(param, param_type, param_value)
@@ -495,8 +519,8 @@ class Params:
                 # a new parameter instance has been created
                 # we need to update in the pool as well
                 if (prev_param and
-                        prev_param is not self.get_param(prev_param.names[0])):
-                    self.set_param(prev_param)
+                        prev_param is not self._get_param(prev_param.names[0])):
+                    self._set_param(prev_param)
 
             elif prev_param: # No param
                 if param_name is not None:
@@ -506,7 +530,7 @@ class Params:
                     # 1. hits a command
                     # 2. hits the start of positional arguments
                     # Type: Optional[Type['Param']], Optional[str]
-                    prev_param, matched = self.match_command_or_positional(
+                    prev_param, matched = self._match_command_or_positional(
                         prev_param, param_value, args[(i+1):], namespace
                     )
                     if matched == 'command':
@@ -523,7 +547,7 @@ class Params:
 
             else: # neither
                 # Type: Optional[Type['Param']], Optional[str]
-                prev_param, matched = self.match_command_or_positional(
+                prev_param, matched = self._match_command_or_positional(
                     prev_param, param_value, args[(i+1):], namespace
                 )
                 if matched == 'command':
@@ -537,7 +561,7 @@ class Params:
 
         self.values(namespace)
 
-    def match_command_or_positional(
+    def _match_command_or_positional(
         self,
         prev_param: Optional[Type['Param']],
         arg: str,
@@ -602,7 +626,7 @@ class Params:
 
         return None, 'command'
 
-    def match_param(self, arg: str) -> Tuple[
+    def _match_param(self, arg: str) -> Tuple[
         Optional[Type['Param']], Optional[str], Optional[str], Optional[str]
     ]:
         """Check if arg matches any predefined parameters. With
@@ -626,13 +650,13 @@ class Params:
         # When we didn't match any argument-like
         # with allow_attached=False
         # Or we matched but it is not defined
-        if (
+        if ( # pylint:disable=too-many-boolean-expressions
             self.prefix in ('auto', '-') and
             not param_type and
             param_value and
             param_value[:1] == '-' and
             (param_name is None or (
-                not self.arbitrary and not self.get_param(param_name)
+                not self.arbitrary and not self._get_param(param_name)
             ))
         ):
             # parsed '-arg' as '-a rg'
@@ -644,17 +668,17 @@ class Params:
             )
             if param_name2 is not None and (
                 param_name is None or (not self.arbitrary and
-                                       not self.get_param(param_name2))):
+                                       not self._get_param(param_name2))):
                 param_name, param_type, param_value = (
                     param_name2, param_type2, param_value2
                 )
 
         if (self.arbitrary and
                 param_name is not None and
-                not self.get_param(param_name)):
+                not self._get_param(param_name)):
             self.add_param(param_name, type=param_type)
 
-        param: Optional[Type['Param']] = self.get_param(param_name)
+        param: Optional[Type['Param']] = self._get_param(param_name)
         if not param:
             return None, param_name, param_type, param_value
 
@@ -663,6 +687,159 @@ class Params:
             param.push(param_value)
 
         return param, param_name, param_type, param_value
+
+    def from_file(self,
+                  filename: Union[str, dict],
+                  filetype: Optional[str] = None,
+                  show: bool = True) -> None:
+        """Load parameters from file
+
+        We support 2 types for format to load the parameters.
+
+        - express way, which has some limitations:
+            1. no command definition;
+            2. no namespace parameters;
+        ```toml
+        arg = 1 # default value
+        "arg.desc" = "An argument" # description
+        # other attributes
+        ```
+        or
+        ```toml
+        [arg]
+        default = 1
+        desc = "An argument"
+        ```
+
+        - full specification
+        ```toml
+        [params.arg]
+        default = 1
+        desc = "An argument"
+        [commands.command]
+        desc = "A subcommand"
+
+          [commands.command.params.arg]
+          default = 2
+          desc = "An argument for command"
+        ```
+
+        Args:
+            filename (str): path to the file
+            filetype (str): The type of the file. If None, will infer from the
+                filename.
+                Supported types: ini, cfg, conf, config, yml, yaml, json
+                env, osenv, toml
+            show (bool): The default show value for parameters in the file
+        """
+        config: Config = Config(with_profile=False)
+        config._load(filename, factory=LOADERS.get(filetype))
+
+        self.from_dict(config, show=show)
+
+    def _from_dict_with_sections(self,
+                                 dict_obj: Dict[str, Dict[str, dict]],
+                                 show: bool = True) -> None:
+        """Load from the dict with 'params' and/or 'commands' sections"""
+
+        param_section: Dict[str, dict] = dict_obj.get('params', {})
+        # Type: str, dict
+        for param_name, param_attrs in param_section.items():
+            param_attrs.setdefault('show', show)
+            names: List[str] = always_list(param_attrs.pop('aliases', []))
+            names.insert(0, param_name)
+            self.add_param(names, **param_attrs)
+
+        command_section: Dict[str, dict] = dict_obj.get('commands', {})
+        for command_name, command_attrs in command_section.items():
+            names: List[str] = always_list(command_attrs.pop('aliases', []))
+            names.insert(0, command_name)
+            param_section: Dict[str, dict] = command_attrs.pop('params', {})
+            command: "Params" = self.add_command(names, **command_attrs)
+            command.from_dict({"params": param_section}, show)
+
+    def from_dict(self, dict_obj: dict, show: bool = True):
+        """Load parameters from python dict
+
+        Args:
+            dict_obj (dict): A python dictionary to load parameters from
+            show (bool): The default show value for the parameters in the
+                dictionary
+        """
+        if 'params' not in dict_obj and 'commands' not in dict_obj:
+            # express way
+            # scan and create dict for all params
+            all_params: Dict[str, dict] = {}
+            for key, val in dict_obj.items():
+                param_name: str = key
+                if '.' in key:
+                    param_name = key.split('.', 1)[0]
+                all_params.setdefault(param_name, {})
+
+            # scan for the attributes
+            for key, val in dict_obj.items():
+                if key in all_params:
+                    # if it is a dict, and there is not other attributes
+                    # assigned like "arg.desc", that means this dictionary
+                    # contains all attributes
+                    if (not isinstance(val, dict) or
+                            not any(ap_key.startswith(f"{key}.")
+                                    for ap_key in dict_obj)):
+                        all_params[key] = val
+                    else:
+                        all_params[key]['default'] = val
+                elif '.' in key:
+                    # Type: str, str
+                    param_name, param_attr = key.split('.', 1)
+                    all_params[param_name][param_attr] = val
+
+            dict_obj = {"params": all_params}
+
+        self._from_dict_with_sections(dict_obj, show)
+
+    def from_arg(self,
+                 names: Union[str, List[str], 'ParamPath'],
+                 desc: Union[str, List[str]] = "The configuration file.",
+                 group: Optional[str] = None,
+                 required: bool = True):
+        """Load parameters from the file specified by naargument
+        from command line
+
+        This will load the paramters from the file given by the argument,
+        ignoring other arguments from the command line. One can overwrite
+        some of them afterwards, and do the parsing finally.
+
+        Args:
+            names (str|list|ParamPath): The names of the parameter or
+                the parameter itself. If it is the parameter, other
+                arguments are ignored
+            desc (str|list): The description of the parameter
+            group (str): The group of the parameter
+            required (bool): Whether this argument is required
+        """
+        if isinstance(names, (str, list)):
+            param: "ParamPath" = self.add_param(
+                names, desc=desc, required=required, group=group, type='path'
+            )
+        else:
+            param: "ParamPath" = names
+
+        prefixed_names: List[str] = [param._prefix_name(name)
+                                     for name in param.names]
+        args: List[str] = []
+        for i, arg in enumerate(sys.argv):
+            if i == 0:
+                continue
+            if arg in prefixed_names:
+                args.append(arg)
+                if i < len(sys.argv) - 1:
+                    args.append(sys.argv[i+1])
+                break
+
+        parsed: Namespace = self.parse(args, just_try=True)
+        path: Path = parsed[param.name('short', False)]
+        if path:
+            self.from_file(path)
 
 # pylint: disable=invalid-name
 params: Params = Params()
