@@ -157,7 +157,7 @@ class Codeblock:
                 codeblock.add_code(line)
 
         if default_to_append:
-            if not ret or isinstance(ret[-1], 'Codeblock'):
+            if not ret or isinstance(ret[-1], Codeblock):
                 ret.append(default_to_append)
             else:
                 ret[-1] += default_to_append
