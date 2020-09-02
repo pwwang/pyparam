@@ -54,8 +54,8 @@ class OpttypeHighlighter(RegexHighlighter):
     """Apply style to anything that looks like a option type."""
 
     highlights: List[str]= [
-        r"(?P<opttype_frozen>[\[\<][A-Z:]+[\]\>])",
-        r"(?P<opttype>[\[\<][a-z:]+[\]\>])",
+        r"(?P<opttype_frozen>[\[\<][A-Z:]+[\]\>])$",
+        r"(?P<opttype>[\[\<][a-z:]+[\]\>])$",
     ]
 
 class DefaultHighlighter(RegexHighlighter):
@@ -393,7 +393,7 @@ class HelpAssembler:
 
         for title, section in assembled.items():
             self._assembled.append(Text(end="\n"))
-            self._assembled.append(Text(title.upper() + ':', style="title",
+            self._assembled.append(Text(title + ':', style="title",
                                         justify="left"))
             self._assembled.append(section)
 

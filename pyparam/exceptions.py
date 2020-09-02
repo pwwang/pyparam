@@ -3,9 +3,6 @@
 class PyParamException(Exception):
     """Base exception for pyparam"""
 
-class PyParamAlreadyExists(PyParamException):
-    """When try to add an existing parameter"""
-
 class PyParamTypeError(PyParamException, TypeError):
     """When parameter type is not supported"""
 

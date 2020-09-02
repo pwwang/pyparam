@@ -23,7 +23,7 @@ from .defaults import POSITIONAL
 from .param import PARAM_MAPPINGS
 from .help import HelpAssembler
 from .exceptions import (
-    PyParamAlreadyExists,
+    PyParamNameError,
     PyParamTypeError
 )
 
@@ -186,6 +186,7 @@ class Params:
                   group: Optional[str] = None,
                   force: bool = False,
                   type_fronzen: bool = True,
+                  argname_shorten: bool = True,
                   **kwargs) -> Type["Param"]:
         """Add an argument
 
@@ -212,9 +213,12 @@ class Params:
             force (bool): Whether to force adding paramter if it exists
             type_frozen (bool): Whether allow type overwritting from
                 the commone line
+            argname_shorten (bool): Whether show shortened name for parameter
+                under namespace parameter
+            **kwargs: Additional keyword arguments
 
         Raises:
-            PyParamAlreadyExists: When parameter exists and force is false
+            PyParamNameError: When parameter exists and force is false
 
         Return:
             Param: The added parameter
@@ -244,6 +248,7 @@ class Params:
             subtype=subtype,
             type_fronzen=type_fronzen,
             callback=callback,
+            argname_shorten=argname_shorten,
             **kwargs
         )
         if any(name in self.help_keys for name in names):
@@ -252,11 +257,7 @@ class Params:
         if param.namespaces(0):
             # add namespace parameter automatically
             if param.namespaces(0)[0] not in self.params:
-                self.add_param(param.namespaces(0),
-                               type="ns",
-                               show=show,
-                               type_fronzen=type_fronzen,
-                               callback=callback)
+                self.add_param(param.namespaces(0), type="ns")
 
             ns_param: "ParamNamespace" = self.params[param.namespaces(0)[0]]
             ns_param.push(param)
@@ -265,7 +266,7 @@ class Params:
             for name in names:
                 # check if parameter has been added
                 if not force and (name in self.params or name in self.commands):
-                    raise PyParamAlreadyExists(
+                    raise PyParamNameError(
                         f"Argument {name} has already been added."
                     )
                 self.params[name] = param
@@ -334,7 +335,7 @@ class Params:
         for cmd in commands:
             # check if command has been added
             if not force and (cmd in self.params or cmd in self.commands):
-                raise PyParamAlreadyExists(
+                raise PyParamNameError(
                     f"Command {cmd!r} has already been added."
                 )
             self.commands[cmd] = command

@@ -20,8 +20,7 @@ from .defaults import POSITIONAL
 from .exceptions import (
     PyParamValueError,
     PyParamTypeError,
-    PyParamNameError,
-    PyParamAlreadyExists
+    PyParamNameError
 )
 
 PARAM_MAPPINGS: Dict[str, Type['Param']] = {}
@@ -40,6 +39,8 @@ class Param: # pylint: disable=too-many-instance-attributes
         type_frozen (bool): Whether the type is frozen
             (not allowing overwritting from command line)
         callback (Callable): The callback to modify the final value
+        argname_shorten (bool): Whether show shortened name for the parameters
+            under namespace parameters
         _stack (list): The stack to push the values
         _value_cached (any): The cached value calculated from the stack
         _first_hit (str|bool): Whether the parameter is just hit
@@ -66,6 +67,7 @@ class Param: # pylint: disable=too-many-instance-attributes
                  subtype: Optional[bool] = None,
                  type_frozen: bool = True,
                  callback: Optional[Callable] = None,
+                 argname_shorten: bool = True,
                  **kwargs: Dict[str, Any]):
         """Constructor
 
@@ -81,6 +83,8 @@ class Param: # pylint: disable=too-many-instance-attributes
             type_frozen (bool): Whether the type is frozen
                 (not allowing overwritting from command line)
             callback (Callable): The callback to modify the final value
+            argname_shorten (bool): Whether show shortened name for parameters
+                under namespace parameters
             **kwargs: Additional keyword arguments
         """
         self.names: List[str] = names
@@ -93,6 +97,7 @@ class Param: # pylint: disable=too-many-instance-attributes
         self.subtype: Optional[str] = subtype
         self.type_frozen: bool = type_frozen
         self.callback: Optional[Callable] = callback
+        self.argname_shorten: boool = argname_shorten
         self._stack: List[Any] = []
         self._value_cached: Optional[Any] = None
         self._first_hit: Optional[bool, str] = False
@@ -120,7 +125,7 @@ class Param: # pylint: disable=too-many-instance-attributes
                 namespaces = [{part} for part in parts[:-1]]
             else:
                 for i, part in enumerate(parts[:-1]):
-                    parts[i].add(part)
+                    namespaces[i].add(part)
             terminals.add(parts[-1])
         return [list(ns) for ns in namespaces], list(terminals)
 
@@ -133,8 +138,9 @@ class Param: # pylint: disable=too-many-instance-attributes
         Returns:
             str: Name with prefix added
         """
+        name_to_check: str = name.split('.', 1)[0]
         if self.prefix == 'auto':
-            return f"-{name}" if len(name) <= 1 else f"--{name}"
+            return f"-{name}" if len(name_to_check) <= 1 else f"--{name}"
         return f"{self.prefix}{name}"
 
     def namespaces(self,
@@ -360,12 +366,18 @@ class Param: # pylint: disable=too-many-instance-attributes
             str: the string representation of the parameter names and types
                 in the optname section in help page
         """
-        if self.is_help:
-            return self.namestr()
         typestr: str = (self.typestr().upper()
                         if self.type_frozen else self.typestr())
-        # * makes sure it's not wrapped'
-        return f"{self.namestr()}*<{typestr}>"
+        if not self.ns_param or not self.argname_shorten:
+            if self.is_help:
+                return self.namestr()
+            # * makes sure it's not wrapped'
+            return f"{self.namestr()}*<{typestr}>"
+
+        ret: List[str] = []
+        for term in sorted(self.terminals, key=len):
+            ret.append(f"~<ns>.{term}")
+        return ", ".join(ret) + f"*<{typestr}>"
 
     def to(self, to_type: str) -> Type['Param']:
         """Generate a different type of parameter using current settings
@@ -402,7 +414,7 @@ class Param: # pylint: disable=too-many-instance-attributes
         ret: str = "REQUIRED OPTIONS" if self.required else "OPTIONAL OPTIONS"
         if not self.ns_param:
             return ret
-        return f"{ret} UNDER {self.ns_param.name('long', with_prefix=False)}"
+        return f"{ret} UNDER {self.ns_param.name('long')}"
 
     @property
     def desc_with_default(self) -> Optional[List[str]]:
@@ -592,8 +604,15 @@ class ParamBool(Param):
             return self.namestr()
         typestr: str = (self.typestr().upper()
                         if self.type_frozen else self.typestr())
-        # * makes sure it's not wrapped'
-        return f"{self.namestr()}*[{typestr}]"
+
+        if not self.ns_param or not self.argname_shorten:
+            # * makes sure it's not wrapped'
+            return f"{self.namestr()}*[{typestr}]"
+
+        ret: List[str] = []
+        for term in sorted(self.terminals, key=len):
+            ret.append(f"~<ns>.{term}")
+        return ", ".join(ret) + f"*[{typestr}]"
 
     def close(self,
               next_param: Type['Param'],
@@ -824,8 +843,8 @@ class ParamNamespace(Param):
     prog --namespace.arg1 1 --namespace.arg2 2
     ```
     """
-    type: str = 'namespace'
-    type_aliases: List[str] = ['ns']
+    type: str = 'ns'
+    type_aliases: List[str] = ['namespace']
 
     def __init__(self, *args, **kwargs):
         kwargs['desc'] = kwargs.get('desc') or [
@@ -847,7 +866,7 @@ class ParamNamespace(Param):
         if not self.ns_param:
             return f'{ret} OPTIONS'
         return (f'{ret} OPTIONS UNDER '
-                f'{self.ns_param.name("long", with_prefix=False)}')
+                f'{self.ns_param.name("long")}')
 
     def consume(self, value: str) -> bool:
         """Should I consume given parameter?"""
@@ -896,16 +915,22 @@ class ParamNamespace(Param):
         item.full_names()
 
         # check if we have nested namespaces
-        if depth >= 0 and depth < item.namespaces('len') - 1:
-            subns = ParamNamespace([
-                '.'.join(prod) for prod in product(
-                    *(item.namespaces(i) for i in range(depth+2))
-                )
-            ])
+        if 0 <= depth < item.namespaces('len') - 1:
+            # see if sub-ns exists
+            subns_name = item.namespaces(depth + 1)[0]
+            if subns_name in self._stack:
+                subns = self._stack[subns_name]
+            else:
+                subns = ParamNamespace([
+                    '.'.join(prod) for prod in product(
+                        *(item.namespaces(i) for i in range(depth+2))
+                    )
+                ])
+                subns.ns_param = self
+
+                for name in subns.terminals:
+                    self._stack[name] = subns
             subns.push(item, depth + 1)
-            subns.ns_param = self
-            for name in subns.terminals:
-                self._stack[name] = subns
         else:
             item.ns_param = self
             for term in item.terminals:
@@ -954,7 +979,7 @@ def register_param(param: Param) -> None:
     """
     for alias in param.type_aliases + [param.type]:
         if alias in TYPE_NAMES:
-            raise PyParamAlreadyExists(
+            raise PyParamNameError(
                 f'Type name has already been registered: {alias}'
             )
         TYPE_NAMES[alias] = param.type

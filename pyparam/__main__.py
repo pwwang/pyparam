@@ -137,9 +137,16 @@ nsparams.add_param("config.num-heads", type='int', default=8, desc=[
 ])
 # give some description to put it on help page
 nsparams.add_param(
-    "config.nested",
+    "config.nested, config.nt",
     type='ns',
-    desc='Nested configurations under config',
+    desc="""\
+Nested configurations under config.
+You can also apply callback to change the value of the whole namespace:
+```python
+def callback(value, all_values):
+    value.gpus += all_values.config.nlayers
+    return value
+```""",
     callback=(
         lambda value, all_values: setattr(
             value, 'gpus', value.gpus + all_values.config.nlayers
@@ -149,6 +156,11 @@ nsparams.add_param(
 nsparams.add_param("config.nested.gpus", type='int', default=1, desc=[
     "Number of GPUs to use."
 ])
+
+nested_cmd = params.add_command('nested-cmd', desc="Nested commands")
+nested_cmd2 = nested_cmd.add_command('nested-cmd2',
+                                     desc="A command of `nested-cmd`")
+
 
 
 params.add_command("a, arbi, arbitrary",
