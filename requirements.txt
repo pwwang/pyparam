@@ -1,7 +1,5 @@
-colorama
-completions
 diot
-pygments
 pytest
 pytest-cov
 python-simpleconf
+rich==6.*,>=6.0.0

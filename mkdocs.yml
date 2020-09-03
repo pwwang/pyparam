@@ -11,6 +11,7 @@ markdown_extensions:
     - toc:
         baselevel: 2
 nav:
+    - '': mkapi/api/pyparam
     - 'Introduction': 'index.md'
     - 'From command line arguments': 'fromCommandline.md'
     - 'Shell completions': 'shellCompletions.md'
@@ -18,4 +19,5 @@ nav:
     - 'From dict/configuration': 'fromDict.md'
     - 'Subcommands': 'commands.md'
     - 'Using the values': 'useTheValues.md'
+    - 'API': 'api/pyparam.md'
     - 'Change log': 'changeLog.md'

@@ -1,7 +1,3 @@
----
-permalink: ./index.html
----
-
 # pyparam
 [![pypi][1]][2] [![pypi][10]][11] ![github action][3] [![codacy quality][4]][6] [![codacy quality][7]][6] ![pyver][8]
 
