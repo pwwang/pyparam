@@ -23,7 +23,7 @@ jobs:
           python -m pip install poetry
           poetry install -v
       - name: Run pylint
-        run: pylint varname.py
+        run: pylint pyparam
       - name: Update docs
         run: |
           pip install mkdocs
