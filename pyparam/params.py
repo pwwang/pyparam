@@ -10,7 +10,6 @@ from typing import (
     Tuple,
     Dict
 )
-from pathlib import Path
 from diot import OrderedDiot
 import rich
 from simpleconf import Config, LOADERS
@@ -25,10 +24,8 @@ from .utils import (
 from .defaults import POSITIONAL
 from .param import PARAM_MAPPINGS
 from .help import HelpAssembler
-from .exceptions import (
-    PyParamNameError,
-    PyParamTypeError
-)
+from .exceptions import PyParamNameError
+
 
 class Params: # pylint: disable=too-many-instance-attributes
     """Params, served as root params or subcommands
@@ -364,18 +361,14 @@ class Params: # pylint: disable=too-many-instance-attributes
             groups.append(command)
         return command
 
-    def _print_help(self, just_try: bool = False, exit_code: int = 1) -> None:
+    def print_help(self, exit_code: int = 1) -> None:
         """Print the help information and exit
 
         Args:
-            just_try (bool): Whether we are just trying parsing, don't exit
-                nor print help.
             exit_code (int|bool): The exit code or False to not exit
         """
-        if just_try:
-            return
-
-        self.assembler.assemble(self, printout=True)
+        self.assembler.assemble(self)
+        self.assembler.printout()
         if exit_code is not False:
             sys.exit(exit_code)
 
@@ -399,7 +392,7 @@ class Params: # pylint: disable=too-many-instance-attributes
                 value: Any = param.value
             except (TypeError, ValueError) as pve:
                 logger.error("%r: %s", param.namestr(), pve)
-                self._print_help()
+                self.print_help()
             else:
                 for name in param.names:
                     ns_no_callback[name] = value
@@ -413,9 +406,9 @@ class Params: # pylint: disable=too-many-instance-attributes
 
             try:
                 value: Any = param.apply_callback(ns_no_callback)
-            except PyParamTypeError as pte:
+            except (TypeError, ValueError) as pte:
                 logger.error("%r: %s", param.namestr(), pte)
-                self._print_help()
+                self.print_help()
             else:
                 for name in param.names:
                     setattr(namespace, name, value)
@@ -423,14 +416,11 @@ class Params: # pylint: disable=too-many-instance-attributes
         return namespace
 
     def parse(self,
-              args: Optional[List[str]] = None,
-              just_try: bool = False) -> Namespace:
+              args: Optional[List[str]] = None) -> Namespace:
         """Parse the arguments from the command line
 
         Args:
             args (list): The arguments to parse
-            just_try (bool): Just try parsing, don't exit nor print the help.
-                See what we can get from the command line
 
         Return:
             Namespace: The namespace of parsed arguments
@@ -458,14 +448,14 @@ class Params: # pylint: disable=too-many-instance-attributes
         args = sys.argv[1:] if args is None else args
 
         if not args and self.help_on_void:
-            self._print_help(just_try)
+            self.print_help()
 
         namespace: Namespace = Namespace()
-        self._parse(args, namespace, just_try)
+        self._parse(args, namespace)
 
         if self.commands and not namespace.__command__:
             logger.error('No command given.')
-            self._print_help(just_try)
+            self.print_help()
         # run help subcommand
         elif (
                 namespace.__command__ in self.help_cmds and
@@ -473,25 +463,23 @@ class Params: # pylint: disable=too-many-instance-attributes
         ):
             command_passed = namespace[namespace.__command__][POSITIONAL]
             if not command_passed:
-                self._print_help(just_try)
+                self.print_help()
             elif command_passed not in self.commands:
                 logger.error('Unknown command: %r', command_passed)
-                self._print_help(just_try)
+                self.print_help()
             else:
-                self.commands[command_passed]._print_help(just_try)
+                self.commands[command_passed].print_help()
         return namespace
 
     def _parse(self, # pylint: disable=too-many-branches
                args: List[str],
-               namespace: Namespace,
-               just_try: bool = False) -> None:
+               namespace: Namespace) -> None:
         """Parse the arguments from the command line
 
         Args:
             args (list): The arguments to parse
             namespace (Namespace): The namespace for parsed arguments to
                 attach to.
-            just_try (bool): Just try parsing, don't print help nor exit
         """
         logger.debug("Parsing %r", args)
 
@@ -519,7 +507,7 @@ class Params: # pylint: disable=too-many-instance-attributes
                          param, param_name, param_type, param_value)
             # as long as the help argument hit
             if param_name in self.help_keys or (param and param.is_help):
-                self._print_help(just_try)
+                self.print_help()
 
             if param:
                 if prev_param:
@@ -542,7 +530,10 @@ class Params: # pylint: disable=too-many-instance-attributes
                         break
                     if matched == 'positional':
                         continue
-                    logger.warning("Unknown value: %r, skipped", param_value)
+                    if param_value is not None:
+                        logger.warning(
+                            "Unknown value: %r, skipped", param_value
+                        )
                 else:
                     logger.debug("  Param %r consumes %r",
                                  prev_param.namestr(), param_value)
@@ -556,7 +547,8 @@ class Params: # pylint: disable=too-many-instance-attributes
                     break
                 if matched == 'positional':
                     continue
-                logger.warning("Unknown value: %r, skipped", param_value)
+                if param_value is not None:
+                    logger.warning("Unknown value: %r, skipped", param_value)
 
         if prev_param:
             logger.debug("  Closing final argument: %r", prev_param.namestr())
@@ -874,10 +866,5 @@ class Params: # pylint: disable=too-many-instance-attributes
                     args_with_the_arg.append(args[i+1])
                 break
 
-        parsed: Namespace = self.parse(args, just_try=True)
-        path: Path = parsed[param.name('short', False)]
-        if path:
-            self.from_file(path)
-
-# pylint: disable=invalid-name
-params: Params = Params()
+        if len(args_with_the_arg) > 1 and args_with_the_arg[1]:
+            self.from_file(args_with_the_arg[1])

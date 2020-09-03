@@ -1,12 +1,14 @@
 import pytest
-from pyparam import params, Params
+from pyparam import Params
 from pyparam.help import *
 
-params.prog = 'prog'
-params.desc = [
-    'Program: {prog}',
-    '>>> print(1)'
-]
+params = Params(
+    prog='prog',
+    desc = [
+        'Program: {prog}',
+        '>>> print(1)'
+    ]
+)
 params.add_param('a', desc="""\
 >>> print(2)
 
@@ -20,7 +22,7 @@ params.add_command('cmd')
 def test_helpassembler(capsys):
     ha = HelpAssembler('prog', 'default', None)
     assembled = ha.assemble(params)
-    assert len(assembled) % 3 == 0
+    assert len(ha._assembled) % 3 == 0
 
     ha.printout()
     out = capsys.readouterr().out
@@ -36,7 +38,8 @@ def test_callback(capsys):
     ha = HelpAssembler('prog', 'default', callback)
     params2 = Params()
     params2.desc = None
-    assembled = ha.assemble(params2, True)
+    ha.assemble(params2)
+    ha.printout()
 
     out = capsys.readouterr().out
     assert 'NEW:' in out

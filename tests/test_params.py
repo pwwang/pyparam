@@ -1,7 +1,10 @@
 import logging
+from pathlib import Path
 import pytest
 from pyparam.params import *
+from pyparam.exceptions import PyParamTypeError
 
+params = Params()
 def setup_function():
     params.params = OrderedDiot()
     params.commands = OrderedDiot()
@@ -32,12 +35,11 @@ def test_more():
 
     p.add_command('cmd')
 
-    p._print_help(just_try=True)
     values = p.values()
     assert len(values) == 1
     assert values.a.b.c == 'None'
     with pytest.raises(SystemExit):
-        p._print_help()
+        p.print_help()
 
 def test_parse():
     with pytest.raises(SystemExit):

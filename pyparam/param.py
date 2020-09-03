@@ -30,7 +30,6 @@ class Param:
 
     Attributes:
         names (list): The names of the parameter
-        desc (list): The description of the parameter
         default (any): The default value
         prefix (str): The prefix of the parameter on the command line
         show (bool): Whether this parameter should show on help page
@@ -45,6 +44,7 @@ class Param:
         ns_param (ParamNamespace): The namespace parameter where this parameter
             is under
         is_help (bool): Whether this is a help parameter
+        _desc (list): The raw description of the parameter
         _stack (list): The stack to push the values
         _value_cached (any): The cached value calculated from the stack
         _kwargs (dict): other kwargs
@@ -61,7 +61,7 @@ class Param:
     def __init__(self, # pylint: disable=too-many-arguments
                  names: List[str],
                  default: Any,
-                 desc: List[str],
+                 desc: Optional[List[str]],
                  prefix: str = 'auto',
                  show: bool = True,
                  required: bool = False,
@@ -91,7 +91,6 @@ class Param:
         self.names: List[str] = names
 
         self.default: Any = default
-        self.desc: List[str] = desc or ['No description.']
         self.prefix: str = prefix
         self.show: bool = show
         self.required: bool = required
@@ -102,6 +101,7 @@ class Param:
         self.hit: bool = False
         self.is_help: bool = False
         self.ns_param: Optional["ParamNamespace"] = None
+        self._desc: List[str] = desc or ['No description.']
         self._stack: List[Any] = []
         self._value_cached: Optional[Any] = None
         self._kwargs: Dict[Any] = kwargs
@@ -234,6 +234,19 @@ class Param:
             return True
         return False
 
+    @property
+    def desc(self) -> List[str]:
+        """The formatted description using attributes and _kwargs"""
+        format_data: dict = {
+            key: val
+            for key, val in self.__dict__.items()
+            if (not key.startswith('_') and
+                key != 'desc' and
+                not callable(val))
+        }
+        format_data.update(self._kwargs)
+        return [description.format(**format_data) for description in self._desc]
+
     def name(self, which: str, with_prefix: bool = True) -> str:
         """Get the shortest/longest name of the parameter
 
@@ -365,8 +378,7 @@ class Param:
             return self.desc
 
         if (
-                self.required or
-                self.default is None or (
+                self.required or (
                     self.desc and
                     any("Default:" in desc or "DEFAULT:" in desc
                         for desc in self.desc)
@@ -507,7 +519,7 @@ class ParamStr(Param):
 class ParamBool(Param):
     """A bool parameter whose value is automatically casted into a bool"""
     type: str = 'bool'
-    type_aliases: List[str] = ['b']
+    type_aliases: List[str] = ['b', 'flag']
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -662,7 +674,7 @@ class ParamPy(Param):
     type: str = 'py'
 
     def _value(self) -> Any:
-        return ast.literal_eval(super()._value())
+        return ast.literal_eval(str(super()._value()))
 
 class ParamJson(Param):
     """A parameter whose value will be parsed as json"""
@@ -670,7 +682,8 @@ class ParamJson(Param):
     type_aliases: List[str] = ['j']
 
     def _value(self) -> Any:
-        return json.loads(super()._value())
+        val: Any = super()._value()
+        return None if val is None else json.loads(str(val))
 
 class ParamList(Param):
     """A parameter whose value is a list"""
@@ -782,6 +795,11 @@ class ParamNamespace(Param):
             return f'{ret} OPTIONS'
         return (f'{ret} OPTIONS UNDER '
                 f'{self.ns_param.name("long")}')
+
+    @property
+    def desc_with_default(self) -> Optional[List[str]]:
+        """Namespace parameters do not have a default value"""
+        return self.desc[:]
 
     def consume(self, value: str) -> bool:
         """Should I consume given parameter?"""

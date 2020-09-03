@@ -11,7 +11,7 @@ from typing import (
     Tuple
 )
 from diot import OrderedDiot, Diot
-from rich import box
+from rich import box#, print
 from rich.table import Table
 from rich.columns import Columns
 from rich.padding import Padding
@@ -252,7 +252,7 @@ class HelpSectionOption(HelpSection):
                 Columns(self._wrap_descs(
                     param_descs or [],
                     console.meta.highlighters.default
-                ), padding=(0, 0))
+                ), padding=(0, 0, 0, 1))
             )
         yield table
 
@@ -358,14 +358,14 @@ class HelpAssembler:
                 for command in cmd_list
             )
 
-    def assemble(self,
-                 params: "Params",
-                 printout: bool = False) -> Optional[List[RenderResult]]:
+    def assemble(
+            self,
+            params: "Params"
+    ) -> Optional[List[RenderResult]]:
         """Assemble the help page
 
         Args:
             param (Params): The params object
-            printout (bool): Whether to print the help page
 
         Returns:
             str: The assembled help page
@@ -397,11 +397,6 @@ class HelpAssembler:
             self._assembled.append(Text(title + ':', style="title",
                                         justify="left"))
             self._assembled.append(section)
-
-        if printout:
-            self.printout()
-
-        return self._assembled
 
     def printout(self) -> None:
         """Print the help page"""
