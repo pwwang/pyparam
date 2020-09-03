@@ -57,6 +57,7 @@ class Params: # pylint: disable=too-many-instance-attributes
     """
 
     def __init__(self, # pylint: disable=too-many-arguments
+                 names: Optional[Union[str, List[str]]] = None,
                  desc: Optional[Union[List[str], str]] = 'No description',
                  prog: str = sys.argv[0],
                  help_keys: Union[str, List[str]] = 'h,help,H',
@@ -66,11 +67,11 @@ class Params: # pylint: disable=too-many-instance-attributes
                  prefix: str = 'auto',
                  arbitrary: bool = False,
                  theme: str = 'default',
-                 usage: Optional[Union[str, List[str]]] = None,
-                 names: Optional[Union[str, List[str]]] = None) -> None:
+                 usage: Optional[Union[str, List[str]]] = None) -> None:
         """Constructor
 
         Args:
+            names (str|list): The names of this command if served as a command
             desc (str|list): The description of the command.
                 This will be finally compiled into a list if a string is given.
                 The difference is, when displayed on help page, the string will
@@ -87,7 +88,6 @@ class Params: # pylint: disable=too-many-instance-attributes
             arbitrary (bool): Whether to parse the command line arbitrarily
             theme (str|rich.theme.Theme): The theme to render the help page
             usage (str|list): Some example usages,
-            names (str|list): The names of this command if served as a command
         """
         self.desc: List[str] = always_list(desc, strip=False, split=False)
         self.prog: str = prog
@@ -101,7 +101,7 @@ class Params: # pylint: disable=too-many-instance-attributes
         self.prefix: str = prefix
         self.arbitrary: bool = arbitrary
         self.theme: Union[str, rich.theme.Theme] = theme
-        self.names: List[str] = names or []
+        self.names: List[str] = always_list(names) if names else []
 
         self.params: OrderedDiot = OrderedDiot()
         self.commands: OrderedDiot = OrderedDiot()
@@ -128,29 +128,27 @@ class Params: # pylint: disable=too-many-instance-attributes
         """
         return list(sorted(self.names, key=len))[0 if 'short' in which else -1]
 
-    def namestr(self, sep: str = ", ", sort: str = 'asc') -> str:
+    def namestr(self, sep: str = ", ") -> str:
         """Get all names connected with a separator.
 
         Args:
             sep (str): The separator to connect the names
-            sort (str|bool): Whether to sort the names by length,
-                or False to not sort
+
         Returns:
             str: the connected names
         """
-        names: List[str] = (
-            self.names
-            if not sort
-            else sorted(self.names, key=len)
-            if sort == 'asc'
-            else sorted(self.names, key=lambda x: -len(x))
-        )
-        return sep.join(names)
+        return sep.join(sorted(self.names, key=len))
 
-    def _get_param(self, name: Optional[str]) -> Optional[Type["Param"]]:
+    def get_param(self, name: Optional[str]) -> Optional[Type["Param"]]:
         """Get the parameter by name
 
         If the parameter is under a namespace, try to get it via the namespace
+
+        Args:
+            name (str): The name of the parameter to get (without prefix)
+
+        Returns:
+            Param: The parameter, None if failed
         """
         if name is None:
             return None
@@ -162,7 +160,19 @@ class Params: # pylint: disable=too-many-instance-attributes
         )
         if not ns_param:
             return None
-        return ns_param.get_param(name)
+        ret = ns_param.get_param(name)
+        return None if name not in ret.names else ret
+
+    def get_command(self, name: str) -> Optional["Params"]:
+        """Get the command object
+
+        Args:
+            name (str): The name of the command to get
+
+        Returns:
+            Params: The command object, None if failed.
+        """
+        return self.commands.get(name)
 
     def _set_param(self, param: Type["Param"]) -> None:
         """Set the parameter
@@ -227,20 +237,18 @@ class Params: # pylint: disable=too-many-instance-attributes
             Param: The added parameter
         """
         # pylint: disable=too-many-locals
+        names: List[str] = always_list(names)
         if type is None:
-            type = type_from_value(default)
+            if POSITIONAL in names and default is None:
+                type = 'list'
+            else:
+                type = type_from_value(default)
 
         # Type: Optional[str], Optional[str]
         maintype, subtype = parse_type(type.__name__
                                        if callable(type)
                                        else type)
 
-        if maintype not in PARAM_MAPPINGS:
-            raise PyParamTypeError(
-                f"Param type {type} is not supported."
-            )
-
-        names: List[str] = always_list(names)
         param: Type['Param'] = PARAM_MAPPINGS[maintype](
             names=names,
             default=default,
@@ -319,7 +327,7 @@ class Params: # pylint: disable=too-many-instance-attributes
             Params: The added command
         """
         # pylint: disable=too-many-locals
-        commands: List[str]= always_list(names)
+        commands: List[str] = always_list(names)
         command: "Params" = Params(
             desc=desc,
             prog=(f"{self.prog}{' [OPTIONS]' if self.params else ''} "
@@ -513,14 +521,11 @@ class Params: # pylint: disable=too-many-instance-attributes
             if param_name in self.help_keys or (param and param.is_help):
                 self._print_help(just_try)
 
-            if prev_param and param:
-                prev_param = prev_param.close(param, param_type, param_value)
-                # when the type is overwritten
-                # a new parameter instance has been created
-                # we need to update in the pool as well
-                if (prev_param and
-                        prev_param is not self._get_param(prev_param.names[0])):
-                    self._set_param(prev_param)
+            if param:
+                if prev_param:
+                    logger.debug("  Closing previous argument")
+                    prev_param.close()
+                prev_param = param
 
             elif prev_param: # No param
                 if param_name is not None:
@@ -542,9 +547,6 @@ class Params: # pylint: disable=too-many-instance-attributes
                     logger.debug("  Param %r consumes %r",
                                  prev_param.namestr(), param_value)
 
-            elif param: # no prev_param
-                prev_param = param
-
             else: # neither
                 # Type: Optional[Type['Param']], Optional[str]
                 prev_param, matched = self._match_command_or_positional(
@@ -557,16 +559,16 @@ class Params: # pylint: disable=too-many-instance-attributes
                 logger.warning("Unknown value: %r, skipped", param_value)
 
         if prev_param:
-            prev_param.close_end()
+            prev_param.close()
 
         self.values(namespace)
 
     def _match_command_or_positional(
-        self,
-        prev_param: Optional[Type['Param']],
-        arg: str,
-        rest_args: List[str],
-        namespace: Namespace
+            self,
+            prev_param: Optional[Type['Param']],
+            arg: str,
+            rest_args: List[str],
+            namespace: Namespace
     ) -> Tuple[Optional[Type['Param']], Optional[str]]:
         """Check if arg hits a command or a positional argument start
 
@@ -602,14 +604,14 @@ class Params: # pylint: disable=too-many-instance-attributes
             else:
                 logger.debug("  Hit start of positional argument")
                 if self.arbitrary and POSITIONAL not in self.params:
-                    self.add_param(POSITIONAL, type=list)
+                    self.add_param(POSITIONAL)
                 if POSITIONAL in self.params:
-                    self.params[POSITIONAL].set_first_hit('true')
+                    self.params[POSITIONAL].hit = True
                     self.params[POSITIONAL].push(arg)
                     return self.params[POSITIONAL], 'positional'
 
         if prev_param:
-            prev_param.close_end()
+            prev_param.close()
 
         if self.arbitrary and arg not in self.commands:
             self.add_command(arg)
@@ -627,12 +629,16 @@ class Params: # pylint: disable=too-many-instance-attributes
         return None, 'command'
 
     def _match_param(self, arg: str) -> Tuple[
-        Optional[Type['Param']], Optional[str], Optional[str], Optional[str]
+            Optional[Type['Param']],
+            Optional[str],
+            Optional[str],
+            Optional[str]
     ]:
         """Check if arg matches any predefined parameters. With
         arbitrary = True, parameters will be defined on the fly.
 
-        When there is a value attached, it should be pushed to matched parameter
+        And then do all the preparation for the matched parameter, including
+        overwrite the type and push the attached value, such as '--arg=1'
 
         Args:
             arg (str): arg to check
@@ -651,13 +657,11 @@ class Params: # pylint: disable=too-many-instance-attributes
         # with allow_attached=False
         # Or we matched but it is not defined
         if ( # pylint:disable=too-many-boolean-expressions
-            self.prefix in ('auto', '-') and
-            not param_type and
-            param_value and
-            param_value[:1] == '-' and
-            (param_name is None or (
-                not self.arbitrary and not self._get_param(param_name)
-            ))
+                not param_type and param_value and param_value[:1] == (
+                    '-' if self.prefix == 'auto' else self.prefix
+                ) and (param_name is None or (
+                    not self.arbitrary and not self.get_param(param_name)
+                ))
         ):
             # parsed '-arg' as '-a rg'
             # Type: Optional[str], Optional[str], Optional[str]
@@ -667,22 +671,32 @@ class Params: # pylint: disable=too-many-instance-attributes
                 )
             )
             if param_name2 is not None and (
-                param_name is None or (not self.arbitrary and
-                                       not self._get_param(param_name2))):
+                    param_name is None or (
+                        not self.arbitrary and
+                        not self.get_param(param_name2)
+                    )
+            ):
                 param_name, param_type, param_value = (
                     param_name2, param_type2, param_value2
                 )
 
         if (self.arbitrary and
                 param_name is not None and
-                not self._get_param(param_name)):
+                not self.get_param(param_name)):
             self.add_param(param_name, type=param_type)
 
-        param: Optional[Type['Param']] = self._get_param(param_name)
+        param: Optional[Type['Param']] = self.get_param(param_name)
         if not param:
             return None, param_name, param_type, param_value
 
-        param.set_first_hit(param_type)
+        param_maybe_overwritten: Type['Param'] = param.overwrite_type(
+            param_type
+        )
+        if param_maybe_overwritten is not param:
+            self._set_param(param_maybe_overwritten)
+            param = param_maybe_overwritten
+
+        param.hit = True
         if param_value is not None:
             param.push(param_value)
 
@@ -782,7 +796,7 @@ class Params: # pylint: disable=too-many-instance-attributes
                     # if it is a dict, and there is not other attributes
                     # assigned like "arg.desc", that means this dictionary
                     # contains all attributes
-                    if (not isinstance(val, dict) or
+                    if (isinstance(val, dict) and
                             not any(ap_key.startswith(f"{key}.")
                                     for ap_key in dict_obj)):
                         all_params[key] = val
@@ -797,10 +811,11 @@ class Params: # pylint: disable=too-many-instance-attributes
 
         self._from_dict_with_sections(dict_obj, show)
 
-    def from_arg(self,
+    def from_arg(self, # pylint: disable=too-many-arguments
                  names: Union[str, List[str], 'ParamPath'],
                  desc: Union[str, List[str]] = "The configuration file.",
                  group: Optional[str] = None,
+                 args: Optional[List[str]] = None,
                  required: bool = True):
         """Load parameters from the file specified by naargument
         from command line
@@ -816,6 +831,8 @@ class Params: # pylint: disable=too-many-instance-attributes
             desc (str|list): The description of the parameter
             group (str): The group of the parameter
             required (bool): Whether this argument is required
+            args (list): The list of items to parse, otherwise
+                parse sys.argv[1:]
         """
         if isinstance(names, (str, list)):
             param: "ParamPath" = self.add_param(
@@ -823,17 +840,18 @@ class Params: # pylint: disable=too-many-instance-attributes
             )
         else:
             param: "ParamPath" = names
+            self._set_param(names)
 
         prefixed_names: List[str] = [param._prefix_name(name)
                                      for name in param.names]
-        args: List[str] = []
-        for i, arg in enumerate(sys.argv):
-            if i == 0:
-                continue
+
+        args: List[str] = sys.argv[1:] if args is None else args
+        args_with_the_arg: List[str] = []
+        for i, arg in enumerate(args):
             if arg in prefixed_names:
-                args.append(arg)
-                if i < len(sys.argv) - 1:
-                    args.append(sys.argv[i+1])
+                args_with_the_arg.append(arg)
+                if i < len(args) - 1:
+                    args_with_the_arg.append(args[i+1])
                 break
 
         parsed: Namespace = self.parse(args, just_try=True)

@@ -33,6 +33,7 @@ THEMES: Dict[str, Theme] = dict(
     )),
 )
 
+# pylint: disable=too-few-public-methods
 class ProgHighlighter(RegexHighlighter):
     """Apply style to anything that looks like a program name."""
 
@@ -53,7 +54,7 @@ class OptnameHighlighter(RegexHighlighter):
 class OpttypeHighlighter(RegexHighlighter):
     """Apply style to anything that looks like a option type."""
 
-    highlights: List[str]= [
+    highlights: List[str] = [
         r"(?P<opttype_frozen>[\[\<][A-Z:]+[\]\>])$",
         r"(?P<opttype>[\[\<][a-z:]+[\]\>])$",
     ]
@@ -66,10 +67,10 @@ class DefaultHighlighter(RegexHighlighter):
 class HelpSection(list):
     """Base class for all help sections."""
 
-    def _highlight(
-        self,
-        string: str,
-        highlighters: Optional[List[Type[RegexHighlighter]]] = None
+    def _highlight( # pylint: disable=no-self-use
+            self,
+            string: str,
+            highlighters: Optional[List[Type[RegexHighlighter]]] = None
     ) -> Union[Text, str]:
         """Highlight the string using given highlighters"""
         if not highlighters:
@@ -146,9 +147,9 @@ class HelpSectionOption(HelpSection):
                 yield self._highlight(line.replace('*', ' '), highlighters)
 
     def _wrap_descs(
-        self,
-        descs: List[str],
-        default_highlighter: DefaultHighlighter
+            self,
+            descs: List[str],
+            default_highlighter: DefaultHighlighter
     ) -> Union[Text, str]:
         """wrap option descriptions.
 
@@ -176,7 +177,7 @@ class HelpSectionOption(HelpSection):
             ):
                 yield self._highlight(hillight_inline_code(line))
 
-        for desc in descs:
+        for desc in descs: # pylint: disable=too-many-nested-blocks
             if isinstance(desc, Codeblock):
                 yield desc.render()
 
@@ -216,7 +217,7 @@ class HelpSectionOption(HelpSection):
                                 Text.from_markup(
                                     hillight_inline_code(line).replace(
                                         sep + '*' * len(parts[1]),
-                                       sep + parts[1].replace('[', r'\[')
+                                        sep + parts[1].replace('[', r'\[')
                                     )
                                 ),
                                 default_highlighter
@@ -235,7 +236,7 @@ class HelpSectionOption(HelpSection):
                       box=box.SIMPLE,
                       expand=True,
                       pad_edge=False,
-                      padding=(0,0,0,0))
+                      padding=(0, 0, 0, 0))
         table.add_column(width=defaults.HELP_OPTION_WIDTH)
         table.add_column(width=1)
         table.add_column(width=defaults.CONSOLE_WIDTH -
@@ -251,7 +252,7 @@ class HelpSectionOption(HelpSection):
                 Columns(self._wrap_descs(
                     param_descs or [],
                     console.meta.highlighters.default
-                ), padding=(0,0))
+                ), padding=(0, 0))
             )
         yield table
 
@@ -279,7 +280,7 @@ class HelpAssembler:
         self.console: Console = Console(
             theme=theme, width=defaults.CONSOLE_WIDTH, tab_size=4
         )
-        self.callback: Optional[Callable]= callback
+        self.callback: Optional[Callable] = callback
         self._assembled: Optional[List[RenderResult]] = None
 
         self.console.meta = Diot()
@@ -290,7 +291,7 @@ class HelpAssembler:
         self.console.meta.highlighters.opttype = OpttypeHighlighter()
         self.console.meta.highlighters.default = DefaultHighlighter()
 
-    def _assemble_description(self,
+    def _assemble_description(self, # pylint: disable=no-self-use
                               params: "Params") -> Optional[HelpSectionPlain]:
         """Assemble the description section"""
         if not params.desc:
@@ -324,12 +325,12 @@ class HelpAssembler:
             params.usage = [" ".join(usage)]
 
         return HelpSectionUsage(
-            usage.format(prog=params.prog) for usage in params.usage
+            usage.format(prog=self.console.meta.prog) for usage in params.usage
         )
 
-    def _assemble_param_groups(
-        self,
-        params: "Params"
+    def _assemble_param_groups( # pylint: disable=no-self-use
+            self,
+            params: "Params"
     ) -> Tuple[str, HelpSectionOption]:
         """Assemble the parameter groups"""
 
@@ -343,9 +344,9 @@ class HelpAssembler:
                 for param in param_list if param.show
             )
 
-    def _assemble_command_groups(
-        self,
-        params: "Params"
+    def _assemble_command_groups( # pylint: disable=no-self-use
+            self,
+            params: "Params"
     ) -> Tuple[str, HelpSectionOption]:
         """Assemble the command groups"""
         # command groups

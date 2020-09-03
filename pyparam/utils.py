@@ -41,10 +41,9 @@ class Codeblock:
 
     @classmethod
     def scan_texts(
-        cls,
-        texts:
-        List[str],
-        check_default: bool = False
+            cls,
+            texts: List[str],
+            check_default: bool = False
     ) -> List[Union[str, 'Codeblock']]:
         """Scan multiple texts for code blocks
 
@@ -91,9 +90,9 @@ class Codeblock:
 
     @classmethod
     def scan(
-        cls,
-        maybe_codeblock: str,
-        check_default: bool = False
+            cls,
+            maybe_codeblock: str,
+            check_default: bool = False
     ) -> Tuple[List[Union[str, 'Codeblock']], Optional['Codeblock']]:
         """Scan and try to create codeblock objects from maybe_codeblock
 
@@ -115,9 +114,11 @@ class Codeblock:
         )
 
         default_to_append: Optional[str] = None
+        default_in_newline = False
         if check_default and sep:
             parts: List[str] = maybe_codeblock.split(sep, 1)
             default_to_append = sep + parts[1]
+            default_in_newline = parts[0].endswith('\n')
             lines: List[str] = parts[0].splitlines()
         else:
             lines: List[str] = maybe_codeblock.splitlines()
@@ -141,7 +142,7 @@ class Codeblock:
                     codeblock: 'Codeblock' = cls(
                         line_lstripped[
                             :(len(line_lstripped) -
-                            len(line_lstripped.lstrip('`')))
+                              len(line_lstripped.lstrip('`')))
                         ],
                         line_lstripped.lstrip('`').strip() or 'text',
                         len(line) - len(line_lstripped)
@@ -157,7 +158,11 @@ class Codeblock:
                 codeblock.add_code(line)
 
         if default_to_append:
-            if not ret or isinstance(ret[-1], Codeblock):
+            # if codeblock (>>>) is not closed.
+            # but we have default so it actually closes
+            if codeblock and codeblock.opentag == '>>>':
+                codeblock = None
+            if not ret or isinstance(ret[-1], Codeblock) or default_in_newline:
                 ret.append(default_to_append)
             else:
                 ret[-1] += default_to_append
@@ -277,9 +282,9 @@ def parse_type(typestr: str) -> List[Optional[str]]:
 
 @lru_cache()
 def parse_potential_argument(
-    arg: str,
-    prefix: str,
-    allow_attached: bool = False
+        arg: str,
+        prefix: str,
+        allow_attached: bool = False
 ) -> Tuple[Optional[str], Optional[str], Optional[str]]:
     """Parse a potential argument with given prefix
 
@@ -324,10 +329,10 @@ def parse_potential_argument(
     if allow_attached:
         # pylint: disable=too-many-boolean-expressions
         if (item_type is None and item_value is None and (
-            (prefix == 'auto' and item_name[:1] == '-' and
-             item_name[:2] != '--') or
-            (len(prefix) == 1 and
-             item_name[1:2] != prefix )
+                (prefix == 'auto' and item_name[:1] == '-' and
+                 item_name[:2] != '--') or
+                (len(prefix) == 1 and
+                 item_name[1:2] != prefix)
         )):
             # Type: str, str
             item_name, item_value = item_name[:2], item_name[2:]
@@ -358,10 +363,23 @@ def type_from_value(value: Any) -> str:
 
     Returns:
         str: The name of the type
+
+    Raises:
+        PyParamTypeError: When we have list as subtype.
+            For example, when value is `[[1]]`
     """
     typename: str = type(value).__name__
-    if typename in ('int', 'float', 'str', 'bool', 'list'):
+    if typename in ('int', 'float', 'str', 'bool'):
         return typename
+    if isinstance(value, list):
+        if not value:
+            return 'list'
+        type0: str = type_from_value(value[0])
+        if 'list' in type0:
+            raise PyParamTypeError("Cannot have 'list' as subtype.")
+        return (f'list:{type0}'
+                if all(type_from_value(item) == type0 for item in value[1:])
+                else 'list')
     if isinstance(value, dict):
         return 'json'
     if isinstance(value, Path):
@@ -421,15 +439,16 @@ def cast_to(value: Any, to_type: str) -> Any:
                 return True
             if value in ('false', 'FALSE', 'False', '0', 0, False):
                 return False
-            raise ValueError(
+            raise PyParamTypeError(
                 'Expecting one of [true, TRUE, True, 1, false, FALSE, False, 0]'
             )
-        if to_type == 'path':
-            return Path(value)
-        if to_type == 'py':
-            return ast.literal_eval(str(value))
-        if to_type == 'json':
-            return json.loads(str(value))
+
+        if to_type in ('path', 'py', 'json'):
+            return {
+                'path': Path,
+                'py': ast.literal_eval,
+                'json': json.loads
+            }[to_type](str(value))
         if to_type in (None, 'auto'):
             return _cast_auto(value)
     except (TypeError, ValueError, json.JSONDecodeError) as cast_exc:
@@ -438,6 +457,7 @@ def cast_to(value: Any, to_type: str) -> Any:
         ) from cast_exc
     raise PyParamTypeError(f"Cannot cast {value} to {to_type}")
 
+# pylint: disable=invalid-name
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)
 logger.addHandler(RichHandler(show_time=False, show_path=False))

@@ -1,0 +1,125 @@
+[params.int]
+required = true
+aliases = "i"
+type = "int"
+desc = [
+    "An argument whose value will be casted into an integer.",
+    "You can also try the short name with attached value: `-i1`.",
+    "Negative values should be passed using `=`: ",
+    "`-i-1` or `--int=-1`",
+    "Same for other values starting with `-`"
+]
+
+[params.float]
+aliases = "f"
+type = "float"
+type_frozen = false
+desc = [
+    "An argument whose value will be casted into float.",
+    "You can also try `--float=1e-3`",
+    "You can even overwrite the type of the argument from command line by `--float:int 1`"
+]
+
+[params.bool]
+aliases = "b"
+desc = [
+    "A boolean/flag argument. ",
+    "If it is hit by itself, `True` will be used. However, it can consume one of following values: [true, TRUE, True, 1, false, FALSE, False, 0]"
+]
+
+[params.count]
+aliases = "c"
+max = 3
+type = "count"
+desc=[
+    "A count argument, you can do -c, -cc, -ccc, etc.",
+    "It must have a short name (`c` here for example). ",
+    "You can also use it like an integer argument with long name. For example: `--count 3`",
+    "The default value has to be `0` if specified. A max value can also be defined while adding this argument."
+]
+
+[params.auto]
+desc = [
+    "An argument whose value will be automatically casted.",
+    "```python",
+    "# Value received => Value/Type casted into",
+    "'True', 'TRUE', 'true' => True",
+    "'False', 'FALSE', 'false' => False",
+    "'1', '2', '-1' => int",
+    "'1.1', '2.0', '-1.0' => float",
+    "'{\"a\": 1}' => {\"a\": 1} # json",
+    "```",
+    "If you don't want the value to be casted. Declare the argument with type `str`"
+]
+
+[params.in]
+type = "path"
+required = true
+desc = [
+    "An argument whose value will be casted into `pathlib.Path`.",
+    "Since the argument name is a python keyword, you may not be able to fetch the value by:",
+    "```python",
+    "parsed = params.parse()",
+    "parsed.in",
+    "# you can do parsed['in'] instead.",
+    "```",
+    "You can use a callback here to check if the path exists:",
+    ">>> def callback(path):",
+    ">>>    if not path.exists():",
+    ">>>        # You can also return the error using lambda",
+    ">>>        raise ValueError('Path does not exist.')",
+    ">>>    return path"
+]
+
+[commands.subcmd]
+desc = "A subcommand"
+
+    [commands.subcmd.params.py]
+    required = true
+    type = "py"
+    desc = "Value will be evaluated using `ast.literal_eval`"
+
+    [commands.subcmd.params.str]
+    default = 'size'
+    type = "str"
+    desc = "Value will be converted using `json.loads`"
+
+    [commands.subcmd.params.json]
+    default = "{}"
+    type  = "json"
+    desc = "Value will be converted using `json.loads`"
+
+[commands.subcmd2]
+desc = "A second subcommand"
+aliases = "sc2"
+
+    [commands.subcmd2.params.choice]
+    type = "choice"
+    choices = ["small", "medium", "large"]
+    default = "medium"
+    desc = [
+        "One of the choices: small, medium and large.",
+        "Callback can also be apply to modify the value:",
+        ">>> def callback(value, all_values):",
+        ">>>    # Use the value of argument '--str'",
+        ">>>    return f'{value} {all_values.str}'"
+    ]
+
+    [commands.subcmd2.params.list]
+    type = "list"
+    default = [1, 2, 3]
+    desc = [
+        "List/Array argument.",
+        "You can pass the values one by one like this: `--list 1 2 3`.",
+        "Or like this: `--list 1 --list 2 --list 3`.",
+        "List argument is incremental, meaning the values will be added to the values. To stop doing that, you can direct users to reset it using `--list:reset 4 5 6` or `--list:reset 4 --list 5 --list 6`",
+        "You can also set a subtype for list elements, including the scalar types. For exapmle: `--list:list:bool 0 1 0` will produce `[False, True, False]`."
+    ]
+
+    [commands.subcmd2.params.config]
+    type = "ns"
+    desc = "A namespace parameter"
+
+    [commands.subcmd2.params."config.cutoff"]
+    type = "float"
+    desc = "The cutoff"

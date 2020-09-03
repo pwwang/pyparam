@@ -25,7 +25,7 @@ from .exceptions import (
 
 PARAM_MAPPINGS: Dict[str, Type['Param']] = {}
 
-class Param: # pylint: disable=too-many-instance-attributes
+class Param:
     """Base class for parameter
 
     Attributes:
@@ -41,14 +41,15 @@ class Param: # pylint: disable=too-many-instance-attributes
         callback (Callable): The callback to modify the final value
         argname_shorten (bool): Whether show shortened name for the parameters
             under namespace parameters
+        hit (bool): Whether the parameter is just hit
+        ns_param (ParamNamespace): The namespace parameter where this parameter
+            is under
+        is_help (bool): Whether this is a help parameter
         _stack (list): The stack to push the values
         _value_cached (any): The cached value calculated from the stack
-        _first_hit (str|bool): Whether the parameter is just hit
         _kwargs (dict): other kwargs
-        _is_help (bool): Whether this is a help parameter
-        _ns_param (ParamNamespace): The namespace parameter where this parameter
-            is under
     """
+    # pylint: disable=too-many-instance-attributes
 
     type: Optional[str] = None
     type_aliases: List[str] = []
@@ -57,7 +58,7 @@ class Param: # pylint: disable=too-many-instance-attributes
     def on_register(cls):
         """Opens opportunity to do something when a parameter is registered"""
 
-    def __init__(self,
+    def __init__(self, # pylint: disable=too-many-arguments
                  names: List[str],
                  default: Any,
                  desc: List[str],
@@ -97,16 +98,16 @@ class Param: # pylint: disable=too-many-instance-attributes
         self.subtype: Optional[str] = subtype
         self.type_frozen: bool = type_frozen
         self.callback: Optional[Callable] = callback
-        self.argname_shorten: boool = argname_shorten
+        self.argname_shorten: bool = argname_shorten
+        self.hit: bool = False
+        self.is_help: bool = False
+        self.ns_param: Optional["ParamNamespace"] = None
         self._stack: List[Any] = []
         self._value_cached: Optional[Any] = None
-        self._first_hit: Optional[bool, str] = False
         self._kwargs: Dict[Any] = kwargs
-        self._is_help: bool = False
-        self._ns_param: Optional["ParamNamespace"] = None
 
         # check if I am under a namespace
-        # type: Tuple[List[List[str]], List[str]]
+        # Type: List[List[str]], List[str]
         self._namespaces, self.terminals = self._extract_namespaces()
 
     def _extract_namespaces(self) -> Tuple[List[List[str]], List[str]]:
@@ -129,7 +130,7 @@ class Param: # pylint: disable=too-many-instance-attributes
             terminals.add(parts[-1])
         return [list(ns) for ns in namespaces], list(terminals)
 
-    def _prefix_name(self, name:str) -> str:
+    def _prefix_name(self, name: str) -> str:
         """Add prefix to a name
 
         Args:
@@ -174,45 +175,6 @@ class Param: # pylint: disable=too-many-instance-attributes
                       for prod in product(*self._namespaces, self.terminals)]
 
     @property
-    def is_help(self) -> bool:
-        """Tell if this parameter is a help parameter
-
-        Returns:
-            bool: True if this parameter is a help parameter or False
-        """
-        return self._is_help
-
-    @is_help.setter
-    def is_help(self, value: bool) -> None:
-        """Set if this parameter is a help parameter
-
-        Args:
-            value (bool): True if this parameter is a help parameter
-                otherwise False
-        """
-        self._is_help = value
-
-    @property
-    def ns_param(self) -> Optional["ParamNamespace"]:
-        """Get the namespace parameter
-
-        Returns:
-            ParamNamespace: The namespace parameter where this parameter
-                is under
-        """
-        return self._ns_param
-
-    @ns_param.setter
-    def ns_param(self, value: Optional["ParamNamespace"]) -> None:
-        """Set the namespace parameter
-
-        Args:
-            value (ParamNamespace): The namespace parameter where this parameter
-                is under
-        """
-        self._ns_param = value
-
-    @property
     def is_positional(self) -> bool:
         """Tell if this parameter is positional
 
@@ -221,58 +183,42 @@ class Param: # pylint: disable=too-many-instance-attributes
         """
         return POSITIONAL in self.names
 
-    def set_first_hit(self, param_type: str) -> None:
-        """Set the status of first hit
+    def close(self) -> None:
+        """Close up the parameter while scanning the command line
 
-        Args:
-            param_type (str): The type specified on the command line when
-                the paramter is hit
+        We are mostly doing nothing, only if, say, param is bool and
+        it was just hit, we should push a true value to it.
         """
-        self._first_hit = 'reset' if param_type == 'reset' else True
+        if self.hit:
+            logger.warning("No value provided for argument %r", self.namestr())
 
-    def close(self,
-              next_param: Type['Param'],
-              param_type: Optional[str],
-              param_value: Optional[str]) -> Type['Param']:
-        """Close up this parameter while scanning the command line
+    def overwrite_type(self, param_type: Optional[str]) -> Type['Param']:
+        """Try to overwrite the type
+
+        Only when param_type is not None and it's different from mine
+        A new param will be returned if different
 
         Args:
-            next_param (Param): Next matched parameter
-            param_name (str): Name of the next matched parameter
-            param_type (str): Type of the next matched parameter
-            param_value (str): The value attached to the next matched parameter
+            param_type (str): The type to overwrite
 
         Returns:
-            Param: next_param is this parameter is closed otherwise this
-                parameter
+            Param: Self when type not changed otherwise a new parameter with
+                the given type
         """
-        logger.debug("  Closing argument: %r", self.namestr())
-        # if they are the same parameter
-        if param_type and param_type != next_param.typestr():
-            if not self.type_frozen:
-                raise PyParamTypeError(
-                    f"Type of argument {next_param.namestr()!r} "
-                    "is not overwritable"
-                )
-            logger.warning("Type changed from %r to %r for argument %r",
-                            next_param.typestr(),
-                            param_type,
-                            next_param.namestr())
+        if param_type is None or param_type == self.typestr():
+            return self
 
-            next_param = next_param.to(param_type)
+        if self.type_frozen:
+            raise PyParamTypeError(
+                f"Type of argument {self.namestr()!r} "
+                "is not overwritable"
+            )
 
-        if param_value is None:
-            # only set when no attached value
-            # since if there is attached value, it's already set
-            # in Params.match_param
-            next_param.set_first_hit(param_type)
-        return next_param
-
-    def close_end(self) -> None:
-        """Close the parameter when it hits at the end of the command line or
-        prior to a command"""
-        if self._first_hit is True:
-            logger.warning("No value provided for argument %r", self.namestr())
+        logger.warning("Type changed from %r to %r for argument %r",
+                       self.typestr(),
+                       param_type,
+                       self.namestr())
+        return self.to(param_type)
 
     def consume(self, value: Any) -> bool:
         """Consume a value
@@ -283,7 +229,7 @@ class Param: # pylint: disable=too-many-instance-attributes
         Returns:
             bool: True if value was consumed, otherwise False
         """
-        if self._first_hit is True or not self._stack:
+        if self.hit or not self._stack:
             self.push(value)
             return True
         return False
@@ -311,15 +257,12 @@ class Param: # pylint: disable=too-many-instance-attributes
 
     def namestr(self,
                 sep: str = ", ",
-                with_prefix: bool = True,
-                sort: str = 'asc') -> str:
+                with_prefix: bool = True) -> str:
         """Get all names connected with a separator.
 
         Args:
             sep (str): The separator to connect the names
             with_prefix (bool): Whether to include the prefix or not
-            sort (str|bool): Whether to sort the names by length,
-                or False to not sort
         Returns:
             str: the connected names
         """
@@ -327,13 +270,7 @@ class Param: # pylint: disable=too-many-instance-attributes
                        else self._prefix_name(name)
                        if with_prefix
                        else name
-                       for name in (
-                           self.names
-                           if not sort
-                           else sorted(self.names, key=len)
-                           if sort == 'asc'
-                           else sorted(self.names, key=lambda x: -len(x))
-                       )]
+                       for name in sorted(self.names, key=len)]
         return sep.join(names)
 
     def typestr(self) -> str:
@@ -453,17 +390,17 @@ class Param: # pylint: disable=too-many-instance-attributes
         Returns:
             item (any): The item to be pushed
         """
-        if self._first_hit is True and self._stack:
+        if self.hit is True and self._stack:
             logger.warning(
                 "Previous value of argument %r is overwritten with %r.",
                 self.namestr(), item
             )
             self._stack = []
 
-        if self._first_hit or not self._stack:
+        if self.hit or not self._stack:
             self._stack.append([])
         self._stack[-1].append(item)
-        self._first_hit = False
+        self.hit = False
 
     def __repr__(self) -> str:
         return (f'<{self.__class__.__name__}({self.namestr()} :: '
@@ -549,7 +486,7 @@ class ParamInt(Param):
 class ParamFloat(Param):
     """A float parameter whose value is automatically casted into a float"""
     type: str = 'float'
-    type_aliases: List[str]= ['f']
+    type_aliases: List[str] = ['f']
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -560,8 +497,8 @@ class ParamFloat(Param):
 
 class ParamStr(Param):
     """A str parameter whose value is automatically casted into a str"""
-    type: str= 'str'
-    type_aliases: List[str]= ['s']
+    type: str = 'str'
+    type_aliases: List[str] = ['s']
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -570,7 +507,7 @@ class ParamStr(Param):
 class ParamBool(Param):
     """A bool parameter whose value is automatically casted into a bool"""
     type: str = 'bool'
-    type_aliases: List[str]= ['b']
+    type_aliases: List[str] = ['b']
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -614,21 +551,13 @@ class ParamBool(Param):
             ret.append(f"~<ns>.{term}")
         return ", ".join(ret) + f"*[{typestr}]"
 
-    def close(self,
-              next_param: Type['Param'],
-              param_type: Optional[str],
-              param_value: Optional[str]):
-        self.push('true')
-        return super().close(next_param, param_type, param_value)
-
-    def close_end(self):
-        if self._first_hit is True:
-            logger.debug("  Closing ending argument: %r", self.namestr())
+    def close(self) -> None:
+        if self.hit is True:
             self.push('true')
 
     def consume(self, value: str) -> bool:
-        """Should I consume given parameter?"""
-        if not self._first_hit:
+        """Should I consume given value?"""
+        if not self.hit:
             return False
 
         try:
@@ -674,22 +603,13 @@ class ParamCount(Param):
                 "Argument 'max' for count argument must be a positive integer"
             )
 
-
-    def close(self,
-              next_param: Type['Param'],
-              param_type: Optional[str],
-              param_value: Optional[str]):
-        self.push('1')
-        return super().close(next_param, param_type, param_value)
-
-    def close_end(self):
-        if self._first_hit is True:
-            logger.debug("  Closing ending argument: %r", self.namestr())
+    def close(self) -> None:
+        if self.hit is True:
             self.push('1')
 
     def consume(self, value: str) -> bool:
         """Should I consume given parameter?"""
-        if not self._first_hit:
+        if not self.hit:
             return False
 
         if value.isdigit():
@@ -718,7 +638,9 @@ class ParamCount(Param):
                 "Expect repeated short names or an integer "
                 "as count argument value."
             )
-        if self._kwargs['max'] and retval > self._kwargs['max']:
+        if ('max' in self._kwargs and
+                self._kwargs['max'] and
+                retval > self._kwargs['max']):
             raise PyParamValueError(
                 f"{retval} is greater than the max of "
                 f"{self._kwargs['max']}."
@@ -753,7 +675,7 @@ class ParamJson(Param):
 class ParamList(Param):
     """A parameter whose value is a list"""
     type: str = 'list'
-    type_aliases: List[str]= ['l', 'a', 'array']
+    type_aliases: List[str] = ['l', 'a', 'array']
 
     @classmethod
     def on_register(cls):
@@ -761,9 +683,7 @@ class ParamList(Param):
         name = 'reset'
         aliases = ['r']
         all_names = [name] + aliases
-        if any(name in TYPE_NAMES for name in all_names):
-            raise PyParamValueError("Types 'r, reset' are reserved "
-                                    "for ParamList")
+
         for nam in all_names:
             TYPE_NAMES[nam] = name
 
@@ -772,30 +692,25 @@ class ParamList(Param):
         self.default = self.default or []
         self._stack.append(self.default)
 
-    def close(self,
-              next_param: Type['Param'],
-              param_type: Optional[str],
-              param_value: Optional[str]):
+    def overwrite_type(self, param_type: Optional[str]) -> Type['Param']:
+        """Deal with when param_type is reset"""
         if param_type == 'reset':
-            return next_param
+            self._stack = []
+            return self
 
-        return super().close(next_param, param_type, param_value)
+        return super().overwrite_type(param_type)
 
-    def consume(self, value:str) -> bool:
+    def consume(self, value: str) -> bool:
         """Should I consume given parameter?"""
         self.push(value)
         return True
 
     def push(self, item: str):
         """Push a value into the stack for calculating"""
-        if self._first_hit == 'reset':
-            self._stack = []
-            self._first_hit = True
-
-        if self._first_hit or not self._stack:
+        if self.hit or not self._stack:
             self._stack.append([])
         self._stack[-1].append(item)
-        self._first_hit = False
+        self.hit = False
 
     def _value(self) -> List[Any]:
         """Get the value a list parameter"""
@@ -810,7 +725,7 @@ class ParamList(Param):
 class ParamChoice(Param):
     """A bool parameter whose value is automatically casted into a bool"""
     type: str = 'choice'
-    type_aliases: List[str]= ['c']
+    type_aliases: List[str] = ['c']
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -896,7 +811,6 @@ class ParamNamespace(Param):
 
     # pylint: disable=arguments-differ
     def push(self, item: Type["Param"], depth: int = 0) -> None:
-
         """Push the parameter under this namespace.
 
         We are not pushing any values to this namespace, but pushing
@@ -947,7 +861,6 @@ class ParamNamespace(Param):
         return val
 
     def apply_callback(self, all_values: Namespace) -> Any:
-
         ns_callback_applied = Namespace()
         for param_name, param in self._stack.items():
             if param_name not in ns_callback_applied:
@@ -985,7 +898,6 @@ def register_param(param: Param) -> None:
         TYPE_NAMES[alias] = param.type
 
     PARAM_MAPPINGS[param.type] = param
-
     param.on_register()
 
 register_param(ParamAuto)

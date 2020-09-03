@@ -5,6 +5,7 @@ from . import defaults
 from . import Params, Namespace
 from .utils import logger
 
+# pylint: disable=invalid-name
 defaults.CONSOLE_WIDTH = 100
 
 params = Params(prog='python -m pyparam', desc="""\
@@ -109,7 +110,7 @@ predefined.add_param("choice", type="choice", desc=[
     "small", "medium", "large"
 ], default="medium", callback=(lambda value, all_values:
                                f"{value} {all_values.str}"))
-predefined.add_param("list", default=[1,2,3], type=list, desc=[
+predefined.add_param("list", default=[1, 2, 3], type=list, desc=[
     "List/Array argument.",
     "You can pass the values one by one like this: `--list 1 2 3`.",
     "Or like this: `--list 1 --list 2 --list 3`.",
@@ -164,10 +165,10 @@ nested_cmd2 = nested_cmd.add_command('nested-cmd2',
 
 
 params.add_command("a, arbi, arbitrary",
-                    desc="No predefined arguments, but you can "
-                    "pass arbitrary arguments and see how "
-                    "`pyparam` parses them",
-                    arbitrary=True)
+                   desc="No predefined arguments, but you can "
+                   "pass arbitrary arguments and see how "
+                   "`pyparam` parses them",
+                   arbitrary=True)
 
 fromfile = params.add_command("f, fromfile", desc="""\
 Load parameter definition from file.

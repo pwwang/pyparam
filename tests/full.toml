@@ -1,0 +1,10 @@
+[params.int]
+default = 1
+type = "int"
+
+[commands.cmd]
+help_on_void = false
+
+[commands.cmd.params.float]
+default = 0.1
+type = "float"
