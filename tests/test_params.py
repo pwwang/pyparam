@@ -153,13 +153,13 @@ def test_non_default_prefix():
 
     params.add_param(POSITIONAL)
     params.add_param('i')
-    parsed = params.parse(['+i', '1', '2', '+x', '3'])
+    parsed = params.parse(['+i1', '2', '+x', '3'])
     assert parsed.i == 1
 
 def test_unregconized_value():
     params.add_param(POSITIONAL)
     params.add_param('i')
-    parsed = params.parse(['-i', '1', '2', '-x', '3'])
+    parsed = params.parse(['-i1', '2', '-x', '3'])
     assert parsed.i == 1
 
 def test_arbitrary():

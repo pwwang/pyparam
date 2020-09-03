@@ -166,12 +166,16 @@ def test_parse_type_error():
 
 @pytest.mark.parametrize("arg,prefix,allow_attached,expected", [
     ('a', '-', False, (None, None, 'a')),
+    ('a', '+', False, (None, None, 'a')),
+    ('+a', '+', False, ('a', None, None)),
     ('-a', 'auto', False, ('a', None, None)),
     ('-a:int=1', 'auto', False, ('a', 'int', '1')),
     ('--arg', 'auto', False, ('arg', None, None)),
     ('-a.bc', 'auto', False, ('a.bc', None, None)),
     ('-a1', 'auto', True, ('a', None, '1')),
     ('--a', 'auto', False, (None, None, '--a')),
+    ('+a1', '+', True, ('a', None, '1')),
+    ('+a1', '+', False, ('a1', None, None)),
 ])
 def test_parse_positional_argument(arg, prefix, allow_attached, expected):
     assert parse_potential_argument(arg, prefix, allow_attached) == expected

@@ -327,12 +327,10 @@ def parse_potential_argument(
 
     # detach the value for -b1
     if allow_attached:
-        # pylint: disable=too-many-boolean-expressions
+        single_prefix: str = '-' if prefix == 'auto' else prefix
         if (item_type is None and item_value is None and (
-                (prefix == 'auto' and item_name[:1] == '-' and
-                 item_name[:2] != '--') or
-                (len(prefix) == 1 and
-                 item_name[1:2] != prefix)
+                item_name[:1] == single_prefix and
+                item_name[1:2] != single_prefix
         )):
             # Type: str, str
             item_name, item_value = item_name[:2], item_name[2:]
@@ -459,5 +457,5 @@ def cast_to(value: Any, to_type: str) -> Any:
 
 # pylint: disable=invalid-name
 logger = logging.getLogger(__name__)
-logger.setLevel(logging.INFO)
+logger.setLevel(logging.DEBUG)
 logger.addHandler(RichHandler(show_time=False, show_path=False))

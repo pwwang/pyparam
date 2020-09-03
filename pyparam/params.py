@@ -559,6 +559,7 @@ class Params: # pylint: disable=too-many-instance-attributes
                 logger.warning("Unknown value: %r, skipped", param_value)
 
         if prev_param:
+            logger.debug("  Closing final argument: %r", prev_param.namestr())
             prev_param.close()
 
         self.values(namespace)
@@ -656,30 +657,49 @@ class Params: # pylint: disable=too-many-instance-attributes
         # When we didn't match any argument-like
         # with allow_attached=False
         # Or we matched but it is not defined
-        if ( # pylint:disable=too-many-boolean-expressions
-                not param_type and param_value and param_value[:1] == (
-                    '-' if self.prefix == 'auto' else self.prefix
-                ) and (param_name is None or (
-                    not self.arbitrary and not self.get_param(param_name)
-                ))
-        ):
-            # parsed '-arg' as '-a rg'
+        name_with_attached: Optional[str] = None
+        if not param_type and self.prefix == 'auto':
+            # then -a1 will be put in param_value, as if `a1` is a name,
+            # it should be --a1
+            name_with_attached = (
+                param_value
+                if (param_name is None and
+                    param_value and param_value[:1] == '-' and
+                    param_value[1:2] != '-')
+                else None
+            )
+
+        elif not param_type and len(self.prefix) == 1:
+            # say prefix = '+'
+            # then `a1` for `+a1` will be put as param_name, since
+            # there is no restriction on name length
+            name_with_attached = (
+                self.prefix + param_name
+                if param_name and not param_name.startswith(self.prefix)
+                else None
+            )
+
+        # we cannot find a parameter with param_name
+        # check if there is any value attached
+        if name_with_attached and not self.get_param(param_name):
             # Type: Optional[str], Optional[str], Optional[str]
             param_name2, param_type2, param_value2 = (
                 parse_potential_argument(
-                    arg, self.prefix, allow_attached=True
+                    name_with_attached, self.prefix, allow_attached=True
                 )
             )
+            # Use them only if we found a param_name2 and
+            # arbitrary: not previous param_name found
+            # otherwise: parameter with param_name2 exists
             if param_name2 is not None and (
-                    param_name is None or (
-                        not self.arbitrary and
-                        not self.get_param(param_name2)
-                    )
+                    (self.arbitrary and param_name is None) or
+                    self.get_param(param_name2)
             ):
                 param_name, param_type, param_value = (
                     param_name2, param_type2, param_value2
                 )
 
+        # create the parameter for arbitrary
         if (self.arbitrary and
                 param_name is not None and
                 not self.get_param(param_name)):
