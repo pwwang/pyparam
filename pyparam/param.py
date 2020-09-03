@@ -104,7 +104,7 @@ class Param:
         self._desc: List[str] = desc or ['No description.']
         self._stack: List[Any] = []
         self._value_cached: Optional[Any] = None
-        self._kwargs: Dict[Any] = kwargs
+        self._kwargs: Dict[str, Any] = kwargs
 
         # check if I am under a namespace
         # Type: List[List[str]], List[str]
