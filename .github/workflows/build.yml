@@ -27,7 +27,7 @@ jobs:
           cp ../README.md index.md
           cp ../pyparam-help.png ./
           cd ..
-          poetry run mkdocs gh-deploy
+          poetry run mkdocs gh-deploy --clean
         if: success() && github.event_name == 'push'
 
   fix-index:
