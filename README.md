@@ -1,5 +1,5 @@
 # pyparam
-[![pypi][1]][2] [![pypi][10]][11] ![github action][3] [![codacy quality][4]][6] [![codacy quality][7]][6] ![pyver][8]
+[![pypi][1]][2] [![pypi][10]][11] [![codacy quality][4]][6] [![codacy quality][7]][6] ![github action][3] ![pyver][8]
 
 Powerful parameter processing
 
@@ -19,7 +19,7 @@ pip install -U pyparam
 ```
 
 ## Documentation
-[https://pwwang.github.io/pyparam/index.html][5]
+[https://pwwang.github.io/pyparam/][5]
 
 ## Basic usage
 
@@ -70,7 +70,7 @@ Try it out:
 $ python example.py
 ```
 
-![help](pyparam-help.png)
+![help](./pyparam-help.png)
 
 ```sh
 $ python example.py \
