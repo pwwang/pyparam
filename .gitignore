@@ -140,5 +140,6 @@ poetry.lock
 docs/index.md
 docs/README.md
 docs/pyparam-help.png
+docs/api/
 
 # End of https://www.gitignore.io/api/python
