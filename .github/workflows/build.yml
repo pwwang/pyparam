@@ -26,10 +26,10 @@ jobs:
         run: pylint pyparam
       - name: Update docs
         run: |
-          python -m pip install mkdocs
-          python -m pip install -r docs/requirements.txt
+          poetry run python -m pip install mkdocs
+          poetry run python -m pip install -r docs/requirements.txt
           cd docs; ln -s ../README.md index.md; ln -s ../pyparam-help.png; cd -
-          mkdocs gh-deploy
+          poetry run mkdocs gh-deploy
         if: success() && matrix.python-version == 3.8 && github.event_name == 'push'
       - name: Test with pytest
         run: poetry run pytest tests/ --junitxml=junit/test-results-${{ matrix.python-version }}.xml
