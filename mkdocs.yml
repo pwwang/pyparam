@@ -16,7 +16,7 @@ plugins:
 extra_css:
     - api.css
 nav:
-    - 'Home': 'README.md'
+    - 'index': 'README.md'
     - 'From command line arguments': 'fromCommandline.md'
     - 'Shell completions': 'shellCompletions.md'
     - 'Help page': 'helpPage.md'
