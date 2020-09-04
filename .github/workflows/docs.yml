@@ -42,8 +42,10 @@ jobs:
           ref: gh-pages
       - name: Fix index.html
         run: |
+          echo ':: head of index.html - before ::'
           head index.html
-          tail -n +4 index.html > index.html
+          sed -i '1,5{/^$/d}' index.html
+          echo ':: head of index.html - after ::'
           head index.html
         if: success()
       - name: Commit changes
