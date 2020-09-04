@@ -14,7 +14,7 @@ plugins:
     - search # necessary for search to work
     - mkapi
 extra_css:
-    - api.css
+    - style.css
 nav:
     - 'index.md'
     - 'Defining parameters': 'TypesOfParams.md'

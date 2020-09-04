@@ -28,26 +28,42 @@ PARAM_MAPPINGS: Dict[str, Type['Param']] = {}
 class Param:
     """Base class for parameter
 
-    Attributes:
-        names (list): The names of the parameter
-        default (any): The default value
-        prefix (str): The prefix of the parameter on the command line
-        show (bool): Whether this parameter should show on help page
-        required (bool): Whether this parameter is required
-        subtype (str): The subtype of the parameter if this is a complex type
-        type_frozen (bool): Whether the type is frozen
+    Args:
+        names: The names of the parameter
+        default: The default value
+        desc: The description of the parameter
+        prefix: The prefix of the parameter on the command line
+        show: Whether this parameter should show on help page
+        required: Whether this parameter is required
+        subtype: The subtype of the parameter if
+            this is a complex type
+        type_frozen: Whether the type is frozen
             (not allowing overwritting from command line)
-        callback (Callable): The callback to modify the final value
-        argname_shorten (bool): Whether show shortened name for the parameters
+        callback: The callback to modify the final value
+        argname_shorten: Whether show shortened name for parameters
             under namespace parameters
-        hit (bool): Whether the parameter is just hit
-        ns_param (ParamNamespace): The namespace parameter where this parameter
+        **kwargs: Additional keyword arguments
+
+    Attributes:
+        names: The names of the parameter
+        default: The default value
+        prefix: The prefix of the parameter on the command line
+        show: Whether this parameter should show on help page
+        required: Whether this parameter is required
+        subtype: The subtype of the parameter if this is a complex type
+        type_frozen: Whether the type is frozen
+            (not allowing overwritting from command line)
+        callback: The callback to modify the final value
+        argname_shorten: Whether show shortened name for the parameters
+            under namespace parameters
+        hit: Whether the parameter is just hit
+        ns_param: The namespace parameter where this parameter
             is under
-        is_help (bool): Whether this is a help parameter
-        _desc (list): The raw description of the parameter
-        _stack (list): The stack to push the values
-        _value_cached (any): The cached value calculated from the stack
-        _kwargs (dict): other kwargs
+        is_help: Whether this is a help parameter
+        _desc: The raw description of the parameter
+        _stack: The stack to push the values
+        _value_cached: The cached value calculated from the stack
+        _kwargs: other kwargs
     """
     # pylint: disable=too-many-instance-attributes
 
@@ -70,24 +86,7 @@ class Param:
                  callback: Optional[Callable] = None,
                  argname_shorten: bool = True,
                  **kwargs: Dict[str, Any]):
-        """Constructor
-
-        Args:
-            names (list): The names of the parameter
-            default (any): The default value
-            desc (list): The description of the parameter
-            prefix (str): The prefix of the parameter on the command line
-            show (bool): Whether this parameter should show on help page
-            required (bool): Whether this parameter is required
-            subtype (str): The subtype of the parameter if
-                this is a complex type
-            type_frozen (bool): Whether the type is frozen
-                (not allowing overwritting from command line)
-            callback (Callable): The callback to modify the final value
-            argname_shorten (bool): Whether show shortened name for parameters
-                under namespace parameters
-            **kwargs: Additional keyword arguments
-        """
+        """Constructor"""
         self.names: List[str] = names
 
         self.default: Any = default
@@ -134,10 +133,10 @@ class Param:
         """Add prefix to a name
 
         Args:
-            name (str): Name to add prefix to
+            name: Name to add prefix to
 
         Returns:
-            str: Name with prefix added
+            Name with prefix added
         """
         name_to_check: str = name.split('.', 1)[0]
         if self.prefix == 'auto':
@@ -149,10 +148,10 @@ class Param:
         """Get the namespaces at the given index or number of namespaces
 
         Args:
-            index (int|str): The index or a length indicator
+            index: The index or a length indicator
 
         Returns:
-            int|list: The length of the namespaces or the namespaces at index.
+            The length of the namespaces or the namespaces at index.
         """
         if index == 'len':
             return len(self._namespaces)
@@ -169,7 +168,7 @@ class Param:
         to `n.arg` and `ns.arg`
 
         Returns:
-            list: The names with full combinations of namespaces and terminals
+            The names with full combinations of namespaces and terminals
         """
         self.names = ['.'.join(prod)
                       for prod in product(*self._namespaces, self.terminals)]
@@ -179,7 +178,7 @@ class Param:
         """Tell if this parameter is positional
 
         Returns:
-            bool: True if it is, otherwise False.
+            True if it is, otherwise False.
         """
         return POSITIONAL in self.names
 
@@ -199,10 +198,10 @@ class Param:
         A new param will be returned if different
 
         Args:
-            param_type (str): The type to overwrite
+            param_type: The type to overwrite
 
         Returns:
-            Param: Self when type not changed otherwise a new parameter with
+            Self when type not changed otherwise a new parameter with
                 the given type
         """
         if param_type is None or param_type == self.typestr():
@@ -224,10 +223,10 @@ class Param:
         """Consume a value
 
         Args:
-            Value (Any): value to consume
+            Value: value to consume
 
         Returns:
-            bool: True if value was consumed, otherwise False
+            True if value was consumed, otherwise False
         """
         if self.hit or not self._stack:
             self.push(value)
@@ -254,12 +253,12 @@ class Param:
         short/long name, but just the shortest/longest name among all the names
 
         Args:
-            which (str): Whether get the shortest or longest name
+            which: Whether get the shortest or longest name
                 Could use `short` or `long` for short.
-            with_prefix (bool): Whether to include the prefix or not
+            with_prefix: Whether to include the prefix or not
 
         Returns:
-            str: The shortest/longest name of the parameter
+            The shortest/longest name of the parameter
         """
         name: str = list(sorted(self.names, key=len))[
             0 if 'short' in which else -1
@@ -274,10 +273,10 @@ class Param:
         """Get all names connected with a separator.
 
         Args:
-            sep (str): The separator to connect the names
-            with_prefix (bool): Whether to include the prefix or not
+            sep: The separator to connect the names
+            with_prefix: Whether to include the prefix or not
         Returns:
-            str: the connected names
+            the connected names
         """
         names: list = ['POSITIONAL' if name == POSITIONAL
                        else self._prefix_name(name)
@@ -290,7 +289,7 @@ class Param:
         """Get the string representation of the type
 
         Returns:
-            str: the string representation of the type
+            the string representation of the type
         """
         if not self.subtype:
             return self.type
@@ -301,7 +300,7 @@ class Param:
         constructor
 
         Returns:
-            str: the string representation of the parameter in the default usage
+            the string representation of the parameter in the default usage
         """
         # * makes sure it's not wrapped
         ret: str = self.name('long') + "*"
@@ -313,7 +312,7 @@ class Param:
         in the optname section in help page
 
         Returns:
-            str: the string representation of the parameter names and types
+            the string representation of the parameter names and types
                 in the optname section in help page
         """
         typestr: str = (self.typestr().upper()
@@ -333,10 +332,10 @@ class Param:
         """Generate a different type of parameter using current settings
 
         Args:
-            to_type (str): the type of paramter to generate
+            to_type: the type of paramter to generate
 
         Returns:
-            Param: the generated parameter with different type
+            the generated parameter with different type
         """
         # Type: Optional[str], Optional[str]
         main_type, sub_type = parse_type(to_type)
@@ -359,7 +358,7 @@ class Param:
         """Get the default group of the parameter
 
         Returns:
-            str: the default group name
+            the default group name
         """
         ret: str = "REQUIRED OPTIONS" if self.required else "OPTIONAL OPTIONS"
         if not self.ns_param:
@@ -372,7 +371,7 @@ class Param:
         value
 
         Returns:
-            list: list of descriptions with default value added
+            list of descriptions with default value added
         """
         if self.is_help:
             return self.desc
@@ -400,7 +399,7 @@ class Param:
         """Push a value into the stack for calculating
 
         Returns:
-            item (any): The item to be pushed
+            The item to be pushed
         """
         if self.hit is True and self._stack:
             logger.warning(
@@ -422,7 +421,7 @@ class Param:
         """Get the organized value of this parameter
 
         Returns:
-            any: The parsed value of thie parameter
+            The parsed value of thie parameter
         """
 
         if not self._stack:
@@ -437,8 +436,8 @@ class Param:
     def value(self) -> Any:
         """Return the cached value if possible, otherwise calcuate one
 
-        @Returns:
-            any: The cached value of this parameter or the newly calculated
+        Returns:
+            The cached value of this parameter or the newly calculated
                 from stack
         """
         if self._value_cached is not None:
@@ -451,10 +450,10 @@ class Param:
         """Apply the callback function to the value
 
         Args:
-            all_values (Namespace): The namespace of values of all parameters
+            all_values: The namespace of values of all parameters
 
         Returns:
-            Any: The value after the callback applied
+            The value after the callback applied
 
         Raises:
             PyParamTypeError: When exceptions raised or returned from callback
@@ -537,7 +536,7 @@ class ParamBool(Param):
         constructor
 
         Returns:
-            str: the string representation of the parameter in the default usage
+            the string representation of the parameter in the default usage
         """
         return self.name('long')
 
@@ -546,7 +545,7 @@ class ParamBool(Param):
         in the optname section in help page
 
         Returns:
-            str: the string representation of the parameter names and types
+            the string representation of the parameter names and types
                 in the optname section in help page
         """
         if self.is_help:
@@ -811,11 +810,11 @@ class ParamNamespace(Param):
         This parameter is like '-a', and the name can be 'a.b.c.d'
 
         Args:
-            name (str): The name of the parameter to get
-            depth (int): The depth
+            name: The name of the parameter to get
+            depth: The depth
 
         Returns:
-            Param: The parameter we get with the given name
+            The parameter we get with the given name
         """
         parts: List[str] = name.split('.')
         if depth < len(parts) - 1:
@@ -904,7 +903,7 @@ def register_param(param: Param) -> None:
     """Register a parameter class
 
     Args:
-        param (Param): The param to register
+        param: The param to register
             A param class should include a type
             You can also define type alias for a param type
     """

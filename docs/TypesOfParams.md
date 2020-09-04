@@ -98,7 +98,7 @@ THe value of a path parameter will be automatically converted into a `pathlib.Pa
                      callback=callback)
     ```
 
-    See how callback works at [parameter callbacks](#Paramter-callbacks)
+    See how callback works at [parameter callbacks](#paramter-callbacks)
 
 ### py paramter
 

@@ -21,8 +21,23 @@ from .defaults import TYPE_NAMES
 from .exceptions import PyParamTypeError
 
 class Namespace(APNamespace):
-    """Subclass of argparse.Namespace with __getitem__ avaiable"""
-    __command__ = None
+    """Subclass of `argparse.Namespace`
+
+    We have enabled `__getitem__`, `__setitem__`, `__len__` and `__contains__`.
+    So that you can do:
+
+    ```python
+    ns = Namespace()
+    ns['a'] = 1  # same as ns.a = 1
+    ns['a'] == 1 # same as ns.a == 1
+    len(ns) == 1
+    'a' in ns
+    ```
+
+    Attributes:
+        __command__: The command name if matched.
+    """
+    __command__: Optional[str] = None
 
     def __getitem__(self, name: str) -> Any:
         return getattr(self, name)
@@ -49,12 +64,12 @@ class Codeblock:
 
         Args:
             cls (Codeblock class): The class
-            texts (list): a list of texts
-            check_default (bool): Check if there is default in maybe_codeblock.
+            texts: a list of texts
+            check_default: Check if there is default in maybe_codeblock.
                 Defaults should not be scanned as code blocks
 
         Returns:
-            list: mixed text and code blocks
+            mixed text and code blocks
         """
 
         ret: List[Union[str, 'Codeblock']] = []
@@ -98,10 +113,10 @@ class Codeblock:
 
         Args:
             cls (Codeblock class): The class
-            maybe_codeblock (str): Maybe a code block start
+            maybe_codeblock: Maybe a code block start
                 It can be a text block, we have to scan if it has code blocks
                 inside.
-            check_default (bool): Check if there is default in maybe_codeblock.
+            check_default: Check if there is default in maybe_codeblock.
                 Defaults should not be scanned as code blocks
 
         Returns:
@@ -176,11 +191,11 @@ class Codeblock:
         """Constructor
 
         Args:
-            opentag (str): The opentag for the code block.
+            opentag: The opentag for the code block.
                 One of '>>>', '```<lang>', '````<lang>', ...
-            lang (str): The language name
-            indent (int): The indentation level
-            codes (list): The lines of code
+            lang: The language name
+            indent: The indentation level
+            codes: The lines of code
         """
         self.opentag: str = opentag
         self.lang: str = lang
@@ -195,7 +210,7 @@ class Codeblock:
         """Add code to code block
 
         Args:
-            code (str): code to add
+            code: code to add
                 It can be multiple lines, each of which will be dedented
         """
         # Type: str
@@ -206,10 +221,10 @@ class Codeblock:
         """Tell if the line is the end of the code block
 
         Args:
-            line (str): line to check
+            line: line to check
 
         Returns:
-            bool: True if it is the end otherwise False
+            True if it is the end otherwise False
         """
         if self.opentag == '>>>' and not line[self.indent:].startswith('>>>'):
             return True
@@ -221,7 +236,7 @@ class Codeblock:
         """Render the code block to a rich.syntax.Syntax
 
         Returns:
-            Padding: A padding of rich.syntax.Syntax
+            A padding of rich.syntax.Syntax
         """
         return Padding(
             Syntax('\n'.join(self.codes), self.lang),
@@ -234,9 +249,9 @@ def always_list(str_or_list: Union[str, List[str]],
     """Convert a string (comma separated) or a list to a list
 
     Args:
-        str_or_list (str|list): string or list
-        strip (bool): whether to strip the elements in result list
-        split (bool|str): Delimiter for split or False to not split
+        str_or_list: string or list
+        strip: whether to strip the elements in result list
+        split: Delimiter for split or False to not split
 
     Return:
         list: list of strings
@@ -259,10 +274,10 @@ def parse_type(typestr: str) -> List[Optional[str]]:
         >>> parse_type("list")  # list, None
 
     Args:
-        typestr (str): string of type to parse
+        typestr: string of type to parse
 
     Returns:
-        list: Main type and subtype
+        Main type and subtype
 
     Raises:
         PyParamTypeError: When a type cannot be parsed
@@ -298,13 +313,13 @@ def parse_potential_argument(
         >>> # -a, None, bc
 
     Args:
-        arg (str): a potential argument. Such as:
+        arg: a potential argument. Such as:
             -a, --def, -b=1, --abc=value, -b1 (for argument -b with value 1)
             with types:
             -a:int --def:list -b:str=1 --abs:str=value -b:bool
             It is usually one element of the sys.argv
-        prefix (str): The prefix for the argument names
-        allow_attached (bool): Whether to detect item like '-b1' for argument
+        prefix: The prefix for the argument names
+        allow_attached: Whether to detect item like '-b1' for argument
             '-b' with value '1' or the entire one is parsed as argument '-b1'
 
     Returns:
@@ -357,10 +372,10 @@ def type_from_value(value: Any) -> str:
     """Detect parameter type from a value
 
     Args:
-        value (any): The value
+        value: The value
 
     Returns:
-        str: The name of the type
+        The name of the type
 
     Raises:
         PyParamTypeError: When we have list as subtype.
@@ -388,10 +403,10 @@ def _cast_auto(value: Any) -> Any:
     """Cast value automatically
 
     Args:
-        value (any): value to cast
+        value: value to cast
 
     Returns:
-        any: value casted
+        value casted
     """
     # pylint: disable=too-many-return-statements
     if value in ("True", "TRUE", "true", 1, True):
@@ -420,11 +435,11 @@ def cast_to(value: Any, to_type: str) -> Any:
     """Cast a value to a given type
 
     Args:
-        value (any): value to cast
-        to_type (str): type to cast
+        value: value to cast
+        to_type: type to cast
 
     Returns:
-        any: casted value
+        casted value
 
     Raises:
         PyParamTypeError: if value is not able to be casted

@@ -1,4 +1,8 @@
-"""Help assembler for pyparam"""
+"""Help assembler for pyparam
+
+Attributes:
+    THEMES: The theme for the help page.
+"""
 import re
 import textwrap
 from typing import (
@@ -35,7 +39,11 @@ THEMES: Dict[str, Theme] = dict(
 
 # pylint: disable=too-few-public-methods
 class ProgHighlighter(RegexHighlighter):
-    """Apply style to anything that looks like a program name."""
+    """Apply style to anything that looks like a program name.
+
+    Args:
+        prog: The program name
+    """
 
     def __init__(self, prog: str):
         super().__init__()
@@ -259,21 +267,20 @@ class HelpSectionOption(HelpSection):
 class HelpAssembler:
     """Assemble a help page
 
+    Args:
+        prog: The name of the program
+        theme: The theme for the help page
+
     Attributes:
-        console (Console): The console to print the help page
-        callback (Callable): The callback to modify the help page
+        console: The console to print the help page
+        callback: The callback to modify the help page
     """
 
     def __init__(self,
                  prog: str,
                  theme: Union[str, Theme],
                  callback: Optional[Callable]):
-        """Constructor
-
-        Args:
-            prog (str): The name of the program
-            theme (Theme|str): The theme for the help page
-        """
+        """Constructor"""
         theme = (theme if isinstance(theme, Theme)
                  else THEMES.get(theme, 'default'))
 
@@ -358,17 +365,11 @@ class HelpAssembler:
                 for command in cmd_list
             )
 
-    def assemble(
-            self,
-            params: "Params"
-    ) -> Optional[List[RenderResult]]:
+    def assemble(self, params: "Params") -> None:
         """Assemble the help page
 
         Args:
-            param (Params): The params object
-
-        Returns:
-            str: The assembled help page
+            params: The params object
         """
         self._assembled = []
 

@@ -30,33 +30,52 @@ from .exceptions import PyParamNameError
 class Params: # pylint: disable=too-many-instance-attributes
     """Params, served as root params or subcommands
 
+    Args:
+        names: The names of this command if served as a command
+        desc: The description of the command.
+            This will be finally compiled into a list if a string is given.
+            The difference is, when displayed on help page, the string will
+            be wrapped by textwrap automatically. However, each element in
+            a given list will not be wrapped.
+        prog: The program name
+        help_keys: The names to bring up the help information
+        help_cmds: The help command names to show help of other
+            subcommands
+        help_on_void: Whether to show help when no arguments provided
+        help_callback: A function to modify the help page
+        prefix: The prefix for the arguments
+            (see attribute `Params.prefix`)
+        arbitrary: Whether to parse the command line arbitrarily
+        theme (str|rich.theme.Theme): The theme to render the help page
+        usage: Some example usages
+
     Attributes:
-        desc (list): The description of the command.
-        prog (str): The program name. Default: `sys.argv[0]`
-        help_keys (list): The names to bring up the help information.
-        help_cmds (list): The names of help subcommands to bring up
+        desc: The description of the command.
+        prog: The program name. Default: `sys.argv[0]`
+        help_keys: The names to bring up the help information.
+        help_cmds: The names of help subcommands to bring up
             help information of subcommands
-        help_on_void (bool): Whether show help when there is not arguments
+        help_on_void: Whether show help when there is not arguments
             provided
-        usage (list): The usages of this program
-        prefix (str): The prefix for the arguments on command line
+        usage: The usages of this program
+        prefix: The prefix for the arguments on command line
             - `auto`: Automatically determine the prefix for each argument.
                 Basically, `-` for short options, and `--` for long.
                 Note that `-` for `-vvv` if `v` is a count option
-        arbitrary (bool): Whether parsing the command line arbitrarily
+        arbitrary: Whether parsing the command line arbitrarily
         theme (rich.theme.Theme|str): The theme for the help page
-        names (list): The names of the commands if this serves as sub-command
-        params (OrderedDiot): The ordered dict of registered parameters
-        commands (OrderedDiot): The ordered dict of registered commands
-        param_groups (OrderedDiot): The ordered dict of parameter groups
-        command_groups (OrderedDiot): The ordered dict of command groups
-        asssembler (HelpAssembler): The asssembler to assemble the help page
+        names: The names of the commands if this serves as sub-command
+        params: The ordered dict of registered parameters
+        commands: The ordered dict of registered commands
+        param_groups: The ordered dict of parameter groups
+        command_groups: The ordered dict of command groups
+        asssembler: The asssembler to assemble the help page
     """
 
     def __init__(self, # pylint: disable=too-many-arguments
                  names: Optional[Union[str, List[str]]] = None,
                  desc: Optional[Union[List[str], str]] = 'No description',
-                 prog: str = sys.argv[0],
+                 prog: Optional[str] = None,
                  help_keys: Union[str, List[str]] = 'h,help,H',
                  help_cmds: Union[str, List[str]] = 'help',
                  help_on_void: bool = True,
@@ -65,29 +84,9 @@ class Params: # pylint: disable=too-many-instance-attributes
                  arbitrary: bool = False,
                  theme: str = 'default',
                  usage: Optional[Union[str, List[str]]] = None) -> None:
-        """Constructor
-
-        Args:
-            names (str|list): The names of this command if served as a command
-            desc (str|list): The description of the command.
-                This will be finally compiled into a list if a string is given.
-                The difference is, when displayed on help page, the string will
-                be wrapped by textwrap automatically. However, each element in
-                a given list will not be wrapped.
-            prog (str): The program name
-            help_keys (str|list): The names to bring up the help information
-            help_cmds (str|list): The help command names to show help of other
-                subcommands
-            help_on_void (bool): Whether to show help when no arguments provided
-            help_callback (callable): A function to modify the help page
-            prefix (str): The prefix for the arguments
-                (see attribute `Params.prefix`)
-            arbitrary (bool): Whether to parse the command line arbitrarily
-            theme (str|rich.theme.Theme): The theme to render the help page
-            usage (str|list): Some example usages,
-        """
+        """Constructor"""
         self.desc: List[str] = always_list(desc, strip=False, split=False)
-        self.prog: str = prog
+        self.prog: str = sys.argv[0] if prog is None else prog
         self.help_keys: List[str] = always_list(help_keys)
         self.help_cmds: List[str] = always_list(help_cmds)
         self.help_on_void: bool = help_on_void
@@ -107,7 +106,7 @@ class Params: # pylint: disable=too-many-instance-attributes
         self.command_groups: OrderedDiot = OrderedDiot()
 
         self.assembler: HelpAssembler = HelpAssembler(
-            prog, theme, help_callback
+            self.prog, theme, help_callback
         )
 
     def name(self, which: str = 'short') -> str:
@@ -117,11 +116,11 @@ class Params: # pylint: disable=too-many-instance-attributes
         short/long name, but just the shortest/longest name among all the names
 
         Args:
-            which (str): Whether get the shortest or longest name
+            which: Whether get the shortest or longest name
                 Could use `short` or `long` for short.
 
         Returns:
-            str: The shortest/longest name of the parameter
+            The shortest/longest name of the parameter
         """
         return list(sorted(self.names, key=len))[0 if 'short' in which else -1]
 
@@ -129,10 +128,10 @@ class Params: # pylint: disable=too-many-instance-attributes
         """Get all names connected with a separator.
 
         Args:
-            sep (str): The separator to connect the names
+            sep: The separator to connect the names
 
         Returns:
-            str: the connected names
+            the connected names
         """
         return sep.join(sorted(self.names, key=len))
 
@@ -142,10 +141,10 @@ class Params: # pylint: disable=too-many-instance-attributes
         If the parameter is under a namespace, try to get it via the namespace
 
         Args:
-            name (str): The name of the parameter to get (without prefix)
+            name: The name of the parameter to get (without prefix)
 
         Returns:
-            Param: The parameter, None if failed
+            The parameter, None if failed
         """
         if name is None:
             return None
@@ -164,10 +163,10 @@ class Params: # pylint: disable=too-many-instance-attributes
         """Get the command object
 
         Args:
-            name (str): The name of the command to get
+            name: The name of the command to get
 
         Returns:
-            Params: The command object, None if failed.
+            The command object, None if failed.
         """
         return self.commands.get(name)
 
@@ -201,29 +200,29 @@ class Params: # pylint: disable=too-many-instance-attributes
         """Add an argument
 
         Args:
-            names (str|list): names of the argument
-            default (any): The default value for the argument
-            type (str|callable): The type of the argument
+            names: names of the argument
+            default: The default value for the argument
+            type: The type of the argument
                 Including single value type and complex one
                 - Single value types:
                     auto, int, str, float, bool, count, py, json, reset
                 - Complex value types:
                     list[<single value type>], ns
-            desc (str|list): The description of the argument
+            desc: The description of the argument
                 This will be finally compiled into a list if a string is given.
                 The difference is, when displayed on help page, the string will
                 be wrapped by textwrap automatically. However, each element in
                 a given list will not be wrapped.
-            show (bool): Whether this should be shown on help page.
-            required (bool): Whether this argument is required from
+            show: Whether this should be shown on help page.
+            required: Whether this argument is required from
                 the command line
-            callback (callable): Callback to convert parsed values
-            group (str): The group this parameter belongs to.
+            callback: Callback to convert parsed values
+            group: The group this parameter belongs to.
                 Arguments will be grouped by this on the help page.
-            force (bool): Whether to force adding paramter if it exists
-            type_frozen (bool): Whether allow type overwritting from
+            force: Whether to force adding paramter if it exists
+            type_frozen: Whether allow type overwritting from
                 the commone line
-            argname_shorten (bool): Whether show shortened name for parameter
+            argname_shorten: Whether show shortened name for parameter
                 under namespace parameter
             **kwargs: Additional keyword arguments
 
@@ -306,22 +305,22 @@ class Params: # pylint: disable=too-many-instance-attributes
         """Add a sub-command
 
         Args:
-            names (list): list of names of this command
-            desc (str|list): description of this command
-            help_keys (str|list): help key for bring up help for this command
-            help_cmds (str|list): help command for printing help for other
+            names: list of names of this command
+            desc: description of this command
+            help_keys: help key for bring up help for this command
+            help_cmds: help command for printing help for other
                 sub-commands of this command
-            help_on_void (bool): whether printing help when no arguments passed
-            help_callback (callable): callback to manipulate help page
-            prefix (str): prefix for arguments for this command
-            arbitray (bool): whether do arbitray Parsing
-            theme (str): The theme of help page for this command
-            usage (str|list): Usage for this command
-            group (str): Group of this command
-            force (bool): Force adding when command exists already.
+            help_on_void: whether printing help when no arguments passed
+            help_callback: callback to manipulate help page
+            prefix: prefix for arguments for this command
+            arbitray: whether do arbitray Parsing
+            theme: The theme of help page for this command
+            usage: Usage for this command
+            group: Group of this command
+            force: Force adding when command exists already.
 
         Returns:
-            Params: The added command
+            The added command
         """
         # pylint: disable=too-many-locals
         commands: List[str] = always_list(names)
@@ -365,7 +364,7 @@ class Params: # pylint: disable=too-many-instance-attributes
         """Print the help information and exit
 
         Args:
-            exit_code (int|bool): The exit code or False to not exit
+            exit_code: The exit code or False to not exit
         """
         self.assembler.assemble(self)
         self.assembler.printout()
@@ -378,10 +377,10 @@ class Params: # pylint: disable=too-many-instance-attributes
         to the given namespace
 
         Args:
-            namespace (Namespace): The namespace for the values to attach to.
+            namespace: The namespace for the values to attach to.
 
         Returns:
-            Namespace: the namespace with values of all parameter
+            the namespace with values of all parameter
                 name-value pairs
         """
         ns_no_callback: Namespace = Namespace()
@@ -420,7 +419,7 @@ class Params: # pylint: disable=too-many-instance-attributes
         """Parse the arguments from the command line
 
         Args:
-            args (list): The arguments to parse
+            args: The arguments to parse
 
         Return:
             Namespace: The namespace of parsed arguments
@@ -477,8 +476,8 @@ class Params: # pylint: disable=too-many-instance-attributes
         """Parse the arguments from the command line
 
         Args:
-            args (list): The arguments to parse
-            namespace (Namespace): The namespace for parsed arguments to
+            args: The arguments to parse
+            namespace: The namespace for parsed arguments to
                 attach to.
         """
         logger.debug("Parsing %r", args)
@@ -566,9 +565,9 @@ class Params: # pylint: disable=too-many-instance-attributes
         """Check if arg hits a command or a positional argument start
 
         Args:
-            prev_param (Param): The previous parameter
-            arg (str): The current argument item
-            rest_args (list): The remaining argument items
+            prev_param: The previous parameter
+            arg: The current argument item
+            rest_args: The remaining argument items
 
         Returns:
             tuple (Param, str):
@@ -634,7 +633,7 @@ class Params: # pylint: disable=too-many-instance-attributes
         overwrite the type and push the attached value, such as '--arg=1'
 
         Args:
-            arg (str): arg to check
+            arg: arg to check
 
         Returns:
             tuple (Param, str, str, str): The matched parameter, parameter name,
@@ -751,12 +750,12 @@ class Params: # pylint: disable=too-many-instance-attributes
         ```
 
         Args:
-            filename (str): path to the file
-            filetype (str): The type of the file. If None, will infer from the
+            filename: path to the file
+            filetype: The type of the file. If None, will infer from the
                 filename.
                 Supported types: ini, cfg, conf, config, yml, yaml, json
                 env, osenv, toml
-            show (bool): The default show value for parameters in the file
+            show: The default show value for parameters in the file
         """
         config: Config = Config(with_profile=False)
         config._load(filename, factory=LOADERS.get(filetype))
@@ -788,8 +787,8 @@ class Params: # pylint: disable=too-many-instance-attributes
         """Load parameters from python dict
 
         Args:
-            dict_obj (dict): A python dictionary to load parameters from
-            show (bool): The default show value for the parameters in the
+            dict_obj: A python dictionary to load parameters from
+            show: The default show value for the parameters in the
                 dictionary
         """
         if 'params' not in dict_obj and 'commands' not in dict_obj:
@@ -837,13 +836,13 @@ class Params: # pylint: disable=too-many-instance-attributes
         some of them afterwards, and do the parsing finally.
 
         Args:
-            names (str|list|ParamPath): The names of the parameter or
+            names: The names of the parameter or
                 the parameter itself. If it is the parameter, other
                 arguments are ignored
-            desc (str|list): The description of the parameter
-            group (str): The group of the parameter
-            required (bool): Whether this argument is required
-            args (list): The list of items to parse, otherwise
+            desc: The description of the parameter
+            group: The group of the parameter
+            required: Whether this argument is required
+            args: The list of items to parse, otherwise
                 parse sys.argv[1:]
         """
         if isinstance(names, (str, list)):
