@@ -19,7 +19,7 @@ pip install -U pyparam
 ```
 
 ## Documentation
-[https://pwwang.github.io/pyparam/][5]
+[https://pwwang.github.io/pyparam/index.html][5]
 
 ## Basic usage
 

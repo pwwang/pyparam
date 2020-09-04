@@ -28,7 +28,10 @@ jobs:
         run: |
           poetry run python -m pip install mkdocs
           poetry run python -m pip install -r docs/requirements.txt
-          cd docs; ln -s ../README.md index.md; ln -s ../pyparam-help.png; cd -
+          cd docs
+          copy ../README.md index.md
+          copy ../pyparam-help.png ./
+          cd ..
           poetry run mkdocs gh-deploy
         if: success() && matrix.python-version == 3.8 && github.event_name == 'push'
       - name: Test with pytest
