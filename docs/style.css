@@ -36,6 +36,7 @@
 .md-typeset pre>code {
     overflow: visible;
     line-height: 1.2;
+    font-size: 0.1rem !important;
 }
 .mkapi-section-name.bases {
     margin-top: .2em;
