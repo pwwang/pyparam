@@ -19,7 +19,7 @@ pip install -U pyparam
 ```
 
 ## Documentation
-[https://pwwang.github.io/pyparam/index.html][5]
+[https://pwwang.github.io/pyparam/][5]
 
 ## Basic usage
 
@@ -119,7 +119,7 @@ $ python -m pyparam
 [2]: https://pypi.org/project/pyparam/
 [3]: https://img.shields.io/github/workflow/status/pwwang/pyparam/Build%20and%20Deploy?style=flat-square
 [4]: https://img.shields.io/codacy/grade/a34b1afaccf84019a6b138d40932d566.svg?style=flat-square
-[5]: https://pwwang.github.io/pyparam/index.html
+[5]: https://pwwang.github.io/pyparam/
 [6]: https://app.codacy.com/project/pwwang/pyparam/dashboard
 [7]: https://img.shields.io/codacy/coverage/a34b1afaccf84019a6b138d40932d566.svg?style=flat-square
 [8]: https://img.shields.io/pypi/pyversions/pyparam.svg?style=flat-square
