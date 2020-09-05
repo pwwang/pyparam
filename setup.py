@@ -21,7 +21,7 @@ if os.path.exists(readme_path):
 setup(
     long_description=readme,
     name='pyparam',
-    version='0.2.6',
+    version='0.3.0',
     description='Powerful parameter processing.',
     python_requires='==3.*,>=3.6.0',
     project_urls={
@@ -34,8 +34,6 @@ setup(
     packages=['pyparam'],
     package_dir={"": "."},
     package_data={"pyparam": ["*.bak"]},
-    install_requires=[
-        'colorama', 'completions', 'diot', 'pygments', 'python-simpleconf'
-    ],
+    install_requires=['diot', 'python-simpleconf', 'rich==6.*,>=6.0.0'],
     extras_require={"dev": ["pytest", "pytest-cov"]},
 )

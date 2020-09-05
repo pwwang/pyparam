@@ -1,21 +1,27 @@
 site_name: pyparam
 theme:
     name: 'material'
-    font:
-      text: 'Ubuntu'
-      code: 'Ubuntu Mono'
+    # font:
+    #   text: 'Ubuntu'
+    #   code: 'Ubuntu Mono'
 markdown_extensions:
     - markdown.extensions.admonition
     - pymdownx.superfences:
         preserve_tabs: true
     - toc:
         baselevel: 2
+plugins:
+    - search # necessary for search to work
+    - mkapi
+extra_css:
+    - style.css
 nav:
-    - 'Introduction': 'index.md'
-    - 'From command line arguments': 'fromCommandline.md'
-    - 'Shell completions': 'shellCompletions.md'
+    - 'Home': 'index.md'
+    - 'Defining parameters': 'TypesOfParams.md'
+    - 'Commands': 'commands.md'
+    - 'Parsing from command line': 'fromCommandline.md'
+    - 'Loading from dict/config file': 'fromDict.md'
     - 'Help page': 'helpPage.md'
-    - 'From dict/configuration': 'fromDict.md'
-    - 'Subcommands': 'commands.md'
-    - 'Using the values': 'useTheValues.md'
+    - 'Using the parsed values': 'useTheValues.md'
+    - 'API': mkapi/api/pyparam
     - 'Change log': 'changeLog.md'

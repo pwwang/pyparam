@@ -1,12 +1,8 @@
 """
-parameters module for PyPPL
+Powerful parameter processing with pyparam
 """
+from .defaults import POSITIONAL
+from .params import Params
+from .utils import Namespace
 
-__version__ = "0.2.6"
-
-from .params import Param, Params
-from .commands import Commands
-
-# pylint: disable=invalid-name
-params = Params()
-commands = Commands()
+__version__ = "0.3.0"

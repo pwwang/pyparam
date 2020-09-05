@@ -139,11 +139,13 @@ disable=print-statement,
         deprecated-sys-function,
         exception-escape,
         comprehension-escape,
-        cyclic-import,
+        import-error,
         protected-access,
-        attribute-defined-outside-init,
         import-outside-toplevel,
-        import-error
+        no-name-in-module,
+        no-member,
+        broad-except,
+        cyclic-import
 
 # Enable the message, report, category or checker with the given id(s). You can
 # either give multiple identifier separated by comma (,) or put this option
@@ -209,7 +211,7 @@ ignore-comments=yes
 ignore-docstrings=yes
 
 # Ignore imports when computing similarities.
-ignore-imports=no
+ignore-imports=yes
 
 # Minimum lines number of a similarity.
 min-similarity-lines=4
@@ -295,7 +297,22 @@ function-naming-style=snake_case
 good-names=i,
            j,
            k,
+           x,
+           y,
+           z,
+           np,
+           nn,
+           ns,
+           t,
+           t0,
+           to,
            ex,
+           rc,
+           eq,
+           do,
+           by,
+           tf,
+           op,
            Run,
            _
 
@@ -423,7 +440,7 @@ indent-after-paren=4
 indent-string='    '
 
 # Maximum number of characters on a single line.
-max-line-length=100
+max-line-length=80
 
 # Maximum number of lines in a module.
 max-module-lines=1000
@@ -485,19 +502,19 @@ redefining-builtins-modules=six.moves,past.builtins,future.builtins,builtins,io
 [DESIGN]
 
 # Maximum number of arguments for function / method.
-max-args=10
+max-args=5
 
 # Maximum number of attributes for a class (see R0902).
-max-attributes=12
+max-attributes=7
 
 # Maximum number of boolean expressions in an if statement (see R0916).
 max-bool-expr=5
 
 # Maximum number of branch for function / method body.
-max-branches=25
+max-branches=15
 
 # Maximum number of locals for function / method body.
-max-locals=20
+max-locals=15
 
 # Maximum number of parents for a class (see R0901).
 max-parents=7
@@ -506,13 +523,13 @@ max-parents=7
 max-public-methods=20
 
 # Maximum number of return / yield for function / method body.
-max-returns=20
+max-returns=6
 
 # Maximum number of statements in function / method body.
-max-statements=60
+max-statements=50
 
 # Minimum number of public methods for a class (see R0903).
-min-public-methods=1
+min-public-methods=2
 
 
 [IMPORTS]

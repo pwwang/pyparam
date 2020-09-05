@@ -1,143 +1,161 @@
-## Theming
 
-Default theme:
+## Grouping parameters/commands
 
-![default-theme][1]
+On the help page, parameters/commands are put in groups. You can specify the group for a parameter or command by `params.add_param(..., group=xxx)` or `params.add_command(..., group=xxx)`
 
-Blue theme:
+If not specified, we have default groups assigned for them
+
+### Default group
+
+Optional parameters will be in group `OPTIONAL OPTIONS`, and required parameters will be in group `REQUIRED OPTIONS`.
+
+For a namespace parameter, if any paramters under it is required, then the namespace parameter is required, otherwise it optional. Those parameters under a namespace parameter will be grouped as something like `OPTIONAL OPTIONS UNDER --config`.
+
+Sub-commands are grouped into `COMMANDS`
+
+## Manipulating help page
+
+You are able to modify the help page yourself. Just pass a callback funtion to `Params`:
 ```python
-from pyparam import params
-params._theme = 'blue'
-# same as examples/basic.py
+params = Params(..., help_callback=...)
 ```
 
-![default-theme][13]
+A help callback function takes only one argument, which is a `OrderedDiot` object (A dot-notation enabled `OrderedDict` by [`diot`][1]). Each key is a section title and value is the corresponding content of that section. The content be one of `HelpSectionPlain`, `HelpSectionUsage` and `HelpSectionOption` objects. They are basically subclasses of `list`. The elements of first two are just strings; while they are 2-element tuples for the last one. Those two elements are lists of parameter names/types and descriptions.
 
-Plain theme:
-```python
-from pyparam import params
-params._theme = 'plain'
-# same as examples/basic.py
-```
+Here are the examples on how you can manipulate the help page.
 
-![theme_blue][14]
-
-Customize theme based on default theme:
-```python
-dict(
-    error   = colorama.Fore.RED,
-    warning = colorama.Fore.YELLOW,
-    title   = colorama.Style.BRIGHT + colorama.Fore.CYAN,  # section title
-    prog    = colorama.Style.BRIGHT + colorama.Fore.GREEN, # program name
-    default = colorama.Fore.MAGENTA,              # default values
-    optname = colorama.Style.BRIGHT + colorama.Fore.GREEN,
-    opttype = colorama.Fore.BLUE,
-    optdesc = ''),
-```
-```python
-import colorama
-from pyparam import params
-params._theme = dict(title = colorama.Style.BRIGHT + colorama.Fore.YELLOW)
-# same as examples/basic.py
-```
-
-![theme_custom][15]
-
-## Help options
-By default, we use `-h`, `--help` and `-H` for users to explictly call the help page and exit. You may define you own by `params._htops = 'hlp'`
-
-## Manipulation of help page
-The data of the help page is managed by class `pyparam.help.Helps`. The whole help page is composed of sections, with a title and two types of contents `HelpItems` (plain content without options) and `HelpOptions` (content with options). You can add, delete, modify and query the sections and contents with the API provided by `pyparam`.
-All you need to do is to pass a function to `params._helpx` to manipulate the help page.
-
-- Full example
-    `examples/helpPage.py`
+- Without callback:
     ```python
-    from pyparam import params
-    from pyparam.help import HelpOptions, HelpItems
-
-    def helpx(helps):
-        # # initiate it with an option
-        # # or initiate with empty
-        # helps.add('Java options', HelpOptions())
-        # # or
-        # helps.add('Java options', sectype = 'option')
-        helps.add('Java options', ('-Xmx', '<SIZE>', 'set maximum Java heap size'))
-
-        # add another option
-        helps.select('Java options').add(
-            ('-Xms', '<SIZE>', 'set initial Java heap size'))
-
-        # add a section before USAGE
-        # # or initiate with empty
-        # helps.before('USAGE', 'Description', sectype = 'item')
-        # # or
-        # helps.before('USAGE', 'Description', HelpItems())
-        helps.before('USAGE', 'Description', 'This is an example of help manipulation.')
-
-        # add another line to description
-        helps.select('Description').add('Another description')
-
-        # add a line before 'Another description'
-        helps.select('Description').before('Another description', 'One description')
-
-        # add required option section before optional
-        # because no required options defined
-        helps.before('Optional options', 'Required Options', sectype = 'option')
-
-        # add an option
-        helps.select('Required options').add(
-            ('-v',  # option name
-                '',    # type
-                # description in multiple lines
-                'The verbosity\nSome very very long description\nabout this option.'
-            ))
-
-        # add a line to the description after 'The verbosity'
-        helps.select('Required options') \
-                .select('-v')[2] \
-                .after('The verbosity', 'Default: 0')
-
-        # add another
-        helps.select('Required options').add(
-            ('-d, --depend', '<DICT>', 'The dependencies.'))
-
-        # add an option after -v
-        helps.select('Required options').after('-v',
-            ('--version', '[BOOL]', 'Show the version.'))
-
-    params._helpx = helpx
-    print(params._parse())
+    from pyparam import Params
+    params = Params(prog='pyparam')
+    params.add_param('i')
+    params.print_help()
     ```
 
-    ![helpx][16]
+    DESCRIPTION:
+      No description
 
-- Section, non-option item and item description selector
+    USAGE:
+      pyparam [OPTIONS]
 
-    You can select a selctor or non-option item using handy selector here. A selector can be:
+    OPTIONAL OPTIONS:
+      -i <AUTO>                        - No description. Default: None
 
-    1. A regular expression compiled by `re.compile`
-    2. A `perl` like regular expression, starting and ending with `/`
-    3. A substring of the item
+- Adding a section
+    ```python
+    from pyparam import Params
+    from pyparam.help import HelpSectionPlain
+    def help_callback(assembled):
+        assembled.SEE = HelpSectionPlain(
+            ['See: https://github.com/pwwang/pyparam']
+        )
 
-    !!! Note
+    params = Params(prog='pyparam', help_callback=help_callback)
+    # add paramters and print help
+    ```
 
-        It's case-insensitive for 2 and 3. You may compile a regex by yourself with `re.compile(..., re.I)` to get a case-insenstive selector.
-        The first item that matched will be returned.
+    ```
+    DESCRIPTION:
+      No description
 
-- Option selector
+    USAGE:
+      pyparam [OPTIONS]
 
-    It's a little bit different for option selectors. It only search again the option names.
-    - If a selector is of type 1 and 2 abovementioned, then the whole option name is to be searched. For example, `r'/-o, .*--output/'` will match `'-o, --out, --output'`.
-    - While if you are using substring selector, then it's different. It first tokenizes the option names by `, ` and then search agaist each one with or without the prefix. For example, `'--out'` or `'out'` will match  `'-o, --out, --output'` but `'-out'` will not.
+    OPTIONAL OPTIONS:
+      -i <AUTO>                        - No description. Default: None
 
-    !!! Hint
+    SEE:
+      See: https://github.com/pwwang/pyparam
+    ```
 
-        Selectors can be used while removing, selecting, editing and adding before, after an item.
+    You can also insert a section to a certain position:
+    ```python
+    assembled.insert(0, "SEE", HelpSectionPlain(...))
+    # or insert before or after a section
+    assembled.insert_after('DESCRIPTION', "SEE", HelpSectionPlain(...))
+    ```
+
+    To add a option section (with option name, type and descriptions):
+    ```python
+    from pyparam.help import HelpSectionOption
+    def help_callback(assembled):
+        assembled['EXTRA OPTIONS'] = HelpSectionOption([
+            (['-i, --int <INT>'], ['An int paramter', 'Default: 0']),
+            (['-f, --float <FLOAT>'], ['An float paramter', 'Default: 0.0']),
+        ])
+    ```
+
+- Removing a section:
+    ```python
+    del assembled['DESCRIPTION']
+    ```
+
+- Modify a section:
+    ```python
+    # it is just a list!
+    assembled.DESCRIPTION[0] = 'Awesome program!'
+    ```
+
+    ```
+    DESCRIPTION:
+      Awesome progrom!
+
+    USAGE:
+      pyparam [OPTIONS]
+
+    OPTIONAL OPTIONS:
+      -i <AUTO>                        - No description. Default: None
+    ```
+
+## Changing the size of help page
+
+Default sizes of the help page are defined in `pyparam.defaults`.
+
+To change them:
+```python
+from pyparam import defaults
+
+# Total width of the help page
+# change it to None to spread the help page with full terminal width
+defaults.CONSOLE_WIDTH = 100
+# indention for the contents of each section
+defaults.HELP_SECTION_INDENT = 2
+# The width of the name/type part in HelpSectionOption
+defaults.HELP_OPTION_WIDTH = 34
+# For exapmle:
+#     OPTIONAL OPTIONS:
+#       -i, --int <INT>                  - An integer argument. Default: 0
+#     |<-------------------------- CONSOLE_WIDTH ----------------------------------->|
+#   ->||<-  HELP_SECTION_INDENT
+#     |<----- HELP_OPTION_WIDTH ------->|
+```
+
+## Theming
+
+For now, there are two builtin themes: `default` (default theme) and `synthware`.
+The `synthware` is from the vscode theme `synthware' 84`, and using some color combinations from there.
+
+You can specify your own theme by:
+```python
+from rith.theme import Theme
+params = Params(..., theme=Theme({
+    # The section title
+    'title': "bold cyan",
+    # Highlight program name
+    'prog': "bold green",
+    # Highlight default value in parameter description
+    'default': "magenta",
+    # Highlight option names
+    'optname': "bright_green",
+    # Highlight option types when type overwriting is enabled
+    'opttype': "blue italic",
+    # Highlight option types when it is disabled
+    'opttype_frozen': "blue"
+}))
+```
+
+See more details in [rich's documentation][2].
 
 
-[1]: https://raw.githubusercontent.com/pwwang/pyparam/master/docs/static/help.png
-[13]: https://raw.githubusercontent.com/pwwang/pyparam/master/docs/static/theme_blue.png
-[14]: https://raw.githubusercontent.com/pwwang/pyparam/master/docs/static/theme_plain.png
-[15]: https://raw.githubusercontent.com/pwwang/pyparam/master/docs/static/theme_custom.png
-[16]: https://raw.githubusercontent.com/pwwang/pyparam/master/docs/static/helpx.png
+[1]: https://github.com/pwwang/diot
+[2]: https://rich.readthedocs.io/en/latest/style.html#style-themes

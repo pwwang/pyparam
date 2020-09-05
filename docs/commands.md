@@ -1,79 +1,79 @@
-## An example
-`examples/subcommands.py`
+
+## Root command
+
+Root command is instantiated like `params = Params(...)`, and sub-commands are added like `params.add_command(...)`. Both root command and sub-commands are objects of class `Params`.
+
+Root command doesn't have names, but it does have `prog` to define the program name:
 ```python
-from pyparam import commands
-# default global options proxy name '_'
-commands._.shell      = 'auto'
-commands._.shell.desc = [
-	'The shell, one of bash, fish, zsh and auto.',
-	'Shell will be detected from `os.environ["SHELL"]` if auto.',
-]
-commands._.auto      = False
-commands._.auto.desc = [
-	'Automatically write completions to destination file.',
-	'Bash: `~/bash_completion.d/<name>.bash-completion`',
-	'  Also try to source it in ~/.bash_completion',
-	'Fish: `~/.config/fish/completions/<name>.fish`',
-	'Zsh:  `~/.zfunc/_<name>`',
-	'  `fpath+=~/.zfunc` is ensured to add before `compinit`'
-]
-commands._.a         = commands._.auto
-commands._.s         = commands._.shell
-# description for the command
-commands.self        = 'Generate completions for myself.'
-# we don't have any required options for command 'self'
-commands.self._hbald = False
-commands.generate    = 'Generate completions from configuration files'
-# define an option for command 'generate'
-commands.generate.config.desc = [
-	'The configuration file. Scheme should be aligned following json data:',
-	'{',
-	'	"program": {',
-	'		"name": "program",',
-	'		"desc": "A program",',
-	'		"options": {',
-	'			"-o": "Output file",',
-	'			"--output": "Long version of -o"',
-	'		}',
-	'	},',
-	'	"commands": {',
-	'		"list": {',
-	'			"desc": "List commands",',
-	'			"options": {',
-	'				"-a": "List all commands",',
-	'				"--all": "List all commands"',
-	'			}',
-	'		}',
-	'	}',
-	'}',
-	'',
-	'Configuration file that is supported by `python-simpleconf` is supported.'
-]
-commands.generate.config.required = True
-# alias
-commands.generate.c = commands.generate.config
-command, options, goptions = commands._parse()
-print(command, options, goptions)
+params = Params(..., prog='pyparam')
 ```
+If not given, `sys.argv[0]` will be used.
 
-![subcommand][12]
+`prog` will be used to format the description and the usage of the program.
+
+### Description
+
+Like paramter description, you can provide a single string or a list of strings as the description. And it acts the same as the paramter description in terms of differences between single string and list of strings.
+
+You can also code blocks as we do for parameter descriptions. See [Parameter descriptions](../TypesOfParams/#parameter-descriptions).
+
+### Usage
+
+You can specify some example usages for the program. A single string or list of strings acts as the description. You can also use `{prog}` as a placeholder for the program name.
+
+By default, `pyparam` generates default usages for the program. It literally list all the required parameters and merge all optional ones as `[OPTIONS]`.
+
+## Sub-commands
+
+Sub-commands act very similarly as the root command. But unlike the root command, they do have names, which are used from themselves to be detected from the command line. A typical way to add a command is: `params.add_command('command, command_alias', ...)` or `pyparam.add_command(['command', 'command_alias'], ...)`
+
+A sub-command can have sub-commands, too. Just add some commands to the sub-command:
 ```python
-> python examples/subcommands.py generate -sfish -a -c some.json
-('generate',  # command
- {'config': 'some.json', 'c': 'some.json',
-  'shell': 'fish', 'auto': True, 'a': True, 's': 'fish'}, # command options
- {'h': False, 'help': False, 'H': False, 'shell': 'fish',
-  'auto': True, 'a': True, 's': 'fish'} # global options
+command1 = params.add_command('cmd1, command1', ...)
+subcommand1 = command1.add_command('subcmd1, subcommand1', ...)
 ```
 
-## Inheritage of global options
-As you may see from the results, the parameters from global options are inherited in the command options. This allows the users to pass the global options after the command:
-```shell
-python examples/subcommands.py self --shell fish --auto
+You don't have to call `parse()` for sub-commands, the root command will do it once `params.parse()` is called. All descades of sub-commands' `parse()` method will be called automatically.
+
+The attribute `prog` for a sub-command is its parent command's prog plus `[OPTIONS]` if any and plus the longest name of the sub-command. You can replace this by `params.add_command(..., prog='prog command')`.
+
+Their attributes are independent of their parent command, but once absence, they will be inherited from the parent command. For example:
+```python
+params = Params(..., prefix='+')
+command = params.add_command('command')
+# command == '+'
 ```
-However, you may turn this off `commands._inherit = False`, then the only way to pass the global options is to put them before the command:
-```shell
-python examples/subcommands.py --shell fish --auto self
+You can change this by:
+```python
+params = Params(..., prefix='+')
+command = params.add_command('command', prefix='-')
+```
+Then with the parameters being added:
+```python
+params.add_param('i')
+command.add_param('i')
+parsed = params.parse()
+```
+This:
+```sh
+$ prog +i 1 command -i 2
+```
+will produce
+```
+Namespace(__command__='command',
+		  i=1,
+		  command=Namespace(i=2))
 ```
 
-[12]: https://raw.githubusercontent.com/pwwang/pyparam/master/docs/static/subcommand.png
+## Help command
+
+One can invoke sub-command's help page by:
+```sh
+prog help command
+```
+Where help is also a sub-command, which means you can invoke the help page of the help sub-command.
+
+You can change the default help command by `params.add_command(..., help_cmds='show')`. Then the invoke command is like:
+```sh
+prog show command
+```

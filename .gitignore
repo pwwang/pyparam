@@ -136,4 +136,10 @@ poetry.lock
 # backup file
 *.bak
 
+# will be copied from top level
+docs/index.md
+docs/README.md
+docs/pyparam-help.png
+docs/api/
+
 # End of https://www.gitignore.io/api/python
