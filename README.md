@@ -1,5 +1,5 @@
 # pyparam
-[![pypi][1]][2] [![pypi][10]][11] [![codacy quality][4]][6] [![codacy quality][7]][6] ![github action][3] ![pyver][8]
+[![pypi][1]][2] [![pypi][10]][11] [![codacy quality][4]][6] [![codacy quality][7]][6] [![docs][12]][5] ![github action][3] ![pyver][8]
 
 Powerful parameter processing
 
@@ -125,3 +125,4 @@ $ python -m pyparam
 [9]: https://raw.githubusercontent.com/pwwang/pyparam/master/docs/static/help.png
 [10]: https://img.shields.io/github/tag/pwwang/pyparam.svg?style=flat-square
 [11]: https://github.com/pwwang/pyparam
+[12]: https://img.shields.io/github/workflow/status/pwwang/pyparam/Build%20Docs?label=docs&style=flat-square
