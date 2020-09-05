@@ -1,3 +1,6 @@
+## 0.2.6
+- Final version of 0.2.x
+
 ## 0.2.5
 - Change API to camel_case style
 
