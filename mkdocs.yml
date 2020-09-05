@@ -1,5 +1,9 @@
 site_name: pyparam
 theme:
+    palette:
+      primary: blue grey
+    favicon: favicon.png
+    logo: favicon.png
     name: 'material'
     # font:
     #   text: 'Ubuntu'
