@@ -10,6 +10,7 @@ from typing import (
     Tuple,
     Dict
 )
+from pathlib import Path
 from diot import OrderedDiot
 import rich
 from simpleconf import Config, LOADERS
@@ -829,6 +830,7 @@ class Params: # pylint: disable=too-many-instance-attributes
                  names: Union[str, List[str], 'ParamPath'],
                  desc: Union[str, List[str]] = "The configuration file.",
                  group: Optional[str] = None,
+                 default: Optional[Union[str, Path]] = None,
                  args: Optional[List[str]] = None):
         """Load parameters from the file specified by naargument
         from command line
@@ -843,12 +845,13 @@ class Params: # pylint: disable=too-many-instance-attributes
                 arguments are ignored
             desc: The description of the parameter
             group: The group of the parameter
+            default: The default value of the file path
             args: The list of items to parse, otherwise
                 parse sys.argv[1:]
         """
         if isinstance(names, (str, list)):
             param: "ParamPath" = self.add_param(
-                names, desc=desc, group=group, type='path'
+                names, desc=desc, group=group, type='path', default=default
             )
         else:
             param: "ParamPath" = names
@@ -865,6 +868,11 @@ class Params: # pylint: disable=too-many-instance-attributes
                 if i < len(args) - 1:
                     args_with_the_arg.append(args[i+1])
                 break
+        filepath: Optional[Union[str, Path]] = (
+            args_with_the_arg[1]
+            if len(args_with_the_arg) > 1
+            else param.value
+        )
 
-        if len(args_with_the_arg) > 1 and args_with_the_arg[1]:
-            self.from_file(args_with_the_arg[1])
+        if filepath:
+            self.from_file(filepath)
