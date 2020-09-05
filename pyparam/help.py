@@ -34,6 +34,14 @@ THEMES: Dict[str, Theme] = dict(
         opttype="blue italic",
         opttype_frozen="blue"
     )),
+    synthware=Theme(dict(
+        title="bold magenta",
+        prog="bold yellow",
+        default="cyan",
+        optname="bright_yellow",
+        opttype="bright_red italic",
+        opttype_frozen="bright_red"
+    ))
 )
 
 # pylint: disable=too-few-public-methods

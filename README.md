@@ -111,7 +111,6 @@ $ python -m pyparam
 ```
 
 ## TODO
-- [ ] More builtin themes for help page
 - [ ] Shell completion.
 
 

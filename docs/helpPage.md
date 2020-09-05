@@ -132,8 +132,10 @@ defaults.HELP_OPTION_WIDTH = 34
 
 ## Theming
 
-For now, there is one builtin theme: `default` (more to come).
-But you can specify your own theme by:
+For now, there are two builtin themes: `default` (default theme) and `synthware`.
+The `synthware` is from the vscode theme `synthware' 84`, and using some color combinations from there.
+
+You can specify your own theme by:
 ```python
 from rith.theme import Theme
 params = Params(..., theme=Theme({
