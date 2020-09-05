@@ -774,8 +774,12 @@ class ParamChoice(Param):
         val = super()._value()
 
         if val not in self._kwargs['choices']:
-            raise PyParamValueError(f"{val} is not "
-                                    f"one of {self._kwargs['choices']}")
+            if val is None:
+                val = self._kwargs['choices'][0]
+            else:
+                raise PyParamValueError(
+                    f"{val} is not one of {self._kwargs['choices']}"
+                )
 
         self._stack = []
         return val

@@ -283,6 +283,10 @@ def test_paramchoice():
     with pytest.raises(PyParamValueError):
         param.value
 
+    param = ParamChoice(['a'], default=None, choices=[3,2,1],
+                        desc=['Description'])
+    assert param.value == 3
+
 def test_paramns():
     param = ParamNamespace(['c', 'config'], default=None, desc=['Description'])
     paramint = ParamInt(['c.a'], default=1, required=True, desc=['Description'])

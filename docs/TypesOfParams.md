@@ -122,10 +122,13 @@ The value will be converted using `json.loads`
 ### choice paramter
 
 Alias: `c`
-Default value if not specified: `None` (There will be an error if `None` is not one of the choices)
+Default value if not specified: The first element of `choices`
 
 The value is required to be one of the given values. To provide choices to choose:
-`params.add_param('choice', choices=["small", "medium", "large"], default="medium")`
+
+`params.add_param('choice', choices=["small", "medium", "large"])`
+
+Default is `small` if not provided.
 
 ### list paramter
 
