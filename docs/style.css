@@ -36,6 +36,8 @@
 .md-typeset pre>code {
     overflow: visible;
     line-height: 1.2;
+}
+.mkapi-docstring .md-typeset pre>code {
     font-size: 0.1rem !important;
 }
 .mkapi-section-name.bases {
