@@ -17,7 +17,7 @@ Attributes:
     HELP_OPTION_WIDTH: The width that the option name and type take up in
         the help page.
 """
-from typing import Dict
+from typing import Dict, Optional
 
 POSITIONAL: str = ''
 
@@ -27,8 +27,8 @@ POSITIONAL: str = ''
 #     list[<single/complex value type>], ns
 TYPE_NAMES: Dict[str, str] = {}
 
-CONSOLE_WIDTH: int = 80
-# indention for each section
+CONSOLE_WIDTH: Optional[int] = 80
+# indention for the contents of each section
 HELP_SECTION_INDENT: int = 2
 # The width of the options in help
 HELP_OPTION_WIDTH: int = 34

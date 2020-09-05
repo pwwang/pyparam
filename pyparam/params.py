@@ -219,7 +219,7 @@ class Params: # pylint: disable=too-many-instance-attributes
             callback: Callback to convert parsed values
             group: The group this parameter belongs to.
                 Arguments will be grouped by this on the help page.
-            force: Whether to force adding paramter if it exists
+            force: Whether to force adding parameter if it exists
             type_frozen: Whether allow type overwritting from
                 the commone line
             argname_shorten: Whether show shortened name for parameter
@@ -275,7 +275,7 @@ class Params: # pylint: disable=too-many-instance-attributes
                 # check if parameter has been added
                 if not force and (name in self.params or name in self.commands):
                     raise PyParamNameError(
-                        f"Argument {name} has already been added."
+                        f"Argument {name!r} has already been added."
                     )
                 self.params[name] = param
 
@@ -373,7 +373,7 @@ class Params: # pylint: disable=too-many-instance-attributes
 
     def values(self,
                namespace: Optional[Namespace] = None) -> Optional[Namespace]:
-        """Get a namespace of all paramter name => value pairs or attach them
+        """Get a namespace of all parameter name => value pairs or attach them
         to the given namespace
 
         Args:
@@ -636,7 +636,7 @@ class Params: # pylint: disable=too-many-instance-attributes
             arg: arg to check
 
         Returns:
-            tuple (Param, str, str, str): The matched parameter, parameter name,
+            The matched parameter, parameter name,
                 type and unpushed value if matched.
                 Otherwise, None, param_name, param_type and arg itself.
         """
@@ -660,13 +660,13 @@ class Params: # pylint: disable=too-many-instance-attributes
                 else None
             )
 
-        elif not param_type and len(self.prefix) == 1:
+        elif not param_type and len(self.prefix) <= 1:
             # say prefix = '+'
             # then `a1` for `+a1` will be put as param_name, since
             # there is no restriction on name length
             name_with_attached = (
                 self.prefix + param_name
-                if param_name and not param_name.startswith(self.prefix)
+                if param_name and param_name[:1] != self.prefix
                 else None
             )
 
@@ -679,6 +679,8 @@ class Params: # pylint: disable=too-many-instance-attributes
                     name_with_attached, self.prefix, allow_attached=True
                 )
             )
+            print(param_name, param_type, param_value)
+            print(param_name2, param_type2, param_value2)
             # Use them only if we found a param_name2 and
             # arbitrary: not previous param_name found
             # otherwise: parameter with param_name2 exists
@@ -686,6 +688,7 @@ class Params: # pylint: disable=too-many-instance-attributes
                     (self.arbitrary and param_name is None) or
                     self.get_param(param_name2)
             ):
+                print(33)
                 param_name, param_type, param_value = (
                     param_name2, param_type2, param_value2
                 )
@@ -826,12 +829,11 @@ class Params: # pylint: disable=too-many-instance-attributes
                  names: Union[str, List[str], 'ParamPath'],
                  desc: Union[str, List[str]] = "The configuration file.",
                  group: Optional[str] = None,
-                 args: Optional[List[str]] = None,
-                 required: bool = True):
+                 args: Optional[List[str]] = None):
         """Load parameters from the file specified by naargument
         from command line
 
-        This will load the paramters from the file given by the argument,
+        This will load the parameters from the file given by the argument,
         ignoring other arguments from the command line. One can overwrite
         some of them afterwards, and do the parsing finally.
 
@@ -841,13 +843,12 @@ class Params: # pylint: disable=too-many-instance-attributes
                 arguments are ignored
             desc: The description of the parameter
             group: The group of the parameter
-            required: Whether this argument is required
             args: The list of items to parse, otherwise
                 parse sys.argv[1:]
         """
         if isinstance(names, (str, list)):
             param: "ParamPath" = self.add_param(
-                names, desc=desc, required=required, group=group, type='path'
+                names, desc=desc, group=group, type='path'
             )
         else:
             param: "ParamPath" = names

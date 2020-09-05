@@ -1,62 +1,39 @@
-## Accessing the values
 
-You actually don't need to use the return values from `params._parse()`. You can access the values via `params` itself.
+The parsed values by `params.parse()` or `params.values()` are attached to a namespace. Yes, `argparse`'s `Namespace`. So this will be true:
 
 ```python
-from pyparam import params
-params.a = 1
-params._parse()
+from argparse import Namespace
+from params import Params
+params.add_param('i', default=1)
+values = params.values()
 
-# -a 2
-assert params.a.value == 2
+isinstance(values, Namespace)
 ```
 
-## Casting the values
-If the value is a `str`, you can try to cast into different types using:
+However, it is not exactly the same, meaning this is NOT true:
 ```python
-# assume
-# params.a.value == '1'
-
-assert params.a.int() == 1
-assert params.a.float() == 1.0
-assert params.a.bool() == True
-assert params.a.str() == '1'
+from argparse import Namespace as APNamespace
+from params import PMNamespace
+PMNamespace is APNamespace
 ```
 
-## Str methods
-You may also use some methods of `str` directly:
-```python
-# assume
-# params.a.value == 'abcdefg'
+But `PMNamespace` is a subclass of `APNamespace`, with following functionalities being added:
 
-assert params.a + 'hij' == 'abcdefghij'
-assert 'abc' in params.a
-assert params.a.capitalize() == 'Abcdefg'
-assert params.a.count('a') == 1
-assert params.a.islower() == True
-assert params.a.find('b') == 1
-assert params.a.upper()  == 'ABCDEFG'
-... ...
-```
+- Subscription:
+    ```python
+    ns = PMNamespace()
+    ns['a'] = 1
+    ns['a'] == 1
+    ```
 
-## Using a different wrapper for parsed values
-```python
-# python-box
-from box import Box
-from pyparam import params
-params.a = {}
+- Length:
+    ```python
+    len(ns['a']) == 1
+    ```
 
-ret = params._parse(['-a.b.c.d', '1'], dict_wrapper = Box)
-assert ret.a.b.c.d == 1
-```
+- Key existence detection:
+    ```python
+    'a' in ns is True
+    ```
 
-## Using multiple params instances
-You may want multiple `params` to store parameters from different sources, or for different uses.
-```python
-from pyparam import Params
-
-params1 = Params()
-params1._loadFile('config1')
-params2 = Params()
-params2._loadFile('config2')
-```
+You can turn a namespace into a dictionary by `vars(ns)`. However, if you want to turned all the namespaces inside into dictionaries, you may need to do it recursively.

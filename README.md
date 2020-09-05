@@ -110,9 +110,8 @@ Try more features with:
 $ python -m pyparam
 ```
 
-## TODO:
-- [ ] More themes for help page
-- [ ] More flexible and handy API for help page manipulation.
+## TODO
+- [ ] More builtin themes for help page
 - [ ] Shell completion.
 
 

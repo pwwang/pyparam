@@ -16,13 +16,12 @@ plugins:
 extra_css:
     - style.css
 nav:
-    - 'index.md'
+    - 'Home': 'index.md'
     - 'Defining parameters': 'TypesOfParams.md'
+    - 'Commands': 'commands.md'
     - 'Parsing from command line': 'fromCommandline.md'
-    - 'Shell completions': 'shellCompletions.md'
+    - 'Loading from dict/config file': 'fromDict.md'
     - 'Help page': 'helpPage.md'
-    - 'From dict/configuration': 'fromDict.md'
-    - 'Subcommands': 'commands.md'
-    - 'Using the values': 'useTheValues.md'
+    - 'Using the parsed values': 'useTheValues.md'
     - 'API': mkapi/api/pyparam
     - 'Change log': 'changeLog.md'

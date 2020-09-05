@@ -40,13 +40,13 @@ predefined.add_param('i, int', required=True, type=int, desc=[
     "You can also try the short name with attached value: `-i1`.",
     "Negative values should be passed using `=`: ",
     "`-i-1` or `--int=-1`",
-    "Same for other values starting with `-`"
+    "Same for other values starting with `-`. Default: 0"
 ])
 predefined.add_param('f, float', type_frozen=False, type=float, desc=[
     "An argument whose value will be casted into float.",
     "You can also try `--float=1e-3`",
     "You can even overwrite the type of the argument from command line by "
-    "`--float:int 1`"
+    "`--float:int=1`"
 ])
 predefined.add_param('b, bool', type=bool, desc=[
     "A boolean/flag argument. ",
@@ -57,7 +57,7 @@ predefined.add_param('c, count', max=3, type='count', desc=[
     "A count argument, you can do -c, -cc, -ccc, etc.",
     "It must have a short name (`c` here for example). ",
     "You can also use it like an integer argument with long name. "
-    "For example: `--count 3`",
+    "For example: --count 3",
     "The default value has to be `0` if specified. A max value can also "
     "be defined while adding this argument."
 ])
@@ -69,7 +69,7 @@ predefined.add_param('auto', desc=[
     "'False', 'FALSE', 'false' => False",
     "'1', '2', '-1' => int",
     "'1.1', '2.0', '-1.0' => float",
-    "'{\"a\": 1}' => {\"a\": 1} # json",
+    "'{{\"a\": 1}}' => {{\"a\": 1}} # json",
     "```",
     "If you don't want the value to be casted. Declare the argument with "
     "type `str`"
@@ -105,7 +105,7 @@ predefined.add_param("choice", type="choice", desc=[
     "Callback can also be apply to modify the value:",
     ">>> def callback(value, all_values):",
     ">>>    # Use the value of argument '--str'",
-    ">>>    return f'{value} {all_values.str}'"
+    ">>>    return f'{{value}} {{all_values.str}}'"
 ], choices=[
     "small", "medium", "large"
 ], default="medium", callback=(lambda value, all_values:
@@ -113,12 +113,14 @@ predefined.add_param("choice", type="choice", desc=[
 predefined.add_param("list", default=[1, 2, 3], type=list, desc=[
     "List/Array argument.",
     "You can pass the values one by one like this: `--list 1 2 3`.",
-    "Or like this: `--list 1 --list 2 --list 3`.",
+    "Or like this: --list 1 --list 2 --list 3",
     "List argument is incremental, meaning the values will be added to "
-    "the values. To stop doing that, you can direct users to reset it using "
-    "`--list:reset 4 5 6` or `--list:reset 4 --list 5 --list 6`",
+    "the values. To stop doing that, you can direct users to reset it using: ",
+    "`--list:reset 4 5 6` or ",
+    "`--list:reset 4 --list 5 --list 6`",
     "You can also set a subtype for list elements, including the scalar types. "
-    "For exapmle: `--list:list:bool 0 1 0` will produce `[False, True, False]`."
+    "For exapmle: ",
+    "`--list:list:bool 0 1 0` will produce [False, True, False]."
 ])
 
 nsparams = params.add_command(

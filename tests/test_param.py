@@ -118,6 +118,11 @@ def test_subtype():
                       desc=['Description'], subtype='int')
     assert param.typestr() == 'list:int'
 
+def test_desc_error():
+    a = ParamInt('a', default=1, desc=['{xyz}'])
+    with pytest.raises(PyParamException):
+        a.desc
+
 def test_desc_with_default():
     param = ParamList(['a'], default=[1], desc=['Description.'])
     assert param.desc_with_default == ['Description. Default: [1]']

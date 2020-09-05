@@ -17,9 +17,8 @@ from typing import (
 from diot import OrderedDiot, Diot
 from rich import box#, print
 from rich.table import Table
-from rich.columns import Columns
 from rich.padding import Padding
-from rich.console import Console, RenderResult
+from rich.console import Console, RenderResult, RenderGroup
 from rich.theme import Theme
 from rich.text import Text
 from rich.highlighter import RegexHighlighter
@@ -99,8 +98,7 @@ class HelpSection(list):
                                               defaults.HELP_SECTION_INDENT))
             else:
                 yield Padding(
-                    Columns([self._highlight(item,
-                                             console.meta.highlighters.prog)]),
+                    self._highlight(item, console.meta.highlighters.prog),
                     (0, 0, 0, defaults.HELP_SECTION_INDENT)
                 )
 
@@ -132,8 +130,8 @@ class HelpSectionUsage(HelpSectionPlain):
             usages = self._wrap_usage(line,
                                       console.meta.prog,
                                       console.meta.highlighters.prog)
-            for usage in usages:
-                yield Columns([usage])
+
+            yield RenderGroup(*usages)
 
 class HelpSectionOption(HelpSection):
     """Options section in help"""
@@ -251,16 +249,16 @@ class HelpSectionOption(HelpSection):
                          defaults.HELP_OPTION_WIDTH - 1)
         for param_opts, param_descs in self:
             table.add_row(
-                Columns(self._wrap_opts(
+                RenderGroup(*self._wrap_opts(
                     param_opts,
                     console.meta.highlighters.optname,
                     console.meta.highlighters.opttype
                 )),
                 Text('-', justify='left'),
-                Columns(self._wrap_descs(
+                RenderGroup(*self._wrap_descs(
                     param_descs or [],
                     console.meta.highlighters.default
-                ), padding=(0, 0, 0, 1))
+                ))
             )
         yield table
 

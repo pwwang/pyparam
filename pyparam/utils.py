@@ -1,4 +1,8 @@
-"""Utilities for pyparam"""
+"""Utilities for pyparam
+
+Attributes:
+    logger: The logger
+"""
 import logging
 import ast
 import json
@@ -120,7 +124,7 @@ class Codeblock:
                 Defaults should not be scanned as code blocks
 
         Returns:
-            tuple (list, Codeblock): mixed text and unclosed code blocks
+            mixed text and unclosed code blocks
         """
         sep: Optional[str] = (
             'Default:' if 'Default:' in maybe_codeblock
@@ -323,7 +327,7 @@ def parse_potential_argument(
             '-b' with value '1' or the entire one is parsed as argument '-b1'
 
     Returns:
-        tuple (str, str, str): the argument name, type and value
+        The argument name, type and value
             When arg cannot be parsed as an argument, argument name and type
             will both be None. arg will be returned as argument value.
     """
@@ -343,12 +347,16 @@ def parse_potential_argument(
     # detach the value for -b1
     if allow_attached:
         single_prefix: str = '-' if prefix == 'auto' else prefix
+        len_spref: int = len(single_prefix)
         if (item_type is None and item_value is None and (
-                item_name[:1] == single_prefix and
-                item_name[1:2] != single_prefix
+                item_name.startswith(single_prefix) and
+                item_name[len_spref:len_spref+1] != single_prefix
         )):
             # Type: str, str
-            item_name, item_value = item_name[:2], item_name[2:]
+            item_name, item_value = (
+                single_prefix + item_name[len_spref:len_spref+1],
+                item_name[len_spref+1:]
+            )
 
     # remove prefix in item_name
     if prefix == 'auto':
@@ -357,7 +365,7 @@ def parse_potential_argument(
                   else '--' if len(item_name_first) >= 4
                   else None)
 
-    if prefix and item_name.startswith(prefix):
+    if prefix is not None and item_name.startswith(prefix):
         item_name = item_name[len(prefix):]
     else:
         return None, None, arg
@@ -409,9 +417,9 @@ def _cast_auto(value: Any) -> Any:
         value casted
     """
     # pylint: disable=too-many-return-statements
-    if value in ("True", "TRUE", "true", 1, True):
+    if value in ("True", "TRUE", "true") or value is True:
         return True
-    if value in ("False", "FALSE", "false", 0, False):
+    if value in ("False", "FALSE", "false") or value is False:
         return False
 
     try:
@@ -472,5 +480,5 @@ def cast_to(value: Any, to_type: str) -> Any:
 
 # pylint: disable=invalid-name
 logger = logging.getLogger(__name__)
-logger.setLevel(logging.DEBUG)
+logger.setLevel(logging.INFO)
 logger.addHandler(RichHandler(show_time=False, show_path=False))

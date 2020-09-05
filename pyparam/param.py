@@ -18,9 +18,10 @@ from diot import OrderedDiot
 from .utils import cast_to, parse_type, logger, TYPE_NAMES, Namespace
 from .defaults import POSITIONAL
 from .exceptions import (
+    PyParamException,
     PyParamValueError,
     PyParamTypeError,
-    PyParamNameError
+    PyParamNameError,
 )
 
 PARAM_MAPPINGS: Dict[str, Type['Param']] = {}
@@ -244,7 +245,23 @@ class Param:
                 not callable(val))
         }
         format_data.update(self._kwargs)
-        return [description.format(**format_data) for description in self._desc]
+        ret: List[str] = []
+        for descr in self._desc:
+            try:
+                descr = descr.format(**format_data)
+            except KeyError as kerr:
+                raise PyParamException(
+                    f'Description of {self.namestr()!r} is formatting '
+                    'using kwargs from contructor. \n'
+                    'If you have curly braces in it, which is not intended '
+                    'for formatting, please escape it by replacing with '
+                    '`{{` or `}}`:\n'
+                    f'- desc: {descr}\n'
+                    f'- key : {{... {str(kerr)[1:-1]} ...}}'
+                ) from None
+            else:
+                ret.append(descr)
+        return ret
 
     def name(self, which: str, with_prefix: bool = True) -> str:
         """Get the shortest/longest name of the parameter
@@ -332,7 +349,7 @@ class Param:
         """Generate a different type of parameter using current settings
 
         Args:
-            to_type: the type of paramter to generate
+            to_type: the type of parameter to generate
 
         Returns:
             the generated parameter with different type
@@ -666,7 +683,8 @@ class ParamPath(Param):
     type_aliases: List[str] = ['p']
 
     def _value(self) -> Path:
-        return Path(super()._value())
+        val: Optional[Path] = super()._value()
+        return None if val is None else Path(val)
 
 class ParamPy(Param):
     """A parameter whose value will be ast.literal_eval'ed"""
