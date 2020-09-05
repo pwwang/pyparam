@@ -10,11 +10,7 @@ pyparam
 .. image:: https://img.shields.io/github/tag/pwwang/pyparam.svg?style=flat-square
    :target: https://img.shields.io/github/tag/pwwang/pyparam.svg?style=flat-square
    :alt: pypi
- <https://github.com/pwwang/pyparam>`_ 
-.. image:: https://img.shields.io/github/workflow/status/pwwang/pyparam/Build%20and%20Deploy?style=flat-square
-   :target: https://img.shields.io/github/workflow/status/pwwang/pyparam/Build%20and%20Deploy?style=flat-square
-   :alt: github action
- `
+ <https://github.com/pwwang/pyparam>`_ `
 .. image:: https://img.shields.io/codacy/grade/a34b1afaccf84019a6b138d40932d566.svg?style=flat-square
    :target: https://img.shields.io/codacy/grade/a34b1afaccf84019a6b138d40932d566.svg?style=flat-square
    :alt: codacy quality
@@ -22,7 +18,15 @@ pyparam
 .. image:: https://img.shields.io/codacy/coverage/a34b1afaccf84019a6b138d40932d566.svg?style=flat-square
    :target: https://img.shields.io/codacy/coverage/a34b1afaccf84019a6b138d40932d566.svg?style=flat-square
    :alt: codacy quality
- <https://app.codacy.com/project/pwwang/pyparam/dashboard>`_ 
+ <https://app.codacy.com/project/pwwang/pyparam/dashboard>`_ `
+.. image:: https://img.shields.io/github/workflow/status/pwwang/pyparam/Build%20Docs?label=docs&style=flat-square
+   :target: https://img.shields.io/github/workflow/status/pwwang/pyparam/Build%20Docs?label=docs&style=flat-square
+   :alt: docs
+ <https://pwwang.github.io/pyparam/>`_ 
+.. image:: https://img.shields.io/github/workflow/status/pwwang/pyparam/Build%20and%20Deploy?style=flat-square
+   :target: https://img.shields.io/github/workflow/status/pwwang/pyparam/Build%20and%20Deploy?style=flat-square
+   :alt: github action
+ 
 .. image:: https://img.shields.io/pypi/pyversions/pyparam.svg?style=flat-square
    :target: https://img.shields.io/pypi/pyversions/pyparam.svg?style=flat-square
    :alt: pyver
@@ -53,7 +57,7 @@ Installation
 Documentation
 -------------
 
-`https://pwwang.github.io/pyparam/index.html <https://pwwang.github.io/pyparam/index.html>`_
+`https://pwwang.github.io/pyparam/ <https://pwwang.github.io/pyparam/>`_
 
 Basic usage
 -----------
@@ -107,8 +111,8 @@ Try it out:
    $ python example.py
 
 
-.. image:: pyparam-help.png
-   :target: pyparam-help.png
+.. image:: ./pyparam-help.png
+   :target: ./pyparam-help.png
    :alt: help
 
 
@@ -152,9 +156,8 @@ Try more features with:
 
    $ python -m pyparam
 
-TODO:
------
+TODO
+----
 
 
-* [ ] More flexible and handy API for help page manipulation.
 * [ ] Shell completion.
