@@ -749,6 +749,9 @@ class ParamList(Param):
             for sublist in self._stack
             for val in sublist
         ]
+
+        if self.required and not ret:
+            raise PyParamValueError("Argument is required.")
         self._stack = []
         return ret
 

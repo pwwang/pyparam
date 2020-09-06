@@ -267,6 +267,12 @@ def test_paramlist():
     param._value_cached = None
     assert param.value == [3]
 
+def test_paramlist_required():
+    param = ParamList(['a'], type=list, default=None, required=True,
+                      desc=['Description'])
+    with pytest.raises(PyParamValueError):
+        param.value
+
 def test_paramchoice():
     param = ParamChoice(['a'], default=1, choices=[1,2,3], desc=['Description'])
 
