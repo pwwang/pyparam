@@ -700,8 +700,8 @@ class ParamDir(ParamPath):
     """Subclass of ParamPath.
 
     It does not make any difference with pyparam. However, it works differently
-    for completions. The completion items for this param will only give files
-    instead of all paths
+    for completions. The completion items for this param will only give
+    directories instead of all paths
     """
     type: str = 'dir'
     type_aliases: List[str] = []
