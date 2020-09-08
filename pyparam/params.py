@@ -25,10 +25,11 @@ from .utils import (
 from .defaults import POSITIONAL
 from .param import PARAM_MAPPINGS
 from .help import HelpAssembler
+from .completer import Completer
 from .exceptions import PyParamNameError
 
 
-class Params: # pylint: disable=too-many-instance-attributes
+class Params(Completer): # pylint: disable=too-many-instance-attributes
     """Params, served as root params or subcommands
 
     Args:
@@ -109,6 +110,7 @@ class Params: # pylint: disable=too-many-instance-attributes
         self.assembler: HelpAssembler = HelpAssembler(
             self.prog, theme, help_callback
         )
+        super().__init__()
 
     def name(self, which: str = 'short') -> str:
         """Get the shortest/longest name of the parameter
@@ -445,7 +447,12 @@ class Params: # pylint: disable=too-many-instance-attributes
                 desc="Command name to print help for"
             )
 
-        args = sys.argv[1:] if args is None else args
+        if args is None:
+            # enable completion only when we are trying to parse sys.argv
+            if self.comp_shell:
+                print("\n".join(self.complete()))
+                sys.exit(0)
+            args = sys.argv[1:]
 
         if not args and self.help_on_void:
             self.print_help()
@@ -680,8 +687,6 @@ class Params: # pylint: disable=too-many-instance-attributes
                     name_with_attached, self.prefix, allow_attached=True
                 )
             )
-            print(param_name, param_type, param_value)
-            print(param_name2, param_type2, param_value2)
             # Use them only if we found a param_name2 and
             # arbitrary: not previous param_name found
             # otherwise: parameter with param_name2 exists
@@ -689,7 +694,6 @@ class Params: # pylint: disable=too-many-instance-attributes
                     (self.arbitrary and param_name is None) or
                     self.get_param(param_name2)
             ):
-                print(33)
                 param_name, param_type, param_value = (
                     param_name2, param_type2, param_value2
                 )

@@ -1,32 +1,25 @@
-"""Definition of a single parameter"""
+"""Definition of a single parameter
+
+Attributes:
+    PARAM_MAPPINGS: The type to Param mappings, used for params to init a
+        parameter. Managed by `register_param`
+"""
 import ast
 import json
-from typing import (
-    Optional,
-    List,
-    Any,
-    Callable,
-    Type,
-    Dict,
-    Set,
-    Tuple,
-    Union
-)
+from typing import (Optional, List, Any, Callable, Type,
+                    Dict, Set, Tuple, Union, Iterator)
 from itertools import product
 from pathlib import Path
 from diot import OrderedDiot
 from .utils import cast_to, parse_type, logger, TYPE_NAMES, Namespace
 from .defaults import POSITIONAL
-from .exceptions import (
-    PyParamException,
-    PyParamValueError,
-    PyParamTypeError,
-    PyParamNameError,
-)
+from .completer import CompleterParam
+from .exceptions import (PyParamException, PyParamValueError,
+                         PyParamTypeError, PyParamNameError)
 
 PARAM_MAPPINGS: Dict[str, Type['Param']] = {}
 
-class Param:
+class Param(CompleterParam):
     """Base class for parameter
 
     Args:
@@ -75,21 +68,15 @@ class Param:
     def on_register(cls):
         """Opens opportunity to do something when a parameter is registered"""
 
-    def __init__(self, # pylint: disable=too-many-arguments
-                 names: List[str],
-                 default: Any,
-                 desc: Optional[List[str]],
-                 prefix: str = 'auto',
-                 show: bool = True,
-                 required: bool = False,
-                 subtype: Optional[bool] = None,
-                 type_frozen: bool = True,
+    def __init__(self, names: List[str], default: Any,
+                 desc: Optional[List[str]], prefix: str = 'auto',
+                 show: bool = True, required: bool = False,
+                 subtype: Optional[bool] = None, type_frozen: bool = True,
                  callback: Optional[Callable] = None,
-                 argname_shorten: bool = True,
-                 **kwargs: Dict[str, Any]):
+                 argname_shorten: bool = True, **kwargs: Dict[str, Any]):
+        # pylint: disable=too-many-arguments
         """Constructor"""
         self.names: List[str] = names
-
         self.default: Any = default
         self.prefix: str = prefix
         self.show: bool = show
@@ -209,15 +196,11 @@ class Param:
             return self
 
         if self.type_frozen:
-            raise PyParamTypeError(
-                f"Type of argument {self.namestr()!r} "
-                "is not overwritable"
-            )
+            raise PyParamTypeError(f"Type of argument {self.namestr()!r} "
+                                   "is not overwritable")
 
         logger.warning("Type changed from %r to %r for argument %r",
-                       self.typestr(),
-                       param_type,
-                       self.namestr())
+                       self.typestr(), param_type, self.namestr())
         return self.to(param_type)
 
     def consume(self, value: Any) -> bool:
@@ -238,11 +221,8 @@ class Param:
     def desc(self) -> List[str]:
         """The formatted description using attributes and _kwargs"""
         format_data: dict = {
-            key: val
-            for key, val in self.__dict__.items()
-            if (not key.startswith('_') and
-                key != 'desc' and
-                not callable(val))
+            key: val for key, val in self.__dict__.items()
+            if (not key.startswith('_') and key != 'desc' and not callable(val))
         }
         format_data.update(self._kwargs)
         ret: List[str] = []
@@ -277,16 +257,14 @@ class Param:
         Returns:
             The shortest/longest name of the parameter
         """
-        name: str = list(sorted(self.names, key=len))[
-            0 if 'short' in which else -1
-        ]
+        name: str = list(
+            sorted(self.names, key=len)
+        )[0 if 'short' in which else -1]
         if not with_prefix:
             return name
         return self._prefix_name(name)
 
-    def namestr(self,
-                sep: str = ", ",
-                with_prefix: bool = True) -> str:
+    def namestr(self, sep: str = ", ", with_prefix: bool = True) -> str:
         """Get all names connected with a separator.
 
         Args:
@@ -296,10 +274,8 @@ class Param:
             the connected names
         """
         names: list = ['POSITIONAL' if name == POSITIONAL
-                       else self._prefix_name(name)
-                       if with_prefix
-                       else name
-                       for name in sorted(self.names, key=len)]
+                       else self._prefix_name(name) if with_prefix
+                       else name for name in sorted(self.names, key=len)]
         return sep.join(names)
 
     def typestr(self) -> str:
@@ -358,14 +334,9 @@ class Param:
         main_type, sub_type = parse_type(to_type)
         klass: Callable = PARAM_MAPPINGS[main_type]
         param: Type['Param'] = klass(
-            names=self.names,
-            default=None,
-            desc=self.desc,
-            prefix=self.prefix,
-            show=self.show,
-            required=self.required,
-            subtype=sub_type,
-            callback=self.callback
+            names=self.names, default=None, desc=self.desc,
+            prefix=self.prefix, show=self.show, required=self.required,
+            subtype=sub_type, callback=self.callback
         )
         param.ns_param = self.ns_param
         return param
@@ -393,22 +364,18 @@ class Param:
         if self.is_help:
             return self.desc
 
-        if (
-                self.required or (
-                    self.desc and
-                    any("Default:" in desc or "DEFAULT:" in desc
-                        for desc in self.desc)
-                )
-        ):
+        if (self.required or (
+                self.desc and
+                any("Default:" in desc or "DEFAULT:" in desc
+                    for desc in self.desc)
+        )):
             return None if self.desc is None else self.desc[:]
 
         desc: List[str] = self.desc[:] if self.desc else ['']
-
         if desc[0] and not desc[0][-1:].isspace():
             desc[0] += " "
 
         default_str: str = str(self.default) or "''"
-
         desc[0] += f"Default: {default_str}"
         return desc
 
@@ -440,7 +407,6 @@ class Param:
         Returns:
             The parsed value of thie parameter
         """
-
         if not self._stack:
             if self.required:
                 raise PyParamValueError("Argument is required.")
@@ -461,7 +427,6 @@ class Param:
             return self._value_cached
         self._value_cached = self._value()
         return self._value_cached
-
 
     def apply_callback(self, all_values: Namespace) -> Any:
         """Apply the callback function to the value
@@ -492,7 +457,6 @@ class Param:
 
 class ParamAuto(Param):
     """An auto parameter whose value is automatically casted"""
-
     type: str = 'auto'
 
     def _value(self) -> Any:
@@ -591,8 +555,7 @@ class ParamBool(Param):
         try:
             cast_to(value, 'bool')
         except (PyParamValueError, PyParamTypeError):
-            # cannot cast, don't consume
-            return False
+            return False # cannot cast, don't consume
         else:
             self.push(value)
             return True
@@ -604,6 +567,15 @@ class ParamBool(Param):
         ret = cast_to(self._stack[-1][0], 'bool')
         self._stack = []
         return ret
+
+    def complete(self, current: str) -> Optional[Union[str, Iterator[str]]]:
+        # pylint: disable=unused-argument
+        """Get the completion candidates for the current parameter
+
+        Args:
+            current: The current word or prefix under cursor
+        """
+        return ''
 
 class ParamCount(Param):
     """A bool parameter whose value is automatically casted into a bool"""
@@ -643,7 +615,6 @@ class ParamCount(Param):
         if value.isdigit():
             self.push(value)
             return True
-
         return False
 
     def _value(self) -> int:
@@ -662,18 +633,12 @@ class ParamCount(Param):
                     retval = len(val) + 1
                     break
         if retval is None:
-            raise PyParamValueError(
-                "Expect repeated short names or an integer "
-                "as count argument value."
-            )
-        if ('max' in self._kwargs and
-                self._kwargs['max'] and
+            raise PyParamValueError("Expect repeated short names or "
+                                    "an integer as count argument value.")
+        if ('max' in self._kwargs and self._kwargs['max'] and
                 retval > self._kwargs['max']):
-            raise PyParamValueError(
-                f"{retval} is greater than the max of "
-                f"{self._kwargs['max']}."
-            )
-
+            raise PyParamValueError(f"{retval} is greater than "
+                                    f"the max of {self._kwargs['max']}.")
         return retval
 
 class ParamPath(Param):
@@ -686,6 +651,23 @@ class ParamPath(Param):
         val: Optional[Path] = super()._value()
         return None if val is None else Path(val)
 
+    def complete(self, current: str) -> Iterator[str]:
+        """Generate path with given current prefix as completion candidates
+
+        Args:
+            current: The current word or prefix under cursor
+        """
+        if not current:
+            for path in Path().glob('*'):
+                yield path.name + ('/\tDirectory' if path.is_dir()
+                                   else '\t{path.suffix}\tFile')
+        else:
+            current = Path(current)
+            if current.parent.is_dir():
+                for path in current.parent.glob('*'):
+                    if path.name.startswith(current.name):
+                        yield str(path) + ('/' if path.is_dir() else '')
+
 class ParamFile(ParamPath):
     """Subclass of ParamPath.
 
@@ -696,6 +678,25 @@ class ParamFile(ParamPath):
     type: str = 'file'
     type_aliases: List[str] = []
 
+    def complete(self, current: str) -> Iterator[str]:
+        """Generate file paths with given current prefix
+        as completion candidates
+
+        Args:
+            current: The current word or prefix under cursor
+        """
+        if not current:
+            for path in Path().glob('*'):
+                if path.is_file():
+                    yield path.name + f'\t{path.suffix}\tFile'
+        else:
+            current = Path(current)
+            if current.parent.is_dir():
+                for path in current.parent.glob('*'):
+                    if path.name.startswith(current.name):
+                        if path.is_file():
+                            yield str(path)
+
 class ParamDir(ParamPath):
     """Subclass of ParamPath.
 
@@ -705,6 +706,24 @@ class ParamDir(ParamPath):
     """
     type: str = 'dir'
     type_aliases: List[str] = []
+
+    def complete(self, current: str) -> Iterator[str]:
+        """Generate dir paths with given current prefix as completion candidates
+
+        Args:
+            current: The current word or prefix under cursor
+        """
+        if not current:
+            for path in Path().glob('*'):
+                if path.is_dir():
+                    yield path.name + '\tDirectory'
+        else:
+            current = Path(current)
+            if current.parent.is_dir():
+                for path in current.parent.glob('*'):
+                    if path.name.startswith(current.name):
+                        if path.is_dir():
+                            yield str(path)
 
 class ParamPy(Param):
     """A parameter whose value will be ast.literal_eval'ed"""
@@ -726,6 +745,7 @@ class ParamList(Param):
     """A parameter whose value is a list"""
     type: str = 'list'
     type_aliases: List[str] = ['l', 'a', 'array']
+    complete_relapse: bool = True
 
     @classmethod
     def on_register(cls):
@@ -747,7 +767,6 @@ class ParamList(Param):
         if param_type == 'reset':
             self._stack = []
             return self
-
         return super().overwrite_type(param_type)
 
     def consume(self, value: str) -> bool:
@@ -764,11 +783,8 @@ class ParamList(Param):
 
     def _value(self) -> List[Any]:
         """Get the value a list parameter"""
-        ret = [
-            cast_to(val, self.subtype)
-            for sublist in self._stack
-            for val in sublist
-        ]
+        ret = [cast_to(val, self.subtype) for sublist in self._stack
+               for val in sublist]
 
         if self.required and not ret:
             raise PyParamValueError("Argument is required.")
@@ -784,28 +800,35 @@ class ParamChoice(Param):
         super().__init__(*args, **kwargs)
 
         if 'choices' not in self._kwargs:
-            raise PyParamValueError(
-                "Argument 'choices' is required for ParamChoice."
-            )
+            raise PyParamValueError("Argument 'choices' is required "
+                                    "for ParamChoice.")
 
         if not isinstance(self._kwargs['choices'], (list, tuple)):
-            raise PyParamValueError(
-                "Argument 'choices' must be a list or a tuple."
-            )
+            raise PyParamValueError("Argument 'choices' must be "
+                                    "a list or a tuple.")
+
+        if not self.required and self.default is None:
+            self.default = self._kwargs['choices'][0]
 
     def _value(self) -> Any:
         val = super()._value()
 
         if val not in self._kwargs['choices']:
-            if val is None:
-                val = self._kwargs['choices'][0]
-            else:
-                raise PyParamValueError(
-                    f"{val} is not one of {self._kwargs['choices']}"
-                )
-
+            raise PyParamValueError(
+                f"{val} is not one of {self._kwargs['choices']}"
+            )
         self._stack = []
         return val
+
+    def complete(self, current: str) -> Iterator[str]:
+        """Generate choices with given current prefix as completion candidates
+
+        Args:
+            current: The current word or prefix under cursor
+        """
+        for choice in self._kwargs['choices']:
+            if choice.startswith(current):
+                yield choice
 
 class ParamNamespace(Param):
     """A pseudo parameter serving as a namespace for parameters under it
@@ -825,25 +848,34 @@ class ParamNamespace(Param):
         ]
         kwargs['default'] = None
         super().__init__(*args, **kwargs)
-        # for my params
-        self._stack = OrderedDiot()
+        self._stack = OrderedDiot() # for my decendents
 
     @property
     def default_group(self) -> str:
         """Get the default group of the parameter"""
-        if any(param.required for param in self._stack.values()):
-            ret: str = 'REQUIRED'
-        else:
-            ret: str = 'OPTIONAL'
+        ret: str = ('REQUIRED'
+                    if any(param.required for param in self._stack.values())
+                    else 'OPTIONAL')
         if not self.ns_param:
             return f'{ret} OPTIONS'
-        return (f'{ret} OPTIONS UNDER '
-                f'{self.ns_param.name("long")}')
+        return f'{ret} OPTIONS UNDER {self.ns_param.name("long")}'
 
     @property
     def desc_with_default(self) -> Optional[List[str]]:
         """Namespace parameters do not have a default value"""
         return self.desc[:]
+
+    @property
+    def decendents(self) -> List[Type['Param']]:
+        """Get all decendents of this namespace parameter"""
+        ret: List[Type['Param']] = []
+        ret_append: Callable = ret.append
+        for param in self._stack.values():
+            if param not in ret:
+                ret_append(param)
+            if isinstance(param, ParamNamespace):
+                ret.extend(param.decendents)
+        return ret
 
     def consume(self, value: str) -> bool:
         """Should I consume given parameter?"""
@@ -919,7 +951,6 @@ class ParamNamespace(Param):
             if param_name not in val:
                 for name in param.terminals:
                     val[name] = param.value
-
         return val
 
     def apply_callback(self, all_values: Namespace) -> Any:
@@ -954,25 +985,14 @@ def register_param(param: Param) -> None:
     """
     for alias in param.type_aliases + [param.type]:
         if alias in TYPE_NAMES:
-            raise PyParamNameError(
-                f'Type name has already been registered: {alias}'
-            )
+            raise PyParamNameError('Type name has already been '
+                                   f'registered: {alias}')
         TYPE_NAMES[alias] = param.type
 
     PARAM_MAPPINGS[param.type] = param
     param.on_register()
 
-register_param(ParamAuto)
-register_param(ParamInt)
-register_param(ParamStr)
-register_param(ParamFloat)
-register_param(ParamBool)
-register_param(ParamCount)
-register_param(ParamPath)
-register_param(ParamFile)
-register_param(ParamDir)
-register_param(ParamPy)
-register_param(ParamJson)
-register_param(ParamList)
-register_param(ParamChoice)
-register_param(ParamNamespace)
+for param_class in (ParamAuto, ParamInt, ParamStr, ParamFloat, ParamBool,
+                    ParamCount, ParamPath, ParamFile, ParamDir, ParamPy,
+                    ParamJson, ParamList, ParamChoice, ParamNamespace):
+    register_param(param_class)

@@ -1,5 +1,7 @@
 """For users to test arbitrary parsing"""
+import sys
 import logging
+from pathlib import Path
 from rich import print # pylint: disable=redefined-builtin
 from . import defaults
 from . import Params, Namespace
@@ -8,7 +10,7 @@ from .utils import logger
 # pylint: disable=invalid-name
 defaults.CONSOLE_WIDTH = 100
 
-params = Params(prog='python -m pyparam', desc="""\
+params = Params(prog='pyparam', desc="""\
 An exhibition showing all supported types of parameters and \
 some features by running {prog}.
 
@@ -187,6 +189,36 @@ See `example.toml` in the repo.
 """)
 fromfile.from_arg("file", desc="The file to load parameters from.")
 
+complete = params.add_command("complete", desc="""\
+Generate shell code for completions.
+
+For bash:
+```sh
+$ python -m pyparam complete --shell bash --module >> ~/.profile
+```
+
+For zsh:
+```sh
+$ python -m pyparam complete --shell zsh --module >> ~/.zprofile
+```
+
+For fish:
+```sh
+$ python -m pyparam complete --shell fish --module \\
+    >> ~/.config/fish/completions/python.fish
+```
+""")
+complete.add_param('shell', required=True, type='choice',
+                   choices=['bash', 'fish', 'zsh'],
+                   desc='The shell where the program will be running. '
+                   'One of {choices}.')
+complete.add_param('script', default=False,
+                   desc='Generate shell code for `python <prog>`')
+complete.add_param('module', default=False,
+                   desc='Generate shell code for `python -m <prog>`')
+complete.add_param('py,python', default=Path(sys.executable).name,
+                   desc='The python executable.')
+
 def vars_ns(ns, depth=None):
     """Get the vars of a namespace"""
     ret = vars(ns)
@@ -203,10 +235,18 @@ def main():
         logger.setLevel(logging.DEBUG)
         params.parse()
 
-    print()
-    print("Arguments passed in:")
-    print()
-    print(vars_ns(parsed))
+    if parsed.__command__ == 'complete':
+        params.generate(
+            shell=parsed.complete.shell,
+            python=parsed.complete.python
+            if parsed.complete.script or parsed.complete.module else None,
+            module=parsed.complete.module
+        )
+    else:
+        print()
+        print("Arguments passed in:")
+        print()
+        print(vars_ns(parsed))
 
 if __name__ == "__main__":
     main()
