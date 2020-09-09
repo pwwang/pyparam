@@ -39,13 +39,13 @@ from hashlib import sha256
 
 COMPLETION_SCRIPT_BASH = """
 %(complete_func)s() {
-    local IFS=$'\n'
+    local IFS=$'\\n'
     local response
     response=$( env COMP_WORDS="${COMP_WORDS[*]}" \\
                 COMP_CWORD=$COMP_CWORD \\
                 %(complete_shell_var)s=bash %(complete_script)s )
     for completion in $response; do
-        IFS=$'\t' read value type <<< "$completion"
+        IFS=$'\\t' read value type <<< "$completion"
         if [[ $type == 'dir' ]]; then
             COMREPLY=()
             compopt -o dirnames
@@ -58,15 +58,12 @@ COMPLETION_SCRIPT_BASH = """
     done
      return 0
 }
-%(complete_func)s_setup() {
-    complete -o default -F %(complete_func)s %(script_name)s
-}
-%(complete_func)s_setup
+complete -o default -F %(complete_func)s %(script_name)s
 """
 
 COMPLETION_SCRIPT_ZSH = """
 #compdef %(script_name)s
- %(complete_func)s() {
+%(complete_func)s() {
     local -a completions
     local -a completions_with_descriptions
     local -a response
@@ -121,7 +118,7 @@ function %(complete_func)s_complete;
     end;
 end;
 
-# Don't overwrite python's default completion
+# Don't do complete until <prog> is hit
 function %(complete_func)s_condition;
     set -l COMP_WORDS (commandline -op)
     set -l comp_script $COMP_WORDS[1] -m pyparam
@@ -149,6 +146,7 @@ complete --no-files --command %(script_name)s \\
     --condition "%(complete_func)s_condition" \\
     --arguments "(%(complete_func)s_complete)"
 """
+
 
 def split_arg_string(string: str) -> List[str]:
     # pylint: disable=line-too-long
@@ -182,6 +180,7 @@ def split_arg_string(string: str) -> List[str]:
             pass
         ret.append(arg)
     return ret
+
 
 class Completer:
     """Main completion handler
@@ -259,8 +258,23 @@ class Completer:
         comp_words = comp_words[
             (3 if is_module else 2 if has_python else 1):
         ]
+
         if current and comp_words and comp_words[-1] == current:
             comp_words.pop(-1)
+
+        if shell == 'bash' and comp_words:
+            # bash splits '--choice=' to ['--choice'] and '=', and
+            # '--choice=l' to ['--choice', '='] and 'l'
+            # We can't distinguish if user really enters '--choice=' or
+            # '--choice =', but this is the best way to implement this.
+            # Also, bash doesn't replace the current,
+            # so we just need to get the unfinished part
+            if current == '=':
+                current = '' # force the unfinished part
+            elif current and comp_words[-1] == '=' and len(comp_words) > 1:
+                # pop out the '=' so to force th unfinished part
+                comp_words.pop() 
+
         return shell, comp_words, current
 
     def _post_complete(self, completions) -> Optional[str]:
@@ -274,12 +288,11 @@ class Completer:
 
         for comp in completions:
             if self.comp_shell == 'fish':
-                yield comp
+                yield '\t'.join(comp)
             elif self.comp_shell == 'zsh':
-                parts: List[str] = comp.split('\t', 1)
-                yield "{}\n{}".format(parts[0].replace(',', '\n'), parts[1])
+                yield '\n'.join((comp[0] or ' ', comp[1], comp[2]))
             else:
-                yield comp.split('\t')[0]
+                yield '\t'.join((comp[0] or ' ', comp[1]))
 
     @lru_cache()
     def _all_params(self) -> List[Type['Param']]:
@@ -432,7 +445,7 @@ class Completer:
         """
         yield from self._post_complete(self._complete())
 
-    def _complete(self) -> Iterator[str]:
+    def _complete(self) -> Iterator[Tuple[str, str, str]]:
         """Provide the completion candidates
 
         The rules are:
@@ -472,11 +485,11 @@ class Completer:
                 return
             if completions:
                 for completion in completions:
-                    yield (f"{completion[0]}\tplain\t"
+                    yield ((completion[0], 'plain', '')
                            if len(completion) == 1
-                           else f"{completion[0]}\tplain\t{completion[1]}"
+                           else (completion[0], 'plain', completion[1])
                            if len(completion) == 2
-                           else '\t'.join(completion[:3]))
+                           else completion)
                 return
 
         # no param or completions == ''
@@ -487,14 +500,15 @@ class Completer:
                 continue
 
             for prefixed_name, desc in param.complete_name(self.comp_curr):
-                yield '\t'.join((prefixed_name, 'plain', desc))
+                yield (prefixed_name, 'plain', desc)
 
         if all_required_completed:
             # see if we have any commands
             for command_name, command in self.commands.items():
                 if command_name.startswith(self.comp_curr):
-                    yield '\t'.join((command_name, "plain",
-                                     command.desc[0].splitlines()[0]))
+                    yield (command_name, "plain", 
+                           command.desc[0].splitlines()[0])
+
 
 class CompleterParam:
     """Class for a parameter dealing with completion"""
