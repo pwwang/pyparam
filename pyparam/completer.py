@@ -237,6 +237,7 @@ class Completer:
 
         comp_words: List[str] = split_arg_string(os.environ['COMP_WORDS'])
         comp_cword: int = int(os.environ['COMP_CWORD'] or 0)
+
         current: str = ''
         if comp_cword >= 0:
             try:
@@ -273,7 +274,7 @@ class Completer:
                 current = '' # force the unfinished part
             elif current and comp_words[-1] == '=' and len(comp_words) > 1:
                 # pop out the '=' so to force th unfinished part
-                comp_words.pop() 
+                comp_words.pop()
 
         return shell, comp_words, current
 
@@ -465,7 +466,12 @@ class Completer:
             self.commands[command].parse()
             return
 
-        completions: Optional[Union[str, Iterator[str]]] = ''
+        completions: Optional[Union[
+            str,
+            Iterator[Tuple[str]],
+            Iterator[Tuple[str, str]],
+            Iterator[Tuple[str, str, str]]
+        ]] = ''
         param: Optional[Type['Param']] = None
         # see if comp_curr is something like '--arg=x'
         if self.comp_curr and '=' in self.comp_curr:
@@ -506,7 +512,7 @@ class Completer:
             # see if we have any commands
             for command_name, command in self.commands.items():
                 if command_name.startswith(self.comp_curr):
-                    yield (command_name, "plain", 
+                    yield (command_name, "plain",
                            command.desc[0].splitlines()[0])
 
 
@@ -518,8 +524,8 @@ class CompleterParam:
             self,
             current: str,
             prefix: str = ''
-    ) -> Optional[Union[str, Tuple[str], Tuple[str, str],
-                        Tuple[str, str, str]]]:
+    ) -> Optional[Union[str, Iterator[Tuple[str]], Iterator[Tuple[str, str]],
+                        Iterator[Tuple[str, str, str]]]]:
         """Give the completion candidates
 
         Args:
@@ -527,13 +533,27 @@ class CompleterParam:
 
         Returns:
             None when there are no candidates, nor should we have next
-                paramters/commands as candidates.
+                paramters/commands as candidates (requiring a value).
                 An empty string if we should put next parameters/commands
-                as candidates. Otherwise an Iterator of candidates
+                as candidates. Otherwise yields
+                The candidates should be either 1-, 2-, or 3-element tuple.
+                If 1-element, type plain and no description implied.
+                If 2-element, type plain and 2nd element should be description.
+                If 3-element, 2nd element the type, 3rd the description.
         """
+        if callable(self.complete_callback):
+            return self.complete_callback(current, prefix)
+        return None
 
-    def complete_name(self, current: str):
-        """Give the completion name candidates"""
+    def complete_name(self, current: str) -> Iterator[Tuple[str, str]]:
+        """Give the completion name candidates
+
+        Args:
+            current: The current prefix or word under cursor
+
+        Returns:
+            An iterator of a tuple including the prefixed name and description.
+        """
         for name in self.names:
             prefixed: str = self._prefix_name(name)
             if prefixed.startswith(current):

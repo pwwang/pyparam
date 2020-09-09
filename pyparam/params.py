@@ -199,6 +199,7 @@ class Params(Completer): # pylint: disable=too-many-instance-attributes
                   force: bool = False,
                   type_fronzen: bool = True,
                   argname_shorten: bool = True,
+                  complete_callback: Optional[Callable] = None,
                   **kwargs) -> Type["Param"]:
         """Add an argument
 
@@ -227,6 +228,8 @@ class Params(Completer): # pylint: disable=too-many-instance-attributes
                 the commone line
             argname_shorten: Whether show shortened name for parameter
                 under namespace parameter
+            complete_callback: The callback for complete the values of the
+                parameter
             **kwargs: Additional keyword arguments
 
         Raises:
@@ -260,6 +263,7 @@ class Params(Completer): # pylint: disable=too-many-instance-attributes
             type_fronzen=type_fronzen,
             callback=callback,
             argname_shorten=argname_shorten,
+            complete_callback=complete_callback,
             **kwargs
         )
         if any(name in self.help_keys for name in names):

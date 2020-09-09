@@ -1,3 +1,4 @@
+# pylint: disable=too-many-lines
 """Definition of a single parameter
 
 Attributes:
@@ -36,6 +37,8 @@ class Param(CompleterParam):
         callback: The callback to modify the final value
         argname_shorten: Whether show shortened name for parameters
             under namespace parameters
+        complete_callback: The callback for complete the values of the
+            parameter
         **kwargs: Additional keyword arguments
 
     Attributes:
@@ -53,6 +56,8 @@ class Param(CompleterParam):
         hit: Whether the parameter is just hit
         ns_param: The namespace parameter where this parameter
             is under
+        complete_callback: The callback for complete the values of the
+            parameter
         is_help: Whether this is a help parameter
         _desc: The raw description of the parameter
         _stack: The stack to push the values
@@ -60,7 +65,6 @@ class Param(CompleterParam):
         _kwargs: other kwargs
     """
     # pylint: disable=too-many-instance-attributes
-
     type: Optional[str] = None
     type_aliases: List[str] = []
 
@@ -73,6 +77,7 @@ class Param(CompleterParam):
                  show: bool = True, required: bool = False,
                  subtype: Optional[bool] = None, type_frozen: bool = True,
                  callback: Optional[Callable] = None,
+                 complete_callback: Optional[Callable] = None,
                  argname_shorten: bool = True, **kwargs: Dict[str, Any]):
         # pylint: disable=too-many-arguments
         """Constructor"""
@@ -84,6 +89,7 @@ class Param(CompleterParam):
         self.subtype: Optional[str] = subtype
         self.type_frozen: bool = type_frozen
         self.callback: Optional[Callable] = callback
+        self.complete_callback: Optional[Callable] = complete_callback
         self.argname_shorten: bool = argname_shorten
         self.hit: bool = False
         self.is_help: bool = False
@@ -109,11 +115,9 @@ class Param(CompleterParam):
                 raise PyParamNameError(
                     "Parameter names must have the same number of namespaces."
                 )
-            if not namespaces:
-                namespaces = [{part} for part in parts[:-1]]
-            else:
-                for i, part in enumerate(parts[:-1]):
-                    namespaces[i].add(part)
+            namespaces = namespaces or [{part} for part in parts[:-1]]
+            for i, part in enumerate(parts[:-1]):
+                namespaces[i].add(part)
             terminals.add(parts[-1])
         return [list(ns) for ns in namespaces], list(terminals)
 
@@ -198,7 +202,6 @@ class Param(CompleterParam):
         if self.type_frozen:
             raise PyParamTypeError(f"Type of argument {self.namestr()!r} "
                                    "is not overwritable")
-
         logger.warning("Type changed from %r to %r for argument %r",
                        self.typestr(), param_type, self.namestr())
         return self.to(param_type)
@@ -257,12 +260,9 @@ class Param(CompleterParam):
         Returns:
             The shortest/longest name of the parameter
         """
-        name: str = list(
-            sorted(self.names, key=len)
-        )[0 if 'short' in which else -1]
-        if not with_prefix:
-            return name
-        return self._prefix_name(name)
+        name: str = list(sorted(self.names,
+                                key=len))[0 if 'short' in which else -1]
+        return name if not with_prefix else self._prefix_name(name)
 
     def namestr(self, sep: str = ", ", with_prefix: bool = True) -> str:
         """Get all names connected with a separator.
@@ -284,9 +284,7 @@ class Param(CompleterParam):
         Returns:
             the string representation of the type
         """
-        if not self.subtype:
-            return self.type
-        return f"{self.type}:{self.subtype}"
+        return self.type if not self.subtype else f"{self.type}:{self.subtype}"
 
     def usagestr(self) -> str:
         """Get the string representation of the parameter in the default usage
@@ -311,10 +309,9 @@ class Param(CompleterParam):
         typestr: str = (self.typestr().upper()
                         if self.type_frozen else self.typestr())
         if not self.ns_param or not self.argname_shorten:
-            if self.is_help:
-                return self.namestr()
-            # * makes sure it's not wrapped'
-            return f"{self.namestr()}*<{typestr}>"
+            # * makes sure it's not wrapped
+            return (self.namestr() if self.is_help
+                    else f"{self.namestr()}*<{typestr}>")
 
         ret: List[str] = []
         for term in sorted(self.terminals, key=len):
@@ -349,9 +346,8 @@ class Param(CompleterParam):
             the default group name
         """
         ret: str = "REQUIRED OPTIONS" if self.required else "OPTIONAL OPTIONS"
-        if not self.ns_param:
-            return ret
-        return f"{ret} UNDER {self.ns_param.name('long')}"
+        return (ret if not self.ns_param
+                else f"{ret} UNDER {self.ns_param.name('long')}")
 
     @property
     def desc_with_default(self) -> Optional[List[str]]:
@@ -442,7 +438,6 @@ class Param(CompleterParam):
         """
         if not callable(self.callback):
             return self.value
-
         try:
             try:
                 val: Any = self.callback(self.value, all_values)
@@ -568,15 +563,31 @@ class ParamBool(Param):
         self._stack = []
         return ret
 
-    def complete_value(self,
-                       current: str,
-                       prefix: str = '') -> str:
-        # pylint: disable=unused-argument
-        """Get the completion candidates for the current parameter
+    def complete_value(
+            self,
+            current: str,
+            prefix: str = ''
+    ) -> Optional[Union[
+        str, Iterator[Tuple[str]],
+        Iterator[Tuple[str, str]], Iterator[Tuple[str, str, str]]
+    ]]:
+        """Get the completion candidates for the current parameter"""
+        if self.is_help:
+            return ''
+        if callable(self.complete_callback):
+            return super().complete_value(current, prefix)
+        if current:
+            trues: List[str] = ('True', 'true', 'TRUE', '1')
+            falses: List[str] = ('False', 'false', 'FALSE', '0')
+            ret: List[Tuple[str, str, str]] = []
+            for cand in trues:
+                if cand.startswith(current):
+                    ret.append((f'{prefix}{cand}', 'plain', 'Value True'))
 
-        Args:
-            current: The current word or prefix under cursor
-        """
+            for cand in falses:
+                if cand.startswith(current):
+                    ret.append((f'{prefix}{cand}', 'plain', 'Value False'))
+            return ret
         return ''
 
 class ParamCount(Param):
@@ -597,10 +608,8 @@ class ParamCount(Param):
                 "Count argument must have a short name."
             )
 
-        if 'max' in self._kwargs and (
-                not isinstance(self._kwargs['max'], int) or
-                self._kwargs['max'] <= 0
-        ):
+        self._kwargs.setdefault('max', 0) # 0: no max
+        if not isinstance(self._kwargs['max'], int) or self._kwargs['max'] < 0:
             raise PyParamValueError(
                 "Argument 'max' for count argument must be a positive integer"
             )
@@ -611,10 +620,7 @@ class ParamCount(Param):
 
     def consume(self, value: str) -> bool:
         """Should I consume given parameter?"""
-        if not self.hit:
-            return False
-
-        if value.isdigit():
+        if self.hit and value.isdigit():
             self.push(value)
             return True
         return False
@@ -637,11 +643,38 @@ class ParamCount(Param):
         if retval is None:
             raise PyParamValueError("Expect repeated short names or "
                                     "an integer as count argument value.")
-        if ('max' in self._kwargs and self._kwargs['max'] and
-                retval > self._kwargs['max']):
+        if self._kwargs['max'] and retval > self._kwargs['max']:
             raise PyParamValueError(f"{retval} is greater than "
                                     f"the max of {self._kwargs['max']}.")
         return retval
+
+    def complete_name(self, current: str) -> Iterator[Tuple[str, str]]:
+        """Complete names for a count parameter
+
+        Since we have -v, -vv, -vvv allowed for a count parameter, we need
+        to put them in the completions, too.
+        """
+        # check if current is trying to do so
+        for name in self.names:
+            if len(name) != 1:
+                continue
+            # current is not like -vvv
+            if self._prefix_name(name) + len(current[2:]) * name != current:
+                continue
+            # check the max
+            value: int = len(current) - 1
+            if self._kwargs['max'] and value >= self._kwargs['max']:
+                # already max'ed, no further completion
+                continue
+
+            ncompletes: int = (min(self._kwargs['max'] - value, 2)
+                               if self._kwargs['max'] else 2)
+            for i in range(ncompletes):
+                yield current + name * (i + 1), self.desc[0].splitlines()[0]
+            break
+
+        else:
+            yield from super().complete_name(current)
 
 class ParamPath(Param):
     """A path parameter whose value is automatically casted into a pathlib.Path
@@ -653,16 +686,23 @@ class ParamPath(Param):
         val: Optional[Path] = super()._value()
         return None if val is None else Path(val)
 
-    def complete_value(self,
-                       current: str,
-                       prefix: str = '') -> Iterator[Tuple[str, str, str]]:
+    def complete_value(
+            self,
+            current: str,
+            prefix: str = ''
+    ) -> Optional[Union[
+        str, Iterator[Tuple[str]],
+        Iterator[Tuple[str, str]], Iterator[Tuple[str, str, str]]
+    ]]:
         """Generate file paths with given current prefix
         as completion candidates
 
         Args:
             current: The current word or prefix under cursor
         """
-        yield current, 'file', prefix
+        if callable(self.complete_callback):
+            return super().complete_value(current, prefix)
+        return [(current, 'file', prefix)]
 
 class ParamDir(ParamPath):
     """Subclass of ParamPath.
@@ -674,15 +714,22 @@ class ParamDir(ParamPath):
     type: str = 'dir'
     type_aliases: List[str] = []
 
-    def complete_value(self,
-                       current: str,
-                       prefix: str = '') -> Iterator[Tuple[str, str, str]]:
+    def complete_value(
+            self,
+            current: str,
+            prefix: str = ''
+    ) -> Optional[Union[
+        str, Iterator[Tuple[str]],
+        Iterator[Tuple[str, str]], Iterator[Tuple[str, str, str]]
+    ]]:
         """Generate dir paths with given current prefix as completion candidates
 
         Args:
             current: The current word or prefix under cursor
         """
-        yield current, 'dir', 'Directory'
+        if callable(self.complete_callback):
+            return super().complete_value(current, prefix)
+        return [(current, 'dir', prefix)]
 
 class ParamPy(Param):
     """A parameter whose value will be ast.literal_eval'ed"""
@@ -779,17 +826,27 @@ class ParamChoice(Param):
         self._stack = []
         return val
 
-    def complete_value(self,
-                       current: str,
-                       prefix: str = '') -> Iterator[Tuple[str]]:
+    def complete_value(
+            self,
+            current: str,
+            prefix: str = ''
+    ) -> Optional[Union[
+        str, Iterator[Tuple[str]],
+        Iterator[Tuple[str, str]], Iterator[Tuple[str, str, str]]
+    ]]:
         """Generate choices with given current prefix as completion candidates
 
         Args:
             current: The current word or prefix under cursor
         """
+        if callable(self.complete_callback):
+            return super().complete_value(current, prefix)
+
+        ret: Iterator[Tuple[str]] = []
         for choice in self._kwargs['choices']:
             if choice.startswith(current):
-                yield (f"{prefix}{choice}", )
+                ret.append((f"{prefix}{choice}", ))
+        return ret
 
 class ParamNamespace(Param):
     """A pseudo parameter serving as a namespace for parameters under it
@@ -817,9 +874,8 @@ class ParamNamespace(Param):
         ret: str = ('REQUIRED'
                     if any(param.required for param in self._stack.values())
                     else 'OPTIONAL')
-        if not self.ns_param:
-            return f'{ret} OPTIONS'
-        return f'{ret} OPTIONS UNDER {self.ns_param.name("long")}'
+        return (f'{ret} OPTIONS' if not self.ns_param
+                else f'{ret} OPTIONS UNDER {self.ns_param.name("long")}')
 
     @property
     def desc_with_default(self) -> Optional[List[str]]:
