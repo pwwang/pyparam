@@ -568,7 +568,9 @@ class ParamBool(Param):
         self._stack = []
         return ret
 
-    def complete(self, current: str) -> Optional[Union[str, Iterator[str]]]:
+    def complete_value(self,
+                       current: str,
+                       prefix: str = '') -> str:
         # pylint: disable=unused-argument
         """Get the completion candidates for the current parameter
 
@@ -645,57 +647,22 @@ class ParamPath(Param):
     """A path parameter whose value is automatically casted into a pathlib.Path
     """
     type: str = 'path'
-    type_aliases: List[str] = ['p']
+    type_aliases: List[str] = ['p', 'file']
 
     def _value(self) -> Path:
         val: Optional[Path] = super()._value()
         return None if val is None else Path(val)
 
-    def complete(self, current: str) -> Iterator[str]:
-        """Generate path with given current prefix as completion candidates
-
-        Args:
-            current: The current word or prefix under cursor
-        """
-        if not current:
-            for path in Path().glob('*'):
-                yield path.name + ('/\tDirectory' if path.is_dir()
-                                   else f'\t{path.suffix}\tFile')
-        else:
-            current = Path(current)
-            if current.parent.is_dir():
-                for path in current.parent.glob('*'):
-                    if path.name.startswith(current.name):
-                        yield str(path) + ('/' if path.is_dir() else '')
-
-class ParamFile(ParamPath):
-    """Subclass of ParamPath.
-
-    It does not make any difference with pyparam. However, it works differently
-    for completions. The completion items for this param will only give files
-    instead of all paths
-    """
-    type: str = 'file'
-    type_aliases: List[str] = []
-
-    def complete(self, current: str) -> Iterator[str]:
+    def complete_value(self,
+                       current: str,
+                       prefix: str = '') -> Iterator[Tuple[str, str, str]]:
         """Generate file paths with given current prefix
         as completion candidates
 
         Args:
             current: The current word or prefix under cursor
         """
-        if not current:
-            for path in Path().glob('*'):
-                if path.is_file():
-                    yield path.name + f'\t{path.suffix}\tFile'
-        else:
-            current = Path(current)
-            if current.parent.is_dir():
-                for path in current.parent.glob('*'):
-                    if path.name.startswith(current.name):
-                        if path.is_file():
-                            yield str(path)
+        yield current, 'file', prefix
 
 class ParamDir(ParamPath):
     """Subclass of ParamPath.
@@ -707,23 +674,15 @@ class ParamDir(ParamPath):
     type: str = 'dir'
     type_aliases: List[str] = []
 
-    def complete(self, current: str) -> Iterator[str]:
+    def complete_value(self,
+                       current: str,
+                       prefix: str = '') -> Iterator[Tuple[str, str, str]]:
         """Generate dir paths with given current prefix as completion candidates
 
         Args:
             current: The current word or prefix under cursor
         """
-        if not current:
-            for path in Path().glob('*'):
-                if path.is_dir():
-                    yield path.name + '\tDirectory'
-        else:
-            current = Path(current)
-            if current.parent.is_dir():
-                for path in current.parent.glob('*'):
-                    if path.name.startswith(current.name):
-                        if path.is_dir():
-                            yield str(path)
+        yield current, 'dir', 'Directory'
 
 class ParamPy(Param):
     """A parameter whose value will be ast.literal_eval'ed"""
@@ -820,7 +779,9 @@ class ParamChoice(Param):
         self._stack = []
         return val
 
-    def complete(self, current: str) -> Iterator[str]:
+    def complete_value(self,
+                       current: str,
+                       prefix: str = '') -> Iterator[Tuple[str]]:
         """Generate choices with given current prefix as completion candidates
 
         Args:
@@ -828,7 +789,7 @@ class ParamChoice(Param):
         """
         for choice in self._kwargs['choices']:
             if choice.startswith(current):
-                yield choice
+                yield (f"{prefix}{choice}", )
 
 class ParamNamespace(Param):
     """A pseudo parameter serving as a namespace for parameters under it
@@ -993,6 +954,6 @@ def register_param(param: Param) -> None:
     param.on_register()
 
 for param_class in (ParamAuto, ParamInt, ParamStr, ParamFloat, ParamBool,
-                    ParamCount, ParamPath, ParamFile, ParamDir, ParamPy,
-                    ParamJson, ParamList, ParamChoice, ParamNamespace):
+                    ParamCount, ParamPath, ParamDir, ParamPy, ParamJson,
+                    ParamList, ParamChoice, ParamNamespace):
     register_param(param_class)

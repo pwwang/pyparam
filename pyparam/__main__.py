@@ -218,6 +218,9 @@ complete.add_param('module', default=False,
                    desc='Generate shell code for `python -m <prog>`')
 complete.add_param('py,python', default=Path(sys.executable).name,
                    desc='The python executable.')
+complete.add_param('dir', type='dir', default=Path(__file__).parent,
+                   desc='This does nothing but just show you '
+                   'how directory completion works.')
 
 def vars_ns(ns, depth=None):
     """Get the vars of a namespace"""

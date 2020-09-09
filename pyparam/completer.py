@@ -1,12 +1,187 @@
-"""Classes for completions"""
+"""Classes for completions
+
+The idea is inspired from
+https://github.com/pallets/click/pull/1622
+
+Some of the code is borrowing there, under following LICENSE:
+
+Copyright 2014 Pallets
+
+Redistribution and use in source and binary forms, with or without
+modification, are permitted provided that the following conditions are met:
+
+Redistributions of source code must retain the above copyright notice,
+this list of conditions and the following disclaimer.
+Redistributions in binary form must reproduce the above copyright notice,
+this list of conditions and the following disclaimer in the documentation
+and/or other materials provided with the distribution.
+Neither the name of the copyright holder nor the names of its contributors
+may be used to endorse or promote products derived from this software without
+specific prior written permission.
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO,
+THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR
+PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS
+BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE
+GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
+HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
+LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT
+OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+"""
 import os
 import sys
 import re
-import textwrap
 from functools import lru_cache
 from typing import Optional, Iterator, List, Callable, Type, Union, Tuple
 from pathlib import Path
 from hashlib import sha256
+
+COMPLETION_SCRIPT_BASH = """
+%(complete_func)s() {
+    local IFS=$'\n'
+    local response
+    response=$( env COMP_WORDS="${COMP_WORDS[*]}" \\
+                COMP_CWORD=$COMP_CWORD \\
+                %(complete_shell_var)s=bash %(complete_script)s )
+    for completion in $response; do
+        IFS=$'\t' read value type <<< "$completion"
+        if [[ $type == 'dir' ]]; then
+            COMREPLY=()
+            compopt -o dirnames
+        elif [[ $type == 'file' ]]; then
+            COMREPLY=()
+            compopt -o filenames
+        elif [[ $type == 'plain' ]]; then
+            COMPREPLY+=($value)
+        fi
+    done
+     return 0
+}
+%(complete_func)s_setup() {
+    complete -o default -F %(complete_func)s %(script_name)s
+}
+%(complete_func)s_setup
+"""
+
+COMPLETION_SCRIPT_ZSH = """
+#compdef %(script_name)s
+ %(complete_func)s() {
+    local -a completions
+    local -a completions_with_descriptions
+    local -a response
+    (( ! $+commands[%(script_name)s] )) && return 1
+    response=("${(@f)$( env COMP_WORDS=\"${words[*]}\" \\
+                        COMP_CWORD=$((CURRENT-1)) \\
+                        %(complete_shell_var)s=\"zsh\" \\
+                        %(complete_script)s )}")
+    for key type descr in ${response}; do
+      if [[ "$type" == "plain" ]]; then
+        if [[ "$descr" == "" ]]; then
+          completions+=("$key")
+        else
+          completions_with_descriptions+=("$key":"$descr")
+        fi
+      elif [[ "$type" == "dir" ]]; then
+        _path_files -/
+      elif [[ "$type" == "file" ]]; then
+        _path_files -f
+      fi
+    done
+     if [ -n "$completions_with_descriptions" ]; then
+        _describe -V unsorted completions_with_descriptions -U
+    fi
+     if [ -n "$completions" ]; then
+        compadd -U -V unsorted -a completions
+    fi
+    compstate[insert]="menucomplete"
+}
+compdef %(complete_func)s %(script_name)s
+"""
+
+COMPLETION_SCRIPT_FISH = """
+function %(complete_func)s_complete;
+    set -l response;
+    set -lx COMP_WORDS (commandline -op)
+    set -lx COMP_CWORD ( \\
+        math (contains -i -- (commandline -t) $COMP_WORDS; or echo 0)-1 \\
+    )
+    set -lx %(complete_shell_var)s fish
+    eval %(complete_script)s | while read completion
+        echo $completion | read -d (echo -e "\\t") -l -a metadata
+        if [ "$metadata[2]" = "dir" ];
+            __fish_complete_directories $metadata[1] | sed "s#^#$metadata[3]#";
+        else if [ "$metadata[2]" = "file" ];
+            __fish_complete_path $metadata[1] | sed "s#^#$metadata[3]#";
+        else if [ "$metadata[2]" = "plain" ];
+            echo -n $metadata[1];
+            echo -ne "\\t";
+            echo $metadata[3];
+        end;
+    end;
+end;
+
+# Don't overwrite python's default completion
+function %(complete_func)s_condition;
+    set -l COMP_WORDS (commandline -op)
+    set -l comp_script $COMP_WORDS[1] -m pyparam
+    set -l len_words (count $COMP_WORDS)
+    set -l len_script (count $comp_script)
+    set -l incomplete (commandline -t)
+    # we haven't hit the script or module
+    # go ahead do the complete only when
+    # len_words > len_script
+    # if len_words == len_script, then requires incomplete == ""
+    if [ $len_words -lt $len_script ]
+        return 1
+    else if [ $len_words -eq $len_script -a -n "$incomplete" ]
+        return 1
+    else if [ $len_script -eq 2 ]
+        [ "$COMP_WORDS[2]" = "$comp_script[2]" ]; and return 0; or return 1
+    else if [ $len_script -eq 3 ]
+        [ "$COMP_WORDS[2]" = "-m" -a "$comp_script[3]" = "$COMP_WORDS[3]" ]; \\
+            and return 0; or return 1
+    end
+    return 1
+end;
+
+complete --no-files --command %(script_name)s \\
+    --condition "%(complete_func)s_condition" \\
+    --arguments "(%(complete_func)s_complete)"
+"""
+
+def split_arg_string(string: str) -> List[str]:
+    # pylint: disable=line-too-long
+    """Given an argument string this attempts to split it into small parts.
+
+    Borrowed from
+    https://github.com/pallets/click/blob/3984f9efce5a0d15f058e1abe1ea808c6abd243a/src/click/parser.py#L106
+
+    Args:
+        string: The string to be split
+
+    Returns:
+        List of split pieces
+    """
+    # pylint: enable=line-too-long
+    ret: List[str] = []
+    for match in re.finditer(
+            r"('([^'\\]*(?:\\.[^'\\]*)*)'|"
+            r"\"([^\"\\]*(?:\\.[^\"\\]*)*)\"|\S+)\s*",
+            string,
+            re.S,
+    ):
+        arg = match.group().strip()
+        if arg[:1] == arg[-1:] and arg[:1] in "\"'":
+            arg = arg[1:-1].encode(
+                "ascii", "backslashreplace"
+            ).decode("unicode-escape")
+        try:
+            arg = type(string)(arg)
+        except UnicodeError:
+            pass
+        ret.append(arg)
+    return ret
 
 class Completer:
     """Main completion handler
@@ -61,8 +236,14 @@ class Completer:
         if not shell:
             return shell, None, ''
 
-        comp_words: List[str] = os.environ['COMP_WORDS'].split()
+        comp_words: List[str] = split_arg_string(os.environ['COMP_WORDS'])
         comp_cword: int = int(os.environ['COMP_CWORD'] or 0)
+        current: str = ''
+        if comp_cword >= 0:
+            try:
+                current = comp_words[comp_cword]
+            except IndexError:
+                pass
 
         has_python: bool = 'python' in Path(comp_words[0]).stem
         if has_python and len(comp_words) == 1:
@@ -75,13 +256,11 @@ class Completer:
         if has_python and not is_module and comp_words[1] != self.prog:
             sys.exit(0)
 
-        current: str = ''
-        if comp_cword < len(comp_words):
-            current = comp_words.pop(comp_cword)
-
         comp_words = comp_words[
             (3 if is_module else 2 if has_python else 1):
         ]
+        if current and comp_words and comp_words[-1] == current:
+            comp_words.pop(-1)
         return shell, comp_words, current
 
     def _post_complete(self, completions) -> Optional[str]:
@@ -94,9 +273,13 @@ class Completer:
             return
 
         for comp in completions:
-            if comp.startswith(self.comp_curr):
-                yield (comp.split('\t')[0]
-                       if self.comp_shell != 'fish' else comp)
+            if self.comp_shell == 'fish':
+                yield comp
+            elif self.comp_shell == 'zsh':
+                parts: List[str] = comp.split('\t', 1)
+                yield "{}\n{}".format(parts[0].replace(',', '\n'), parts[1])
+            else:
+                yield comp.split('\t')[0]
 
     @lru_cache()
     def _all_params(self) -> List[Type['Param']]:
@@ -148,71 +331,67 @@ class Completer:
     def _generate_bash(self, python: Optional[str], module: bool) -> str:
         # type: (Optional[str]) -> str
         """Generate the shell code for bash"""
-        env_name: str = f"{self.progvar}_COMPLETE_SHELL_{self.uid}".upper()
-        complete_exec: str = (
+        complete_shell_var: str = (
+            f"{self.progvar}_COMPLETE_SHELL_{self.uid}"
+        ).upper()
+        complete_script: str = (
             "$1" if not python
             else f"$1 {self.prog}" if not module
             else f"$1 -m {self.prog}"
         )
-        func_name: str = f"_{self.progvar}_completion_{self.uid}"
-        code: str = f"""\
-            {func_name}()
-            {{
-                COMPREPLY=( $( COMP_WORDS="${{COMP_WORDS[*]}}" \\
-                            COMP_CWORD=$COMP_CWORD \\
-                            {env_name}=bash {complete_exec} \\
-                            2>/dev/null ) )
-            }}
-            complete -o default -F {func_name} {python or self.prog}
-        """
-        return textwrap.dedent(code)
+        complete_func: str = f"_{self.progvar}_completion_{self.uid}"
+        return COMPLETION_SCRIPT_BASH % dict(
+            complete_func=complete_func,
+            complete_shell_var=complete_shell_var,
+            complete_script=complete_script,
+            script_name=python or self.prog
+        )
 
     def _generate_fish(self, python: Optional[str], module: bool) -> str:
         # type: (Optional[str]) -> str
         """Generate the shell code for fish"""
-        env_name: str = f"{self.progvar}_COMPLETE_SHELL_{self.uid}".upper()
-        complete_exec: str = (
+        complete_shell_var: str = (
+            f"{self.progvar}_COMPLETE_SHELL_{self.uid}"
+        ).upper()
+        complete_script: str = (
             "$COMP_WORDS[1]" if not python
             else f"$COMP_WORDS[1] {self.prog}" if not module
             else f"$COMP_WORDS[1] -m {self.prog}"
         )
-        func_name: str = f"__fish_complete_{self.progvar}_{self.uid}"
-        code: str = f"""\
-            function {func_name}
-                set -lx COMP_WORDS (commandline -o) ""
-                set -lx COMP_CWORD ( \\
-                    math (contains -i -- (commandline -t) $COMP_WORDS)-1 \\
-                )
-                set -lx {env_name} fish
-                string split \\  -- (eval {complete_exec})
-            end
-            complete -fa "({func_name})" -c {python or self.prog}
-        """
-        return textwrap.dedent(code)
+        complete_func: str = f"__fish_{self.progvar}_{self.uid}"
+        return COMPLETION_SCRIPT_FISH % dict(
+            complete_func=complete_func,
+            complete_shell_var=complete_shell_var,
+            complete_script=complete_script,
+            script_name=python or self.prog
+        )
 
     def _generate_zsh(self, python: Optional[str], module: str) -> str:
         # type: (Optional[str]) -> str
         """Generate the shell code for zsh"""
-        env_name: str = f"{self.progvar}_COMPLETE_SHELL_{self.uid}".upper()
-        complete_exec: str = (
+        complete_shell_var: str = (
+            f"{self.progvar}_COMPLETE_SHELL_{self.uid}"
+        ).upper()
+        complete_script: str = (
             "$words[1]" if not python
             else f"$words[1] {self.prog}" if not module
             else f"$words[1] -m {self.prog}"
         )
-        func_name: str = f"_{self.progvar}_completion_{self.uid}"
-        code: str = f"""\
-            function {func_name} {{
-                local words cword
-                read -Ac words
-                read -cn cword
-                reply=( $( COMP_WORDS="$words[*]" \\
-                           COMP_CWORD=$(( cword-1 )) \\
-                           {env_name}=zsh {complete_exec} \\
-                           2>/dev/null ))
-            }}
-            compctl -K {func_name} {python or self.prog}
-        """
-        return textwrap.dedent(code)
+        complete_func: str = f"_{self.progvar}_completion_{self.uid}"
+        return COMPLETION_SCRIPT_ZSH % dict(
+            complete_func=complete_func,
+            complete_shell_var=complete_shell_var,
+            complete_script=complete_script,
+            script_name=python or self.prog
+        )
+
+    def _get_param_by_prefixed(self, prefixed: str) -> Optional[Type['Param']]:
+        """Get the parameter by the given prefixed name"""
+        for param in self._all_params():
+            if any(param._prefix_name(name) == prefixed
+                   for name in param.names):
+                return param
+        return None
 
     def _parse_completed(self) -> Tuple[
             Optional[List[Type['Param']]], Optional[bool],
@@ -273,47 +452,60 @@ class Completer:
             self.commands[command].parse()
             return
 
-        # If you just entered a parameter name with prefix
-        prev_matched: List[Type['Param']] = [
-            param for param in self._all_params()
-            if any(param._prefix_name(name) == self.comp_prev
-                   for name in param.names)
-        ]
         completions: Optional[Union[str, Iterator[str]]] = ''
-        if prev_matched:
-            completions = prev_matched[0].complete(self.comp_curr)
+        param: Optional[Type['Param']] = None
+        # see if comp_curr is something like '--arg=x'
+        if self.comp_curr and '=' in self.comp_curr:
+            prefixed, val = self.comp_curr.split('=', 1)
+            param = self._get_param_by_prefixed(prefixed)
+            completions = param.complete_value(
+                current=val, prefix=f'{prefixed}='
+            ) if param else completions
+        else:
+            param = self._get_param_by_prefixed(self.comp_prev)
+            completions = param.complete_value(
+                current=self.comp_curr
+            ) if param else completions
 
-        if completions is None:
-            return
-        if completions:
-            yield from completions
-            return
+        if param:
+            if completions is None:
+                return
+            if completions:
+                for completion in completions:
+                    yield (f"{completion[0]}\tplain\t"
+                           if len(completion) == 1
+                           else f"{completion[0]}\tplain\t{completion[1]}"
+                           if len(completion) == 2
+                           else '\t'.join(completion[:3]))
+                return
 
+        # no param or completions == ''
         for param in self._all_params():
             if param.type == 'ns':
                 continue
             if param in completed and not param.complete_relapse:
                 continue
 
-            param_comp_desc: str = param.desc[0].splitlines()[0].replace(
-                ' ', '\t'
-            )
-            for name in param.names:
-                yield f"{param._prefix_name(name)}\t{param_comp_desc}"
+            for prefixed_name, desc in param.complete_name(self.comp_curr):
+                yield '\t'.join((prefixed_name, 'plain', desc))
 
         if all_required_completed:
             # see if we have any commands
             for command_name, command in self.commands.items():
-                yield (
-                    f"{command_name}\t"
-                    f"{command.desc[0].splitlines()[0].replace(' ', chr(9))}"
-                )
+                if command_name.startswith(self.comp_curr):
+                    yield '\t'.join((command_name, "plain",
+                                     command.desc[0].splitlines()[0]))
 
-class CompleterParam: # pylint: disable=too-few-public-methods
+class CompleterParam:
     """Class for a parameter dealing with completion"""
     complete_relapse: bool = False
 
-    def complete(self, current: str) -> Optional[Union[str, Iterator[str]]]:
+    def complete_value(
+            self,
+            current: str,
+            prefix: str = ''
+    ) -> Optional[Union[str, Tuple[str], Tuple[str, str],
+                        Tuple[str, str, str]]]:
         """Give the completion candidates
 
         Args:
@@ -325,3 +517,10 @@ class CompleterParam: # pylint: disable=too-few-public-methods
                 An empty string if we should put next parameters/commands
                 as candidates. Otherwise an Iterator of candidates
         """
+
+    def complete_name(self, current: str):
+        """Give the completion name candidates"""
+        for name in self.names:
+            prefixed: str = self._prefix_name(name)
+            if prefixed.startswith(current):
+                yield (prefixed, self.desc[0].splitlines()[0])
