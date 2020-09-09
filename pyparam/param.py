@@ -660,7 +660,7 @@ class ParamPath(Param):
         if not current:
             for path in Path().glob('*'):
                 yield path.name + ('/\tDirectory' if path.is_dir()
-                                   else '\t{path.suffix}\tFile')
+                                   else f'\t{path.suffix}\tFile')
         else:
             current = Path(current)
             if current.parent.is_dir():

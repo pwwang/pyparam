@@ -77,7 +77,7 @@ class Completer:
 
         current: str = ''
         if comp_cword < len(comp_words):
-            comp_words.pop(comp_cword)
+            current = comp_words.pop(comp_cword)
 
         comp_words = comp_words[
             (3 if is_module else 2 if has_python else 1):
