@@ -212,3 +212,38 @@ def test_from_arg_param():
     parsed = params.parse(args)
     assert parsed['int'] == 1
     assert parsed.cmd['float'] == 0.1
+
+def test_param_reuse():
+    cmd1 = params.add_command('cmd1', help_on_void=False)
+    cmd2 = params.add_command('cmd2', help_on_void=False)
+    cmd3 = params.add_command('cmd3', help_on_void=False)
+    param1 = cmd1.add_param('i', default=1)
+    param2 = cmd1.add_param('l', default=[1,2])
+    param3 = cmd1.add_param('c', type='ns')
+    param4 = cmd1.add_param('c.a', default=[8,9])
+    cmd2.add_param(param1)
+    cmd2.add_param(param2)
+    cmd2.add_param(param3)
+    cmd3.add_param(param4)
+
+    parsed1 = params.parse(["cmd1"])
+    assert parsed1.cmd1.i == 1
+    assert parsed1.cmd1.l == [1, 2]
+    assert parsed1.cmd1.c.a == [8, 9]
+
+    parsed2 = params.parse(["cmd2", "-i2", "-l3", "-c.a", "0"])
+    assert parsed2.cmd2.i == 2
+    assert parsed2.cmd2.l == [1, 2, 3]
+    assert parsed2.cmd2.c.a == [8, 9, 0]
+    # orginal doesn't change
+    assert parsed1.cmd1.i == 1
+    assert parsed1.cmd1.l == [1, 2]
+    assert parsed1.cmd1.c.a == [8, 9]
+
+    parsed3 = params.parse(["cmd3", "-c.a", "5"])
+    assert parsed3.cmd3.c.a == [8, 9, 5]
+
+    # orginal doesn't change
+    assert parsed1.cmd1.i == 1
+    assert parsed1.cmd1.l == [1, 2]
+    assert parsed1.cmd1.c.a == [8, 9]

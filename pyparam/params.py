@@ -187,7 +187,7 @@ class Params(Completer): # pylint: disable=too-many-instance-attributes
                 self.params[name] = param
 
     def add_param(self, # pylint: disable=too-many-arguments
-                  names: Union[str, List[str]],
+                  names: Union[str, List[str], Type["Param"]],
                   default: Any = None,
                   # pylint: disable=redefined-builtin
                   type: Optional[str] = None,
@@ -204,7 +204,12 @@ class Params(Completer): # pylint: disable=too-many-instance-attributes
         """Add an argument
 
         Args:
-            names: names of the argument
+            names: names of the argument or a parameter defined somewhere else
+                For example, in case we want to reuse a parameter
+                >>> param = cmd1.add_param('n,name')
+                >>> # reuse it:
+                >>> cmd2.add_param(param)
+                >>> # other arguments will be ignored, except force
             default: The default value for the argument
             type: The type of the argument
                 Including single value type and complex one
@@ -239,34 +244,39 @@ class Params(Completer): # pylint: disable=too-many-instance-attributes
             Param: The added parameter
         """
         # pylint: disable=too-many-locals
-        names: List[str] = always_list(names)
-        if type is None:
-            if POSITIONAL in names and default is None:
-                type = 'list'
-            else:
-                type = type_from_value(default)
+        if isinstance(names, (str, list)):
+            names: List[str] = always_list(names)
+            if type is None:
+                if POSITIONAL in names and default is None:
+                    type = 'list'
+                else:
+                    type = type_from_value(default)
 
-        # Type: Optional[str], Optional[str]
-        maintype, subtype = parse_type(type.__name__
-                                       if callable(type)
-                                       else type)
+            # Type: Optional[str], Optional[str]
+            maintype, subtype = parse_type(type.__name__
+                                           if callable(type)
+                                           else type)
 
-        param: Type['Param'] = PARAM_MAPPINGS[maintype](
-            names=names,
-            default=default,
-            desc=None if desc is None else always_list(desc, strip=False,
-                                                       split=False),
-            prefix=self.prefix,
-            show=show,
-            required=required,
-            subtype=subtype,
-            type_fronzen=type_fronzen,
-            callback=callback,
-            argname_shorten=argname_shorten,
-            complete_callback=complete_callback,
-            **kwargs
-        )
-        if any(name in self.help_keys for name in names):
+            param: Type['Param'] = PARAM_MAPPINGS[maintype](
+                names=names,
+                default=default,
+                desc=None if desc is None else always_list(desc,
+                                                           strip=False,
+                                                           split=False),
+                prefix=self.prefix,
+                show=show,
+                required=required,
+                subtype=subtype,
+                type_fronzen=type_fronzen,
+                callback=callback,
+                argname_shorten=argname_shorten,
+                complete_callback=complete_callback,
+                **kwargs
+            )
+        else:
+            param = names.copy()
+
+        if any(name in self.help_keys for name in param.names):
             param.is_help = True
 
         if param.namespaces(0):
@@ -278,7 +288,7 @@ class Params(Completer): # pylint: disable=too-many-instance-attributes
             ns_param.push(param)
 
         else:
-            for name in names:
+            for name in param.names:
                 # check if parameter has been added
                 if not force and (name in self.params or name in self.commands):
                     raise PyParamNameError(

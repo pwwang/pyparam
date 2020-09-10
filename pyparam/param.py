@@ -72,13 +72,19 @@ class Param(CompleterParam):
     def on_register(cls):
         """Opens opportunity to do something when a parameter is registered"""
 
-    def __init__(self, names: List[str], default: Any,
-                 desc: Optional[List[str]], prefix: str = 'auto',
-                 show: bool = True, required: bool = False,
-                 subtype: Optional[bool] = None, type_frozen: bool = True,
+    def __init__(self,
+                 names: List[str],
+                 default: Any,
+                 desc: Optional[List[str]],
+                 prefix: str = 'auto',
+                 show: bool = True,
+                 required: bool = False,
+                 subtype: Optional[bool] = None,
+                 type_frozen: bool = True,
                  callback: Optional[Callable] = None,
                  complete_callback: Optional[Callable] = None,
-                 argname_shorten: bool = True, **kwargs: Dict[str, Any]):
+                 argname_shorten: bool = True,
+                 **kwargs: Dict[str, Any]):
         # pylint: disable=too-many-arguments
         """Constructor"""
         self.names: List[str] = names
@@ -331,12 +337,39 @@ class Param(CompleterParam):
         main_type, sub_type = parse_type(to_type)
         klass: Callable = PARAM_MAPPINGS[main_type]
         param: Type['Param'] = klass(
-            names=self.names, default=None, desc=self.desc,
-            prefix=self.prefix, show=self.show, required=self.required,
-            subtype=sub_type, callback=self.callback
+            names=self.names,
+            default=None,
+            desc=self.desc,
+            prefix=self.prefix,
+            show=self.show,
+            required=self.required,
+            subtype=sub_type,
+            callback=self.callback,
+            complete_callback=self.complete_callback,
+            argname_shorten=self.argname_shorten
         )
         param.ns_param = self.ns_param
         return param
+
+    def copy(self) -> Type['Param']:
+        """Copy a parameter so that it can be reused.
+
+        Returns:
+            The copy of the parameter
+        """
+        return self.__class__(
+            names=self.names,
+            default=self.default,
+            desc=self.desc,
+            prefix=self.prefix,
+            show=self.show,
+            required=self.required,
+            subtype=self.subtype,
+            callback=self.callback,
+            type_frozen=self.type_frozen,
+            complete_callback=self.complete_callback,
+            argname_shorten=self.argname_shorten
+        )
 
     @property
     def default_group(self) -> str:
@@ -969,6 +1002,17 @@ class ParamNamespace(Param):
                 for name in param.terminals:
                     val[name] = param.value
         return val
+
+    def copy(self) -> Type['Param']:
+        """Copy a parameter so that it can be reused.
+
+        Returns:
+            The copy of the parameter
+        """
+        copied = super().copy()
+        copied._stack = OrderedDiot([(key, param.copy())
+                                     for key, param in self._stack.items()])
+        return copied
 
     def apply_callback(self, all_values: Namespace) -> Any:
         ns_callback_applied = Namespace()
