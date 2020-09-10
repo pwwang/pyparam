@@ -432,11 +432,14 @@ class Params(Completer): # pylint: disable=too-many-instance-attributes
         return namespace
 
     def parse(self,
-              args: Optional[List[str]] = None) -> Namespace:
+              args: Optional[List[str]] = None,
+              help_modifier: Optional[Callable] = None) -> Namespace:
         """Parse the arguments from the command line
 
         Args:
             args: The arguments to parse
+            help_modifier: A callback to modify the help parameter and command.
+                It takes 2 elements, help parameter and command if any.
 
         Return:
             Namespace: The namespace of parsed arguments
@@ -448,8 +451,9 @@ class Params(Completer): # pylint: disable=too-many-instance-attributes
                        desc='Print help information for this command',
                        force=True)
 
+        help_cmd: Optional["Params"] = None
         if self.commands:
-            help_cmd: "Params" = self.add_command(
+            help_cmd = self.add_command(
                 self.help_cmds,
                 desc='Print help of sub-commands',
                 force=True
@@ -460,6 +464,9 @@ class Params(Completer): # pylint: disable=too-many-instance-attributes
                 default="",
                 desc="Command name to print help for"
             )
+
+        if callable(help_modifier):
+            help_modifier(self.get_param(self.help_keys[0]), help_cmd)
 
         if args is None:
             # enable completion only when we are trying to parse sys.argv

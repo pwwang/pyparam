@@ -247,3 +247,12 @@ def test_param_reuse():
     assert parsed1.cmd1.i == 1
     assert parsed1.cmd1.l == [1, 2]
     assert parsed1.cmd1.c.a == [8, 9]
+
+def test_help_modifier():
+    def help_modifier(help_param, help_cmd):
+        help_param.group = 'Other arguments'
+
+    with pytest.raises(SystemExit):
+        params.parse(help_modifier=help_modifier)
+
+    assert params.get_param('h').group == 'Other arguments'
