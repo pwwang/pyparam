@@ -176,7 +176,7 @@ def split_arg_string(string: str) -> List[str]:
             ).decode("unicode-escape")
         try:
             arg = type(string)(arg)
-        except UnicodeError:
+        except UnicodeError: # pragma: no cover
             pass
         ret.append(arg)
     return ret
@@ -278,15 +278,15 @@ class Completer:
 
         return shell, comp_words, current
 
-    def _post_complete(self, completions) -> Optional[str]:
+    def _post_complete(
+            self,
+            completions: Iterator[Tuple[str, str, str]]
+    ) -> Optional[str]:
         """Post processing the completions
 
         Filter only completions with given current word/prefix
         If non-fish, don't give the description
         """
-        if completions is None or not completions:
-            return
-
         for comp in completions:
             if self.comp_shell == 'fish':
                 yield '\t'.join(comp)
@@ -311,10 +311,10 @@ class Completer:
                 ret.extend(param.decendents)
         return ret
 
-    def generate(self,
-                 shell: str,
-                 python: Optional[str] = None,
-                 module: bool = False) -> None:
+    def shellcode(self,
+                  shell: str,
+                  python: Optional[str] = None,
+                  module: bool = False) -> None:
         """Generate the shell code to be integrated
 
         For bash, it should be appended to ~/.profile
@@ -334,15 +334,14 @@ class Completer:
         """
 
         if shell == 'zsh':
-            print(self._generate_zsh(python=python, module=module))
-        elif shell == 'fish':
-            print(self._generate_fish(python=python, module=module))
-        elif shell == 'bash':
-            print(self._generate_bash(python=python, module=module))
-        else:
-            raise ValueError(f'Shell not supported: {shell}')
+            return self._shellcode_zsh(python=python, module=module)
+        if shell == 'fish':
+            return self._shellcode_fish(python=python, module=module)
+        if shell == 'bash':
+            return self._shellcode_bash(python=python, module=module)
+        raise ValueError(f'Shell not supported: {shell}')
 
-    def _generate_bash(self, python: Optional[str], module: bool) -> str:
+    def _shellcode_bash(self, python: Optional[str], module: bool) -> str:
         # type: (Optional[str]) -> str
         """Generate the shell code for bash"""
         complete_shell_var: str = (
@@ -361,7 +360,7 @@ class Completer:
             script_name=python or self.prog
         )
 
-    def _generate_fish(self, python: Optional[str], module: bool) -> str:
+    def _shellcode_fish(self, python: Optional[str], module: bool) -> str:
         # type: (Optional[str]) -> str
         """Generate the shell code for fish"""
         complete_shell_var: str = (
@@ -380,7 +379,7 @@ class Completer:
             script_name=python or self.prog
         )
 
-    def _generate_zsh(self, python: Optional[str], module: str) -> str:
+    def _shellcode_zsh(self, python: Optional[str], module: str) -> str:
         # type: (Optional[str]) -> str
         """Generate the shell code for zsh"""
         complete_shell_var: str = (
@@ -464,7 +463,7 @@ class Completer:
             self.commands[command].comp_prev = rest[-1] if rest else None
             # make sure that help parameters or commands are added
             self.commands[command].parse()
-            return
+            # sys.exit(0)
 
         completions: Optional[Union[
             str,
@@ -488,15 +487,15 @@ class Completer:
 
         if param:
             if completions is None:
-                return
-            if completions:
+                return # StopIteration
+            if completions is not None and completions:
                 for completion in completions:
                     yield ((completion[0], 'plain', '')
                            if len(completion) == 1
                            else (completion[0], 'plain', completion[1])
                            if len(completion) == 2
                            else completion)
-                return
+                return # StopIteration, dont go further
 
         # no param or completions == ''
         for param in self._all_params():
@@ -513,7 +512,7 @@ class Completer:
             for command_name, command in self.commands.items():
                 if command_name.startswith(self.comp_curr):
                     yield (command_name, "plain",
-                           command.desc[0].splitlines()[0])
+                           "Command: " + command.desc[0].splitlines()[0])
 
 
 class CompleterParam:

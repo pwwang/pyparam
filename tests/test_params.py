@@ -45,6 +45,10 @@ def test_parse():
     with pytest.raises(SystemExit):
         params.parse([])
 
+    sys.argv = [sys.argv[0]]
+    with pytest.raises(SystemExit):
+        params.parse()
+
     params.add_param('a.b.c', default=1)
     params.add_param('v', type='count')
     parsed = params.parse(['-a.b.c', '2'])

@@ -249,12 +249,12 @@ def main():
         params.parse()
 
     if parsed.__command__ == 'complete':
-        params.generate(
+        print(params.shellcode(
             shell=parsed.complete.shell,
             python=parsed.complete.python
             if parsed.complete.script or parsed.complete.module else None,
             module=parsed.complete.module
-        )
+        ))
     else:
         print()
         print("Arguments passed in:")
