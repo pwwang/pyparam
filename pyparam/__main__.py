@@ -222,15 +222,10 @@ complete.add_param('dir', type='dir', default=Path(__file__).parent,
                    desc='This does nothing but just show you '
                    'how directory completion works.')
 complete.add_param('choice', type='choice',
-                   choices=['small', 'medium', 'large'],
+                   choices=['xsmall', 'small', 'medium', 'large', 'xlarge'],
                    desc='This does nothing but just show you '
                    'how complete callback works.',
-                   complete_callback=lambda current, prefix: [
-                       (f'{prefix}small', 'A very small cup'),
-                       (f'{prefix}medium',
-                        'A relatively medium cup'),
-                       (f'{prefix}large', 'A very large cup'),
-                   ])
+                   complete_callback=None)
 
 def vars_ns(ns, depth=None):
     """Get the vars of a namespace"""

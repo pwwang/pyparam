@@ -26,6 +26,7 @@ jobs:
           cd docs
           cp ../README.md index.md
           cp ../pyparam-help.png ./
+          cp ../pyparam-completions.png ./
           cd ..
           poetry run mkdocs gh-deploy --clean --force
         if: success()

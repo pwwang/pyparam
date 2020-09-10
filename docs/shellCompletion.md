@@ -41,6 +41,80 @@ autoload -Uz compinit
 compinit
 ```
 
+## Complation value callback
+
+When define a parameter, you can also specify a callback to modify how the completion works for the values. For example, to add some description for a `choice` parameter:
+```python
+def complete_callback(current, prefix):
+    completes = []
+    for value in ['xsmall', 'small', 'medium', 'large', 'xlarge']:
+        # only show the value matches user's incomplete input
+        if value.startswith(current):
+            # prefix makes it works with `--choice=...`
+            # Add some description for each value
+            completes.append((f'{prefix}{value}', f'Cup size: {value}'))
+    return completes
+
+params.add_param('choice', type='choice',
+                 choices=['xsmall', 'small', 'medium', 'large', 'xlarge'],
+                 complete_callback=complete_callback)
+```
+
+This is how it looks like in `fish`:
+```shell
+> python -m pyparam complete --choice <tab>
+large    (Cup size: large)  small    (Cup size: small)
+xsmall  (Cup size: xsmall)  medium  (Cup size: medium)
+xlarge  (Cup size: xlarge)
+
+> python -m pyparam complete --choice x<tab>
+xlarge  (Cup size: xlarge)  xsmall  (Cup size: xsmall)
+```
+
+Without the callback:
+```shell
+> python -m pyparam complete --choice <tab>
+large  medium  small  xlarge  xsmall
+
+> python -m pyparam complete --choice x<tab>
+xlarge  xsmall
+```
+
+The callback should return:
+
+- `None`: no completion candidates given, meaning it's requiring user to input a value
+- `''`: An empty string, meaning we are done with the this parameter, go ahead to next available ones.
+- A list of tuple of:
+  - 1-element: Shows just the value, without description
+  - 2-element: Shows both the value and the description
+  - 3-element: Shows the value, type and the description
+
+  There are 3 types of completion candidates. `plain`, `file` and `dir`. In most cases, it's `plain`. But if you want to complete `file` or `dir`, you should return a list of 3-element tuples. Those 3 elements should be :
+  - `current`: the current incomplete user-input, used to filter the paths (the `current` argument).
+  - `type`: either `file` or `dir`
+  - `prefix`: the `prefix` argument, used to do completion for `--path=...`
+
+!!! Note
+
+  `file` type of completions will also show directories.
+
+!!! Note
+
+  When a command has required parameters uncompleted, no subcommands will show in the candidates.
+
+  For example, in your script:
+  ```python
+  params.add_param('i', required=True)
+  params.add_command('command')
+  ```
+
+  Then:
+  ```shell
+  > script <tab>
+  -i  (No description)
+  ```
+  will only show the required parameter, command will not show until the required parameters are filled.
+
 ## Enabling completion in your script
 
 Make sure you call `params.parse(...)` after all parameters/commands defined to make those shell code work.

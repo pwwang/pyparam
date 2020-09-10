@@ -110,8 +110,13 @@ Try more features with:
 $ python -m pyparam
 ```
 
-## TODO
-- [ ] Shell completion.
+## Shell completions
+
+Here is how the command completion in `fish` works:
+
+![pyparam-completions](./pyparam-completions.gif)
+
+Check the [documentation][13], as well as the `__main__.py` to see how the completion works.
 
 
 [1]: https://img.shields.io/pypi/v/pyparam.svg?style=flat-square
@@ -126,3 +131,4 @@ $ python -m pyparam
 [10]: https://img.shields.io/github/tag/pwwang/pyparam.svg?style=flat-square
 [11]: https://github.com/pwwang/pyparam
 [12]: https://img.shields.io/github/workflow/status/pwwang/pyparam/Build%20Docs?label=docs&style=flat-square
+[13]: https://pwwang.github.io/pyparam/shellCompletion/
