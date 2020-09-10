@@ -41,7 +41,7 @@ autoload -Uz compinit
 compinit
 ```
 
-## Complation value callback
+## Completion value callback
 
 When define a parameter, you can also specify a callback to modify how the completion works for the values. For example, to add some description for a `choice` parameter:
 ```python
@@ -85,35 +85,35 @@ The callback should return:
 - `None`: no completion candidates given, meaning it's requiring user to input a value
 - `''`: An empty string, meaning we are done with the this parameter, go ahead to next available ones.
 - A list of tuple of:
-  - 1-element: Shows just the value, without description
-  - 2-element: Shows both the value and the description
-  - 3-element: Shows the value, type and the description
+    - 1-element: Shows just the value, without description
+    - 2-element: Shows both the value and the description
+    - 3-element: Shows the value, type and the description
 
-  There are 3 types of completion candidates. `plain`, `file` and `dir`. In most cases, it's `plain`. But if you want to complete `file` or `dir`, you should return a list of 3-element tuples. Those 3 elements should be :
-  - `current`: the current incomplete user-input, used to filter the paths (the `current` argument).
-  - `type`: either `file` or `dir`
-  - `prefix`: the `prefix` argument, used to do completion for `--path=...`
-
-!!! Note
-
-  `file` type of completions will also show directories.
+    There are 3 types of completion candidates. `plain`, `file` and `dir`. In most cases, it's `plain`. But if you want to complete `file` or `dir`, you should return a list of 3-element tuples. Those 3 elements should be:
+    - `current`: the current incomplete user-input, used to filter the paths (the `current` argument).
+    - `type`: either `file` or `dir`
+    - `prefix`: the `prefix` argument, used to do completion for `--path=...`
 
 !!! Note
 
-  When a command has required parameters uncompleted, no subcommands will show in the candidates.
+    `file` type of completions will also show directories.
 
-  For example, in your script:
-  ```python
-  params.add_param('i', required=True)
-  params.add_command('command')
-  ```
+!!! Note
 
-  Then:
-  ```shell
-  > script <tab>
-  -i  (No description)
-  ```
-  will only show the required parameter, command will not show until the required parameters are filled.
+    When a command has required parameters uncompleted, no subcommands will show in the candidates.
+
+    For example, in your script:
+    ```python
+    params.add_param('i', required=True)
+    params.add_command('command')
+    ```
+
+    Then:
+    ```shell
+    > script <tab>
+    -i  (No description)
+    ```
+    will only show the required parameter, command will not show until the required parameters are filled.
 
 ## Enabling completion in your script
 
