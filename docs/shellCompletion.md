@@ -90,8 +90,11 @@ The callback should return:
     - 3-element: Shows the value, type and the description
 
     There are 3 types of completion candidates. `plain`, `file` and `dir`. In most cases, it's `plain`. But if you want to complete `file` or `dir`, you should return a list of 3-element tuples. Those 3 elements should be:
+
     - `current`: the current incomplete user-input, used to filter the paths (the `current` argument).
+
     - `type`: either `file` or `dir`
+
     - `prefix`: the `prefix` argument, used to do completion for `--path=...`
 
 !!! Note

@@ -21,7 +21,7 @@ if os.path.exists(readme_path):
 setup(
     long_description=readme,
     name='pyparam',
-    version='0.3.2',
+    version='0.4.0',
     description='Powerful parameter processing.',
     python_requires='==3.*,>=3.6.0',
     project_urls={

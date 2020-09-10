@@ -156,8 +156,15 @@ Try more features with:
 
    $ python -m pyparam
 
-TODO
-----
+Shell completions
+-----------------
+
+Here is how the command completion in ``fish`` works:
 
 
-* [ ] Shell completion.
+.. image:: ./pyparam-completions.gif
+   :target: ./pyparam-completions.gif
+   :alt: pyparam-completions
+
+
+Check the `documentation <https://pwwang.github.io/pyparam/shellCompletion/>`_\ , as well as the ``__main__.py`` to see how the completion works.

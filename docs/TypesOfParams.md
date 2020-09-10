@@ -82,7 +82,7 @@ You can also specify a maximum value for the count parameter. For example: `para
 
 ### path parameter
 
-Alias: `p`
+Alias: `p/file`
 Default value if not specified: `None`
 
 THe value of a path parameter will be automatically converted into a `pathlib.Path` object.
@@ -104,6 +104,12 @@ THe value of a path parameter will be automatically converted into a `pathlib.Pa
     ```
 
     See how callback works at [parameter callbacks](#paramter-callbacks)
+
+### dir parameter
+
+No alias.
+
+It is the same as path paramter in terms of parsing and casting the values. However, it is difference in shell completion. It only shows directories, but path parameter will show all available files.
 
 ### py paramter
 
