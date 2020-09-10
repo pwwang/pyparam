@@ -301,3 +301,24 @@ Here are some examples to show how callbacks work:
     parsed = params.parse(['--choice', '1'])
     # parsed.choice == 'medium'
     ```
+
+## Parameter reuse
+
+Parameters can be reused once created. For example:
+```python
+cmd1 = params.add_command('cmd1', help_on_void=False)
+cmd2 = params.add_command('cmd2', help_on_void=False)
+cmd3 = params.add_command('cmd3', help_on_void=False)
+param1 = cmd1.add_param('i', default=1)
+param2 = cmd1.add_param('l', default=[1, 2])
+param3 = cmd1.add_param('c', type='ns')
+param4 = cmd1.add_param('c.a', default=[8, 9])
+cmd2.add_param(param1)
+cmd2.add_param(param2)
+cmd2.add_param(param3)
+cmd3.add_param(param4)
+```
+
+The first argument of `add_param` can be a `Param` object. In such a case, other arguments will be ignored, except `force`.
+
+For namespace parameter, if it is reused, all of its decendents will be reused (copied), too. However, for a parameter under a namespace parameter, if it is reused independent, the namespace parameter will not will be copied. Instead, a new namespace will created for it. In the above case, `cmd3.params['c']is not param3`.
