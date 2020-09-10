@@ -11,7 +11,7 @@ from typing import (
     Dict
 )
 from pathlib import Path
-from diot import OrderedDiot
+from diot import OrderedDiot, Diot
 import rich
 from simpleconf import Config, LOADERS
 from .utils import (
@@ -742,6 +742,99 @@ class Params(Completer): # pylint: disable=too-many-instance-attributes
 
         return param, param_name, param_type, param_value
 
+    def to_dict(self) -> Diot:
+        """Save the parameters/commands to file.
+
+        This is helpful if the parameters/commands take time to load. Once can
+        cache this to a file, and load it from it using `from_file`.
+
+        Returns:
+            The complied Diot of parameters and commands
+        """
+        # load all parameters and commands
+        loaded: Diot = Diot(params={}, commands={})
+        param_groups = {}
+        for group, param_list in self.param_groups.items():
+            for param in param_list:
+                param_groups[param.names[0]] = group
+
+        for param in self._all_params():
+            loaded.params[param.names[0]] = Diot()
+            param_dict: Diot = loaded.params[param.names[0]]
+            if len(param.names) > 1:
+                param_dict.aliases = param.names[1:]
+            param_dict.default = param.default
+            param_dict.type = param.typestr()
+            param_dict.desc = param.desc
+            param_dict.show = param.show
+            param_dict.required = param.required
+            param_dict.type_frozen = param.type_frozen
+            param_dict.argname_shorten = param.argname_shorten
+            param_dict.group = group = param_groups[param.names[0]]
+
+        command_groups = {}
+        for group, command_list in self.command_groups.items():
+            for command in command_list:
+                for name in command.names:
+                    command_groups[name] = group
+
+        for command_name, command in self.commands.items():
+            if any(name in loaded.commands for name in command.names):
+                continue
+            loaded.commands[command_name] = Diot()
+            cmd_dict: Diot = loaded.commands[command_name]
+            if len(command.names) > 1:
+                cmd_dict.aliases = [name for name in command.names
+                                    if name != command_name]
+            cmd_dict.desc = command.desc
+            cmd_dict.help_keys = command.help_keys
+            cmd_dict.help_cmds = command.help_cmds
+            cmd_dict.help_on_void = command.help_on_void
+            cmd_dict.prefix = command.prefix
+            cmd_dict.arbitrary = command.arbitrary
+            cmd_dict.theme = command.theme
+            cmd_dict.usage = command.usage
+            cmd_dict.group = command_groups[command_name]
+            cmd_dict |= command.to_dict()
+
+        return loaded
+
+    def to_file(self,
+                path: Union[str, Path],
+                cfgtype: Optional[str] = None) -> None:
+        """Save the parameters/commands to file.
+
+        This is helpful if the parameters/commands take time to load. Once can
+        cache this to a file, and load it from it using `from_file`.
+
+        Args:
+            path: The path to the file
+            cfgtype: The type of the file
+                If not given, will inferred from the suffix of the path
+                Supports one of yaml, toml and json
+        """
+        loaded: Diot = self.to_dict()
+        if not isinstance(path, Path):
+            path = Path(path)
+        if not cfgtype:
+            if path.suffix in ('.yml', '.yaml'):
+                cfgtype = 'yaml'
+            elif path.suffix == '.toml':
+                cfgtype = 'toml'
+            elif path.suffix == '.json':
+                cfgtype = 'json'
+            else:
+                cfgtype = path.suffix
+        if cfgtype not in ('yaml', 'json', 'toml'):
+            raise ValueError('File type not supported: %s' % cfgtype)
+
+        if cfgtype == 'yaml':
+            loaded.to_yaml(path)
+        elif cfgtype == 'json':
+            loaded.to_json(path)
+        else:
+            loaded.to_toml(path)
+
     def from_file(self,
                   filename: Union[str, dict],
                   filetype: Optional[str] = None,
@@ -809,8 +902,10 @@ class Params(Completer): # pylint: disable=too-many-instance-attributes
             names: List[str] = always_list(command_attrs.pop('aliases', []))
             names.insert(0, command_name)
             param_section: Dict[str, dict] = command_attrs.pop('params', {})
+            subcmd_section: Dict[str, dict] = command_attrs.pop('commands', {})
             command: "Params" = self.add_command(names, **command_attrs)
-            command.from_dict({"params": param_section}, show)
+            command.from_dict({"params": param_section,
+                               "commands": subcmd_section}, show)
 
     def from_dict(self, dict_obj: dict, show: bool = True):
         """Load parameters from python dict

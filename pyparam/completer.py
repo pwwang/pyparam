@@ -32,7 +32,6 @@ OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 import os
 import sys
 import re
-from functools import lru_cache
 from typing import Optional, Iterator, List, Callable, Type, Union, Tuple
 from pathlib import Path
 from hashlib import sha256
@@ -295,7 +294,6 @@ class Completer:
             else:
                 yield '\t'.join((comp[0] or ' ', comp[1]))
 
-    @lru_cache()
     def _all_params(self) -> List[Type['Param']]:
         """All parameters under this command
 

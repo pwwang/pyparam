@@ -256,3 +256,76 @@ def test_help_modifier():
         params.parse(help_modifier=help_modifier)
 
     assert params.get_param('h').group == 'Other arguments'
+
+def test_to_dict():
+    d = params.to_dict()
+    assert len(d['params']) == 0
+    assert len(d['commands']) == 0
+
+    param1 = params.add_param('i, int')
+    d = params.to_dict()
+    assert len(d['params']) == 1
+
+    params2 = Params()
+    params2.from_dict(d)
+    param2 = params2.get_param('i')
+
+    assert d.params['i'].group == 'OPTIONAL OPTIONS'
+    assert param1.names == param2.names
+    assert param1.default == param2.default
+    assert param1.type == param2.type
+    assert param1.desc == param2.desc
+    assert param1.show == param2.show
+    assert param1.required == param2.required
+    assert param1.type_frozen == param2.type_frozen
+    assert param1.argname_shorten == param2.argname_shorten
+
+    cmd = params.add_command('cmd, cmd1', group='X Commands')
+    cmd.add_param('j')
+    d = params.to_dict()
+    assert d.commands.cmd.params == cmd.to_dict().params
+    assert d.commands.cmd.commands == cmd.to_dict().commands
+
+    assert d.commands.cmd.desc == cmd.desc
+    assert d.commands.cmd.help_keys == cmd.help_keys
+    assert d.commands.cmd.help_cmds == cmd.help_cmds
+    assert d.commands.cmd.help_on_void == cmd.help_on_void
+    assert d.commands.cmd.prefix == cmd.prefix
+    assert d.commands.cmd.arbitrary == cmd.arbitrary
+    assert d.commands.cmd.theme == cmd.theme
+    assert d.commands.cmd.usage == cmd.usage
+    assert d.commands.cmd.group == 'X Commands'
+
+@pytest.mark.parametrize("cfgtype", [
+    "params.toml", "params.json", "params.yaml"
+])
+def test_to_file(tmp_path, cfgtype):
+    path = tmp_path / cfgtype
+    param1 = params.add_param('i, int')
+    params.add_command('cmd, cmd1').add_param('j')
+    params.to_file(str(path))
+
+    params2 = Params()
+    params2.from_file(path)
+    param2 = params2.get_param('i')
+    assert param1.names == param2.names
+    assert param1.default == param2.default
+    assert param1.type == param2.type
+    assert param1.desc == param2.desc
+    assert param1.show == param2.show
+    assert param1.required == param2.required
+    assert param1.type_frozen == param2.type_frozen
+    assert param1.argname_shorten == param2.argname_shorten
+
+    assert params2.commands.cmd.desc == params.commands.cmd.desc
+    assert params2.commands.cmd.help_keys == params.commands.cmd.help_keys
+    assert params2.commands.cmd.help_cmds == params.commands.cmd.help_cmds
+    assert params2.commands.cmd.help_on_void == params.commands.cmd.help_on_void
+    assert params2.commands.cmd.prefix == params.commands.cmd.prefix
+    assert params2.commands.cmd.arbitrary == params.commands.cmd.arbitrary
+    assert params2.commands.cmd.theme == params.commands.cmd.theme
+    assert params2.commands.cmd.usage == params.commands.cmd.usage
+
+def test_to_file_error():
+    with pytest.raises(ValueError):
+        params.to_file('abc.def')
