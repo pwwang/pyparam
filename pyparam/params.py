@@ -1,24 +1,19 @@
 """Definition of Params"""
 import sys
-from typing import (Optional, Type, Union, List, Callable, Any, Tuple, Dict)
+from typing import Optional, Type, Union, List, Callable, Any, Tuple, Dict
 from pathlib import Path
 from diot import OrderedDiot, Diot
 import rich
 from simpleconf import Config, LOADERS
 from .utils import (
-    always_list,
-    Namespace,
-    logger,
-    parse_type,
-    type_from_value,
-    parse_potential_argument
+    always_list, Namespace, logger, parse_type,
+    type_from_value, parse_potential_argument
 )
 from .defaults import POSITIONAL
 from .param import PARAM_MAPPINGS
 from .help import HelpAssembler
 from .completer import Completer
 from .exceptions import PyParamNameError
-
 
 class Params(Completer): # pylint: disable=too-many-instance-attributes
     """Params, served as root params or subcommands
@@ -518,7 +513,6 @@ class Params(Completer): # pylint: disable=too-many-instance-attributes
         prev_param: Optional[Type['Param']] = None
         for i, arg in enumerate(args):
             logger.debug("- Parsing item %r", arg)
-
             # Match the arg with defined parameters
             # If arbitrary, non-existing parameters will be created on the fly
             # This means
@@ -565,7 +559,6 @@ class Params(Completer): # pylint: disable=too-many-instance-attributes
                 else:
                     logger.debug("  Param %r consumes %r",
                                  prev_param.namestr(), param_value)
-
             else: # neither
                 # Type: Optional[Type['Param']], Optional[str]
                 prev_param, matched = self._match_command_or_positional(
@@ -651,9 +644,7 @@ class Params(Completer): # pylint: disable=too-many-instance-attributes
 
     def _match_param(self, arg: str) -> Tuple[
             Optional[Type['Param']],
-            Optional[str],
-            Optional[str],
-            Optional[str]
+            Optional[str], Optional[str], Optional[str]
     ]:
         """Check if arg matches any predefined parameters. With
         arbitrary = True, parameters will be defined on the fly.
@@ -739,7 +730,6 @@ class Params(Completer): # pylint: disable=too-many-instance-attributes
         param.hit = True
         if param_value is not None:
             param.push(param_value)
-
         return param, param_name, param_type, param_value
 
     def to_dict(self) -> Diot:
@@ -759,10 +749,13 @@ class Params(Completer): # pylint: disable=too-many-instance-attributes
                 param_groups[param.names[0]] = group
 
         for param in self._all_params():
-            loaded.params[param.names[0]] = Diot()
-            param_dict: Diot = loaded.params[param.names[0]]
+            param_name: str = ("POSITIONAL" if param.names[0] == POSITIONAL
+                               else param.names[0])
+            loaded.params[param_name] = Diot()
+            param_dict: Diot = loaded.params[param_name]
             if len(param.names) > 1:
-                param_dict.aliases = param.names[1:]
+                param_dict.aliases = ["POSITIONAL" if name == POSITIONAL
+                                      else name for name in param.names[1:]]
             param_dict.default = param.default
             param_dict.type = param.typestr()
             param_dict.desc = param.desc
@@ -838,7 +831,8 @@ class Params(Completer): # pylint: disable=too-many-instance-attributes
     def from_file(self,
                   filename: Union[str, dict],
                   filetype: Optional[str] = None,
-                  show: bool = True) -> None:
+                  show: bool = True,
+                  force: bool = False) -> None:
         """Load parameters from file
 
         We support 2 types for format to load the parameters.
@@ -874,19 +868,19 @@ class Params(Completer): # pylint: disable=too-many-instance-attributes
         Args:
             filename: path to the file
             filetype: The type of the file. If None, will infer from the
-                filename.
-                Supported types: ini, cfg, conf, config, yml, yaml, json
-                env, osenv, toml
+                filename. Supported types: ini, cfg, conf, config, yml, yaml,
+                json, env, osenv, toml
             show: The default show value for parameters in the file
+            force: Whether to force adding params/commands
         """
         config: Config = Config(with_profile=False)
         config._load(filename, factory=LOADERS.get(filetype))
-
-        self.from_dict(config, show=show)
+        self.from_dict(config, show=show, force=force)
 
     def _from_dict_with_sections(self,
                                  dict_obj: Dict[str, Dict[str, dict]],
-                                 show: bool = True) -> None:
+                                 show: bool = True,
+                                 force: bool = False) -> None:
         """Load from the dict with 'params' and/or 'commands' sections"""
 
         param_section: Dict[str, dict] = dict_obj.get('params', {})
@@ -895,7 +889,9 @@ class Params(Completer): # pylint: disable=too-many-instance-attributes
             param_attrs.setdefault('show', show)
             names: List[str] = always_list(param_attrs.pop('aliases', []))
             names.insert(0, param_name)
-            self.add_param(names, **param_attrs)
+            self.add_param([POSITIONAL if name == 'POSITIONAL'
+                            else name for name in names],
+                           **param_attrs, force=force)
 
         command_section: Dict[str, dict] = dict_obj.get('commands', {})
         for command_name, command_attrs in command_section.items():
@@ -903,17 +899,19 @@ class Params(Completer): # pylint: disable=too-many-instance-attributes
             names.insert(0, command_name)
             param_section: Dict[str, dict] = command_attrs.pop('params', {})
             subcmd_section: Dict[str, dict] = command_attrs.pop('commands', {})
-            command: "Params" = self.add_command(names, **command_attrs)
+            command: "Params" = self.add_command(names, **command_attrs,
+                                                 force=force)
             command.from_dict({"params": param_section,
                                "commands": subcmd_section}, show)
 
-    def from_dict(self, dict_obj: dict, show: bool = True):
+    def from_dict(self, dict_obj: dict, show: bool = True, force: bool = False):
         """Load parameters from python dict
 
         Args:
             dict_obj: A python dictionary to load parameters from
             show: The default show value for the parameters in the
                 dictionary
+            force: Whether to force adding params/commands
         """
         if 'params' not in dict_obj and 'commands' not in dict_obj:
             # express way
@@ -944,13 +942,15 @@ class Params(Completer): # pylint: disable=too-many-instance-attributes
 
             dict_obj = {"params": all_params}
 
-        self._from_dict_with_sections(dict_obj, show)
+        self._from_dict_with_sections(dict_obj, show, force)
 
     def from_arg(self, # pylint: disable=too-many-arguments
                  names: Union[str, List[str], 'ParamPath'],
                  desc: Union[str, List[str]] = "The configuration file.",
                  group: Optional[str] = None,
                  default: Optional[Union[str, Path]] = None,
+                 show: bool = True,
+                 force: bool = False,
                  args: Optional[List[str]] = None):
         """Load parameters from the file specified by naargument
         from command line
@@ -966,6 +966,8 @@ class Params(Completer): # pylint: disable=too-many-instance-attributes
             desc: The description of the parameter
             group: The group of the parameter
             default: The default value of the file path
+            show: Whether those parameters should show up in the help page
+            force: Whether to force adding the parameters/commands
             args: The list of items to parse, otherwise
                 parse sys.argv[1:]
         """
@@ -979,7 +981,6 @@ class Params(Completer): # pylint: disable=too-many-instance-attributes
 
         prefixed_names: List[str] = [param._prefix_name(name)
                                      for name in param.names]
-
         args: List[str] = sys.argv[1:] if args is None else args
         args_with_the_arg: List[str] = []
         for i, arg in enumerate(args):
@@ -995,4 +996,4 @@ class Params(Completer): # pylint: disable=too-many-instance-attributes
         )
 
         if filepath:
-            self.from_file(filepath)
+            self.from_file(filepath, show=show, force=force)
