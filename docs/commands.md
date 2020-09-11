@@ -98,3 +98,17 @@ You can change the default help command by `params.add_command(..., help_cmds='s
 ```sh
 prog show command
 ```
+
+### Modifying help command
+
+Sometimes, you may want to modify the help command, for example, its group showing in the help page.
+To do this, you need to define a callback and pass it to the `params.parse` function. Since the help command and the help parameters are added on the fly.
+
+```python
+def help_modifier(help_param, help_command):
+	# also do some modifications to help_param as well
+	help_command.group = 'Other commands'
+
+# params definition
+parsed = params.parse(help_modifier=help_modifier)
+```

@@ -348,3 +348,11 @@ params.add_command('cmd').add_param(param)
     params.add_param(param.copy())
     ```
     Even though, we have `param.copy()` API public.
+
+## Help parameter
+
+Help parameter is defined when a command is defined by passing `help_keys` to `Params(...)`. After that, there is no way to modify it. For example, change the group of the help parameter in help page.
+
+To do that, you need to define a callback and pass it to `params.parse`.
+
+See [Modifying help command](../commands/#modifying-help-command)

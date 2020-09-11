@@ -59,7 +59,6 @@ class Params(Completer): # pylint: disable=too-many-instance-attributes
         command_groups: The ordered dict of command groups
         asssembler: The asssembler to assemble the help page
     """
-
     def __init__(self, # pylint: disable=too-many-arguments
                  names: Optional[Union[str, List[str]]] = None,
                  desc: Optional[Union[List[str], str]] = 'No description',
@@ -72,7 +71,6 @@ class Params(Completer): # pylint: disable=too-many-instance-attributes
                  arbitrary: bool = False,
                  theme: str = 'default',
                  usage: Optional[Union[str, List[str]]] = None) -> None:
-        """Constructor"""
         self.desc: List[str] = always_list(desc, strip=False, split=False)
         self.prog: str = sys.argv[0] if prog is None else prog
         self.help_keys: List[str] = always_list(help_keys)
@@ -192,10 +190,13 @@ class Params(Completer): # pylint: disable=too-many-instance-attributes
         Args:
             names: names of the argument or a parameter defined somewhere else
                 For example, in case we want to reuse a parameter
-                >>> param = cmd1.add_param('n,name')
-                >>> # reuse it:
-                >>> cmd2.add_param(param)
-                >>> # other arguments will be ignored, except force
+                ```python
+                param = cmd1.add_param('n,name')
+                # reuse it:
+                cmd2.add_param(param)
+                # other arguments will be ignored, except force
+                ```
+
             default: The default value for the argument
             type: The type of the argument
                 Including single value type and complex one
@@ -994,6 +995,5 @@ class Params(Completer): # pylint: disable=too-many-instance-attributes
             if len(args_with_the_arg) > 1
             else param.value
         )
-
         if filepath:
             self.from_file(filepath, show=show, force=force)
