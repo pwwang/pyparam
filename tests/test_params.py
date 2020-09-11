@@ -252,9 +252,10 @@ def test_param_reuse():
 def test_help_modifier():
     def help_modifier(help_param, help_cmd):
         help_param.group = 'Other arguments'
+    params.help_modifier = help_modifier
 
     with pytest.raises(SystemExit):
-        params.parse(help_modifier=help_modifier)
+        params.parse()
 
     assert params.get_param('h').group == 'Other arguments'
 

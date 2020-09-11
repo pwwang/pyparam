@@ -316,6 +316,7 @@ class HelpAssembler:
 
     def _assemble_usage(self, params: "Params") -> HelpSectionUsage:
         """Assemble the usage section"""
+        # pylint: disable=no-self-use
         if not params.usage:
             # default usage
             # gather required Arguments
@@ -338,7 +339,7 @@ class HelpAssembler:
             params.usage = [" ".join(usage)]
 
         return HelpSectionUsage(
-            usage.format(prog=self.console.meta.prog) for usage in params.usage
+            usage.format(prog=params.prog) for usage in params.usage
         )
 
     def _assemble_param_groups( # pylint: disable=no-self-use

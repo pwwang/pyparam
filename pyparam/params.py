@@ -1,4 +1,5 @@
 """Definition of Params"""
+# pylint: disable=too-many-lines
 import sys
 from typing import Optional, Type, Union, List, Callable, Any, Tuple, Dict
 from pathlib import Path
@@ -6,12 +7,16 @@ from diot import OrderedDiot, Diot
 import rich
 from simpleconf import Config, LOADERS
 from .utils import (
-    always_list, Namespace, logger, parse_type,
-    type_from_value, parse_potential_argument
+    always_list,
+    Namespace,
+    logger,
+    parse_type,
+    type_from_value,
+    parse_potential_argument
 )
 from .defaults import POSITIONAL
 from .param import PARAM_MAPPINGS
-from .help import HelpAssembler
+from .help import HelpAssembler, ProgHighlighter
 from .completer import Completer
 from .exceptions import PyParamNameError
 
@@ -31,6 +36,7 @@ class Params(Completer): # pylint: disable=too-many-instance-attributes
             subcommands
         help_on_void: Whether to show help when no arguments provided
         help_callback: A function to modify the help page
+        help_modifier: A callback function to modify the help param/command
         prefix: The prefix for the arguments
             (see attribute `Params.prefix`)
         arbitrary: Whether to parse the command line arbitrarily
@@ -67,6 +73,7 @@ class Params(Completer): # pylint: disable=too-many-instance-attributes
                  help_cmds: Union[str, List[str]] = 'help',
                  help_on_void: bool = True,
                  help_callback: Optional[Callable] = None,
+                 help_modifier: Optional[Callable] = None,
                  prefix: str = 'auto',
                  arbitrary: bool = False,
                  theme: str = 'default',
@@ -90,6 +97,8 @@ class Params(Completer): # pylint: disable=too-many-instance-attributes
 
         self.param_groups: OrderedDiot = OrderedDiot()
         self.command_groups: OrderedDiot = OrderedDiot()
+
+        self.help_modifier = help_modifier
 
         self.assembler: HelpAssembler = HelpAssembler(
             self.prog, theme, help_callback
@@ -300,6 +309,7 @@ class Params(Completer): # pylint: disable=too-many-instance-attributes
                     help_cmds: Union[str, List[str]] = '__inherit__',
                     help_on_void: Union[str, bool] = '__inherit__',
                     help_callback: Optional[Callable] = None,
+                    help_modifier: Optional[Callable] = None,
                     prefix: str = '__inherit__',
                     arbitrary: Union[str, bool] = '__inherit__',
                     theme: Union[str, rich.theme.Theme] = '__inherit__',
@@ -335,6 +345,10 @@ class Params(Completer): # pylint: disable=too-many-instance-attributes
                 f"{self.prog}{' [OPTIONS]' if self.params else ''} "
                 f"{command.name('long')}"
             )
+            command.assembler.console.meta.prog = command.prog
+            command.assembler.console.meta.highlighters.prog = ProgHighlighter(
+                command.prog
+            )
         else:
             names: List[str] = always_list(names)
             command: "Params" = Params(
@@ -348,6 +362,7 @@ class Params(Completer): # pylint: disable=too-many-instance-attributes
                 help_on_void=(self.help_on_void if help_on_void == '__inherit__'
                               else help_on_void),
                 help_callback=help_callback,
+                help_modifier=help_modifier,
                 prefix=(self.prefix if prefix == '__inherit__'
                         else prefix),
                 arbitrary=(self.arbitrary
@@ -426,14 +441,11 @@ class Params(Completer): # pylint: disable=too-many-instance-attributes
         return namespace
 
     def parse(self,
-              args: Optional[List[str]] = None,
-              help_modifier: Optional[Callable] = None) -> Namespace:
+              args: Optional[List[str]] = None) -> Namespace:
         """Parse the arguments from the command line
 
         Args:
             args: The arguments to parse
-            help_modifier: A callback to modify the help parameter and command.
-                It takes 2 elements, help parameter and command if any.
 
         Return:
             Namespace: The namespace of parsed arguments
@@ -459,8 +471,8 @@ class Params(Completer): # pylint: disable=too-many-instance-attributes
                 desc="Command name to print help for"
             )
 
-        if callable(help_modifier):
-            help_modifier(self.get_param(self.help_keys[0]), help_cmd)
+        if callable(self.help_modifier):
+            self.help_modifier(self.get_param(self.help_keys[0]), help_cmd)
 
         if args is None:
             # enable completion only when we are trying to parse sys.argv

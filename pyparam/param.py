@@ -1,10 +1,10 @@
-# pylint: disable=too-many-lines
 """Definition of a single parameter
 
 Attributes:
     PARAM_MAPPINGS: The type to Param mappings, used for params to init a
         parameter. Managed by `register_param`
 """
+# pylint: disable=too-many-lines
 import ast
 import json
 from typing import (Optional, List, Any, Callable, Type,
