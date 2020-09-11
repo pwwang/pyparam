@@ -65,6 +65,27 @@ Namespace(__command__='command',
 		  command=Namespace(i=2))
 ```
 
+## Command reuse
+
+To reuse a command, you can define a command in either way below:
+```python
+from pyparam import Params
+# root command
+params = Params()
+command = params.add_command('cmd')
+# or
+command = Params('cmd')
+```
+Then add it by:
+```python
+params.add_command(command)
+```
+In such a case, other arguments of `params.add_command` will be ignored, except `force` and `group`.
+
+!!! Note
+
+	Unlike reuse of parameters, the `command` here is not copied. This means any changes you make on `command` will reflect on `params.commands['cmd']`
+
 ## Help command
 
 One can invoke sub-command's help page by:

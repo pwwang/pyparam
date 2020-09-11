@@ -325,6 +325,26 @@ cmd2.add_param(param3)
 cmd3.add_param(param4)
 ```
 
-The first argument of `add_param` can be a `Param` object. In such a case, other arguments will be ignored, except `force`.
+The first argument of `add_param` can be a `Param` object. In such a case, other arguments will be ignored, except `force` and `group`.
 
 For namespace parameter, if it is reused, all of its decendents will be reused (copied), too. However, for a parameter under a namespace parameter, if it is reused independent, the namespace parameter will not will be copied. Instead, a new namespace will created for it. In the above case, `cmd3.params['c']is not param3`.
+
+You may also use the `ParamInt`, `ParamFloat` to initialize a parameter, and reuse them later. For example:
+
+```python
+from pyparam import Params
+from pyparam.param import ParamInt
+param = ParamInt(['i'], default=1)
+
+params = Params()
+params.add_param(param)
+params.add_command('cmd').add_param(param)
+```
+
+!!! Note
+
+    By passing a `Param` object to `add_param`, it will be automatically copied. You don't need to do:
+    ```python
+    params.add_param(param.copy())
+    ```
+    Even though, we have `param.copy()` API public.

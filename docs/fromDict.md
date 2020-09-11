@@ -199,6 +199,16 @@ configfile = params.add_params('config-file', ...)
 params.from_arg(configfile)
 ```
 
+!!! Tip
+
+    `from_dict`, `from_file` and `from_arg` have a `force` argument to force adding parameters/commands, if they exist. Basically later ones will overwrite existing ones.
+
+## Dumping all params to a dict or file
+
+You can dump all parameters and commands into a file, which later on can be loaded by `params`. This is useful when the parameters/commands take time to load.
+
+You can just do `params.to_dict()` or `params.to_file(...)`. You can directly specify the file path, the type will be automatically detected from the extension. Currently supported extensions are `.yaml`, `.yml`, `.json` and `.toml`. Otherwise you can specify the type by `cfgtype` argument. Supported `cfgtype`s are `yaml`, `json` and `toml`.
+
 ## Skipping command line argument parsing
 
 `pyparam` can also work as a value holder, which does not parse anything from the command line, but just use the predefined values. This requires all the parameters are optional and no command has been defined.
