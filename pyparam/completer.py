@@ -294,7 +294,7 @@ class Completer:
             else:
                 yield '\t'.join((comp[0] or ' ', comp[1]))
 
-    def _all_params(self) -> List[Type['Param']]:
+    def _all_params(self, show_only=False) -> List[Type['Param']]:
         """All parameters under this command
 
         self.params don't have all of them, since namespaced ones are under
@@ -303,10 +303,12 @@ class Completer:
         ret: List[Type['Param']] = []
         ret_append: Callable = ret.append
         for param in self.params.values():
+            if show_only and not param.show:
+                continue
             if param not in ret:
                 ret_append(param)
             if param.type == 'ns':
-                ret.extend(param.decendents)
+                ret.extend(param.decendents(show_only))
         return ret
 
     def shellcode(self,
@@ -398,7 +400,7 @@ class Completer:
 
     def _get_param_by_prefixed(self, prefixed: str) -> Optional[Type['Param']]:
         """Get the parameter by the given prefixed name"""
-        for param in self._all_params():
+        for param in self._all_params(True):
             if any(param._prefix_name(name) == prefixed
                    for name in param.names):
                 return param
@@ -426,7 +428,7 @@ class Completer:
         unmatched_required: bool = False
         matched: List[Type['Param']] = []
         matched_append: Callable = matched.append
-        for param in self._all_params():
+        for param in self._all_params(True):
             if any(param._prefix_name(name) in self.comp_words
                    for name in param.names):
                 matched_append(param)
@@ -496,7 +498,7 @@ class Completer:
                 return # StopIteration, dont go further
 
         # no param or completions == ''
-        for param in self._all_params():
+        for param in self._all_params(True):
             if param.type == 'ns':
                 continue
             if param in completed and not param.complete_relapse:

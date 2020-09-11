@@ -44,12 +44,12 @@ cmd4.add_param('config.subcfg.os', type='choice',
                desc='OS parameter')
 
 
-def _set_env(shell, words, cword):
-    os.environ[f'{params.progvar}_COMPLETE_SHELL_{params.uid}'.upper()] = shell
+def _set_env(shell, words, cword, ps=params):
+    os.environ[f'{ps.progvar}_COMPLETE_SHELL_{ps.uid}'.upper()] = shell
     os.environ['COMP_WORDS'] = words
     os.environ['COMP_CWORD'] = str(cword)
     try:
-        Completer.__init__(params)
+        Completer.__init__(ps)
     except SystemExit:
         pass
 
@@ -320,3 +320,15 @@ def test_complete_prepare(capsys):
         params.parse()
 
     assert capsys.readouterr().out.strip() == ''
+
+def test_complete_showonly(capsys):
+    params2 = Params(help_on_void=False, prog='pyparam')
+    params2.add_param('x', show=False)
+    _set_env('fish', 'pyparam', 2, params2)
+    with pytest.raises(SystemExit):
+        params2.parse()
+    out = capsys.readouterr().out
+    assert sorted(out.splitlines()) == sorted([
+        "-h\tplain\tPrint help information for this command",
+        "--help\tplain\tPrint help information for this command",
+    ])

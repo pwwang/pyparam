@@ -915,16 +915,22 @@ class ParamNamespace(Param):
         """Namespace parameters do not have a default value"""
         return self.desc[:]
 
-    @property
-    def decendents(self) -> List[Type['Param']]:
-        """Get all decendents of this namespace parameter"""
+    def decendents(self, show_only=False) -> List[Type['Param']]:
+        """Get all decendents of this namespace parameter
+
+        Args:
+            show_only: Load params with show=True only?
+
+        Returns:
+            The decendents of this namespace parameter
+        """
         ret: List[Type['Param']] = []
         ret_append: Callable = ret.append
         for param in self._stack.values():
             if param not in ret:
                 ret_append(param)
             if isinstance(param, ParamNamespace):
-                ret.extend(param.decendents)
+                ret.extend(param.decendents(show_only))
         return ret
 
     def consume(self, value: str) -> bool:
