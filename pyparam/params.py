@@ -415,7 +415,6 @@ class Params(Completer): # pylint: disable=too-many-instance-attributes
         for param_name, param in self.params.items():
             if param.is_help or param_name in namespace:
                 continue
-
             try:
                 value: Any = param.apply_callback(ns_no_callback)
             except (TypeError, ValueError) as pte:
@@ -424,7 +423,6 @@ class Params(Completer): # pylint: disable=too-many-instance-attributes
             else:
                 for name in param.names:
                     setattr(namespace, name, value)
-
         return namespace
 
     def parse(self,

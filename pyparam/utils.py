@@ -53,7 +53,7 @@ class Namespace(APNamespace):
         return len(vars(self))
 
     def __contains__(self, name: str) -> bool:
-        return hasattr(self, name)
+        return name in vars(self)
 
 class Codeblock:
     """A code block, will be rendered as rich.syntax.Syntax"""
