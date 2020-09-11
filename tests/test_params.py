@@ -9,6 +9,7 @@ def setup_function():
     params.params = OrderedDiot()
     params.commands = OrderedDiot()
     params.prefix = 'auto'
+    params.prog = 'pyparam'
     params.arbitrary = False
     params.help_on_void = True
 
@@ -329,3 +330,9 @@ def test_to_file(tmp_path, cfgtype):
 def test_to_file_error():
     with pytest.raises(ValueError):
         params.to_file('abc.def')
+
+def test_command_reuse():
+    params2 = Params('cmd,cmd1')
+    params.add_command(params2)
+    assert params.commands.cmd is params.commands.cmd1
+    assert params2.prog == 'pyparam cmd1'

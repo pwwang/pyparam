@@ -1,15 +1,6 @@
 """Definition of Params"""
 import sys
-from typing import (
-    Optional,
-    Type,
-    Union,
-    List,
-    Callable,
-    Any,
-    Tuple,
-    Dict
-)
+from typing import (Optional, Type, Union, List, Callable, Any, Tuple, Dict)
 from pathlib import Path
 from diot import OrderedDiot, Diot
 import rich
@@ -307,7 +298,7 @@ class Params(Completer): # pylint: disable=too-many-instance-attributes
         return param
 
     def add_command(self, # pylint: disable=too-many-arguments
-                    names: Union[str, List[str]],
+                    names: Union["Params", str, List[str]],
                     desc: Optional[Union[str, List[str]]] = 'No description',
                     help_keys: Union[str, List[str]] = '__inherit__',
                     help_cmds: Union[str, List[str]] = '__inherit__',
@@ -323,6 +314,7 @@ class Params(Completer): # pylint: disable=too-many-instance-attributes
 
         Args:
             names: list of names of this command
+                It can also be a Params object that served as a subcommand
             desc: description of this command
             help_keys: help key for bring up help for this command
             help_cmds: help command for printing help for other
@@ -340,29 +332,37 @@ class Params(Completer): # pylint: disable=too-many-instance-attributes
             The added command
         """
         # pylint: disable=too-many-locals
-        commands: List[str] = always_list(names)
-        command: "Params" = Params(
-            desc=desc,
-            prog=(f"{self.prog}{' [OPTIONS]' if self.params else ''} "
-                  f"{sorted(commands, key=len)[-1]}"),
-            help_keys=(self.help_keys if help_keys == '__inherit__'
-                       else help_keys),
-            help_cmds=(self.help_cmds if help_cmds == '__inherit__'
-                       else help_cmds),
-            help_on_void=(self.help_on_void if help_on_void == '__inherit__'
-                          else help_on_void),
-            help_callback=help_callback,
-            prefix=(self.prefix if prefix == '__inherit__'
-                    else prefix),
-            arbitrary=(self.arbitrary
-                       if arbitrary == '__inherit__'
-                       else arbitrary),
-            theme=(self.theme if theme == '__inherit__'
-                   else theme),
-            usage=usage,
-            names=commands
-        )
-        for cmd in commands:
+        command: Optional["Params"] = None
+        if isinstance(names, Params):
+            command = names
+            command.prog = (
+                f"{self.prog}{' [OPTIONS]' if self.params else ''} "
+                f"{command.name('long')}"
+            )
+        else:
+            names: List[str] = always_list(names)
+            command: "Params" = Params(
+                desc=desc,
+                prog=(f"{self.prog}{' [OPTIONS]' if self.params else ''} "
+                      f"{sorted(names, key=len)[-1]}"),
+                help_keys=(self.help_keys if help_keys == '__inherit__'
+                           else help_keys),
+                help_cmds=(self.help_cmds if help_cmds == '__inherit__'
+                           else help_cmds),
+                help_on_void=(self.help_on_void if help_on_void == '__inherit__'
+                              else help_on_void),
+                help_callback=help_callback,
+                prefix=(self.prefix if prefix == '__inherit__'
+                        else prefix),
+                arbitrary=(self.arbitrary
+                           if arbitrary == '__inherit__'
+                           else arbitrary),
+                theme=(self.theme if theme == '__inherit__'
+                       else theme),
+                usage=usage,
+                names=names
+            )
+        for cmd in command.names:
             # check if command has been added
             if not force and (cmd in self.params or cmd in self.commands):
                 raise PyParamNameError(
