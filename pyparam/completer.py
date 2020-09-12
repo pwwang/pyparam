@@ -120,7 +120,7 @@ end;
 # Don't do complete until <prog> is hit
 function %(complete_func)s_condition;
     set -l COMP_WORDS (commandline -op)
-    set -l comp_script $COMP_WORDS[1] -m pyparam
+    set -l comp_script %(complete_script)s
     set -l len_words (count $COMP_WORDS)
     set -l len_script (count $comp_script)
     set -l incomplete (commandline -t)
