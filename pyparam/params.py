@@ -79,7 +79,7 @@ class Params(Completer): # pylint: disable=too-many-instance-attributes
                  theme: str = 'default',
                  usage: Optional[Union[str, List[str]]] = None) -> None:
         self.desc: List[str] = always_list(desc, strip=False, split=False)
-        self.prog: str = sys.argv[0] if prog is None else prog
+        self._prog: str = sys.argv[0] if prog is None else prog
         self.help_keys: List[str] = always_list(help_keys)
         self.help_cmds: List[str] = always_list(help_cmds)
         self.help_on_void: bool = help_on_void
@@ -104,6 +104,24 @@ class Params(Completer): # pylint: disable=too-many-instance-attributes
             self.prog, theme, help_callback
         )
         super().__init__()
+
+    @property
+    def prog(self) -> str:
+        """Get the program name"""
+        return self._prog
+
+    @prog.setter
+    def prog(self, value: str):
+        """Set the program name and update the help assembler
+
+        Args:
+            value: The new program name
+        """
+        self._prog = value
+        self.assembler.console.meta.prog = value
+        self.assembler.console.meta.highlighters.prog = ProgHighlighter(
+            value
+        )
 
     def name(self, which: str = 'short') -> str:
         """Get the shortest/longest name of the parameter
@@ -344,10 +362,6 @@ class Params(Completer): # pylint: disable=too-many-instance-attributes
             command.prog = (
                 f"{self.prog}{' [OPTIONS]' if self.params else ''} "
                 f"{command.name('long')}"
-            )
-            command.assembler.console.meta.prog = command.prog
-            command.assembler.console.meta.highlighters.prog = ProgHighlighter(
-                command.prog
             )
         else:
             names: List[str] = always_list(names)
