@@ -775,6 +775,7 @@ class Params(Completer): # pylint: disable=too-many-instance-attributes
             param_dict.type_frozen = param.type_frozen
             param_dict.argname_shorten = param.argname_shorten
             param_dict.group = group = param_groups[param.names[0]]
+            param_dict |= param._kwargs
 
         command_groups = {}
         for group, command_list in self.command_groups.items():
@@ -1007,3 +1008,67 @@ class Params(Completer): # pylint: disable=too-many-instance-attributes
         )
         if filepath:
             self.from_file(filepath, show=show, force=force)
+
+    def __repr__(self):
+        return "<Params(%s) @ %s>" % (','.join(self.names), id(self))
+
+    def copy(self, deep=False) -> "Params":
+        """Copy a Params object
+
+        Args:
+            deep: Whether to copy the parameters and commands deeply
+
+        Returns:
+            The copied params object
+        """
+        copied: "Params" = Params(
+            names=self.names[:],
+            desc=self.desc[:],
+            prog=self.prog,
+            help_keys=self.help_keys[:],
+            help_cmds=self.help_cmds[:],
+            help_on_void=self.help_on_void,
+            help_callback=None,
+            help_modifier=self.help_modifier,
+            prefix=self.prefix,
+            arbitrary=self.arbitrary,
+            theme=self.theme,
+            usage=self.usage and self.usage[:]
+        )
+        copied.assembler = self.assembler
+
+        if not deep:
+            copied.params = self.params.copy()
+            copied.commands = self.commands.copy()
+
+            copied.param_groups = self.param_groups.copy()
+            copied.command_groups = self.command_groups.copy()
+        else:
+            copied.params = OrderedDiot()
+            copied.commands = OrderedDiot()
+
+            copied.param_groups = OrderedDiot()
+            copied.command_groups = OrderedDiot()
+
+            for param in self.params.values():
+                if any(name in copied.params for name in param.names):
+                    continue
+                param_copy = param.copy()
+                for name in param.names:
+                    copied.params[name] = param_copy
+
+            for command in self.commands.values():
+                if any(name in copied.commands for name in command.names):
+                    continue
+                command_copy = command.copy(deep=deep)
+                for name in command.names:
+                    copied.commands[name] = command_copy
+
+            for group, param_list in self.param_groups.items():
+                self.param_groups[group] = [copied.get_param(param.names[0])
+                                            for param in param_list]
+            for group, cmd_list in self.command_groups.items():
+                self.command_groups[group] = [copied.commands[cmd.names[0]]
+                                              for cmd in cmd_list]
+
+        return copied
