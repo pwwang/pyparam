@@ -264,7 +264,14 @@ def test_to_dict():
     assert len(d['params']) == 0
     assert len(d['commands']) == 0
 
-    param1 = params.add_param('i, int')
+    param1 = params.add_param('i, int',
+                              default=1,
+                              type=int,
+                              desc='Int parameter',
+                              show=False,
+                              required=True,
+                              type_frozen=False,
+                              argname_shorten=False)
     d = params.to_dict()
     assert len(d['params']) == 1
 
@@ -272,7 +279,7 @@ def test_to_dict():
     params2.from_dict(d)
     param2 = params2.get_param('i')
 
-    assert d.params['i'].group == 'OPTIONAL OPTIONS'
+    assert d.params['i'].group == 'REQUIRED OPTIONS'
     assert param1.names == param2.names
     assert param1.default == param2.default
     assert param1.type == param2.type
@@ -282,20 +289,31 @@ def test_to_dict():
     assert param1.type_frozen == param2.type_frozen
     assert param1.argname_shorten == param2.argname_shorten
 
-    cmd = params.add_command('cmd, cmd1', group='X Commands')
+    cmd = params.add_command(
+        'cmd, cmd1',
+        help_keys='H',
+        help_cmds='hlp',
+        desc='subcommand',
+        help_on_void=False,
+        prefix='+',
+        arbitrary=True,
+        theme='synthware',
+        usage='{prog} [options]',
+        group='X Commands'
+    )
     cmd.add_param('j')
     d = params.to_dict()
     assert d.commands.cmd.params == cmd.to_dict().params
     assert d.commands.cmd.commands == cmd.to_dict().commands
 
     assert d.commands.cmd.desc == cmd.desc
-    assert d.commands.cmd.help_keys == cmd.help_keys
-    assert d.commands.cmd.help_cmds == cmd.help_cmds
-    assert d.commands.cmd.help_on_void == cmd.help_on_void
-    assert d.commands.cmd.prefix == cmd.prefix
-    assert d.commands.cmd.arbitrary == cmd.arbitrary
-    assert d.commands.cmd.theme == cmd.theme
-    assert d.commands.cmd.usage == cmd.usage
+    assert d.commands.cmd.help_keys == d.commands.cmd.help_keys
+    assert d.commands.cmd.help_cmds == d.commands.cmd.help_cmds
+    assert d.commands.cmd.help_on_void == d.commands.cmd.help_on_void
+    assert d.commands.cmd.prefix == d.commands.cmd.prefix
+    assert d.commands.cmd.arbitrary == d.commands.cmd.arbitrary
+    assert d.commands.cmd.theme == d.commands.cmd.theme
+    assert d.commands.cmd.usage == d.commands.cmd.usage
     assert d.commands.cmd.group == 'X Commands'
 
 @pytest.mark.parametrize("cfgtype", [
@@ -337,3 +355,28 @@ def test_command_reuse():
     params.add_command(params2)
     assert params.commands.cmd is params.commands.cmd1
     assert params2.prog == 'pyparam cmd1'
+    assert repr(params2).startswith('<Params(cmd,cmd1) @ ')
+
+def test_copy():
+    params.add_param('i', default=0)
+    # shallow
+    params_copied = params.copy()
+    parsed = params.parse(['-i', '1'])
+    assert parsed.i == 1
+    assert params_copied.values().i == 1
+
+def test_deepcopy():
+    params1 = Params()
+    params1.add_command('cmd,cmd1').add_param('i,int', default=1)
+
+    params2 = params1.copy(deep=True)
+    params2.commands.cmd.add_param('j', default=2)
+
+    parsed = params1.parse(['cmd', '-i', '3', '-j', '8'])
+    assert parsed.cmd.i == 3
+    assert 'j' not in parsed.cmd
+
+    values = params2.commands.cmd.values()
+    assert values.i == 1
+    assert values.j == 2
+

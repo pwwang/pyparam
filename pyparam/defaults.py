@@ -18,6 +18,7 @@ Attributes:
         the help page.
 """
 from typing import Dict, Optional
+from diot import Diot
 
 POSITIONAL: str = ''
 
@@ -32,3 +33,27 @@ CONSOLE_WIDTH: Optional[int] = 80
 HELP_SECTION_INDENT: int = 2
 # The width of the options in help
 HELP_OPTION_WIDTH: int = 34
+
+# Default attribute values for a Params object
+# This, as well as default attribute values for Param object,
+# are useful to reduce the size of a dumped file
+PARAMS: Diot = Diot(
+    desc=['Not described.'],
+    help_keys=['h', 'help'],
+    help_cmds=['help'],
+    help_on_void=True,
+    prefix='auto',
+    theme='default',
+    usage=None,
+    arbitrary=False,
+)
+
+PARAM: Diot = Diot(
+    type=None,
+    desc=['Not described.'],
+    default=None,
+    show=True,
+    type_frozen=True,
+    argname_shorten=True,
+    required=False
+)

@@ -14,7 +14,9 @@ from .utils import (
     type_from_value,
     parse_potential_argument
 )
-from .defaults import POSITIONAL
+from .defaults import (POSITIONAL,
+                       PARAMS as PARAMS_DEFAULT,
+                       PARAM as PARAM_DEFAULT)
 from .param import PARAM_MAPPINGS
 from .help import HelpAssembler, ProgHighlighter
 from .completer import Completer
@@ -67,22 +69,32 @@ class Params(Completer): # pylint: disable=too-many-instance-attributes
     """
     def __init__(self, # pylint: disable=too-many-arguments
                  names: Optional[Union[str, List[str]]] = None,
-                 desc: Optional[Union[List[str], str]] = 'No description',
+                 desc: Optional[Union[List[str], str]] = None,
                  prog: Optional[str] = None,
-                 help_keys: Union[str, List[str]] = 'h,help',
-                 help_cmds: Union[str, List[str]] = 'help',
-                 help_on_void: bool = True,
+                 help_keys: Union[str, List[str]] = None,
+                 help_cmds: Union[str, List[str]] = None,
+                 help_on_void: bool = None,
                  help_callback: Optional[Callable] = None,
                  help_modifier: Optional[Callable] = None,
                  prefix: str = 'auto',
                  arbitrary: bool = False,
                  theme: str = 'default',
                  usage: Optional[Union[str, List[str]]] = None) -> None:
-        self.desc: List[str] = always_list(desc, strip=False, split=False)
+        self.names: List[str] = always_list(names) if names else []
+        self.desc: List[str] = (PARAMS_DEFAULT.desc if desc is None
+                                else always_list(desc,
+                                                 strip=False,
+                                                 split=False))
         self._prog: str = sys.argv[0] if prog is None else prog
-        self.help_keys: List[str] = always_list(help_keys)
-        self.help_cmds: List[str] = always_list(help_cmds)
-        self.help_on_void: bool = help_on_void
+        self.help_keys: List[str] = (PARAMS_DEFAULT.help_keys
+                                     if help_keys is None
+                                     else always_list(help_keys))
+        self.help_cmds: List[str] = (PARAMS_DEFAULT.help_cmds
+                                     if help_cmds is None
+                                     else always_list(help_cmds))
+        self.help_on_void: bool = (PARAMS_DEFAULT.help_on_void
+                                   if help_on_void is None
+                                   else help_on_void)
         self.usage: Optional[List[str]] = (
             None if usage is None
             else always_list(usage, strip=True, split='\n')
@@ -90,7 +102,6 @@ class Params(Completer): # pylint: disable=too-many-instance-attributes
         self.prefix: str = prefix
         self.arbitrary: bool = arbitrary
         self.theme: Union[str, rich.theme.Theme] = theme
-        self.names: List[str] = always_list(names) if names else []
 
         self.params: OrderedDiot = OrderedDiot()
         self.commands: OrderedDiot = OrderedDiot()
@@ -203,13 +214,13 @@ class Params(Completer): # pylint: disable=too-many-instance-attributes
                   # pylint: disable=redefined-builtin
                   type: Optional[str] = None,
                   desc: Union[str, List[str]] = None,
-                  show: bool = True,
-                  required: bool = False,
+                  show: bool = None,
+                  required: bool = None,
                   callback: Optional[Callable] = None,
                   group: Optional[str] = None,
                   force: bool = False,
-                  type_fronzen: bool = True,
-                  argname_shorten: bool = True,
+                  type_frozen: bool = None,
+                  argname_shorten: bool = None,
                   complete_callback: Optional[Callable] = None,
                   **kwargs) -> Type["Param"]:
         """Add an argument
@@ -269,21 +280,27 @@ class Params(Completer): # pylint: disable=too-many-instance-attributes
             # Type: Optional[str], Optional[str]
             maintype, subtype = parse_type(type.__name__
                                            if callable(type)
+                                           else PARAM_DEFAULT.type
+                                           if type is None
                                            else type)
 
             param: Type['Param'] = PARAM_MAPPINGS[maintype](
                 names=names,
-                default=default,
-                desc=None if desc is None else always_list(desc,
-                                                           strip=False,
-                                                           split=False),
+                default=PARAM_DEFAULT.default if default is None else default,
+                desc=PARAM_DEFAULT.desc if desc is None else always_list(
+                    desc, strip=False, split=False
+                ),
                 prefix=self.prefix,
-                show=show,
-                required=required,
+                show=PARAM_DEFAULT.show if show is None else show,
+                required=(PARAM_DEFAULT.required if required is None
+                          else required),
                 subtype=subtype,
-                type_fronzen=type_fronzen,
+                type_frozen=(PARAM_DEFAULT.type_frozen if type_frozen is None
+                             else type_frozen),
                 callback=callback,
-                argname_shorten=argname_shorten,
+                argname_shorten=(PARAM_DEFAULT.argname_shorten
+                                 if argname_shorten is None
+                                 else argname_shorten),
                 complete_callback=complete_callback,
                 **kwargs
             )
@@ -757,6 +774,79 @@ class Params(Completer): # pylint: disable=too-many-instance-attributes
             param.push(param_value)
         return param, param_name, param_type, param_value
 
+    def _to_dict_params(self) -> Diot:
+        """Load all parameters into a dictionary"""
+        ret = Diot()
+        param_groups = {}
+        for group, param_list in self.param_groups.items():
+            for param in param_list:
+                param_groups[param.names[0]] = group
+
+        for param in self._all_params():
+            param_name: str = ("POSITIONAL" if param.names[0] == POSITIONAL
+                               else param.names[0])
+            ret[param_name] = Diot()
+            param_dict: Diot = ret[param_name]
+            if len(param.names) > 1:
+                param_dict.aliases = ["POSITIONAL" if name == POSITIONAL
+                                      else name for name in param.names[1:]]
+            if param.default != PARAM_DEFAULT.default:
+                param_dict.default = param.default
+            if param.typestr() != PARAM_DEFAULT.type:
+                param_dict.type = param.typestr()
+            if param.desc != PARAM_DEFAULT.desc:
+                param_dict.desc = param.desc
+            if param.show != PARAM_DEFAULT.show:
+                param_dict.show = param.show
+            if param.required != PARAM_DEFAULT.required:
+                param_dict.required = param.required
+            if param.type_frozen != PARAM_DEFAULT.type_frozen:
+                param_dict.type_frozen = param.type_frozen
+            if param.argname_shorten != PARAM_DEFAULT.argname_shorten:
+                param_dict.argname_shorten = param.argname_shorten
+            param_dict.group = group = param_groups[param.names[0]]
+            param_dict |= param._kwargs
+
+        return ret
+
+    def _to_dict_commands(self) -> Diot:
+        """Load all commands into a dictionary"""
+        ret = Diot()
+        command_groups = {}
+        for group, command_list in self.command_groups.items():
+            for command in command_list:
+                for name in command.names:
+                    command_groups[name] = group
+
+        for command_name, command in self.commands.items():
+            if any(name in ret for name in command.names):
+                continue
+            ret[command_name] = Diot()
+            cmd_dict: Diot = ret[command_name]
+            if len(command.names) > 1:
+                cmd_dict.aliases = [name for name in command.names
+                                    if name != command_name]
+            if command.desc != PARAMS_DEFAULT.desc:
+                cmd_dict.desc = command.desc
+            if command.help_keys != PARAMS_DEFAULT.help_keys:
+                cmd_dict.help_keys = command.help_keys
+            if command.help_cmds != PARAMS_DEFAULT.help_cmds:
+                cmd_dict.help_cmds = command.help_cmds
+            if command.help_on_void != PARAMS_DEFAULT.help_on_void:
+                cmd_dict.help_on_void = command.help_on_void
+            if command.prefix != PARAMS_DEFAULT.prefix:
+                cmd_dict.prefix = command.prefix
+            if command.arbitrary != PARAMS_DEFAULT.arbitrary:
+                cmd_dict.arbitrary = command.arbitrary
+            if command.theme != PARAMS_DEFAULT.theme:
+                cmd_dict.theme = command.theme
+            if command.usage != PARAMS_DEFAULT.usage:
+                cmd_dict.usage = command.usage
+            cmd_dict.group = command_groups[command_name]
+            cmd_dict |= command.to_dict()
+
+        return ret
+
     def to_dict(self) -> Diot:
         """Save the parameters/commands to file.
 
@@ -767,56 +857,8 @@ class Params(Completer): # pylint: disable=too-many-instance-attributes
             The complied Diot of parameters and commands
         """
         # load all parameters and commands
-        loaded: Diot = Diot(params={}, commands={})
-        param_groups = {}
-        for group, param_list in self.param_groups.items():
-            for param in param_list:
-                param_groups[param.names[0]] = group
-
-        for param in self._all_params():
-            param_name: str = ("POSITIONAL" if param.names[0] == POSITIONAL
-                               else param.names[0])
-            loaded.params[param_name] = Diot()
-            param_dict: Diot = loaded.params[param_name]
-            if len(param.names) > 1:
-                param_dict.aliases = ["POSITIONAL" if name == POSITIONAL
-                                      else name for name in param.names[1:]]
-            param_dict.default = param.default
-            param_dict.type = param.typestr()
-            param_dict.desc = param.desc
-            param_dict.show = param.show
-            param_dict.required = param.required
-            param_dict.type_frozen = param.type_frozen
-            param_dict.argname_shorten = param.argname_shorten
-            param_dict.group = group = param_groups[param.names[0]]
-            param_dict |= param._kwargs
-
-        command_groups = {}
-        for group, command_list in self.command_groups.items():
-            for command in command_list:
-                for name in command.names:
-                    command_groups[name] = group
-
-        for command_name, command in self.commands.items():
-            if any(name in loaded.commands for name in command.names):
-                continue
-            loaded.commands[command_name] = Diot()
-            cmd_dict: Diot = loaded.commands[command_name]
-            if len(command.names) > 1:
-                cmd_dict.aliases = [name for name in command.names
-                                    if name != command_name]
-            cmd_dict.desc = command.desc
-            cmd_dict.help_keys = command.help_keys
-            cmd_dict.help_cmds = command.help_cmds
-            cmd_dict.help_on_void = command.help_on_void
-            cmd_dict.prefix = command.prefix
-            cmd_dict.arbitrary = command.arbitrary
-            cmd_dict.theme = command.theme
-            cmd_dict.usage = command.usage
-            cmd_dict.group = command_groups[command_name]
-            cmd_dict |= command.to_dict()
-
-        return loaded
+        return Diot(params=self._to_dict_params(),
+                    commands=self._to_dict_commands())
 
     def to_file(self,
                 path: Union[str, Path],
