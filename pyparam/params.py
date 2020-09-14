@@ -587,6 +587,7 @@ class Params(Completer): # pylint: disable=too-many-instance-attributes
                     # 1. hits a command
                     # 2. hits the start of positional arguments
                     # Type: Optional[Type['Param']], Optional[str]
+                    prev_param.close()
                     prev_param, matched = self._match_command_or_positional(
                         prev_param, param_value, args[(i+1):], namespace
                     )

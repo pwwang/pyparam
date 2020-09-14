@@ -380,3 +380,10 @@ def test_deepcopy():
     assert values.i == 1
     assert values.j == 2
 
+def test_bool_next_to_positional():
+    params.add_param('b,bool', default=False)
+    params.add_param(POSITIONAL, type=str)
+    parsed = params.parse(['-b', 'a'])
+    assert parsed.b
+    assert parsed.bool
+    assert parsed[POSITIONAL] == 'a'
