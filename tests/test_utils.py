@@ -18,6 +18,16 @@ def test_namespace():
     assert ns
     assert 'a' in ns
 
+    ns1 = Namespace(b=2)
+    ns2 = ns | ns1
+    assert len(ns2) == 2
+    assert ns2.a == 1
+    assert ns2.b == 2
+
+    assert len(ns) == 1
+    ns |= ns1
+    assert len(ns) == 2
+
 class TestCodeblock:
 
     def test_init(self):

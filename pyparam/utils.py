@@ -67,6 +67,7 @@ class Namespace(APNamespace):
             other = vars(other)
         for key, value in other.items():
             self[key] = value
+        return self
 
 class Codeblock:
     """A code block, will be rendered as rich.syntax.Syntax"""

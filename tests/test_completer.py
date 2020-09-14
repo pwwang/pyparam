@@ -324,6 +324,9 @@ def test_complete_prepare(capsys):
 def test_complete_showonly(capsys):
     params2 = Params(help_on_void=False, prog='pyparam')
     params2.add_param('x', show=False)
+    params2.add_param('ns', type='ns', show=False)
+    params2.add_param('ns.a', desc='NS.A')
+    params2.add_param('ns.b', show=False)
     _set_env('fish', 'pyparam', 2, params2)
     with pytest.raises(SystemExit):
         params2.parse()
@@ -331,4 +334,5 @@ def test_complete_showonly(capsys):
     assert sorted(out.splitlines()) == sorted([
         "-h\tplain\tPrint help information for this command",
         "--help\tplain\tPrint help information for this command",
+        "--ns.a\tplain\tNS.A",
     ])
