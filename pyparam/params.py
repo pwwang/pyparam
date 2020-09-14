@@ -775,6 +775,26 @@ class Params(Completer): # pylint: disable=too-many-instance-attributes
             param.push(param_value)
         return param, param_name, param_type, param_value
 
+    def _all_params(self, show_only=False) -> List[Type['Param']]:
+        """All parameters under this command
+
+        self.params don't have all of them, since namespaced ones are under
+        namespace paramters
+        """
+        ret: List[Type['Param']] = []
+        ret_append: Callable = ret.append
+        for param in self.params.values():
+            if param.type == 'ns':
+                if (not show_only or param.show) and param not in ret:
+                    ret.append(param)
+                ret.extend(param.decendents(show_only))
+
+            elif show_only and not param.show:
+                continue
+            elif param not in ret:
+                ret_append(param)
+        return ret
+
     def _to_dict_params(self) -> Diot:
         """Load all parameters into a dictionary"""
         ret = Diot()

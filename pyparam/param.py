@@ -927,10 +927,16 @@ class ParamNamespace(Param):
         ret: List[Type['Param']] = []
         ret_append: Callable = ret.append
         for param in self._stack.values():
+            # don't skip entire ns parameter
+            if isinstance(param, ParamNamespace):
+                if (not show_only or param.show) and param not in ret:
+                    ret.append(param)
+                ret.extend(param.decendents(show_only))
+                continue
+            if show_only and not param.show:
+                continue
             if param not in ret:
                 ret_append(param)
-            if isinstance(param, ParamNamespace):
-                ret.extend(param.decendents(show_only))
         return ret
 
     def consume(self, value: str) -> bool:

@@ -297,23 +297,6 @@ class Completer:
             else:
                 yield '\t'.join((comp[0] or ' ', comp[1]))
 
-    def _all_params(self, show_only=False) -> List[Type['Param']]:
-        """All parameters under this command
-
-        self.params don't have all of them, since namespaced ones are under
-        namespace paramters
-        """
-        ret: List[Type['Param']] = []
-        ret_append: Callable = ret.append
-        for param in self.params.values():
-            if show_only and not param.show:
-                continue
-            if param not in ret:
-                ret_append(param)
-            if param.type == 'ns':
-                ret.extend(param.decendents(show_only))
-        return ret
-
     def shellcode(self,
                   shell: str,
                   python: Optional[str] = None,
