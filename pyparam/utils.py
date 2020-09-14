@@ -55,6 +55,19 @@ class Namespace(APNamespace):
     def __contains__(self, name: str) -> bool:
         return name in vars(self)
 
+    def __or__(self, other):
+        # copy myself
+        myself: Namespace = self.__class__()
+        myself |= self
+        myself |= other
+        return myself
+
+    def __ior__(self, other):
+        if not isinstance(other, dict):
+            other = vars(other)
+        for key, value in other.items():
+            self[key] = value
+
 class Codeblock:
     """A code block, will be rendered as rich.syntax.Syntax"""
 
