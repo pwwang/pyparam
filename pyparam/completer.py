@@ -124,6 +124,9 @@ function %(complete_func)s_condition;
     set -l len_words (count $COMP_WORDS)
     set -l len_script (count $comp_script)
     set -l incomplete (commandline -t)
+    if [ $len_script -eq 1 ];
+        return 0;
+    end
     # we haven't hit the script or module
     # go ahead do the complete only when
     # len_words > len_script
