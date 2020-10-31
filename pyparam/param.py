@@ -498,7 +498,7 @@ class ParamInt(Param):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.default = self.default or 0
+        # self.default = self.default or 0
 
     def _value(self) -> int:
         return int(super()._value())
@@ -510,7 +510,7 @@ class ParamFloat(Param):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.default = self.default or 0.0
+        # self.default = self.default or 0.0
 
     def _value(self) -> float:
         return float(super()._value())
@@ -522,7 +522,7 @@ class ParamStr(Param):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.default = self.default or ''
+        # self.default = self.default or ''
 
 class ParamBool(Param):
     """A bool parameter whose value is automatically casted into a bool"""
@@ -531,14 +531,15 @@ class ParamBool(Param):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.default = self.default or False
-        try:
-            cast_to(str(self.default), 'bool')
-        except (PyParamValueError, PyParamTypeError):
-            raise PyParamValueError(
-                "Default value of a count argument must be a bool value or "
-                "a value that can be casted to a bool value."
-            ) from None
+        #self.default = self.default or False
+        if self.default is not None:
+            try:
+                self.default = cast_to(str(self.default), 'bool')
+            except (PyParamValueError, PyParamTypeError):
+                raise PyParamValueError(
+                    "Default value of a count argument must be a bool value or "
+                    "a value that can be casted to a bool value."
+                ) from None
 
     def usagestr(self) -> str:
         """Get the string representation of the parameter in the default usage
@@ -588,9 +589,9 @@ class ParamBool(Param):
             self.push(value)
             return True
 
-    def _value(self) -> bool:
+    def _value(self) -> Optional[bool]:
         if not self._stack:
-            return False
+            return self.default
 
         ret = cast_to(self._stack[-1][0], 'bool')
         self._stack = []
@@ -631,7 +632,7 @@ class ParamCount(Param):
         super().__init__(*args, **kwargs)
 
         self.default = self.default or 0
-        if self.default != 0:
+        if self.default is not None and self.default != 0:
             raise PyParamValueError(
                 "Default value of a count argument must be 0"
             )
@@ -846,13 +847,13 @@ class ParamChoice(Param):
             raise PyParamValueError("Argument 'choices' must be "
                                     "a list or a tuple.")
 
-        if not self.required and self.default is None:
-            self.default = self._kwargs['choices'][0]
+        # if not self.required and self.default is None:
+        #     self.default = self._kwargs['choices'][0]
 
     def _value(self) -> Any:
         val = super()._value()
 
-        if val not in self._kwargs['choices']:
+        if val is not None and val not in self._kwargs['choices']:
             raise PyParamValueError(
                 f"{val} is not one of {self._kwargs['choices']}"
             )
@@ -963,6 +964,8 @@ class ParamNamespace(Param):
             if not isinstance(self._stack[part], ParamNamespace):
                 return self._stack[part]
             return self._stack[part].get_param(name, depth + 1)
+        if name in self.names:
+            return self
         return None
 
     # pylint: disable=arguments-differ

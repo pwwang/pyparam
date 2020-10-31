@@ -142,4 +142,7 @@ docs/README.md
 docs/pyparam-help.png
 docs/api/
 
+# vscode's local history extension
+.history/
+
 # End of https://www.gitignore.io/api/python

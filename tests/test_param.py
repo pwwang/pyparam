@@ -154,7 +154,7 @@ def test_callback():
 
 def test_paramstr():
     param = ParamStr(['a'], default=None, desc=['Description'])
-    assert param.value == ''
+    assert param.value == None
 
 def test_parambool():
     with pytest.raises(PyParamValueError):
@@ -193,8 +193,13 @@ def test_parambool():
     param.hit = True
     assert not param.consume('true1')
 
-    param = ParamBool(['a', 'arg'], default='false', desc=['Description'])
+    param = ParamBool(['a', 'arg1'], default='false', desc=['Description'])
     assert param._value() is False
+
+    # allow value/default to be None
+    param = ParamBool(['a', 'arg1'], default=None, desc=['Description'])
+    assert param._value() is None
+
 
 def test_paramcount():
     param = ParamCount(['arg', 'a'], default=0, desc=['Description'])
@@ -291,7 +296,7 @@ def test_paramchoice():
 
     param = ParamChoice(['a'], default=None, choices=[3,2,1],
                         desc=['Description'])
-    assert param.value == 3
+    assert param.value == None
 
 def test_paramns():
     param = ParamNamespace(['c', 'config'], default=None, desc=['Description'])
@@ -301,6 +306,7 @@ def test_paramns():
     assert param.get_param('config.a') is paramint
     assert param.get_param('x.y') is None
     assert param.get_param('') is None
+    assert param.get_param('c') is param
 
     assert param.default_group == 'REQUIRED OPTIONS'
     param.ns_param = param
