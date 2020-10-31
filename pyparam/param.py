@@ -501,7 +501,8 @@ class ParamInt(Param):
         # self.default = self.default or 0
 
     def _value(self) -> int:
-        return int(super()._value())
+        val = super()._value()
+        return None if val is None else int(val)
 
 class ParamFloat(Param):
     """A float parameter whose value is automatically casted into a float"""
@@ -513,7 +514,8 @@ class ParamFloat(Param):
         # self.default = self.default or 0.0
 
     def _value(self) -> float:
-        return float(super()._value())
+        val = super()._value()
+        return None if val is None else float(val)
 
 class ParamStr(Param):
     """A str parameter whose value is automatically casted into a str"""
@@ -593,7 +595,8 @@ class ParamBool(Param):
         if not self._stack:
             return self.default
 
-        ret = cast_to(self._stack[-1][0], 'bool')
+        val = self._stack[-1][0]
+        ret = None if val is None else cast_to(val, 'bool')
         self._stack = []
         return ret
 
