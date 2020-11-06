@@ -4,7 +4,7 @@ build-backend = "poetry.masonry.api"
 
 [tool.poetry]
 name = "pyparam"
-version = "0.4.3"
+version = "0.4.4"
 description = "Powerful parameter processing."
 authors = [ "pwwang <pwwang@pwwang.com>",]
 license = "MIT"
@@ -15,7 +15,7 @@ repository = "https://github.com/pwwang/pyparam"
 [tool.poetry.dependencies]
 python = "^3.6"
 python-simpleconf = "*"
-rich = "^6"
+rich = "^9"
 diot = "*"
 
 [tool.poetry.dev-dependencies]
