@@ -431,7 +431,8 @@ class Params(Completer): # pylint: disable=too-many-instance-attributes
             sys.exit(exit_code)
 
     def values(self,
-               namespace: Optional[Namespace] = None) -> Optional[Namespace]:
+               namespace: Optional[Namespace] = None,
+               ignore_errors: bool = False) -> Optional[Namespace]:
         """Get a namespace of all parameter name => value pairs or attach them
         to the given namespace
 
@@ -449,8 +450,9 @@ class Params(Completer): # pylint: disable=too-many-instance-attributes
             try:
                 value: Any = param.value
             except (TypeError, ValueError) as pve:
-                logger.error("%r: %s", param.namestr(), pve)
-                self.print_help()
+                if not ignore_errors:
+                    logger.error("%r: %s", param.namestr(), pve)
+                    self.print_help()
             else:
                 for name in param.names:
                     ns_no_callback[name] = value
@@ -464,19 +466,24 @@ class Params(Completer): # pylint: disable=too-many-instance-attributes
             try:
                 value: Any = param.apply_callback(ns_no_callback)
             except (TypeError, ValueError) as pte:
-                logger.error("%r: %s", param.namestr(), pte)
-                self.print_help()
+                if not ignore_errors:
+                    logger.error("%r: %s", param.namestr(), pte)
+                    self.print_help()
             else:
                 for name in param.names:
                     setattr(namespace, name, value)
         return namespace
 
     def parse(self,
-              args: Optional[List[str]] = None) -> Namespace:
+              args: Optional[List[str]] = None,
+              ignore_errors: bool = False) -> Namespace:
         """Parse the arguments from the command line
 
         Args:
             args: The arguments to parse
+            ignore_errors: Whether to ignore errors.
+                This is helpful to check a specific option or command,
+                but ignore errors, such as required options not provided.
 
         Return:
             Namespace: The namespace of parsed arguments
@@ -516,7 +523,7 @@ class Params(Completer): # pylint: disable=too-many-instance-attributes
             self.print_help()
 
         namespace: Namespace = Namespace()
-        self._parse(args, namespace)
+        self._parse(args, namespace, ignore_errors)
 
         ## Allow command to be not provided.
         # if self.commands and not namespace.__command__:
@@ -539,7 +546,8 @@ class Params(Completer): # pylint: disable=too-many-instance-attributes
 
     def _parse(self, # pylint: disable=too-many-branches
                args: List[str],
-               namespace: Namespace) -> None:
+               namespace: Namespace,
+               ignore_errors: bool) -> None:
         """Parse the arguments from the command line
 
         Args:
@@ -550,7 +558,7 @@ class Params(Completer): # pylint: disable=too-many-instance-attributes
         logger.debug("Parsing %r", args)
 
         if not args: # help_on_void = False
-            self.values(namespace)
+            self.values(namespace, ignore_errors)
             return
 
         prev_param: Optional[Type['Param']] = None
@@ -582,7 +590,8 @@ class Params(Completer): # pylint: disable=too-many-instance-attributes
 
             elif prev_param: # No param
                 if param_name is not None:
-                    logger.warning("Unknown argument: %r, skipped", arg)
+                    if not ignore_errors:
+                        logger.warning("Unknown argument: %r, skipped", arg)
                 elif not prev_param.consume(param_value):
                     # If value cannot be consumed, let's see if it
                     # 1. hits a command
@@ -590,13 +599,17 @@ class Params(Completer): # pylint: disable=too-many-instance-attributes
                     # Type: Optional[Type['Param']], Optional[str]
                     prev_param.close()
                     prev_param, matched = self._match_command_or_positional(
-                        prev_param, param_value, args[(i+1):], namespace
+                        prev_param,
+                        param_value,
+                        args[(i+1):],
+                        namespace,
+                        ignore_errors
                     )
                     if matched == 'command':
                         break
                     if matched == 'positional':
                         continue
-                    if param_value is not None:
+                    if param_value is not None and not ignore_errors:
                         logger.warning(
                             "Unknown value: %r, skipped", param_value
                         )
@@ -606,27 +619,32 @@ class Params(Completer): # pylint: disable=too-many-instance-attributes
             else: # neither
                 # Type: Optional[Type['Param']], Optional[str]
                 prev_param, matched = self._match_command_or_positional(
-                    prev_param, param_value, args[(i+1):], namespace
+                    prev_param,
+                    param_value,
+                    args[(i+1):],
+                    namespace,
+                    ignore_errors
                 )
                 if matched == 'command':
                     break
                 if matched == 'positional':
                     continue
-                if param_value is not None:
+                if param_value is not None and not ignore_errors:
                     logger.warning("Unknown value: %r, skipped", param_value)
 
         if prev_param:
             logger.debug("  Closing final argument: %r", prev_param.namestr())
             prev_param.close()
 
-        self.values(namespace)
+        self.values(namespace, ignore_errors)
 
-    def _match_command_or_positional(
+    def _match_command_or_positional( # pylint: disable=too-many-arguments
             self,
             prev_param: Optional[Type['Param']],
             arg: str,
             rest_args: List[str],
-            namespace: Namespace
+            namespace: Namespace,
+            ignore_errors: bool = False
     ) -> Tuple[Optional[Type['Param']], Optional[str]]:
         """Check if arg hits a command or a positional argument start
 
@@ -680,7 +698,7 @@ class Params(Completer): # pylint: disable=too-many-instance-attributes
         logger.debug("* Hit command: %r", arg)
         command: "Params" = self.commands[arg]
         namespace.__command__ = arg
-        parsed: Namespace = command.parse(rest_args)
+        parsed: Namespace = command.parse(rest_args, ignore_errors)
         for name in command.names:
             namespace[name] = parsed
 

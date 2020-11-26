@@ -34,6 +34,8 @@ HELP_SECTION_INDENT: int = 2
 # The width of the options in help
 HELP_OPTION_WIDTH: int = 34
 
+ARGUMENT_REQUIRED = "Argument is required."
+
 # Default attribute values for a Params object
 # This, as well as default attribute values for Param object,
 # are useful to reduce the size of a dumped file

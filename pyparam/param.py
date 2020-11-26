@@ -13,7 +13,7 @@ from itertools import product
 from pathlib import Path
 from diot import OrderedDiot
 from .utils import cast_to, parse_type, logger, TYPE_NAMES, Namespace
-from .defaults import POSITIONAL
+from .defaults import POSITIONAL, ARGUMENT_REQUIRED
 from .completer import CompleterParam
 from .exceptions import (PyParamException, PyParamValueError,
                          PyParamTypeError, PyParamNameError)
@@ -830,7 +830,7 @@ class ParamList(Param):
                for val in sublist]
 
         if self.required and not ret:
-            raise PyParamValueError("Argument is required.")
+            raise PyParamValueError(ARGUMENT_REQUIRED)
         self._stack = []
         return ret
 
