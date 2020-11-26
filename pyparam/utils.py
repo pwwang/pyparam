@@ -21,6 +21,7 @@ from pathlib import Path
 from rich.logging import RichHandler
 from rich.padding import Padding
 from rich.syntax import Syntax
+from rich.console import Console
 from .defaults import TYPE_NAMES
 from .exceptions import PyParamTypeError
 
@@ -494,5 +495,7 @@ def cast_to(value: Any, to_type: str) -> Any:
 
 # pylint: disable=invalid-name
 logger = logging.getLogger(__name__)
-logger.setLevel(logging.INFO)
-logger.addHandler(RichHandler(show_time=False, show_path=False))
+logger.addHandler(RichHandler(logging.INFO,
+                              console=Console(),
+                              show_time=False,
+                              show_path=False))
