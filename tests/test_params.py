@@ -87,8 +87,10 @@ def test_parse_command():
     parsed = params.parse(['cmd', '-x'])
     assert parsed.cmd.x is True
 
-    with pytest.raises(SystemExit):
-        params.parse(['cmd2'])
+    # with pytest.raises(SystemExit):
+    #     params.parse(['cmd2'])
+    parsed = params.parse(['cmd2'])
+    assert parsed.__command__ is None
 
     with pytest.raises(SystemExit):
         params.parse(['help', 'cmd'])

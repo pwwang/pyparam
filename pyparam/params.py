@@ -518,11 +518,12 @@ class Params(Completer): # pylint: disable=too-many-instance-attributes
         namespace: Namespace = Namespace()
         self._parse(args, namespace)
 
-        if self.commands and not namespace.__command__:
-            logger.error('No command given.')
-            self.print_help()
+        ## Allow command to be not provided.
+        # if self.commands and not namespace.__command__:
+        #     logger.error('No command given.')
+        #     self.print_help()
         # run help subcommand
-        elif (
+        if (
                 namespace.__command__ in self.help_cmds and
                 len(self.commands) > 1 # together with help command
         ):
