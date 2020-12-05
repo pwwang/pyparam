@@ -504,9 +504,14 @@ class Params(Completer): # pylint: disable=too-many-instance-attributes
             )
             help_cmd.add_param(
                 POSITIONAL,
-                type='str',
+                type='choice',
                 default="",
-                desc="Command name to print help for"
+                desc=("Command name to print help for. "
+                      "Available commands are: {}".format(
+                          ', '.join(cmd for cmd in self.commands
+                                    if cmd not in self.help_cmds)
+                      )),
+                choices=list(self.commands)
             )
 
         if callable(self.help_modifier):
