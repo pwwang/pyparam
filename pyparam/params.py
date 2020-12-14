@@ -20,7 +20,7 @@ from .defaults import (POSITIONAL,
 from .param import PARAM_MAPPINGS
 from .help import HelpAssembler, ProgHighlighter
 from .completer import Completer
-from .exceptions import PyParamNameError
+from .exceptions import PyParamNameError, PyParamTypeError, PyParamValueError
 
 class Params(Completer): # pylint: disable=too-many-instance-attributes
     """Params, served as root params or subcommands
@@ -449,7 +449,7 @@ class Params(Completer): # pylint: disable=too-many-instance-attributes
                 continue
             try:
                 value: Any = param.value
-            except (TypeError, ValueError) as pve:
+            except (PyParamTypeError, PyParamValueError) as pve:
                 if not ignore_errors:
                     logger.error("%r: %s", param.namestr(), pve)
                     self.print_help()
@@ -465,7 +465,7 @@ class Params(Completer): # pylint: disable=too-many-instance-attributes
                 continue
             try:
                 value: Any = param.apply_callback(ns_no_callback)
-            except (TypeError, ValueError) as pte:
+            except (PyParamTypeError, PyParamValueError) as pte:
                 if not ignore_errors:
                     logger.error("%r: %s", param.namestr(), pte)
                     self.print_help()

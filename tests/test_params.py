@@ -77,7 +77,7 @@ def test_parse_wrong_value():
 def test_parse_callback_error():
     params.add_param('f', type='float', callback=lambda x: 1/0)
 
-    with pytest.raises(SystemExit):
+    with pytest.raises(ZeroDivisionError):
         params.parse(['-f', '1'])
 
 def test_parse_command():

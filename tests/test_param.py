@@ -149,7 +149,7 @@ def test_callback():
 
     param = ParamInt(['a'], default=1, desc=['Description'],
                      callback=lambda x: x/0)
-    with pytest.raises(PyParamTypeError):
+    with pytest.raises(ZeroDivisionError):
         param.apply_callback(Namespace())
 
 def test_paramstr():
@@ -353,7 +353,7 @@ def test_paramns():
         param.apply_callback(Namespace())
 
     param_sub.callback = lambda value: 1/0
-    with pytest.raises(PyParamTypeError):
+    with pytest.raises(ZeroDivisionError):
         param.apply_callback(Namespace())
 
 def test_register_param():

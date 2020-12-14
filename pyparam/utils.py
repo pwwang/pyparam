@@ -18,8 +18,9 @@ from typing import (
 from functools import lru_cache
 from argparse import Namespace as APNamespace
 from pathlib import Path
-from rich.logging import RichHandler
+from rich.logging import RichHandler as _RichHandler
 from rich.padding import Padding
+from rich.text import Text
 from rich.syntax import Syntax
 from rich.console import Console
 from .defaults import TYPE_NAMES
@@ -492,6 +493,23 @@ def cast_to(value: Any, to_type: str) -> Any:
             f"Cannot cast {value} to {to_type}: {cast_exc}"
         ) from cast_exc
     raise PyParamTypeError(f"Cannot cast {value} to {to_type}")
+
+class RichHandler(_RichHandler):
+    """Subclass of rich.logging.RichHandler, showing log levels as a single
+    character"""
+    # pylint: disable=no-self-use,too-few-public-methods
+    def get_level_text(self, record: logging.LogRecord) -> Text:
+        """Get the level name from the record.
+        Args:
+            record (LogRecord): LogRecord instance.
+        Returns:
+            Text: A tuple of the style and level name.
+        """
+        level_name = record.levelname
+        level_text = Text.styled(
+            level_name.upper() + ':', f"logging.level.{level_name.lower()}"
+        )
+        return level_text
 
 # pylint: disable=invalid-name
 logger = logging.getLogger(__name__)

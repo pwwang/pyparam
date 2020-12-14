@@ -6,6 +6,7 @@ Attributes:
 """
 # pylint: disable=too-many-lines
 import ast
+import re
 import json
 from typing import (Optional, List, Any, Callable, Type,
                     Dict, Set, Tuple, Union, Iterator)
@@ -471,13 +472,15 @@ class Param(CompleterParam):
         """
         if not callable(self.callback):
             return self.value
+
         try:
-            try:
-                val: Any = self.callback(self.value, all_values)
-            except TypeError:
-                val: Any = self.callback(self.value)
-        except Exception as exc:
-            raise PyParamTypeError(str(exc)) from None
+            val = self.callback(self.value, all_values)
+        except TypeError as terr:
+            # len() takes exactly one argument (2 given)
+            # <lambda>() takes 1 positional argument but 2 were given
+            if not re.search(r'takes .+ argument .+ given', str(terr)):
+                raise
+            val = self.callback(self.value)
 
         if isinstance(val, Exception):
             raise PyParamTypeError(str(val))
@@ -502,7 +505,10 @@ class ParamInt(Param):
 
     def _value(self) -> int:
         val = super()._value()
-        return None if val is None else int(val)
+        try:
+            return None if val is None else int(val)
+        except ValueError as verr:
+            raise PyParamValueError(str(verr)) from None
 
 class ParamFloat(Param):
     """A float parameter whose value is automatically casted into a float"""
@@ -515,7 +521,10 @@ class ParamFloat(Param):
 
     def _value(self) -> float:
         val = super()._value()
-        return None if val is None else float(val)
+        try:
+            return None if val is None else float(val)
+        except ValueError as verr:
+            raise PyParamValueError(str(verr)) from None
 
 class ParamStr(Param):
     """A str parameter whose value is automatically casted into a str"""
@@ -1043,12 +1052,13 @@ class ParamNamespace(Param):
             return ns_callback_applied
 
         try:
-            try:
-                val = self.callback(ns_callback_applied, all_values)
-            except TypeError:
-                val = self.callback(ns_callback_applied)
-        except Exception as exc:
-            raise PyParamTypeError(str(exc)) from None
+            val = self.callback(ns_callback_applied, all_values)
+        except TypeError as terr:
+            # len() takes exactly one argument (2 given)
+            # <lambda>() takes 1 positional argument but 2 were given
+            if not re.search(r'takes .+ argument .+ given', str(terr)):
+                raise
+            val = self.callback(ns_callback_applied)
 
         if isinstance(val, Exception):
             raise PyParamTypeError(str(val))
