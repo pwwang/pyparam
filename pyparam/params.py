@@ -85,7 +85,7 @@ class Params(Completer): # pylint: disable=too-many-instance-attributes
                                 else always_list(desc,
                                                  strip=False,
                                                  split=False))
-        self._prog: str = sys.argv[0] if prog is None else prog
+        self._prog: str = Path(sys.argv[0]).name if prog is None else prog
         self.help_keys: List[str] = (PARAMS_DEFAULT.help_keys
                                      if help_keys is None
                                      else always_list(help_keys))
