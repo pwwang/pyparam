@@ -1,3 +1,23 @@
+## 0.4.7
+- Use basename in help for prog name by default
+- Fix ignore_errors not ignoring the non-PyParamException errors
+
+## 0.4.6
+- Make sure switching # arugments of callbacks correctly
+- Only print errors with help for callbaks to return exceptions, otherwise, raise them
+- Make clean logger level name
+
+## 0.4.5
+- Change help_cmd to choice
+-
+## 0.4.4
+- Don't use shared console for logging
+- Allow command to be not provided.
+
+## 0.4.3
+- Allow default value of other types to be None
+- Fix None value conversion at runtime
+
 ## 0.4.2
 - Don't use `hasattr` for `__contains__` for Namespace, which allows override of `__getattr__`
 - Move help_modifier to params construct
