@@ -443,6 +443,7 @@ class Params(Completer): # pylint: disable=too-many-instance-attributes
             the namespace with values of all parameter
                 name-value pairs
         """
+        # pylint: disable=too-many-branches
         ns_no_callback: Namespace = Namespace()
         for param_name, param in self.params.items():
             if param.is_help or param_name in ns_no_callback:
@@ -453,6 +454,9 @@ class Params(Completer): # pylint: disable=too-many-instance-attributes
                 if not ignore_errors:
                     logger.error("%r: %s", param.namestr(), pve)
                     self.print_help()
+            except Exception:
+                if not ignore_errors:
+                    raise
             else:
                 for name in param.names:
                     ns_no_callback[name] = value
@@ -469,6 +473,9 @@ class Params(Completer): # pylint: disable=too-many-instance-attributes
                 if not ignore_errors:
                     logger.error("%r: %s", param.namestr(), pte)
                     self.print_help()
+            except Exception:
+                if not ignore_errors:
+                    raise
             else:
                 for name in param.names:
                     setattr(namespace, name, value)
