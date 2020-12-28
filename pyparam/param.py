@@ -347,7 +347,8 @@ class Param(CompleterParam):
             subtype=sub_type,
             callback=self.callback,
             complete_callback=self.complete_callback,
-            argname_shorten=self.argname_shorten
+            argname_shorten=self.argname_shorten,
+            **self._kwargs
         )
         param.ns_param = self.ns_param
         return param
@@ -369,7 +370,8 @@ class Param(CompleterParam):
             callback=self.callback,
             type_frozen=self.type_frozen,
             complete_callback=self.complete_callback,
-            argname_shorten=self.argname_shorten
+            argname_shorten=self.argname_shorten,
+            **self._kwargs
         )
 
     @property
