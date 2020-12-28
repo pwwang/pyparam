@@ -1,3 +1,6 @@
+## 0.4.8
+- Add kwargs to `to` and `copy` for Param
+
 ## 0.4.7
 - Use basename in help for prog name by default
 - Fix ignore_errors not ignoring the non-PyParamException errors
