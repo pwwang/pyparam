@@ -1,0 +1,778 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+      
+      
+      
+      <link rel="shortcut icon" href="../favicon.png">
+      <meta name="generator" content="mkdocs-1.1.2, mkdocs-material-6.2.3">
+    
+    
+      
+        <title>Shell completion - pyparam</title>
+      
+    
+    
+      <link rel="stylesheet" href="../assets/stylesheets/main.3b61ea93.min.css">
+      
+        
+        <link rel="stylesheet" href="../assets/stylesheets/palette.39b8e14a.min.css">
+        
+          
+          
+          <meta name="theme-color" content="#546d78">
+        
+      
+    
+    
+    
+      
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,400,400i,700%7CRoboto+Mono&display=fallback">
+        <style>body,input{font-family:"Roboto",-apple-system,BlinkMacSystemFont,Helvetica,Arial,sans-serif}code,kbd,pre{font-family:"Roboto Mono",SFMono-Regular,Consolas,Menlo,monospace}</style>
+      
+    
+    
+    
+      <link rel="stylesheet" href="//use.fontawesome.com/releases/v5.8.1/css/all.css">
+    
+      <link rel="stylesheet" href="//use.fontawesome.com/releases/v5.8.1/css/v4-shims.css">
+    
+      <link rel="stylesheet" href="../css/mkapi-common.css">
+    
+      <link rel="stylesheet" href="../style.css">
+    
+    
+      
+    
+    
+  </head>
+  
+  
+    
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="" data-md-color-primary="blue-grey" data-md-color-accent="">
+      
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#completions-for-bash" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header-nav md-grid" aria-label="Header">
+    <a href=".." title="pyparam" class="md-header-nav__button md-logo" aria-label="pyparam">
+      
+  <img src="../favicon.png" alt="logo">
+
+    </a>
+    <label class="md-header-nav__button md-icon" for="__drawer">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3V6m0 5h18v2H3v-2m0 5h18v2H3v-2z"/></svg>
+    </label>
+    <div class="md-header-nav__title" data-md-component="header-title">
+      <div class="md-header-nav__ellipsis">
+        <div class="md-header-nav__topic">
+          <span class="md-ellipsis">
+            pyparam
+          </span>
+        </div>
+        <div class="md-header-nav__topic">
+          <span class="md-ellipsis">
+            
+              Shell completion
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      <label class="md-header-nav__button md-icon" for="__search">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0116 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 019.5 16 6.5 6.5 0 013 9.5 6.5 6.5 0 019.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5z"/></svg>
+      </label>
+      
+<div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" data-md-state="active" required>
+      <label class="md-search__icon md-icon" for="__search">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0116 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 019.5 16 6.5 6.5 0 013 9.5 6.5 6.5 0 019.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5z"/></svg>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12z"/></svg>
+      </label>
+      <button type="reset" class="md-search__icon md-icon" aria-label="Clear" data-md-component="search-reset" tabindex="-1">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41z"/></svg>
+      </button>
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+    
+  </nav>
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href=".." title="pyparam" class="md-nav__button md-logo" aria-label="pyparam">
+      
+  <img src="../favicon.png" alt="logo">
+
+    </a>
+    pyparam
+  </label>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+      
+
+
+
+  <li class="md-nav__item">
+    <a href=".." class="md-nav__link">
+      Home
+    </a>
+  </li>
+
+    
+      
+      
+      
+
+
+
+  <li class="md-nav__item">
+    <a href="../TypesOfParams/" class="md-nav__link">
+      Defining parameters
+    </a>
+  </li>
+
+    
+      
+      
+      
+
+
+
+  <li class="md-nav__item">
+    <a href="../commands/" class="md-nav__link">
+      Commands
+    </a>
+  </li>
+
+    
+      
+      
+      
+
+
+
+  <li class="md-nav__item">
+    <a href="../fromCommandline/" class="md-nav__link">
+      Parsing from command line
+    </a>
+  </li>
+
+    
+      
+      
+      
+
+
+
+  <li class="md-nav__item">
+    <a href="../fromDict/" class="md-nav__link">
+      Loading from dict/config file
+    </a>
+  </li>
+
+    
+      
+      
+      
+
+
+
+  <li class="md-nav__item">
+    <a href="../helpPage/" class="md-nav__link">
+      Help page
+    </a>
+  </li>
+
+    
+      
+      
+      
+
+
+
+  <li class="md-nav__item">
+    <a href="../useTheValues/" class="md-nav__link">
+      Using the parsed values
+    </a>
+  </li>
+
+    
+      
+      
+      
+
+
+  
+
+
+  <li class="md-nav__item md-nav__item--active">
+    
+    <input class="md-nav__toggle md-toggle" data-md-toggle="toc" type="checkbox" id="__toc">
+    
+    
+      <label class="md-nav__link md-nav__link--active" for="__toc">
+        Shell completion
+        <span class="md-nav__icon md-icon"></span>
+      </label>
+    
+    <a href="./" class="md-nav__link md-nav__link--active">
+      Shell completion
+    </a>
+    
+      
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#completions-for-bash" class="md-nav__link">
+    Completions for bash
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#completions-for-fish" class="md-nav__link">
+    Completions for fish
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#completions-for-zsh" class="md-nav__link">
+    Completions for zsh
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#completion-value-callback" class="md-nav__link">
+    Completion value callback
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#enabling-completion-in-your-script" class="md-nav__link">
+    Enabling completion in your script
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+    
+  </li>
+
+    
+      
+      
+      
+
+
+
+  
+  <li class="md-nav__item md-nav__item--nested">
+    
+    
+      <input class="md-nav__toggle md-toggle" data-md-toggle="nav-9" type="checkbox" id="nav-9" >
+    
+    <label class="md-nav__link" for="nav-9">
+      API
+      <span class="md-nav__icon md-icon"></span>
+    </label>
+    <nav class="md-nav" aria-label="API" data-md-level="1">
+      <label class="md-nav__title" for="nav-9">
+        <span class="md-nav__icon md-icon"></span>
+        API
+      </label>
+      <ul class="md-nav__list" data-md-scrollfix>
+        
+        
+          
+          
+          
+
+
+
+  
+  <li class="md-nav__item md-nav__item--nested">
+    
+    
+      <input class="md-nav__toggle md-toggle" data-md-toggle="nav-9-1" type="checkbox" id="nav-9-1" >
+    
+    <label class="md-nav__link" for="nav-9-1">
+      pyparam
+      <span class="md-nav__icon md-icon"></span>
+    </label>
+    <nav class="md-nav" aria-label="pyparam" data-md-level="2">
+      <label class="md-nav__title" for="nav-9-1">
+        <span class="md-nav__icon md-icon"></span>
+        pyparam
+      </label>
+      <ul class="md-nav__list" data-md-scrollfix>
+        
+        
+          
+          
+          
+
+
+
+  <li class="md-nav__item">
+    <a href="../api/pyparam/" class="md-nav__link">
+      pyparam
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+
+  <li class="md-nav__item">
+    <a href="../api/pyparam.params/" class="md-nav__link">
+      pyparam.params
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+
+  <li class="md-nav__item">
+    <a href="../api/pyparam.exceptions/" class="md-nav__link">
+      pyparam.exceptions
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+
+  <li class="md-nav__item">
+    <a href="../api/pyparam.help/" class="md-nav__link">
+      pyparam.help
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+
+  <li class="md-nav__item">
+    <a href="../api/pyparam.defaults/" class="md-nav__link">
+      pyparam.defaults
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+
+  <li class="md-nav__item">
+    <a href="../api/pyparam.param/" class="md-nav__link">
+      pyparam.param
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+
+  <li class="md-nav__item">
+    <a href="../api/pyparam.utils/" class="md-nav__link">
+      pyparam.utils
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+
+  <li class="md-nav__item">
+    <a href="../api/pyparam.completer/" class="md-nav__link">
+      pyparam.completer
+    </a>
+  </li>
+
+        
+      </ul>
+    </nav>
+  </li>
+
+        
+      </ul>
+    </nav>
+  </li>
+
+    
+      
+      
+      
+
+
+
+  <li class="md-nav__item">
+    <a href="../changeLog/" class="md-nav__link">
+      Change log
+    </a>
+  </li>
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#completions-for-bash" class="md-nav__link">
+    Completions for bash
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#completions-for-fish" class="md-nav__link">
+    Completions for fish
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#completions-for-zsh" class="md-nav__link">
+    Completions for zsh
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#completion-value-callback" class="md-nav__link">
+    Completion value callback
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#enabling-completion-in-your-script" class="md-nav__link">
+    Enabling completion in your script
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          <div class="md-content">
+            <article class="md-content__inner md-typeset">
+              
+                
+                
+                  <h1>Shell completion</h1>
+                
+                <p><code>pyparam</code> supports shell completions for <code>bash</code>, <code>zsh</code> and <code>fish</code>. It also supports the script to be ran as a python script (in the format of <code>python myscript.py</code>) and as a python module (in the format of <code>python -m myscript</code>).</p>
+<p>To enable the completions, you will have to print the code generated by <code>params.shellcode(...)</code>, and let the user save it at required locations for the shell to initiate the completion.</p>
+<p><code>params.shellcode</code> has 3 arguments that generates codes for direct executables, python scripts and python modules.</p>
+<ul>
+<li>Argument <code>shell</code>: Specifies the shell (One of <code>bash</code>, <code>zsh</code> and <code>fish</code>)</li>
+<li>Argument <code>python</code>: Once specified, program will be ran as a python script or a module.
+  It specifies the path or name to the python you used to run your script or your module.
+  For example, if your python executable is <code>python3.8</code>, you will need to specify <code>python3.8</code>.
+  In this case, your program name has to be the path to <code>myscript.py</code>, for example.</li>
+<li>Argument <code>module</code>: Whether the program is running as a python module.
+  <code>python</code> will be used if specified and your program name need to be the name of the module (<code>myscript</code>, for example).</li>
+</ul>
+<p>Let's say you have <code>$ myscript shellcode</code> calling <code>params.shellcode(...)</code> and printing the code:</p>
+<h3 id="completions-for-bash">Completions for bash</h3>
+<div class="highlight"><pre><span></span><code>$ myscript shellcode &gt;&gt; ~/.bashrc
+</code></pre></div>
+<h3 id="completions-for-fish">Completions for fish</h3>
+<p>For direct executable:
+<div class="highlight"><pre><span></span><code>$ myscript shellcode &gt;&gt; ~/.config/fish/completions/myscript.fish
+</code></pre></div>
+For python script or module:
+<div class="highlight"><pre><span></span><code>$ myscript shellcode &gt;&gt; ~/.config/fish/completions/python.fish
+$ <span class="c1">#     corresponding to your python executable:   ^^^^^^</span>
+</code></pre></div></p>
+<h3 id="completions-for-zsh">Completions for zsh</h3>
+<div class="highlight"><pre><span></span><code>$ myscript shellcode &gt;&gt; ~/.zshrc
+</code></pre></div>
+<p>If you encounter <code>command not found: compdef</code>, make sure you have this before the inserted code:
+<div class="highlight"><pre><span></span><code>autoload -Uz compinit
+compinit
+</code></pre></div></p>
+<h3 id="completion-value-callback">Completion value callback</h3>
+<p>When define a parameter, you can also specify a callback to modify how the completion works for the values. For example, to add some description for a <code>choice</code> parameter:
+<div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">complete_callback</span><span class="p">(</span><span class="n">current</span><span class="p">,</span> <span class="n">prefix</span><span class="p">):</span>
+    <span class="n">completes</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">value</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;xsmall&#39;</span><span class="p">,</span> <span class="s1">&#39;small&#39;</span><span class="p">,</span> <span class="s1">&#39;medium&#39;</span><span class="p">,</span> <span class="s1">&#39;large&#39;</span><span class="p">,</span> <span class="s1">&#39;xlarge&#39;</span><span class="p">]:</span>
+        <span class="c1"># only show the value matches user&#39;s incomplete input</span>
+        <span class="k">if</span> <span class="n">value</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="n">current</span><span class="p">):</span>
+            <span class="c1"># prefix makes it works with `--choice=...`</span>
+            <span class="c1"># Add some description for each value</span>
+            <span class="n">completes</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">prefix</span><span class="si">}{</span><span class="n">value</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">,</span> <span class="sa">f</span><span class="s1">&#39;Cup size: </span><span class="si">{</span><span class="n">value</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">))</span>
+    <span class="k">return</span> <span class="n">completes</span>
+
+<span class="n">params</span><span class="o">.</span><span class="n">add_param</span><span class="p">(</span><span class="s1">&#39;choice&#39;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="s1">&#39;choice&#39;</span><span class="p">,</span>
+                 <span class="n">choices</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;xsmall&#39;</span><span class="p">,</span> <span class="s1">&#39;small&#39;</span><span class="p">,</span> <span class="s1">&#39;medium&#39;</span><span class="p">,</span> <span class="s1">&#39;large&#39;</span><span class="p">,</span> <span class="s1">&#39;xlarge&#39;</span><span class="p">],</span>
+                 <span class="n">complete_callback</span><span class="o">=</span><span class="n">complete_callback</span><span class="p">)</span>
+</code></pre></div></p>
+<p>This is how it looks like in <code>fish</code>:
+<div class="highlight"><pre><span></span><code>&gt; python -m pyparam <span class="nb">complete</span> --choice &lt;tab&gt;
+large    <span class="o">(</span>Cup size: large<span class="o">)</span>  small    <span class="o">(</span>Cup size: small<span class="o">)</span>
+xsmall  <span class="o">(</span>Cup size: xsmall<span class="o">)</span>  medium  <span class="o">(</span>Cup size: medium<span class="o">)</span>
+xlarge  <span class="o">(</span>Cup size: xlarge<span class="o">)</span>
+
+&gt; python -m pyparam <span class="nb">complete</span> --choice x&lt;tab&gt;
+xlarge  <span class="o">(</span>Cup size: xlarge<span class="o">)</span>  xsmall  <span class="o">(</span>Cup size: xsmall<span class="o">)</span>
+</code></pre></div></p>
+<p>Without the callback:
+<div class="highlight"><pre><span></span><code>&gt; python -m pyparam <span class="nb">complete</span> --choice &lt;tab&gt;
+large  medium  small  xlarge  xsmall
+
+&gt; python -m pyparam <span class="nb">complete</span> --choice x&lt;tab&gt;
+xlarge  xsmall
+</code></pre></div></p>
+<p>The callback should return:</p>
+<ul>
+<li><code>None</code>: no completion candidates given, meaning it's requiring user to input a value</li>
+<li><code>''</code>: An empty string, meaning we are done with the this parameter, go ahead to next available ones.</li>
+<li>
+<p>A list of tuple of:</p>
+<ul>
+<li>1-element: Shows just the value, without description</li>
+<li>2-element: Shows both the value and the description</li>
+<li>3-element: Shows the value, type and the description</li>
+</ul>
+<p>There are 3 types of completion candidates. <code>plain</code>, <code>file</code> and <code>dir</code>. In most cases, it's <code>plain</code>. But if you want to complete <code>file</code> or <code>dir</code>, you should return a list of 3-element tuples. Those 3 elements should be:</p>
+<ul>
+<li>
+<p><code>current</code>: the current incomplete user-input, used to filter the paths (the <code>current</code> argument).</p>
+</li>
+<li>
+<p><code>type</code>: either <code>file</code> or <code>dir</code></p>
+</li>
+<li>
+<p><code>prefix</code>: the <code>prefix</code> argument, used to do completion for <code>--path=...</code></p>
+</li>
+</ul>
+</li>
+</ul>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p><code>file</code> type of completions will also show directories.</p>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>When a command has required parameters uncompleted, no subcommands will show in the candidates.</p>
+<p>For example, in your script:
+<div class="highlight"><pre><span></span><code><span class="n">params</span><span class="o">.</span><span class="n">add_param</span><span class="p">(</span><span class="s1">&#39;i&#39;</span><span class="p">,</span> <span class="n">required</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="n">params</span><span class="o">.</span><span class="n">add_command</span><span class="p">(</span><span class="s1">&#39;command&#39;</span><span class="p">)</span>
+</code></pre></div></p>
+<p>Then:
+<div class="highlight"><pre><span></span><code>&gt; script &lt;tab&gt;
+-i  <span class="o">(</span>No description<span class="o">)</span>
+</code></pre></div>
+will only show the required parameter, command will not show until the required parameters are filled.</p>
+</div>
+<h3 id="enabling-completion-in-your-script">Enabling completion in your script</h3>
+<p>Make sure you call <code>params.parse(...)</code> after all parameters/commands defined to make those shell code work.</p>
+                
+              
+              
+                
+
+
+              
+            </article>
+          </div>
+        </div>
+      </main>
+      
+        
+<footer class="md-footer">
+  
+    <div class="md-footer-nav">
+      <nav class="md-footer-nav__inner md-grid" aria-label="Footer">
+        
+          <a href="../useTheValues/" class="md-footer-nav__link md-footer-nav__link--prev" rel="prev">
+            <div class="md-footer-nav__button md-icon">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12z"/></svg>
+            </div>
+            <div class="md-footer-nav__title">
+              <div class="md-ellipsis">
+                <span class="md-footer-nav__direction">
+                  Previous
+                </span>
+                Using the parsed values
+              </div>
+            </div>
+          </a>
+        
+        
+          <a href="../api/pyparam/" class="md-footer-nav__link md-footer-nav__link--next" rel="next">
+            <div class="md-footer-nav__title">
+              <div class="md-ellipsis">
+                <span class="md-footer-nav__direction">
+                  Next
+                </span>
+                pyparam
+              </div>
+            </div>
+            <div class="md-footer-nav__button md-icon">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M4 11v2h12l-5.5 5.5 1.42 1.42L19.84 12l-7.92-7.92L10.5 5.5 16 11H4z"/></svg>
+            </div>
+          </a>
+        
+      </nav>
+    </div>
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-footer-copyright">
+        
+        Made with
+        <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+          Material for MkDocs
+        </a>
+      </div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    
+      <script src="../assets/javascripts/vendor.08c56446.min.js"></script>
+      <script src="../assets/javascripts/bundle.6ced434e.min.js"></script><script id="__lang" type="application/json">{"clipboard.copy": "Copy to clipboard", "clipboard.copied": "Copied to clipboard", "search.config.lang": "en", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.placeholder": "Search", "search.result.placeholder": "Type to start searching", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.term.missing": "Missing"}</script>
+      
+      <script>
+        app = initialize({
+          base: "..",
+          features: [],
+          search: Object.assign({
+            worker: "../assets/javascripts/worker/search.8c7e0a7e.min.js"
+          }, typeof search !== "undefined" && search)
+        })
+      </script>
+      
+        <script src="../js/mkapi.js"></script>
+      
+    
+  </body>
+</html>

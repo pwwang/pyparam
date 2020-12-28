@@ -1,0 +1,846 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+      
+      
+      
+      <link rel="shortcut icon" href="../../favicon.png">
+      <meta name="generator" content="mkdocs-1.1.2, mkdocs-material-6.2.3">
+    
+    
+      
+        <title>pyparam.exceptions - pyparam</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.3b61ea93.min.css">
+      
+        
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.39b8e14a.min.css">
+        
+          
+          
+          <meta name="theme-color" content="#546d78">
+        
+      
+    
+    
+    
+      
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,400,400i,700%7CRoboto+Mono&display=fallback">
+        <style>body,input{font-family:"Roboto",-apple-system,BlinkMacSystemFont,Helvetica,Arial,sans-serif}code,kbd,pre{font-family:"Roboto Mono",SFMono-Regular,Consolas,Menlo,monospace}</style>
+      
+    
+    
+    
+      <link rel="stylesheet" href="//use.fontawesome.com/releases/v5.8.1/css/all.css">
+    
+      <link rel="stylesheet" href="//use.fontawesome.com/releases/v5.8.1/css/v4-shims.css">
+    
+      <link rel="stylesheet" href="../../css/mkapi-common.css">
+    
+      <link rel="stylesheet" href="../../style.css">
+    
+    
+      
+    
+    
+  </head>
+  
+  
+    
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="" data-md-color-primary="blue-grey" data-md-color-accent="">
+      
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#pyparamexceptions" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header-nav md-grid" aria-label="Header">
+    <a href="../.." title="pyparam" class="md-header-nav__button md-logo" aria-label="pyparam">
+      
+  <img src="../../favicon.png" alt="logo">
+
+    </a>
+    <label class="md-header-nav__button md-icon" for="__drawer">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3V6m0 5h18v2H3v-2m0 5h18v2H3v-2z"/></svg>
+    </label>
+    <div class="md-header-nav__title" data-md-component="header-title">
+      <div class="md-header-nav__ellipsis">
+        <div class="md-header-nav__topic">
+          <span class="md-ellipsis">
+            pyparam
+          </span>
+        </div>
+        <div class="md-header-nav__topic">
+          <span class="md-ellipsis">
+            
+              pyparam.exceptions
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      <label class="md-header-nav__button md-icon" for="__search">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0116 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 019.5 16 6.5 6.5 0 013 9.5 6.5 6.5 0 019.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5z"/></svg>
+      </label>
+      
+<div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" data-md-state="active" required>
+      <label class="md-search__icon md-icon" for="__search">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0116 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 019.5 16 6.5 6.5 0 013 9.5 6.5 6.5 0 019.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5z"/></svg>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12z"/></svg>
+      </label>
+      <button type="reset" class="md-search__icon md-icon" aria-label="Clear" data-md-component="search-reset" tabindex="-1">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41z"/></svg>
+      </button>
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+    
+  </nav>
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../.." title="pyparam" class="md-nav__button md-logo" aria-label="pyparam">
+      
+  <img src="../../favicon.png" alt="logo">
+
+    </a>
+    pyparam
+  </label>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+      
+
+
+
+  <li class="md-nav__item">
+    <a href="../.." class="md-nav__link">
+      Home
+    </a>
+  </li>
+
+    
+      
+      
+      
+
+
+
+  <li class="md-nav__item">
+    <a href="../../TypesOfParams/" class="md-nav__link">
+      Defining parameters
+    </a>
+  </li>
+
+    
+      
+      
+      
+
+
+
+  <li class="md-nav__item">
+    <a href="../../commands/" class="md-nav__link">
+      Commands
+    </a>
+  </li>
+
+    
+      
+      
+      
+
+
+
+  <li class="md-nav__item">
+    <a href="../../fromCommandline/" class="md-nav__link">
+      Parsing from command line
+    </a>
+  </li>
+
+    
+      
+      
+      
+
+
+
+  <li class="md-nav__item">
+    <a href="../../fromDict/" class="md-nav__link">
+      Loading from dict/config file
+    </a>
+  </li>
+
+    
+      
+      
+      
+
+
+
+  <li class="md-nav__item">
+    <a href="../../helpPage/" class="md-nav__link">
+      Help page
+    </a>
+  </li>
+
+    
+      
+      
+      
+
+
+
+  <li class="md-nav__item">
+    <a href="../../useTheValues/" class="md-nav__link">
+      Using the parsed values
+    </a>
+  </li>
+
+    
+      
+      
+      
+
+
+
+  <li class="md-nav__item">
+    <a href="../../shellCompletion/" class="md-nav__link">
+      Shell completion
+    </a>
+  </li>
+
+    
+      
+      
+      
+
+
+  
+
+
+  
+  <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+    
+    
+      <input class="md-nav__toggle md-toggle" data-md-toggle="nav-9" type="checkbox" id="nav-9" checked>
+    
+    <label class="md-nav__link" for="nav-9">
+      API
+      <span class="md-nav__icon md-icon"></span>
+    </label>
+    <nav class="md-nav" aria-label="API" data-md-level="1">
+      <label class="md-nav__title" for="nav-9">
+        <span class="md-nav__icon md-icon"></span>
+        API
+      </label>
+      <ul class="md-nav__list" data-md-scrollfix>
+        
+        
+          
+          
+          
+
+
+  
+
+
+  
+  <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+    
+    
+      <input class="md-nav__toggle md-toggle" data-md-toggle="nav-9-1" type="checkbox" id="nav-9-1" checked>
+    
+    <label class="md-nav__link" for="nav-9-1">
+      pyparam
+      <span class="md-nav__icon md-icon"></span>
+    </label>
+    <nav class="md-nav" aria-label="pyparam" data-md-level="2">
+      <label class="md-nav__title" for="nav-9-1">
+        <span class="md-nav__icon md-icon"></span>
+        pyparam
+      </label>
+      <ul class="md-nav__list" data-md-scrollfix>
+        
+        
+          
+          
+          
+
+
+
+  <li class="md-nav__item">
+    <a href="../pyparam/" class="md-nav__link">
+      pyparam
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+
+  <li class="md-nav__item">
+    <a href="../pyparam.params/" class="md-nav__link">
+      pyparam.params
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  
+
+
+  <li class="md-nav__item md-nav__item--active">
+    
+    <input class="md-nav__toggle md-toggle" data-md-toggle="toc" type="checkbox" id="__toc">
+    
+    
+      <label class="md-nav__link md-nav__link--active" for="__toc">
+        pyparam.exceptions
+        <span class="md-nav__icon md-icon"></span>
+      </label>
+    
+    <a href="./" class="md-nav__link md-nav__link--active">
+      pyparam.exceptions
+    </a>
+    
+      
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#pyparamexceptions" class="md-nav__link">
+    exceptions
+  </a>
+  
+    <nav class="md-nav" aria-label="exceptions">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#pyparamexceptionspyparamexception" class="md-nav__link">
+    PyParamException
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#pyparamexceptionspyparamtypeerror" class="md-nav__link">
+    PyParamTypeError
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#pyparamexceptionspyparamvalueerror" class="md-nav__link">
+    PyParamValueError
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#pyparamexceptionspyparamnameerror" class="md-nav__link">
+    PyParamNameError
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+    
+  </li>
+
+        
+          
+          
+          
+
+
+
+  <li class="md-nav__item">
+    <a href="../pyparam.help/" class="md-nav__link">
+      pyparam.help
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+
+  <li class="md-nav__item">
+    <a href="../pyparam.defaults/" class="md-nav__link">
+      pyparam.defaults
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+
+  <li class="md-nav__item">
+    <a href="../pyparam.param/" class="md-nav__link">
+      pyparam.param
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+
+  <li class="md-nav__item">
+    <a href="../pyparam.utils/" class="md-nav__link">
+      pyparam.utils
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+
+  <li class="md-nav__item">
+    <a href="../pyparam.completer/" class="md-nav__link">
+      pyparam.completer
+    </a>
+  </li>
+
+        
+      </ul>
+    </nav>
+  </li>
+
+        
+      </ul>
+    </nav>
+  </li>
+
+    
+      
+      
+      
+
+
+
+  <li class="md-nav__item">
+    <a href="../../changeLog/" class="md-nav__link">
+      Change log
+    </a>
+  </li>
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#pyparamexceptions" class="md-nav__link">
+    exceptions
+  </a>
+  
+    <nav class="md-nav" aria-label="exceptions">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#pyparamexceptionspyparamexception" class="md-nav__link">
+    PyParamException
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#pyparamexceptionspyparamtypeerror" class="md-nav__link">
+    PyParamTypeError
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#pyparamexceptionspyparamvalueerror" class="md-nav__link">
+    PyParamValueError
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#pyparamexceptionspyparamnameerror" class="md-nav__link">
+    PyParamNameError
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          <div class="md-content">
+            <article class="md-content__inner md-typeset">
+              
+                
+                
+                  <h1>pyparam.exceptions</h1>
+                
+                <div class="mkapi-node" id="pyparam.exceptions">
+<div class='mkapi-object-container'>
+  <div class="mkapi-object module plain top">
+    <div class="mkapi-object-kind module top">module</div>
+    <h2 id="pyparamexceptions" class="mkapi-object-body module top"><span class="mkapi-object-prefix"><a href="../pyparam/#pyparam">pyparam</a>.</span><span class="mkapi-object-name">exceptions</span></h2>
+  </div>
+  <div class="mkapi-src-link">
+    <a class="mkapi-src-link" href="../source/pyparam.exceptions/#pyparam.exceptions" title="Source for pyparam.exceptions">&lt;/&gt;</a>
+  </div>
+</div>
+<div class="mkapi-docstring">
+<div class="mkapi-section">
+      <div class="mkapi-section-body"><p>Exceptions used in pyparam</p></div>
+    </div>
+  <div class="mkapi-section classes">
+      <div class="mkapi-section-name classes">
+          <span class="mkapi-section-name-body classes">Classes</span> 
+        </div>
+      <div class="mkapi-section-body classes"><ul class="mkapi-items">
+<li class="class"><code class="mkapi-item-name"><a href="#pyparam.exceptions.PyParamException">PyParamException</a></code>
+
+<span class="mkapi-item-dash">&mdash;</span> <span class="mkapi-item-description">Base exception for pyparam<a class="mkapi-src-link" href="../source/pyparam.exceptions/#pyparam.exceptions.PyParamException" title="Source for pyparam.exceptions.PyParamException">&lt;/&gt;</a></span></li>
+
+<li class="class"><code class="mkapi-item-name"><a href="#pyparam.exceptions.PyParamTypeError">PyParamTypeError</a></code>
+
+<span class="mkapi-item-dash">&mdash;</span> <span class="mkapi-item-description">When parameter type is not supported<a class="mkapi-src-link" href="../source/pyparam.exceptions/#pyparam.exceptions.PyParamTypeError" title="Source for pyparam.exceptions.PyParamTypeError">&lt;/&gt;</a></span></li>
+
+<li class="class"><code class="mkapi-item-name"><a href="#pyparam.exceptions.PyParamValueError">PyParamValueError</a></code>
+
+<span class="mkapi-item-dash">&mdash;</span> <span class="mkapi-item-description">When parameter value is improper<a class="mkapi-src-link" href="../source/pyparam.exceptions/#pyparam.exceptions.PyParamValueError" title="Source for pyparam.exceptions.PyParamValueError">&lt;/&gt;</a></span></li>
+
+<li class="class"><code class="mkapi-item-name"><a href="#pyparam.exceptions.PyParamNameError">PyParamNameError</a></code>
+
+<span class="mkapi-item-dash">&mdash;</span> <span class="mkapi-item-description">Any errors related to parameter names<a class="mkapi-src-link" href="../source/pyparam.exceptions/#pyparam.exceptions.PyParamNameError" title="Source for pyparam.exceptions.PyParamNameError">&lt;/&gt;</a></span></li>
+
+
+</ul></div>
+    </div>
+  </div>
+
+</div>
+
+<div class="mkapi-node" id="pyparam.exceptions.PyParamException">
+<div class='mkapi-object-container'>
+  <div class="mkapi-object class code top">
+    <div class="mkapi-object-kind class top">class</div>
+    <h3 id="pyparamexceptionspyparamexception" class="mkapi-object-body class top"><code class="mkapi-object-prefix"><a href="#pyparam.exceptions">pyparam.exceptions</a>.</code><code class="mkapi-object-name">PyParamException</code><code class="mkapi-object-parenthesis">(</code><code class="mkapi-object-parenthesis">)</code></h3>
+  </div>
+  <div class="mkapi-src-link">
+    <a class="mkapi-src-link" href="../source/pyparam.exceptions/#pyparam.exceptions.PyParamException" title="Source for pyparam.exceptions.PyParamException">&lt;/&gt;</a>
+  </div>
+</div>
+<div class="mkapi-docstring">
+<div class="mkapi-section bases">
+      <div class="mkapi-section-name bases">
+          <span class="mkapi-section-name-body bases">Bases</span> 
+        </div>
+      <div class="mkapi-section-body bases">
+<span class="mkapi-base">Exception</span>
+
+<span class="mkapi-base">BaseException</span>
+</div>
+    </div>
+  <div class="mkapi-section">
+      <div class="mkapi-section-body"><p>Base exception for pyparam</p></div>
+    </div>
+  </div>
+
+</div>
+
+<div class="mkapi-node" id="pyparam.exceptions.PyParamTypeError">
+<div class='mkapi-object-container'>
+  <div class="mkapi-object class code top">
+    <div class="mkapi-object-kind class top">class</div>
+    <h3 id="pyparamexceptionspyparamtypeerror" class="mkapi-object-body class top"><code class="mkapi-object-prefix"><a href="#pyparam.exceptions">pyparam.exceptions</a>.</code><code class="mkapi-object-name">PyParamTypeError</code><code class="mkapi-object-parenthesis">(</code><code class="mkapi-object-parenthesis">)</code></h3>
+  </div>
+  <div class="mkapi-src-link">
+    <a class="mkapi-src-link" href="../source/pyparam.exceptions/#pyparam.exceptions.PyParamTypeError" title="Source for pyparam.exceptions.PyParamTypeError">&lt;/&gt;</a>
+  </div>
+</div>
+<div class="mkapi-docstring">
+<div class="mkapi-section bases">
+      <div class="mkapi-section-name bases">
+          <span class="mkapi-section-name-body bases">Bases</span> 
+        </div>
+      <div class="mkapi-section-body bases">
+<span class="mkapi-base"><a href="./#pyparam.exceptions.PyParamException">pyparam.exceptions.PyParamException</a></span>
+
+<span class="mkapi-base">Exception</span>
+
+<span class="mkapi-base">BaseException</span>
+</div>
+    </div>
+  <div class="mkapi-section">
+      <div class="mkapi-section-body"><p>When parameter type is not supported</p></div>
+    </div>
+  </div>
+
+</div>
+
+<div class="mkapi-node" id="pyparam.exceptions.PyParamValueError">
+<div class='mkapi-object-container'>
+  <div class="mkapi-object class code top">
+    <div class="mkapi-object-kind class top">class</div>
+    <h3 id="pyparamexceptionspyparamvalueerror" class="mkapi-object-body class top"><code class="mkapi-object-prefix"><a href="#pyparam.exceptions">pyparam.exceptions</a>.</code><code class="mkapi-object-name">PyParamValueError</code><code class="mkapi-object-parenthesis">(</code><code class="mkapi-object-parenthesis">)</code></h3>
+  </div>
+  <div class="mkapi-src-link">
+    <a class="mkapi-src-link" href="../source/pyparam.exceptions/#pyparam.exceptions.PyParamValueError" title="Source for pyparam.exceptions.PyParamValueError">&lt;/&gt;</a>
+  </div>
+</div>
+<div class="mkapi-docstring">
+<div class="mkapi-section bases">
+      <div class="mkapi-section-name bases">
+          <span class="mkapi-section-name-body bases">Bases</span> 
+        </div>
+      <div class="mkapi-section-body bases">
+<span class="mkapi-base"><a href="./#pyparam.exceptions.PyParamException">pyparam.exceptions.PyParamException</a></span>
+
+<span class="mkapi-base">Exception</span>
+
+<span class="mkapi-base">BaseException</span>
+</div>
+    </div>
+  <div class="mkapi-section">
+      <div class="mkapi-section-body"><p>When parameter value is improper</p></div>
+    </div>
+  </div>
+
+</div>
+
+<div class="mkapi-node" id="pyparam.exceptions.PyParamNameError">
+<div class='mkapi-object-container'>
+  <div class="mkapi-object class code top">
+    <div class="mkapi-object-kind class top">class</div>
+    <h3 id="pyparamexceptionspyparamnameerror" class="mkapi-object-body class top"><code class="mkapi-object-prefix"><a href="#pyparam.exceptions">pyparam.exceptions</a>.</code><code class="mkapi-object-name">PyParamNameError</code><code class="mkapi-object-parenthesis">(</code><code class="mkapi-object-parenthesis">)</code></h3>
+  </div>
+  <div class="mkapi-src-link">
+    <a class="mkapi-src-link" href="../source/pyparam.exceptions/#pyparam.exceptions.PyParamNameError" title="Source for pyparam.exceptions.PyParamNameError">&lt;/&gt;</a>
+  </div>
+</div>
+<div class="mkapi-docstring">
+<div class="mkapi-section bases">
+      <div class="mkapi-section-name bases">
+          <span class="mkapi-section-name-body bases">Bases</span> 
+        </div>
+      <div class="mkapi-section-body bases">
+<span class="mkapi-base"><a href="./#pyparam.exceptions.PyParamException">pyparam.exceptions.PyParamException</a></span>
+
+<span class="mkapi-base">Exception</span>
+
+<span class="mkapi-base">BaseException</span>
+</div>
+    </div>
+  <div class="mkapi-section">
+      <div class="mkapi-section-body"><p>Any errors related to parameter names</p></div>
+    </div>
+  </div>
+
+</div>
+                
+              
+              
+                
+
+
+              
+            </article>
+          </div>
+        </div>
+      </main>
+      
+        
+<footer class="md-footer">
+  
+    <div class="md-footer-nav">
+      <nav class="md-footer-nav__inner md-grid" aria-label="Footer">
+        
+          <a href="../pyparam.params/" class="md-footer-nav__link md-footer-nav__link--prev" rel="prev">
+            <div class="md-footer-nav__button md-icon">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12z"/></svg>
+            </div>
+            <div class="md-footer-nav__title">
+              <div class="md-ellipsis">
+                <span class="md-footer-nav__direction">
+                  Previous
+                </span>
+                pyparam.params
+              </div>
+            </div>
+          </a>
+        
+        
+          <a href="../pyparam.help/" class="md-footer-nav__link md-footer-nav__link--next" rel="next">
+            <div class="md-footer-nav__title">
+              <div class="md-ellipsis">
+                <span class="md-footer-nav__direction">
+                  Next
+                </span>
+                pyparam.help
+              </div>
+            </div>
+            <div class="md-footer-nav__button md-icon">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M4 11v2h12l-5.5 5.5 1.42 1.42L19.84 12l-7.92-7.92L10.5 5.5 16 11H4z"/></svg>
+            </div>
+          </a>
+        
+      </nav>
+    </div>
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-footer-copyright">
+        
+        Made with
+        <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+          Material for MkDocs
+        </a>
+      </div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    
+      <script src="../../assets/javascripts/vendor.08c56446.min.js"></script>
+      <script src="../../assets/javascripts/bundle.6ced434e.min.js"></script><script id="__lang" type="application/json">{"clipboard.copy": "Copy to clipboard", "clipboard.copied": "Copied to clipboard", "search.config.lang": "en", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.placeholder": "Search", "search.result.placeholder": "Type to start searching", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.term.missing": "Missing"}</script>
+      
+      <script>
+        app = initialize({
+          base: "../..",
+          features: [],
+          search: Object.assign({
+            worker: "../../assets/javascripts/worker/search.8c7e0a7e.min.js"
+          }, typeof search !== "undefined" && search)
+        })
+      </script>
+      
+        <script src="../../js/mkapi.js"></script>
+      
+    
+  </body>
+</html>
