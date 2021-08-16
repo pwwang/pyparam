@@ -52,8 +52,9 @@ class TestCodeblock:
     def test_render(self, console):
         cb = Codeblock('>>>', 'pycon', 1)
         cb.add_code(' >>> print("Hello world!")')
+
         console.assert_rich_equal(cb.render(), Padding(
-            Syntax('>>> print("Hello world!")\n', 'pycon'),
+            Syntax('>>> print("Hello world!")', 'pycon'),
             (0,0,0,1)
         ))
 

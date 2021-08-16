@@ -3,5 +3,5 @@ pytest
 pytest-cov
 python-simpleconf
 pyyaml==5.*
-rich==9.*
+rich
 toml==0.*

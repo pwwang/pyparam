@@ -24,7 +24,7 @@ if os.path.exists(readme_path):
 setup(
     long_description=readme,
     name='pyparam',
-    version='0.4.8',
+    version='0.4.9',
     description='Powerful parameter processing.',
     python_requires='==3.*,>=3.6.0',
     project_urls={"homepage": "https://github.com/pwwang/pyparam", "repository": "https://github.com/pwwang/pyparam"},
@@ -34,6 +34,6 @@ setup(
     packages=['pyparam'],
     package_dir={"": "."},
     package_data={},
-    install_requires=['diot', 'python-simpleconf', 'rich==9.*'],
+    install_requires=['diot', 'python-simpleconf', 'rich'],
     extras_require={"dev": ["pytest", "pytest-cov", "pyyaml==5.*", "toml==0.*"]},
 )
