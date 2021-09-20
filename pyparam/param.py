@@ -4,7 +4,6 @@ Attributes:
     PARAM_MAPPINGS: The type to Param mappings, used for params to init a
         parameter. Managed by `register_param`
 """
-# pylint: disable=too-many-lines
 import ast
 import json
 import re
@@ -72,7 +71,6 @@ class Param(CompleterParam):
         _kwargs: other kwargs
     """
 
-    # pylint: disable=too-many-instance-attributes
     type: str = None
     type_aliases: List[str] = []
 
@@ -95,7 +93,6 @@ class Param(CompleterParam):
         argname_shorten: bool = True,
         **kwargs: Dict[str, Any],
     ):
-        # pylint: disable=too-many-arguments
         """Constructor"""
         self.names = names
         self.default = default
@@ -251,7 +248,9 @@ class Param(CompleterParam):
         format_data: dict = {
             key: val
             for key, val in self.__dict__.items()
-            if (not key.startswith("_") and key != "desc" and not callable(val))
+            if (
+                not key.startswith("_") and key != "desc" and not callable(val)
+            )
         }
         format_data.update(self._kwargs)
         ret: List[str] = []
@@ -1047,7 +1046,6 @@ class ParamNamespace(Param):
             return self
         return None
 
-    # pylint: disable=arguments-differ
     def push(self, item: "Param", depth: int = 0) -> None:
         """Push the parameter under this namespace.
 
@@ -1094,8 +1092,6 @@ class ParamNamespace(Param):
             for term in item.terminals:
                 self._stack[term] = item  # type: ignore
 
-    # pylint: enable=arguments-differ
-
     def _value(self) -> Namespace:
         val = Namespace()
         for param_name, param in self._stack.items():
@@ -1121,7 +1117,9 @@ class ParamNamespace(Param):
         for param_name, param in self._stack.items():
             if param_name not in ns_callback_applied:
                 for name in param.terminals:
-                    ns_callback_applied[name] = param.apply_callback(all_values)
+                    ns_callback_applied[name] = param.apply_callback(
+                        all_values
+                    )
 
         if not callable(self.callback):
             return ns_callback_applied

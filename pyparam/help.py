@@ -45,7 +45,7 @@ THEMES: Dict[str, Theme] = dict(
     ),
 )
 
-# pylint: disable=too-few-public-methods
+
 class ProgHighlighter(RegexHighlighter):
     """Apply style to anything that looks like a program name.
 
@@ -87,7 +87,7 @@ class DefaultHighlighter(RegexHighlighter):
 class HelpSection(list):
     """Base class for all help sections."""
 
-    def _highlight(  # pylint: disable=no-self-use
+    def _highlight(
         self,
         string: str,
         highlighters: List[Type[RegexHighlighter]] = None,
@@ -201,11 +201,13 @@ class HelpSectionOption(HelpSection):
             for line in textwrap.wrap(
                 text,
                 drop_whitespace=True,
-                width=(defaults.CONSOLE_WIDTH - defaults.HELP_OPTION_WIDTH - 2),
+                width=(
+                    defaults.CONSOLE_WIDTH - defaults.HELP_OPTION_WIDTH - 2
+                ),
             ):
                 yield self._highlight(hillight_inline_code(line))
 
-        for desc in descs:  # pylint: disable=too-many-nested-blocks
+        for desc in descs:
             if isinstance(desc, Codeblock):
                 yield desc.render()
 
@@ -230,7 +232,8 @@ class HelpSectionOption(HelpSection):
                                 yield Text(sep + " " + line, style="default")
                             else:
                                 yield Text(
-                                    " " * (len(sep) + 1) + line, style="default"
+                                    " " * (len(sep) + 1) + line,
+                                    style="default",
                                 )
                     else:
                         # use * to connect to avoid default to be wrapped
@@ -308,9 +311,10 @@ class HelpAssembler:
         console: The console to print the help page
         callback: The callback to modify the help page
     """
-    # pylint: disable=no-self-use
 
-    def __init__(self, prog: str, theme: Union[str, Theme], callback: Callable):
+    def __init__(
+        self, prog: str, theme: Union[str, Theme], callback: Callable
+    ):
         """Constructor"""
         theme = (
             theme
@@ -333,7 +337,7 @@ class HelpAssembler:
         self.console.meta.highlighters.default = DefaultHighlighter()
 
     def _assemble_description(
-        self, params: "Params"  # pylint: disable=no-self-use
+        self, params: "Params"
     ) -> HelpSectionPlain:
         """Assemble the description section"""
         if not params.desc:
@@ -345,7 +349,6 @@ class HelpAssembler:
 
     def _assemble_usage(self, params: "Params") -> HelpSectionUsage:
         """Assemble the usage section"""
-        # pylint: disable=no-self-use
         if not params.usage:
             # default usage
             # gather required Arguments
@@ -427,7 +430,11 @@ class HelpAssembler:
         for title, section in assembled.items():
             self._assembled.append(Text(end="\n"))  # type: ignore
             self._assembled.append(
-                Text(title + ":", style="title", justify="left")  # type: ignore
+                Text(  # type: ignore
+                    title + ":",
+                    style="title",
+                    justify="left",
+                )
             )
             self._assembled.append(section)
 

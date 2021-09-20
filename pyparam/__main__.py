@@ -3,12 +3,12 @@ import logging
 import sys
 from pathlib import Path
 
-from rich import print  # pylint: disable=redefined-builtin
+from rich import print
 
 from . import Namespace, Params, defaults
 from .utils import logger
 
-# pylint: disable=invalid-name
+
 defaults.CONSOLE_WIDTH = 100
 
 params = Params(
@@ -228,7 +228,10 @@ def callback(value, all_values):
     ),
 )
 nsparams.add_param(
-    "config.nested.gpus", type="int", default=1, desc=["Number of GPUs to use."]
+    "config.nested.gpus",
+    type="int",
+    default=1,
+    desc=["Number of GPUs to use."],
 )
 
 nested_cmd = params.add_command("nested-cmd", desc="Nested commands")

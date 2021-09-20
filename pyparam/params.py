@@ -1,5 +1,4 @@
 """Definition of Params"""
-# pylint: disable=too-many-lines
 import sys
 from os import PathLike
 from pathlib import Path
@@ -30,7 +29,7 @@ if TYPE_CHECKING:
     from .param import Param, ParamNamespace, ParamPath
 
 
-class Params(Completer):  # pylint: disable=too-many-instance-attributes
+class Params(Completer):
     """Params, served as root params or subcommands
 
     Args:
@@ -76,7 +75,7 @@ class Params(Completer):  # pylint: disable=too-many-instance-attributes
         asssembler: The asssembler to assemble the help page
     """
 
-    def __init__(  # pylint: disable=too-many-arguments
+    def __init__(
         self,
         names: Union[str, List[str]] = None,
         desc: Union[List[str], str] = None,
@@ -221,11 +220,10 @@ class Params(Completer):  # pylint: disable=too-many-instance-attributes
             for name in param.names:
                 self.params[name] = param
 
-    def add_param(  # pylint: disable=too-many-arguments
+    def add_param(
         self,
         names: Union[str, List[str], "Param"],
         default: Any = None,
-        # pylint: disable=redefined-builtin
         type: Union[str, Type] = None,
         desc: Union[str, List[str]] = None,
         show: bool = None,
@@ -283,7 +281,6 @@ class Params(Completer):  # pylint: disable=too-many-instance-attributes
         Return:
             Param: The added parameter
         """
-        # pylint: disable=too-many-locals
         if isinstance(names, (str, list)):
             names: List[str] = always_list(names)
             if type is None:
@@ -345,7 +342,9 @@ class Params(Completer):  # pylint: disable=too-many-instance-attributes
         else:
             for name in param.names:
                 # check if parameter has been added
-                if not force and (name in self.params or name in self.commands):
+                if not force and (
+                    name in self.params or name in self.commands
+                ):
                     raise PyParamNameError(
                         f"Argument {name!r} has already been added."
                     )
@@ -361,7 +360,7 @@ class Params(Completer):  # pylint: disable=too-many-instance-attributes
             groups.append(param)
         return param
 
-    def add_command(   # pylint: disable=too-many-arguments
+    def add_command(
         self,
         names: Union["Params", str, List[str]],
         desc: Union[str, List[str]] = "No description",
@@ -398,7 +397,6 @@ class Params(Completer):  # pylint: disable=too-many-instance-attributes
         Returns:
             The added command
         """
-        # pylint: disable=too-many-locals
         command: "Params" = None
         if isinstance(names, Params):
             command = names
@@ -474,7 +472,6 @@ class Params(Completer):  # pylint: disable=too-many-instance-attributes
             the namespace with values of all parameter
                 name-value pairs
         """
-        # pylint: disable=too-many-branches
         ns_no_callback: Namespace = Namespace()
         for param_name, param in self.params.items():
             if param.is_help or param_name in ns_no_callback:
@@ -573,7 +570,7 @@ class Params(Completer):  # pylint: disable=too-many-instance-attributes
         namespace: Namespace = Namespace()
         self._parse(args, namespace, ignore_errors)
 
-        ## Allow command to be not provided.
+        # # Allow command to be not provided.
         # if self.commands and not namespace.__command__:
         #     logger.error('No command given.')
         #     self.print_help()
@@ -592,7 +589,7 @@ class Params(Completer):  # pylint: disable=too-many-instance-attributes
                 self.commands[command_passed].print_help()
         return namespace
 
-    def _parse(   # pylint: disable=too-many-branches
+    def _parse(
         self,
         args: List[str],
         namespace: Namespace,
@@ -693,7 +690,7 @@ class Params(Completer):  # pylint: disable=too-many-instance-attributes
 
         self.values(namespace, ignore_errors)
 
-    def _match_command_or_positional(  # pylint: disable=too-many-arguments
+    def _match_command_or_positional(
         self,
         prev_param: "Param",
         arg: str,
@@ -712,8 +709,8 @@ class Params(Completer):  # pylint: disable=too-many-instance-attributes
             tuple (Param, str):
                 - A parameter if we create a new one here
                     (ie, a positional parameter)
-                - 'command' when arg hits a command or 'positional' when it hits
-                    the start of a positional argument. Otherwise, None.
+                - 'command' when arg hits a command or 'positional' when it
+                    hits the start of a positional argument. Otherwise, None.
         """
         if prev_param and prev_param.is_positional:
             logger.debug("  Hit positional argument")
@@ -877,7 +874,9 @@ class Params(Completer):  # pylint: disable=too-many-instance-attributes
 
         for param in self._all_params():
             param_name: str = (
-                "POSITIONAL" if param.names[0] == POSITIONAL else param.names[0]
+                "POSITIONAL"
+                if param.names[0] == POSITIONAL
+                else param.names[0]
             )
             ret[param_name] = Diot()
             param_dict: Diot = ret[param_name]
@@ -1079,7 +1078,12 @@ class Params(Completer):  # pylint: disable=too-many-instance-attributes
                 {"params": param_section, "commands": subcmd_section}, show
             )
 
-    def from_dict(self, dict_obj: dict, show: bool = True, force: bool = False):
+    def from_dict(
+        self,
+        dict_obj: dict,
+        show: bool = True,
+        force: bool = False,
+    ):
         """Load parameters from python dict
 
         Args:
@@ -1119,7 +1123,7 @@ class Params(Completer):  # pylint: disable=too-many-instance-attributes
 
         self._from_dict_with_sections(dict_obj, show, force)
 
-    def from_arg(   # pylint: disable=too-many-arguments
+    def from_arg(
         self,
         names: Union[str, List[str], "ParamPath"],
         desc: Union[str, List[str]] = "The configuration file.",

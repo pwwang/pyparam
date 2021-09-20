@@ -12,13 +12,6 @@ repos:
     -   id: check-added-large-files
 -   repo: local
     hooks:
-    -   id: pytest
-        name: Run pytest
-        entry: pytest
-        language: system
-        args: [tests/]
-        pass_filenames: false
-        files: ^tests/.+$|^pyparam/.+$
     -   id: versionchecker
         name: Check version agreement in pyproject and __version__
         entry: bash -c
@@ -30,3 +23,17 @@ repos:
               if [[ $v1 == $v2 ]]; then exit 0; else exit 1; fi
         pass_filenames: false
         files: ^pyproject\.toml|pyparam/__init__\.py$
+    -   id: pytest
+        name: Run pytest
+        entry: pytest
+        language: system
+        args: [tests/]
+        pass_filenames: false
+        files: ^tests/.+$|^pyparam/.+$
+    -   id: flake8
+        name: Run flake8
+        entry: flake8
+        language: system
+        args: [pyparam]
+        pass_filenames: false
+        files: ^pyparam/.+$

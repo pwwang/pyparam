@@ -1,5 +1,5 @@
 """An example for pyparam"""
-from rich import print # pylint: disable=redefined-builtin
+from rich import print
 from pyparam import Params
 # program name, otherwise sys.argv[0]
 params = Params(prog='pyparam', desc="An example for {prog}")

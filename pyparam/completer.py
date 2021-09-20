@@ -162,7 +162,6 @@ complete --no-files --command %(script_name)s \\
 
 
 def split_arg_string(string: str) -> List[str]:
-    # pylint: disable=line-too-long
     """Given an argument string this attempts to split it into small parts.
 
     Borrowed from
@@ -174,7 +173,6 @@ def split_arg_string(string: str) -> List[str]:
     Returns:
         List of split pieces
     """
-    # pylint: enable=line-too-long
     ret: List[str] = []
     for match in re.finditer(
         r"('([^'\\]*(?:\\.[^'\\]*)*)'|"
@@ -406,7 +404,7 @@ class Completer:
 
     def _parse_completed(
         self,
-    ) -> Tuple[List["Param"], bool, str, List[str],]:
+    ) -> Tuple[List["Param"], bool, str, List[str]]:
         """Parse completed parameters/commands, and give
         the rest unmatched words. If command matched, also return the command
 

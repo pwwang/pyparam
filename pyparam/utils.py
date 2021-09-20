@@ -106,7 +106,9 @@ class Codeblock:
                 if not text:
                     ret.append(text)
                     continue
-                scanned, codeblock = cls.scan(text, check_default=check_default)
+                scanned, codeblock = cls.scan(
+                    text, check_default=check_default
+                )
                 ret_extend(scanned)
                 continue
             # if we hit an unclosed codeblock
@@ -259,7 +261,10 @@ class Codeblock:
         """
         if self.opentag == ">>>" and not line[self.indent :].startswith(">>>"):
             return True
-        if "`" in self.opentag and line[self.indent :].rstrip() == self.opentag:
+        if (
+            "`" in self.opentag
+            and line[self.indent :].rstrip() == self.opentag
+        ):
             return True
         return False
 
@@ -456,7 +461,6 @@ def _cast_auto(value: Any) -> Any:
     Returns:
         value casted
     """
-    # pylint: disable=too-many-return-statements
     if value in ("True", "TRUE", "true") or value is True:
         return True
     if value in ("False", "FALSE", "false") or value is False:
@@ -522,7 +526,6 @@ class RichHandler(_RichHandler):
     """Subclass of rich.logging.RichHandler, showing log levels as a single
     character"""
 
-    # pylint: disable=no-self-use,too-few-public-methods
     def get_level_text(self, record: logging.LogRecord) -> Text:
         """Get the level name from the record.
         Args:
@@ -537,7 +540,6 @@ class RichHandler(_RichHandler):
         return level_text
 
 
-# pylint: disable=invalid-name
 logger = logging.getLogger(__name__)
 logger.addHandler(
     RichHandler(
