@@ -10,17 +10,7 @@ import json
 import re
 from itertools import product
 from pathlib import Path
-from typing import (
-    Any,
-    Callable,
-    Dict,
-    Iterator,
-    List,
-    Set,
-    Tuple,
-    Type,
-    Union,
-)
+from typing import Any, Callable, Dict, Iterator, List, Set, Tuple, Type, Union
 
 from diot import OrderedDiot
 
@@ -789,7 +779,8 @@ class ParamCount(Param):
 
 
 class ParamPath(Param):
-    """A path parameter whose value is automatically casted into a pathlib.Path"""
+    """A path parameter whose value is automatically casted into a pathlib.Path
+    """
 
     type: str = "path"
     type_aliases: List[str] = ["p", "file"]
@@ -800,12 +791,7 @@ class ParamPath(Param):
 
     def complete_value(
         self, current: str, prefix: str = ""
-    ) -> Union[
-        str,
-        Iterator[Tuple[str]],
-        Iterator[Tuple[str, str]],
-        Iterator[Tuple[str, str, str]],
-    ]:
+    ) -> Union[str, Iterator[Tuple[str, ...]]]:
         """Generate file paths with given current prefix
         as completion candidates
 
@@ -830,12 +816,7 @@ class ParamDir(ParamPath):
 
     def complete_value(
         self, current: str, prefix: str = ""
-    ) -> Union[
-        str,
-        Iterator[Tuple[str]],
-        Iterator[Tuple[str, str]],
-        Iterator[Tuple[str, str, str]],
-    ]:
+    ) -> Union[str, Iterator[Tuple[str, ...]]]:
         """Generate dir paths with given current prefix as completion candidates
 
         Args:
@@ -955,12 +936,7 @@ class ParamChoice(Param):
 
     def complete_value(
         self, current: str, prefix: str = ""
-    ) -> Union[
-        str,
-        Iterator[Tuple[str]],
-        Iterator[Tuple[str, str]],
-        Iterator[Tuple[str, str, str]],
-    ]:
+    ) -> Union[str, Iterator[Tuple[str, ...]]]:
         """Generate choices with given current prefix as completion candidates
 
         Args:

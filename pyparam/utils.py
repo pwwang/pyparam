@@ -293,8 +293,7 @@ def always_list(
         return list(str_or_list)
     if split:
         return [
-            elem.strip()
-            if strip else elem
+            elem.strip() if strip else elem
             for elem in str_or_list.split(split)  # type: ignore
         ]
     return [str_or_list]

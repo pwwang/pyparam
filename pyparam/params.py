@@ -1,7 +1,7 @@
 """Definition of Params"""
 # pylint: disable=too-many-lines
-from os import PathLike
 import sys
+from os import PathLike
 from pathlib import Path
 from typing import TYPE_CHECKING, Any, Callable, Dict, List, Tuple, Type, Union
 
@@ -27,7 +27,8 @@ from .utils import (
 
 if TYPE_CHECKING:
     from .help import Theme
-    from .param import ParamPath, Param, ParamNamespace
+    from .param import Param, ParamNamespace, ParamPath
+
 
 class Params(Completer):  # pylint: disable=too-many-instance-attributes
     """Params, served as root params or subcommands
@@ -75,8 +76,8 @@ class Params(Completer):  # pylint: disable=too-many-instance-attributes
         asssembler: The asssembler to assemble the help page
     """
 
-    def __init__(
-        self,  # pylint: disable=too-many-arguments
+    def __init__(  # pylint: disable=too-many-arguments
+        self,
         names: Union[str, List[str]] = None,
         desc: Union[List[str], str] = None,
         prog: str = None,
@@ -129,9 +130,7 @@ class Params(Completer):  # pylint: disable=too-many-instance-attributes
 
         self.help_modifier = help_modifier
 
-        self.assembler = HelpAssembler(
-            self.prog, theme, help_callback
-        )
+        self.assembler = HelpAssembler(self.prog, theme, help_callback)
         super().__init__()
 
     @property
@@ -192,9 +191,7 @@ class Params(Completer):  # pylint: disable=too-many-instance-attributes
         if "." not in name:
             return self.params.get(name)
 
-        ns_param: "ParamNamespace" = self.params.get(
-            name.split(".", 1)[0]
-        )
+        ns_param: "ParamNamespace" = self.params.get(name.split(".", 1)[0])
         if not ns_param:
             return None
         ret = ns_param.get_param(name)
@@ -224,8 +221,8 @@ class Params(Completer):  # pylint: disable=too-many-instance-attributes
             for name in param.names:
                 self.params[name] = param
 
-    def add_param(
-        self,  # pylint: disable=too-many-arguments
+    def add_param(  # pylint: disable=too-many-arguments
+        self,
         names: Union[str, List[str], "Param"],
         default: Any = None,
         # pylint: disable=redefined-builtin
@@ -340,9 +337,9 @@ class Params(Completer):  # pylint: disable=too-many-instance-attributes
             if param.namespaces(0)[0] not in self.params:  # type: ignore
                 self.add_param(param.namespaces(0), type="ns")  # type: ignore
 
-            ns_param: "ParamNamespace" = (
-                self.params[param.namespaces(0)[0]]  # type: ignore
-            )
+            ns_param: "ParamNamespace" = self.params[
+                param.namespaces(0)[0]
+            ]  # type: ignore
             ns_param.push(param)
 
         else:
@@ -364,8 +361,8 @@ class Params(Completer):  # pylint: disable=too-many-instance-attributes
             groups.append(param)
         return param
 
-    def add_command(
-        self,  # pylint: disable=too-many-arguments
+    def add_command(   # pylint: disable=too-many-arguments
+        self,
         names: Union["Params", str, List[str]],
         desc: Union[str, List[str]] = "No description",
         help_keys: Union[str, List[str]] = "__inherit__",
@@ -595,8 +592,8 @@ class Params(Completer):  # pylint: disable=too-many-instance-attributes
                 self.commands[command_passed].print_help()
         return namespace
 
-    def _parse(
-        self,  # pylint: disable=too-many-branches
+    def _parse(   # pylint: disable=too-many-branches
+        self,
         args: List[str],
         namespace: Namespace,
         ignore_errors: bool,
@@ -762,11 +759,7 @@ class Params(Completer):  # pylint: disable=too-many-instance-attributes
 
         return None, "command"
 
-    def _match_param(
-        self, arg: str
-    ) -> Tuple[
-        "Param", str, str, str
-    ]:
+    def _match_param(self, arg: str) -> Tuple["Param", str, str, str]:
         """Check if arg matches any predefined parameters. With
         arbitrary = True, parameters will be defined on the fly.
 
@@ -844,9 +837,7 @@ class Params(Completer):  # pylint: disable=too-many-instance-attributes
         if not param:
             return None, param_name, param_type, param_value
 
-        param_maybe_overwritten: "Param" = param.overwrite_type(
-            param_type
-        )
+        param_maybe_overwritten: "Param" = param.overwrite_type(param_type)
         if param_maybe_overwritten is not param:
             self._set_param(param_maybe_overwritten)
             param = param_maybe_overwritten
@@ -967,9 +958,7 @@ class Params(Completer):  # pylint: disable=too-many-instance-attributes
             params=self._to_dict_params(), commands=self._to_dict_commands()
         )
 
-    def to_file(
-        self, path: Union[str, Path], cfgtype: str = None
-    ) -> None:
+    def to_file(self, path: Union[str, Path], cfgtype: str = None) -> None:
         """Save the parameters/commands to file.
 
         This is helpful if the parameters/commands take time to load. Once can
@@ -1130,8 +1119,8 @@ class Params(Completer):  # pylint: disable=too-many-instance-attributes
 
         self._from_dict_with_sections(dict_obj, show, force)
 
-    def from_arg(
-        self,  # pylint: disable=too-many-arguments
+    def from_arg(   # pylint: disable=too-many-arguments
+        self,
         names: Union[str, List[str], "ParamPath"],
         desc: Union[str, List[str]] = "The configuration file.",
         group: str = None,

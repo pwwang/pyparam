@@ -308,6 +308,7 @@ class HelpAssembler:
         console: The console to print the help page
         callback: The callback to modify the help page
     """
+    # pylint: disable=no-self-use
 
     def __init__(self, prog: str, theme: Union[str, Theme], callback: Callable):
         """Constructor"""

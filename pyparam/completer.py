@@ -34,7 +34,15 @@ import re
 import sys
 from hashlib import sha256
 from pathlib import Path
-from typing import TYPE_CHECKING, Callable, Generator, Iterator, List, Tuple, Type, Union
+from typing import (
+    TYPE_CHECKING,
+    Callable,
+    Generator,
+    Iterator,
+    List,
+    Tuple,
+    Union,
+)
 
 if TYPE_CHECKING:
     from .param import Param
@@ -530,12 +538,7 @@ class CompleterParam:
 
     def complete_value(
         self, current: str, prefix: str = ""
-    ) -> Union[
-        str,
-        Iterator[Tuple[str]],
-        Iterator[Tuple[str, str]],
-        Iterator[Tuple[str, str, str]],
-    ]:
+    ) -> Union[str, Iterator[Tuple[str, ...]]]:
         """Give the completion candidates
 
         Args:

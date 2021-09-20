@@ -81,7 +81,8 @@ predefined.add_param(
     desc=[
         "A boolean/flag argument. ",
         "If it is hit by itself, `True` will be used. However, it can consume "
-        "one of following values: [true, TRUE, True, 1, false, FALSE, False, 0]",
+        "one of following values: "
+        "[true, TRUE, True, 1, false, FALSE, False, 0]",
     ],
 )
 predefined.add_param(
@@ -180,10 +181,12 @@ predefined.add_param(
         "You can pass the values one by one like this: `--list 1 2 3`.",
         "Or like this: --list 1 --list 2 --list 3",
         "List argument is incremental, meaning the values will be added to "
-        "the values. To stop doing that, you can direct users to reset it using: ",
+        "the values. To stop doing that, you can direct users to reset it "
+        "using: ",
         "`--list:reset 4 5 6` or ",
         "`--list:reset 4 --list 5 --list 6`",
-        "You can also set a subtype for list elements, including the scalar types. "
+        "You can also set a subtype for list elements, including the "
+        "scalar types. "
         "For exapmle: ",
         "`--list:list:bool 0 1 0` will produce [False, True, False].",
     ],
