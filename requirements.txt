@@ -1,7 +1,0 @@
-diot
-pytest
-pytest-cov
-python-simpleconf
-pyyaml==5.*
-rich
-toml==0.*
