@@ -11,14 +11,14 @@ pyparam
    :target: https://img.shields.io/github/tag/pwwang/pyparam.svg?style=flat-square
    :alt: pypi
  <https://github.com/pwwang/pyparam>`_ `
-.. image:: https://img.shields.io/codacy/grade/a34b1afaccf84019a6b138d40932d566.svg?style=flat-square
-   :target: https://img.shields.io/codacy/grade/a34b1afaccf84019a6b138d40932d566.svg?style=flat-square
+.. image:: https://img.shields.io/codacy/grade/370aa0074595445188b01dc8dba47fe5.svg?style=flat-square
+   :target: https://img.shields.io/codacy/grade/370aa0074595445188b01dc8dba47fe5.svg?style=flat-square
    :alt: codacy quality
- <https://app.codacy.com/project/pwwang/pyparam/dashboard>`_ `
-.. image:: https://img.shields.io/codacy/coverage/a34b1afaccf84019a6b138d40932d566.svg?style=flat-square
-   :target: https://img.shields.io/codacy/coverage/a34b1afaccf84019a6b138d40932d566.svg?style=flat-square
+ <https://app.codacy.com/gh/pwwang/pyparam/dashboard>`_ `
+.. image:: https://img.shields.io/codacy/coverage/370aa0074595445188b01dc8dba47fe5.svg?style=flat-square
+   :target: https://img.shields.io/codacy/coverage/370aa0074595445188b01dc8dba47fe5.svg?style=flat-square
    :alt: codacy quality
- <https://app.codacy.com/project/pwwang/pyparam/dashboard>`_ `
+ <https://app.codacy.com/gh/pwwang/pyparam/dashboard>`_ `
 .. image:: https://img.shields.io/github/workflow/status/pwwang/pyparam/Build%20Docs?label=docs&style=flat-square
    :target: https://img.shields.io/github/workflow/status/pwwang/pyparam/Build%20Docs?label=docs&style=flat-square
    :alt: docs

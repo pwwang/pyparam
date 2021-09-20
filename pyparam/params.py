@@ -1,28 +1,35 @@
 """Definition of Params"""
 # pylint: disable=too-many-lines
+from os import PathLike
 import sys
-from typing import Optional, Type, Union, List, Callable, Any, Tuple, Dict
 from pathlib import Path
-from diot import OrderedDiot, Diot
+from typing import TYPE_CHECKING, Any, Callable, Dict, List, Tuple, Type, Union
+
 import rich
-from simpleconf import Config, LOADERS
+from diot import Diot, OrderedDiot
+from simpleconf import LOADERS, Config
+
+from .completer import Completer
+from .defaults import PARAM as PARAM_DEFAULT
+from .defaults import PARAMS as PARAMS_DEFAULT
+from .defaults import POSITIONAL
+from .exceptions import PyParamNameError, PyParamTypeError, PyParamValueError
+from .help import HelpAssembler, ProgHighlighter
+from .param import PARAM_MAPPINGS
 from .utils import (
-    always_list,
     Namespace,
+    always_list,
     logger,
+    parse_potential_argument,
     parse_type,
     type_from_value,
-    parse_potential_argument
 )
-from .defaults import (POSITIONAL,
-                       PARAMS as PARAMS_DEFAULT,
-                       PARAM as PARAM_DEFAULT)
-from .param import PARAM_MAPPINGS
-from .help import HelpAssembler, ProgHighlighter
-from .completer import Completer
-from .exceptions import PyParamNameError, PyParamTypeError, PyParamValueError
 
-class Params(Completer): # pylint: disable=too-many-instance-attributes
+if TYPE_CHECKING:
+    from .help import Theme
+    from .param import ParamPath, Param, ParamNamespace
+
+class Params(Completer):  # pylint: disable=too-many-instance-attributes
     """Params, served as root params or subcommands
 
     Args:
@@ -67,51 +74,62 @@ class Params(Completer): # pylint: disable=too-many-instance-attributes
         command_groups: The ordered dict of command groups
         asssembler: The asssembler to assemble the help page
     """
-    def __init__(self, # pylint: disable=too-many-arguments
-                 names: Optional[Union[str, List[str]]] = None,
-                 desc: Optional[Union[List[str], str]] = None,
-                 prog: Optional[str] = None,
-                 help_keys: Union[str, List[str]] = None,
-                 help_cmds: Union[str, List[str]] = None,
-                 help_on_void: bool = None,
-                 help_callback: Optional[Callable] = None,
-                 help_modifier: Optional[Callable] = None,
-                 prefix: str = 'auto',
-                 arbitrary: bool = False,
-                 theme: str = 'default',
-                 usage: Optional[Union[str, List[str]]] = None) -> None:
+
+    def __init__(
+        self,  # pylint: disable=too-many-arguments
+        names: Union[str, List[str]] = None,
+        desc: Union[List[str], str] = None,
+        prog: str = None,
+        help_keys: Union[str, List[str]] = None,
+        help_cmds: Union[str, List[str]] = None,
+        help_on_void: Union[str, bool] = None,
+        help_callback: Callable = None,
+        help_modifier: Callable = None,
+        prefix: str = "auto",
+        arbitrary: Union[str, bool] = False,
+        theme: Union[str, "Theme"] = "default",
+        usage: Union[str, List[str]] = None,
+    ) -> None:
         self.names: List[str] = always_list(names) if names else []
-        self.desc: List[str] = (PARAMS_DEFAULT.desc if desc is None
-                                else always_list(desc,
-                                                 strip=False,
-                                                 split=False))
-        self._prog: str = Path(sys.argv[0]).name if prog is None else prog
-        self.help_keys: List[str] = (PARAMS_DEFAULT.help_keys
-                                     if help_keys is None
-                                     else always_list(help_keys))
-        self.help_cmds: List[str] = (PARAMS_DEFAULT.help_cmds
-                                     if help_cmds is None
-                                     else always_list(help_cmds))
-        self.help_on_void: bool = (PARAMS_DEFAULT.help_on_void
-                                   if help_on_void is None
-                                   else help_on_void)
-        self.usage: Optional[List[str]] = (
-            None if usage is None
-            else always_list(usage, strip=True, split='\n')
+        self.desc: List[str] = (
+            PARAMS_DEFAULT.desc
+            if desc is None
+            else always_list(desc, strip=False, split=False)
         )
-        self.prefix: str = prefix
-        self.arbitrary: bool = arbitrary
-        self.theme: Union[str, rich.theme.Theme] = theme
+        self._prog: str = Path(sys.argv[0]).name if prog is None else prog
+        self.help_keys: List[str] = (
+            PARAMS_DEFAULT.help_keys
+            if help_keys is None
+            else always_list(help_keys)
+        )
+        self.help_cmds: List[str] = (
+            PARAMS_DEFAULT.help_cmds
+            if help_cmds is None
+            else always_list(help_cmds)
+        )
+        self.help_on_void: bool = (
+            PARAMS_DEFAULT.help_on_void
+            if help_on_void is None
+            else help_on_void
+        )
+        self.usage = (
+            None
+            if usage is None
+            else always_list(usage, strip=True, split="\n")
+        )
+        self.prefix = prefix
+        self.arbitrary = arbitrary
+        self.theme = theme
 
-        self.params: OrderedDiot = OrderedDiot()
-        self.commands: OrderedDiot = OrderedDiot()
+        self.params = OrderedDiot()
+        self.commands = OrderedDiot()
 
-        self.param_groups: OrderedDiot = OrderedDiot()
-        self.command_groups: OrderedDiot = OrderedDiot()
+        self.param_groups = OrderedDiot()
+        self.command_groups = OrderedDiot()
 
         self.help_modifier = help_modifier
 
-        self.assembler: HelpAssembler = HelpAssembler(
+        self.assembler = HelpAssembler(
             self.prog, theme, help_callback
         )
         super().__init__()
@@ -130,11 +148,9 @@ class Params(Completer): # pylint: disable=too-many-instance-attributes
         """
         self._prog = value
         self.assembler.console.meta.prog = value
-        self.assembler.console.meta.highlighters.prog = ProgHighlighter(
-            value
-        )
+        self.assembler.console.meta.highlighters.prog = ProgHighlighter(value)
 
-    def name(self, which: str = 'short') -> str:
+    def name(self, which: str = "short") -> str:
         """Get the shortest/longest name of the parameter
 
         A name is ensured to be returned. It does not mean it is the real
@@ -147,7 +163,7 @@ class Params(Completer): # pylint: disable=too-many-instance-attributes
         Returns:
             The shortest/longest name of the parameter
         """
-        return list(sorted(self.names, key=len))[0 if 'short' in which else -1]
+        return list(sorted(self.names, key=len))[0 if "short" in which else -1]
 
     def namestr(self, sep: str = ", ") -> str:
         """Get all names connected with a separator.
@@ -160,7 +176,7 @@ class Params(Completer): # pylint: disable=too-many-instance-attributes
         """
         return sep.join(sorted(self.names, key=len))
 
-    def get_param(self, name: Optional[str]) -> Optional[Type["Param"]]:
+    def get_param(self, name: str) -> "Param":
         """Get the parameter by name
 
         If the parameter is under a namespace, try to get it via the namespace
@@ -173,18 +189,18 @@ class Params(Completer): # pylint: disable=too-many-instance-attributes
         """
         if name is None:
             return None
-        if '.' not in name:
+        if "." not in name:
             return self.params.get(name)
 
-        ns_param: Optional["ParamNamespace"] = self.params.get(
-            name.split('.', 1)[0]
+        ns_param: "ParamNamespace" = self.params.get(
+            name.split(".", 1)[0]
         )
         if not ns_param:
             return None
         ret = ns_param.get_param(name)
         return None if name not in ret.names else ret
 
-    def get_command(self, name: str) -> Optional["Params"]:
+    def get_command(self, name: str) -> "Params":
         """Get the command object
 
         Args:
@@ -195,7 +211,7 @@ class Params(Completer): # pylint: disable=too-many-instance-attributes
         """
         return self.commands.get(name)
 
-    def _set_param(self, param: Type["Param"]) -> None:
+    def _set_param(self, param: "Param") -> None:
         """Set the parameter
 
         When a paraemeter's type is overwritten, we need to replace it with
@@ -208,21 +224,23 @@ class Params(Completer): # pylint: disable=too-many-instance-attributes
             for name in param.names:
                 self.params[name] = param
 
-    def add_param(self, # pylint: disable=too-many-arguments
-                  names: Union[str, List[str], Type["Param"]],
-                  default: Any = None,
-                  # pylint: disable=redefined-builtin
-                  type: Optional[str] = None,
-                  desc: Union[str, List[str]] = None,
-                  show: bool = None,
-                  required: bool = None,
-                  callback: Optional[Callable] = None,
-                  group: Optional[str] = None,
-                  force: bool = False,
-                  type_frozen: bool = None,
-                  argname_shorten: bool = None,
-                  complete_callback: Optional[Callable] = None,
-                  **kwargs) -> Type["Param"]:
+    def add_param(
+        self,  # pylint: disable=too-many-arguments
+        names: Union[str, List[str], "Param"],
+        default: Any = None,
+        # pylint: disable=redefined-builtin
+        type: Union[str, Type] = None,
+        desc: Union[str, List[str]] = None,
+        show: bool = None,
+        required: bool = None,
+        callback: Callable = None,
+        group: str = None,
+        force: bool = False,
+        type_frozen: bool = None,
+        argname_shorten: bool = None,
+        complete_callback: Callable = None,
+        **kwargs,
+    ) -> "Param":
         """Add an argument
 
         Args:
@@ -273,36 +291,43 @@ class Params(Completer): # pylint: disable=too-many-instance-attributes
             names: List[str] = always_list(names)
             if type is None:
                 if POSITIONAL in names and default is None:
-                    type = 'list'
+                    type = "list"
                 else:
                     type = type_from_value(default)
 
-            # Type: Optional[str], Optional[str]
-            maintype, subtype = parse_type(type.__name__
-                                           if callable(type)
-                                           else PARAM_DEFAULT.type
-                                           if type is None
-                                           else type)
+            maintype, subtype = parse_type(
+                type.__name__
+                if callable(type)
+                else PARAM_DEFAULT.type
+                if type is None
+                else type
+            )
 
-            param: Type['Param'] = PARAM_MAPPINGS[maintype](
+            param = PARAM_MAPPINGS[maintype](  # type: ignore
                 names=names,
                 default=PARAM_DEFAULT.default if default is None else default,
-                desc=PARAM_DEFAULT.desc if desc is None else always_list(
-                    desc, strip=False, split=False
-                ),
+                desc=PARAM_DEFAULT.desc
+                if desc is None
+                else always_list(desc, strip=False, split=False),
                 prefix=self.prefix,
                 show=PARAM_DEFAULT.show if show is None else show,
-                required=(PARAM_DEFAULT.required if required is None
-                          else required),
+                required=(
+                    PARAM_DEFAULT.required if required is None else required
+                ),
                 subtype=subtype,
-                type_frozen=(PARAM_DEFAULT.type_frozen if type_frozen is None
-                             else type_frozen),
+                type_frozen=(
+                    PARAM_DEFAULT.type_frozen
+                    if type_frozen is None
+                    else type_frozen
+                ),
                 callback=callback,
-                argname_shorten=(PARAM_DEFAULT.argname_shorten
-                                 if argname_shorten is None
-                                 else argname_shorten),
+                argname_shorten=(
+                    PARAM_DEFAULT.argname_shorten
+                    if argname_shorten is None
+                    else argname_shorten
+                ),
                 complete_callback=complete_callback,
-                **kwargs
+                **kwargs,
             )
         else:
             param = names.copy()
@@ -312,10 +337,12 @@ class Params(Completer): # pylint: disable=too-many-instance-attributes
 
         if param.namespaces(0):
             # add namespace parameter automatically
-            if param.namespaces(0)[0] not in self.params:
-                self.add_param(param.namespaces(0), type="ns")
+            if param.namespaces(0)[0] not in self.params:  # type: ignore
+                self.add_param(param.namespaces(0), type="ns")  # type: ignore
 
-            ns_param: "ParamNamespace" = self.params[param.namespaces(0)[0]]
+            ns_param: "ParamNamespace" = (
+                self.params[param.namespaces(0)[0]]  # type: ignore
+            )
             ns_param.push(param)
 
         else:
@@ -330,27 +357,29 @@ class Params(Completer): # pylint: disable=too-many-instance-attributes
         group = group or param.default_group
         # leave the parameters here under namespace to have flexibility
         # assigning different groups
-        groups: List[Type['Param']] = self.param_groups.setdefault(group, [])
+        groups: List["Param"] = self.param_groups.setdefault(group, [])
 
         # any parameter with param.names hasn't been added
         if not any(set(param.names) & set(prm.names) for prm in groups):
             groups.append(param)
         return param
 
-    def add_command(self, # pylint: disable=too-many-arguments
-                    names: Union["Params", str, List[str]],
-                    desc: Optional[Union[str, List[str]]] = 'No description',
-                    help_keys: Union[str, List[str]] = '__inherit__',
-                    help_cmds: Union[str, List[str]] = '__inherit__',
-                    help_on_void: Union[str, bool] = '__inherit__',
-                    help_callback: Optional[Callable] = None,
-                    help_modifier: Optional[Callable] = None,
-                    prefix: str = '__inherit__',
-                    arbitrary: Union[str, bool] = '__inherit__',
-                    theme: Union[str, rich.theme.Theme] = '__inherit__',
-                    usage: Optional[Union[str, List[str]]] = None,
-                    group: Optional[str] = None,
-                    force: bool = False) -> "Params":
+    def add_command(
+        self,  # pylint: disable=too-many-arguments
+        names: Union["Params", str, List[str]],
+        desc: Union[str, List[str]] = "No description",
+        help_keys: Union[str, List[str]] = "__inherit__",
+        help_cmds: Union[str, List[str]] = "__inherit__",
+        help_on_void: Union[str, bool] = "__inherit__",
+        help_callback: Callable = None,
+        help_modifier: Callable = None,
+        prefix: str = "__inherit__",
+        arbitrary: Union[str, bool] = "__inherit__",
+        theme: Union[str, rich.theme.Theme] = "__inherit__",
+        usage: Union[str, List[str]] = None,
+        group: str = None,
+        force: bool = False,
+    ) -> "Params":
         """Add a sub-command
 
         Args:
@@ -373,7 +402,7 @@ class Params(Completer): # pylint: disable=too-many-instance-attributes
             The added command
         """
         # pylint: disable=too-many-locals
-        command: Optional["Params"] = None
+        command: "Params" = None
         if isinstance(names, Params):
             command = names
             command.prog = (
@@ -384,25 +413,30 @@ class Params(Completer): # pylint: disable=too-many-instance-attributes
             names: List[str] = always_list(names)
             command: "Params" = Params(
                 desc=desc,
-                prog=(f"{self.prog}{' [OPTIONS]' if self.params else ''} "
-                      f"{sorted(names, key=len)[-1]}"),
-                help_keys=(self.help_keys if help_keys == '__inherit__'
-                           else help_keys),
-                help_cmds=(self.help_cmds if help_cmds == '__inherit__'
-                           else help_cmds),
-                help_on_void=(self.help_on_void if help_on_void == '__inherit__'
-                              else help_on_void),
+                prog=(
+                    f"{self.prog}{' [OPTIONS]' if self.params else ''} "
+                    f"{sorted(names, key=len)[-1]}"
+                ),
+                help_keys=(
+                    self.help_keys if help_keys == "__inherit__" else help_keys
+                ),
+                help_cmds=(
+                    self.help_cmds if help_cmds == "__inherit__" else help_cmds
+                ),
+                help_on_void=(
+                    self.help_on_void
+                    if help_on_void == "__inherit__"
+                    else help_on_void
+                ),
                 help_callback=help_callback,
                 help_modifier=help_modifier,
-                prefix=(self.prefix if prefix == '__inherit__'
-                        else prefix),
-                arbitrary=(self.arbitrary
-                           if arbitrary == '__inherit__'
-                           else arbitrary),
-                theme=(self.theme if theme == '__inherit__'
-                       else theme),
+                prefix=(self.prefix if prefix == "__inherit__" else prefix),
+                arbitrary=(
+                    self.arbitrary if arbitrary == "__inherit__" else arbitrary
+                ),
+                theme=(self.theme if theme == "__inherit__" else theme),
                 usage=usage,
-                names=names
+                names=names,
             )
         for cmd in command.names:
             # check if command has been added
@@ -413,7 +447,7 @@ class Params(Completer): # pylint: disable=too-many-instance-attributes
             self.commands[cmd] = command
 
         group = group or "COMMANDS"
-        groups: List['Params'] = self.command_groups.setdefault(group, [])
+        groups: List["Params"] = self.command_groups.setdefault(group, [])
 
         if not any(set(command.names) & set(cmd.names) for cmd in groups):
             groups.append(command)
@@ -430,9 +464,9 @@ class Params(Completer): # pylint: disable=too-many-instance-attributes
         if exit_code is not False:
             sys.exit(exit_code)
 
-    def values(self,
-               namespace: Optional[Namespace] = None,
-               ignore_errors: bool = False) -> Optional[Namespace]:
+    def values(
+        self, namespace: Namespace = None, ignore_errors: bool = False
+    ) -> Namespace:
         """Get a namespace of all parameter name => value pairs or attach them
         to the given namespace
 
@@ -481,9 +515,9 @@ class Params(Completer): # pylint: disable=too-many-instance-attributes
                     setattr(namespace, name, value)
         return namespace
 
-    def parse(self,
-              args: Optional[List[str]] = None,
-              ignore_errors: bool = False) -> Namespace:
+    def parse(
+        self, args: List[str] = None, ignore_errors: bool = False
+    ) -> Namespace:
         """Parse the arguments from the command line
 
         Args:
@@ -497,28 +531,33 @@ class Params(Completer): # pylint: disable=too-many-instance-attributes
         """
         # add help options here so that user can disable or
         # change it before parsing
-        self.add_param(self.help_keys,
-                       type='bool',
-                       desc='Print help information for this command',
-                       force=True)
+        self.add_param(
+            self.help_keys,
+            type="bool",
+            desc="Print help information for this command",
+            force=True,
+        )
 
-        help_cmd: Optional["Params"] = None
+        help_cmd: "Params" = None
         if self.commands:
             help_cmd = self.add_command(
-                self.help_cmds,
-                desc='Print help of sub-commands',
-                force=True
+                self.help_cmds, desc="Print help of sub-commands", force=True
             )
             help_cmd.add_param(
                 POSITIONAL,
-                type='choice',
+                type="choice",
                 default="",
-                desc=("Command name to print help for. "
-                      "Available commands are: {}".format(
-                          ', '.join(cmd for cmd in self.commands
-                                    if cmd not in self.help_cmds)
-                      )),
-                choices=list(self.commands)
+                desc=(
+                    "Command name to print help for. "
+                    "Available commands are: {}".format(
+                        ", ".join(
+                            cmd
+                            for cmd in self.commands
+                            if cmd not in self.help_cmds
+                        )
+                    )
+                ),
+                choices=list(self.commands),
             )
 
         if callable(self.help_modifier):
@@ -543,23 +582,25 @@ class Params(Completer): # pylint: disable=too-many-instance-attributes
         #     self.print_help()
         # run help subcommand
         if (
-                namespace.__command__ in self.help_cmds and
-                len(self.commands) > 1 # together with help command
+            namespace.__command__ in self.help_cmds
+            and len(self.commands) > 1  # together with help command
         ):
             command_passed = namespace[namespace.__command__][POSITIONAL]
             if not command_passed:
                 self.print_help()
             elif command_passed not in self.commands:
-                logger.error('Unknown command: %r', command_passed)
+                logger.error("Unknown command: %r", command_passed)
                 self.print_help()
             else:
                 self.commands[command_passed].print_help()
         return namespace
 
-    def _parse(self, # pylint: disable=too-many-branches
-               args: List[str],
-               namespace: Namespace,
-               ignore_errors: bool) -> None:
+    def _parse(
+        self,  # pylint: disable=too-many-branches
+        args: List[str],
+        namespace: Namespace,
+        ignore_errors: bool,
+    ) -> None:
         """Parse the arguments from the command line
 
         Args:
@@ -569,11 +610,11 @@ class Params(Completer): # pylint: disable=too-many-instance-attributes
         """
         logger.debug("Parsing %r", args)
 
-        if not args: # help_on_void = False
+        if not args:  # help_on_void = False
             self.values(namespace, ignore_errors)
             return
 
-        prev_param: Optional[Type['Param']] = None
+        prev_param: "Param" = None
         for i, arg in enumerate(args):
             logger.debug("- Parsing item %r", arg)
             # Match the arg with defined parameters
@@ -585,11 +626,15 @@ class Params(Completer): # pylint: disable=too-many-instance-attributes
             # 2. if param_name is not None, arg is parameter-like
             #    With arbitrary = True, parameter will be created on the fly
             # 3. if arg is like --arg=1, then param_value 1 is pushed to param.
-            # Type: Optional[Type['Param']], Optional[str], Optional[str], Any
             param, param_name, param_type, param_value = self._match_param(arg)
             logger.debug("  Previous: %r", prev_param)
-            logger.debug("  Matched: %r, name=%s, type=%s, value=%r",
-                         param, param_name, param_type, param_value)
+            logger.debug(
+                "  Matched: %r, name=%s, type=%s, value=%r",
+                param,
+                param_name,
+                param_type,
+                param_value,
+            )
             # as long as the help argument hit
             if param_name in self.help_keys or (param and param.is_help):
                 self.print_help()
@@ -600,7 +645,7 @@ class Params(Completer): # pylint: disable=too-many-instance-attributes
                     prev_param.close()
                 prev_param = param
 
-            elif prev_param: # No param
+            elif prev_param:  # No param
                 if param_name is not None:
                     if not ignore_errors:
                         logger.warning("Unknown argument: %r, skipped", arg)
@@ -608,38 +653,39 @@ class Params(Completer): # pylint: disable=too-many-instance-attributes
                     # If value cannot be consumed, let's see if it
                     # 1. hits a command
                     # 2. hits the start of positional arguments
-                    # Type: Optional[Type['Param']], Optional[str]
                     prev_param.close()
                     prev_param, matched = self._match_command_or_positional(
                         prev_param,
                         param_value,
-                        args[(i+1):],
+                        args[(i + 1) :],
                         namespace,
-                        ignore_errors
+                        ignore_errors,
                     )
-                    if matched == 'command':
+                    if matched == "command":
                         break
-                    if matched == 'positional':
+                    if matched == "positional":
                         continue
                     if param_value is not None and not ignore_errors:
                         logger.warning(
                             "Unknown value: %r, skipped", param_value
                         )
                 else:
-                    logger.debug("  Param %r consumes %r",
-                                 prev_param.namestr(), param_value)
-            else: # neither
-                # Type: Optional[Type['Param']], Optional[str]
+                    logger.debug(
+                        "  Param %r consumes %r",
+                        prev_param.namestr(),
+                        param_value,
+                    )
+            else:  # neither
                 prev_param, matched = self._match_command_or_positional(
                     prev_param,
                     param_value,
-                    args[(i+1):],
+                    args[(i + 1) :],
                     namespace,
-                    ignore_errors
+                    ignore_errors,
                 )
-                if matched == 'command':
+                if matched == "command":
                     break
-                if matched == 'positional':
+                if matched == "positional":
                     continue
                 if param_value is not None and not ignore_errors:
                     logger.warning("Unknown value: %r, skipped", param_value)
@@ -650,14 +696,14 @@ class Params(Completer): # pylint: disable=too-many-instance-attributes
 
         self.values(namespace, ignore_errors)
 
-    def _match_command_or_positional( # pylint: disable=too-many-arguments
-            self,
-            prev_param: Optional[Type['Param']],
-            arg: str,
-            rest_args: List[str],
-            namespace: Namespace,
-            ignore_errors: bool = False
-    ) -> Tuple[Optional[Type['Param']], Optional[str]]:
+    def _match_command_or_positional(  # pylint: disable=too-many-arguments
+        self,
+        prev_param: "Param",
+        arg: str,
+        rest_args: List[str],
+        namespace: Namespace,
+        ignore_errors: bool = False,
+    ) -> Tuple["Param", str]:
         """Check if arg hits a command or a positional argument start
 
         Args:
@@ -675,18 +721,18 @@ class Params(Completer): # pylint: disable=too-many-instance-attributes
         if prev_param and prev_param.is_positional:
             logger.debug("  Hit positional argument")
             prev_param.push(arg)
-            return prev_param, 'positional'
+            return prev_param, "positional"
 
         if arg not in self.commands:
             # any of the rest args matches is argument-like then
             # this should not hit the start of positional argument
             for rest_arg in rest_args:
-                if self.prefix != 'auto' and rest_arg.startswith(self.prefix):
+                if self.prefix != "auto" and rest_arg.startswith(self.prefix):
                     break
 
-                if self.prefix == 'auto' and rest_arg[:1] == '-':
+                if self.prefix == "auto" and rest_arg[:1] == "-":
                     if len(rest_arg) <= 2 or (
-                            rest_arg[:2] == '--' and len(rest_arg) > 3
+                        rest_arg[:2] == "--" and len(rest_arg) > 3
                     ):
                         break
             else:
@@ -696,7 +742,7 @@ class Params(Completer): # pylint: disable=too-many-instance-attributes
                 if POSITIONAL in self.params:
                     self.params[POSITIONAL].hit = True
                     self.params[POSITIONAL].push(arg)
-                    return self.params[POSITIONAL], 'positional'
+                    return self.params[POSITIONAL], "positional"
 
         if prev_param:
             prev_param.close()
@@ -714,11 +760,12 @@ class Params(Completer): # pylint: disable=too-many-instance-attributes
         for name in command.names:
             namespace[name] = parsed
 
-        return None, 'command'
+        return None, "command"
 
-    def _match_param(self, arg: str) -> Tuple[
-            Optional[Type['Param']],
-            Optional[str], Optional[str], Optional[str]
+    def _match_param(
+        self, arg: str
+    ) -> Tuple[
+        "Param", str, str, str
     ]:
         """Check if arg matches any predefined parameters. With
         arbitrary = True, parameters will be defined on the fly.
@@ -734,7 +781,6 @@ class Params(Completer): # pylint: disable=too-many-instance-attributes
                 type and unpushed value if matched.
                 Otherwise, None, param_name, param_type and arg itself.
         """
-        # Type: Optional[str], Optional[str], Optional[str]
         param_name, param_type, param_value = parse_potential_argument(
             arg, self.prefix
         )
@@ -742,15 +788,18 @@ class Params(Completer): # pylint: disable=too-many-instance-attributes
         # When we didn't match any argument-like
         # with allow_attached=False
         # Or we matched but it is not defined
-        name_with_attached: Optional[str] = None
-        if not param_type and self.prefix == 'auto':
+        name_with_attached: str = None
+        if not param_type and self.prefix == "auto":
             # then -a1 will be put in param_value, as if `a1` is a name,
             # it should be --a1
             name_with_attached = (
                 param_value
-                if (param_name is None and
-                    param_value and param_value[:1] == '-' and
-                    param_value[1:2] != '-')
+                if (
+                    param_name is None
+                    and param_value
+                    and param_value[:1] == "-"
+                    and param_value[1:2] != "-"
+                )
                 else None
             )
 
@@ -767,34 +816,35 @@ class Params(Completer): # pylint: disable=too-many-instance-attributes
         # we cannot find a parameter with param_name
         # check if there is any value attached
         if name_with_attached and not self.get_param(param_name):
-            # Type: Optional[str], Optional[str], Optional[str]
-            param_name2, param_type2, param_value2 = (
-                parse_potential_argument(
-                    name_with_attached, self.prefix, allow_attached=True
-                )
+            param_name2, param_type2, param_value2 = parse_potential_argument(
+                name_with_attached, self.prefix, allow_attached=True
             )
             # Use them only if we found a param_name2 and
             # arbitrary: not previous param_name found
             # otherwise: parameter with param_name2 exists
             if param_name2 is not None and (
-                    (self.arbitrary and param_name is None) or
-                    self.get_param(param_name2)
+                (self.arbitrary and param_name is None)
+                or self.get_param(param_name2)
             ):
                 param_name, param_type, param_value = (
-                    param_name2, param_type2, param_value2
+                    param_name2,
+                    param_type2,
+                    param_value2,
                 )
 
         # create the parameter for arbitrary
-        if (self.arbitrary and
-                param_name is not None and
-                not self.get_param(param_name)):
+        if (
+            self.arbitrary
+            and param_name is not None
+            and not self.get_param(param_name)
+        ):
             self.add_param(param_name, type=param_type)
 
-        param: Optional[Type['Param']] = self.get_param(param_name)
+        param: "Param" = self.get_param(param_name)
         if not param:
             return None, param_name, param_type, param_value
 
-        param_maybe_overwritten: Type['Param'] = param.overwrite_type(
+        param_maybe_overwritten: "Param" = param.overwrite_type(
             param_type
         )
         if param_maybe_overwritten is not param:
@@ -806,16 +856,16 @@ class Params(Completer): # pylint: disable=too-many-instance-attributes
             param.push(param_value)
         return param, param_name, param_type, param_value
 
-    def _all_params(self, show_only=False) -> List[Type['Param']]:
+    def _all_params(self, show_only=False) -> List["Param"]:
         """All parameters under this command
 
         self.params don't have all of them, since namespaced ones are under
         namespace paramters
         """
-        ret: List[Type['Param']] = []
+        ret: List["Param"] = []
         ret_append: Callable = ret.append
         for param in self.params.values():
-            if param.type == 'ns':
+            if param.type == "ns":
                 if (not show_only or param.show) and param not in ret:
                     ret.append(param)
                 ret.extend(param.decendents(show_only))
@@ -835,13 +885,16 @@ class Params(Completer): # pylint: disable=too-many-instance-attributes
                 param_groups[param.names[0]] = group
 
         for param in self._all_params():
-            param_name: str = ("POSITIONAL" if param.names[0] == POSITIONAL
-                               else param.names[0])
+            param_name: str = (
+                "POSITIONAL" if param.names[0] == POSITIONAL else param.names[0]
+            )
             ret[param_name] = Diot()
             param_dict: Diot = ret[param_name]
             if len(param.names) > 1:
-                param_dict.aliases = ["POSITIONAL" if name == POSITIONAL
-                                      else name for name in param.names[1:]]
+                param_dict.aliases = [
+                    "POSITIONAL" if name == POSITIONAL else name
+                    for name in param.names[1:]
+                ]
             if param.default != PARAM_DEFAULT.default:
                 param_dict.default = param.default
             if param.typestr() != PARAM_DEFAULT.type:
@@ -876,8 +929,9 @@ class Params(Completer): # pylint: disable=too-many-instance-attributes
             ret[command_name] = Diot()
             cmd_dict: Diot = ret[command_name]
             if len(command.names) > 1:
-                cmd_dict.aliases = [name for name in command.names
-                                    if name != command_name]
+                cmd_dict.aliases = [
+                    name for name in command.names if name != command_name
+                ]
             if command.desc != PARAMS_DEFAULT.desc:
                 cmd_dict.desc = command.desc
             if command.help_keys != PARAMS_DEFAULT.help_keys:
@@ -909,12 +963,13 @@ class Params(Completer): # pylint: disable=too-many-instance-attributes
             The complied Diot of parameters and commands
         """
         # load all parameters and commands
-        return Diot(params=self._to_dict_params(),
-                    commands=self._to_dict_commands())
+        return Diot(
+            params=self._to_dict_params(), commands=self._to_dict_commands()
+        )
 
-    def to_file(self,
-                path: Union[str, Path],
-                cfgtype: Optional[str] = None) -> None:
+    def to_file(
+        self, path: Union[str, Path], cfgtype: str = None
+    ) -> None:
         """Save the parameters/commands to file.
 
         This is helpful if the parameters/commands take time to load. Once can
@@ -930,29 +985,31 @@ class Params(Completer): # pylint: disable=too-many-instance-attributes
         if not isinstance(path, Path):
             path = Path(path)
         if not cfgtype:
-            if path.suffix in ('.yml', '.yaml'):
-                cfgtype = 'yaml'
-            elif path.suffix == '.toml':
-                cfgtype = 'toml'
-            elif path.suffix == '.json':
-                cfgtype = 'json'
+            if path.suffix in (".yml", ".yaml"):
+                cfgtype = "yaml"
+            elif path.suffix == ".toml":
+                cfgtype = "toml"
+            elif path.suffix == ".json":
+                cfgtype = "json"
             else:
                 cfgtype = path.suffix
-        if cfgtype not in ('yaml', 'json', 'toml'):
-            raise ValueError('File type not supported: %s' % cfgtype)
+        if cfgtype not in ("yaml", "json", "toml"):
+            raise ValueError("File type not supported: %s" % cfgtype)
 
-        if cfgtype == 'yaml':
+        if cfgtype == "yaml":
             loaded.to_yaml(path)
-        elif cfgtype == 'json':
+        elif cfgtype == "json":
             loaded.to_json(path)
         else:
             loaded.to_toml(path)
 
-    def from_file(self,
-                  filename: Union[str, dict],
-                  filetype: Optional[str] = None,
-                  show: bool = True,
-                  force: bool = False) -> None:
+    def from_file(
+        self,
+        filename: Union[str, PathLike, dict],
+        filetype: str = None,
+        show: bool = True,
+        force: bool = False,
+    ) -> None:
         """Load parameters from file
 
         We support 2 types for format to load the parameters.
@@ -997,32 +1054,41 @@ class Params(Completer): # pylint: disable=too-many-instance-attributes
         config._load(filename, factory=LOADERS.get(filetype))
         self.from_dict(config, show=show, force=force)
 
-    def _from_dict_with_sections(self,
-                                 dict_obj: Dict[str, Dict[str, dict]],
-                                 show: bool = True,
-                                 force: bool = False) -> None:
+    def _from_dict_with_sections(
+        self,
+        dict_obj: Dict[str, Dict[str, dict]],
+        show: bool = True,
+        force: bool = False,
+    ) -> None:
         """Load from the dict with 'params' and/or 'commands' sections"""
 
-        param_section: Dict[str, dict] = dict_obj.get('params', {})
+        param_section: Dict[str, dict] = dict_obj.get("params", {})
         # Type: str, dict
         for param_name, param_attrs in param_section.items():
-            param_attrs.setdefault('show', show)
-            names: List[str] = always_list(param_attrs.pop('aliases', []))
+            param_attrs.setdefault("show", show)
+            names: List[str] = always_list(param_attrs.pop("aliases", []))
             names.insert(0, param_name)
-            self.add_param([POSITIONAL if name == 'POSITIONAL'
-                            else name for name in names],
-                           **param_attrs, force=force)
+            self.add_param(
+                [
+                    POSITIONAL if name == "POSITIONAL" else name
+                    for name in names
+                ],
+                **param_attrs,
+                force=force,
+            )
 
-        command_section: Dict[str, dict] = dict_obj.get('commands', {})
+        command_section: Dict[str, dict] = dict_obj.get("commands", {})
         for command_name, command_attrs in command_section.items():
-            names: List[str] = always_list(command_attrs.pop('aliases', []))
+            names: List[str] = always_list(command_attrs.pop("aliases", []))
             names.insert(0, command_name)
-            param_section: Dict[str, dict] = command_attrs.pop('params', {})
-            subcmd_section: Dict[str, dict] = command_attrs.pop('commands', {})
-            command: "Params" = self.add_command(names, **command_attrs,
-                                                 force=force)
-            command.from_dict({"params": param_section,
-                               "commands": subcmd_section}, show)
+            param_section: Dict[str, dict] = command_attrs.pop("params", {})
+            subcmd_section: Dict[str, dict] = command_attrs.pop("commands", {})
+            command: "Params" = self.add_command(
+                names, **command_attrs, force=force
+            )
+            command.from_dict(
+                {"params": param_section, "commands": subcmd_section}, show
+            )
 
     def from_dict(self, dict_obj: dict, show: bool = True, force: bool = False):
         """Load parameters from python dict
@@ -1033,14 +1099,14 @@ class Params(Completer): # pylint: disable=too-many-instance-attributes
                 dictionary
             force: Whether to force adding params/commands
         """
-        if 'params' not in dict_obj and 'commands' not in dict_obj:
+        if "params" not in dict_obj and "commands" not in dict_obj:
             # express way
             # scan and create dict for all params
             all_params: Dict[str, dict] = {}
             for key, val in dict_obj.items():
                 param_name: str = key
-                if '.' in key:
-                    param_name = key.split('.', 1)[0]
+                if "." in key:
+                    param_name = key.split(".", 1)[0]
                 all_params.setdefault(param_name, {})
 
             # scan for the attributes
@@ -1049,29 +1115,31 @@ class Params(Completer): # pylint: disable=too-many-instance-attributes
                     # if it is a dict, and there is not other attributes
                     # assigned like "arg.desc", that means this dictionary
                     # contains all attributes
-                    if (isinstance(val, dict) and
-                            not any(ap_key.startswith(f"{key}.")
-                                    for ap_key in dict_obj)):
+                    if isinstance(val, dict) and not any(
+                        ap_key.startswith(f"{key}.") for ap_key in dict_obj
+                    ):
                         all_params[key] = val
                     else:
-                        all_params[key]['default'] = val
-                elif '.' in key:
+                        all_params[key]["default"] = val
+                elif "." in key:
                     # Type: str, str
-                    param_name, param_attr = key.split('.', 1)
+                    param_name, param_attr = key.split(".", 1)
                     all_params[param_name][param_attr] = val
 
             dict_obj = {"params": all_params}
 
         self._from_dict_with_sections(dict_obj, show, force)
 
-    def from_arg(self, # pylint: disable=too-many-arguments
-                 names: Union[str, List[str], 'ParamPath'],
-                 desc: Union[str, List[str]] = "The configuration file.",
-                 group: Optional[str] = None,
-                 default: Optional[Union[str, Path]] = None,
-                 show: bool = True,
-                 force: bool = False,
-                 args: Optional[List[str]] = None):
+    def from_arg(
+        self,  # pylint: disable=too-many-arguments
+        names: Union[str, List[str], "ParamPath"],
+        desc: Union[str, List[str]] = "The configuration file.",
+        group: str = None,
+        default: Union[str, Path] = None,
+        show: bool = True,
+        force: bool = False,
+        args: List[str] = None,
+    ):
         """Load parameters from the file specified by naargument
         from command line
 
@@ -1092,33 +1160,32 @@ class Params(Completer): # pylint: disable=too-many-instance-attributes
                 parse sys.argv[1:]
         """
         if isinstance(names, (str, list)):
-            param: "ParamPath" = self.add_param(
-                names, desc=desc, group=group, type='path', default=default
+            param: "Param" = self.add_param(
+                names, desc=desc, group=group, type="path", default=default
             )
         else:
-            param: "ParamPath" = names
+            param: "Param" = names
             self._set_param(names)
 
-        prefixed_names: List[str] = [param._prefix_name(name)
-                                     for name in param.names]
+        prefixed_names: List[str] = [
+            param._prefix_name(name) for name in param.names
+        ]
         args: List[str] = sys.argv[1:] if args is None else args
         args_with_the_arg: List[str] = []
         for i, arg in enumerate(args):
             if arg in prefixed_names:
                 args_with_the_arg.append(arg)
                 if i < len(args) - 1:
-                    args_with_the_arg.append(args[i+1])
+                    args_with_the_arg.append(args[i + 1])
                 break
-        filepath: Optional[Union[str, Path]] = (
-            args_with_the_arg[1]
-            if len(args_with_the_arg) > 1
-            else param.value
+        filepath: Union[str, Path] = (
+            args_with_the_arg[1] if len(args_with_the_arg) > 1 else param.value
         )
         if filepath:
             self.from_file(filepath, show=show, force=force)
 
     def __repr__(self):
-        return "<Params(%s) @ %s>" % (','.join(self.names), id(self))
+        return "<Params(%s) @ %s>" % (",".join(self.names), id(self))
 
     def copy(self, deep=False) -> "Params":
         """Copy a Params object
@@ -1141,7 +1208,7 @@ class Params(Completer): # pylint: disable=too-many-instance-attributes
             prefix=self.prefix,
             arbitrary=self.arbitrary,
             theme=self.theme,
-            usage=self.usage and self.usage[:]
+            usage=self.usage and self.usage[:],
         )
         copied.assembler = self.assembler
 
@@ -1173,10 +1240,12 @@ class Params(Completer): # pylint: disable=too-many-instance-attributes
                     copied.commands[name] = command_copy
 
             for group, param_list in self.param_groups.items():
-                self.param_groups[group] = [copied.get_param(param.names[0])
-                                            for param in param_list]
+                self.param_groups[group] = [
+                    copied.get_param(param.names[0]) for param in param_list
+                ]
             for group, cmd_list in self.command_groups.items():
-                self.command_groups[group] = [copied.commands[cmd.names[0]]
-                                              for cmd in cmd_list]
+                self.command_groups[group] = [
+                    copied.commands[cmd.names[0]] for cmd in cmd_list
+                ]
 
         return copied

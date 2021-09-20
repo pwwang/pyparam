@@ -17,10 +17,11 @@ Attributes:
     HELP_OPTION_WIDTH: The width that the option name and type take up in
         the help page.
 """
-from typing import Dict, Optional
+from typing import Dict
+
 from diot import Diot
 
-POSITIONAL: str = ''
+POSITIONAL: str = ""
 
 # - Single value types:
 #     auto, int, str, float, bool, count, py, json
@@ -28,7 +29,7 @@ POSITIONAL: str = ''
 #     list[<single/complex value type>], ns
 TYPE_NAMES: Dict[str, str] = {}
 
-CONSOLE_WIDTH: Optional[int] = 80
+CONSOLE_WIDTH: int = 80
 # indention for the contents of each section
 HELP_SECTION_INDENT: int = 2
 # The width of the options in help
@@ -40,22 +41,22 @@ ARGUMENT_REQUIRED = "Argument is required."
 # This, as well as default attribute values for Param object,
 # are useful to reduce the size of a dumped file
 PARAMS: Diot = Diot(
-    desc=['Not described.'],
-    help_keys=['h', 'help'],
-    help_cmds=['help'],
+    desc=["Not described."],
+    help_keys=["h", "help"],
+    help_cmds=["help"],
     help_on_void=True,
-    prefix='auto',
-    theme='default',
+    prefix="auto",
+    theme="default",
     usage=None,
     arbitrary=False,
 )
 
 PARAM: Diot = Diot(
     type=None,
-    desc=['Not described.'],
+    desc=["Not described."],
     default=None,
     show=True,
     type_frozen=True,
     argname_shorten=True,
-    required=False
+    required=False,
 )

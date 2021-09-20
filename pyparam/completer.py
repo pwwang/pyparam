@@ -30,11 +30,14 @@ LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT
 OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 """
 import os
-import sys
 import re
-from typing import Optional, Iterator, List, Callable, Type, Union, Tuple
-from pathlib import Path
+import sys
 from hashlib import sha256
+from pathlib import Path
+from typing import TYPE_CHECKING, Callable, Generator, Iterator, List, Tuple, Type, Union
+
+if TYPE_CHECKING:
+    from .param import Param
 
 COMPLETION_SCRIPT_BASH = """
 %(complete_func)s() {
@@ -166,19 +169,21 @@ def split_arg_string(string: str) -> List[str]:
     # pylint: enable=line-too-long
     ret: List[str] = []
     for match in re.finditer(
-            r"('([^'\\]*(?:\\.[^'\\]*)*)'|"
-            r"\"([^\"\\]*(?:\\.[^\"\\]*)*)\"|\S+)\s*",
-            string,
-            re.S,
+        r"('([^'\\]*(?:\\.[^'\\]*)*)'|"
+        r"\"([^\"\\]*(?:\\.[^\"\\]*)*)\"|\S+)\s*",
+        string,
+        re.S,
     ):
         arg = match.group().strip()
         if arg[:1] == arg[-1:] and arg[:1] in "\"'":
-            arg = arg[1:-1].encode(
-                "ascii", "backslashreplace"
-            ).decode("unicode-escape")
+            arg = (
+                arg[1:-1]
+                .encode("ascii", "backslashreplace")
+                .decode("unicode-escape")
+            )
         try:
             arg = type(string)(arg)
-        except UnicodeError: # pragma: no cover
+        except UnicodeError:  # pragma: no cover
             pass
         ret.append(arg)
     return ret
@@ -204,21 +209,20 @@ class Completer:
         complete_prepared = self._prepare_complete()
 
         self.comp_shell: str = complete_prepared[0]
-        self.comp_words: Optional[List[str]] = (
+        self.comp_words: List[str] = (
             complete_prepared[1] if self.comp_shell else None
         )
-        self.comp_curr: Optional[str] = (
-            complete_prepared[2] if self.comp_shell else None
-        )
-        self.comp_prev: Optional[str] = (
-            None if not self.comp_shell or not self.comp_words
+        self.comp_curr: str = complete_prepared[2] if self.comp_shell else None
+        self.comp_prev: str = (
+            None
+            if not self.comp_shell or not self.comp_words
             else self.comp_words[-1]
         )
 
     @property
     def progvar(self) -> str:
         """Get the program name that can be used as a variable"""
-        return re.sub(r'[^\w_]+', '', self.prog)
+        return re.sub(r"[^\w_]+", "", self.prog)
 
     @property
     def uid(self) -> str:
@@ -228,79 +232,75 @@ class Completer:
         """
         return sha256(self.prog.encode()).hexdigest()[:6]
 
-    def _prepare_complete(self) -> Tuple[
-            str, Optional[List[str]], Optional[str]
-    ]:
+    def _prepare_complete(
+        self,
+    ) -> Tuple[str, List[str], str]:
         """Prepare for completion, get the env variables"""
         env_name: str = f"{self.progvar}_COMPLETE_SHELL_{self.uid}".upper()
-        shell: str = os.environ.get(env_name, '')
+        shell: str = os.environ.get(env_name, "")
         if not shell:
-            return shell, None, ''
+            return shell, None, ""
 
-        comp_words: List[str] = split_arg_string(os.environ['COMP_WORDS'])
-        comp_cword: int = int(os.environ['COMP_CWORD'] or 0)
+        comp_words: List[str] = split_arg_string(os.environ["COMP_WORDS"])
+        comp_cword: int = int(os.environ["COMP_CWORD"] or 0)
 
-        current: str = ''
+        current: str = ""
         if comp_cword >= 0:
             try:
                 current = comp_words[comp_cword]
             except IndexError:
                 pass
 
-        has_python: bool = 'python' in Path(comp_words[0]).stem
+        has_python: bool = "python" in Path(comp_words[0]).stem
         if has_python and len(comp_words) == 1:
             sys.exit(0)
 
-        is_module: bool = has_python and comp_words[1] == '-m'
+        is_module: bool = has_python and comp_words[1] == "-m"
         if is_module and (len(comp_words) < 3 or comp_words[2] != self.prog):
             sys.exit(0)
 
         if has_python and not is_module and comp_words[1] != self.prog:
             sys.exit(0)
 
-        comp_words = comp_words[
-            (3 if is_module else 2 if has_python else 1):
-        ]
+        comp_words = comp_words[(3 if is_module else 2 if has_python else 1) :]
 
         if current and comp_words and comp_words[-1] == current:
             comp_words.pop(-1)
 
-        if shell == 'bash' and comp_words:
+        if shell == "bash" and comp_words:
             # bash splits '--choice=' to ['--choice'] and '=', and
             # '--choice=l' to ['--choice', '='] and 'l'
             # We can't distinguish if user really enters '--choice=' or
             # '--choice =', but this is the best way to implement this.
             # Also, bash doesn't replace the current,
             # so we just need to get the unfinished part
-            if current == '=':
-                current = '' # force the unfinished part
-            elif current and comp_words[-1] == '=' and len(comp_words) > 1:
+            if current == "=":
+                current = ""  # force the unfinished part
+            elif current and comp_words[-1] == "=" and len(comp_words) > 1:
                 # pop out the '=' so to force th unfinished part
                 comp_words.pop()
 
         return shell, comp_words, current
 
     def _post_complete(
-            self,
-            completions: Iterator[Tuple[str, str, str]]
-    ) -> Optional[str]:
+        self, completions: Iterator[Tuple[str, str, str]]
+    ) -> Generator:
         """Post processing the completions
 
         Filter only completions with given current word/prefix
         If non-fish, don't give the description
         """
         for comp in completions:
-            if self.comp_shell == 'fish':
-                yield '\t'.join(comp)
-            elif self.comp_shell == 'zsh':
-                yield '\n'.join((comp[0] or ' ', comp[1], comp[2]))
+            if self.comp_shell == "fish":
+                yield "\t".join(comp)
+            elif self.comp_shell == "zsh":
+                yield "\n".join((comp[0] or " ", comp[1], comp[2]))
             else:
-                yield '\t'.join((comp[0] or ' ', comp[1]))
+                yield "\t".join((comp[0] or " ", comp[1]))
 
-    def shellcode(self,
-                  shell: str,
-                  python: Optional[str] = None,
-                  module: bool = False) -> None:
+    def shellcode(
+        self, shell: str, python: str = None, module: bool = False
+    ) -> str:
         """Generate the shell code to be integrated
 
         For bash, it should be appended to ~/.profile
@@ -319,23 +319,24 @@ class Completer:
             ValueError: if shell is not one of bash, zsh and fish
         """
 
-        if shell == 'zsh':
+        if shell == "zsh":
             return self._shellcode_zsh(python=python, module=module)
-        if shell == 'fish':
+        if shell == "fish":
             return self._shellcode_fish(python=python, module=module)
-        if shell == 'bash':
+        if shell == "bash":
             return self._shellcode_bash(python=python, module=module)
-        raise ValueError(f'Shell not supported: {shell}')
+        raise ValueError(f"Shell not supported: {shell}")
 
-    def _shellcode_bash(self, python: Optional[str], module: bool) -> str:
-        # type: (Optional[str]) -> str
+    def _shellcode_bash(self, python: str, module: bool) -> str:
         """Generate the shell code for bash"""
         complete_shell_var: str = (
             f"{self.progvar}_COMPLETE_SHELL_{self.uid}"
         ).upper()
         complete_script: str = (
-            "$1" if not python
-            else f"$1 {self.prog}" if not module
+            "$1"
+            if not python
+            else f"$1 {self.prog}"
+            if not module
             else f"$1 -m {self.prog}"
         )
         complete_func: str = f"_{self.progvar}_completion_{self.uid}"
@@ -343,18 +344,19 @@ class Completer:
             complete_func=complete_func,
             complete_shell_var=complete_shell_var,
             complete_script=complete_script,
-            script_name=python or self.prog
+            script_name=python or self.prog,
         )
 
-    def _shellcode_fish(self, python: Optional[str], module: bool) -> str:
-        # type: (Optional[str]) -> str
+    def _shellcode_fish(self, python: str, module: bool) -> str:
         """Generate the shell code for fish"""
         complete_shell_var: str = (
             f"{self.progvar}_COMPLETE_SHELL_{self.uid}"
         ).upper()
         complete_script: str = (
-            "$COMP_WORDS[1]" if not python
-            else f"$COMP_WORDS[1] {self.prog}" if not module
+            "$COMP_WORDS[1]"
+            if not python
+            else f"$COMP_WORDS[1] {self.prog}"
+            if not module
             else f"$COMP_WORDS[1] -m {self.prog}"
         )
         complete_func: str = f"__fish_{self.progvar}_{self.uid}"
@@ -362,18 +364,19 @@ class Completer:
             complete_func=complete_func,
             complete_shell_var=complete_shell_var,
             complete_script=complete_script,
-            script_name=python or self.prog
+            script_name=python or self.prog,
         )
 
-    def _shellcode_zsh(self, python: Optional[str], module: str) -> str:
-        # type: (Optional[str]) -> str
+    def _shellcode_zsh(self, python: str, module: bool) -> str:
         """Generate the shell code for zsh"""
         complete_shell_var: str = (
             f"{self.progvar}_COMPLETE_SHELL_{self.uid}"
         ).upper()
         complete_script: str = (
-            "$words[1]" if not python
-            else f"$words[1] {self.prog}" if not module
+            "$words[1]"
+            if not python
+            else f"$words[1] {self.prog}"
+            if not module
             else f"$words[1] -m {self.prog}"
         )
         complete_func: str = f"_{self.progvar}_completion_{self.uid}"
@@ -381,21 +384,21 @@ class Completer:
             complete_func=complete_func,
             complete_shell_var=complete_shell_var,
             complete_script=complete_script,
-            script_name=python or self.prog
+            script_name=python or self.prog,
         )
 
-    def _get_param_by_prefixed(self, prefixed: str) -> Optional[Type['Param']]:
+    def _get_param_by_prefixed(self, prefixed: str) -> "Param":
         """Get the parameter by the given prefixed name"""
         for param in self._all_params(True):
-            if any(param._prefix_name(name) == prefixed
-                   for name in param.names):
+            if any(
+                param._prefix_name(name) == prefixed for name in param.names
+            ):
                 return param
         return None
 
-    def _parse_completed(self) -> Tuple[
-            Optional[List[Type['Param']]], Optional[bool],
-            Optional[str], Optional[List[str]]
-    ]:
+    def _parse_completed(
+        self,
+    ) -> Tuple[List["Param"], bool, str, List[str],]:
         """Parse completed parameters/commands, and give
         the rest unmatched words. If command matched, also return the command
 
@@ -409,14 +412,16 @@ class Completer:
         """
         for i, word in enumerate(self.comp_words):
             if word in self.commands:
-                return None, None, word, self.comp_words[i+1:]
+                return None, None, word, self.comp_words[i + 1 :]
 
         unmatched_required: bool = False
-        matched: List[Type['Param']] = []
+        matched: List["Param"] = []
         matched_append: Callable = matched.append
         for param in self._all_params(True):
-            if any(param._prefix_name(name) in self.comp_words
-                   for name in param.names):
+            if any(
+                param._prefix_name(name) in self.comp_words
+                for name in param.names
+            ):
                 matched_append(param)
             elif param.required:
                 unmatched_required = True
@@ -439,8 +444,12 @@ class Completer:
            candidates
         2. Otherwise, give both command and parameter candidates
         """
-        (completed, all_required_completed,
-         command, rest) = self._parse_completed()
+        (
+            completed,
+            all_required_completed,
+            command,
+            rest,
+        ) = self._parse_completed()
 
         if command:
             self.commands[command].comp_shell = self.comp_shell
@@ -451,66 +460,82 @@ class Completer:
             self.commands[command].parse()
             # sys.exit(0)
 
-        completions: Optional[Union[
+        completions: Union[
             str,
             Iterator[Tuple[str]],
             Iterator[Tuple[str, str]],
-            Iterator[Tuple[str, str, str]]
-        ]] = ''
-        param: Optional[Type['Param']] = None
+            Iterator[Tuple[str, str, str]],
+        ] = ""
+        param: "Param" = None
         # see if comp_curr is something like '--arg=x'
-        if self.comp_curr and '=' in self.comp_curr:
-            prefixed, val = self.comp_curr.split('=', 1)
+        if self.comp_curr and "=" in self.comp_curr:
+            prefixed, val = self.comp_curr.split("=", 1)
             param = self._get_param_by_prefixed(prefixed)
-            completions = param.complete_value(
-                current=val, prefix=f'{prefixed}='
-            ) if param else completions
+            completions = (
+                param.complete_value(current=val, prefix=f"{prefixed}=")
+                if param
+                else completions
+            )
         else:
             param = self._get_param_by_prefixed(self.comp_prev)
-            completions = param.complete_value(
-                current=self.comp_curr
-            ) if param else completions
+            completions = (
+                param.complete_value(current=self.comp_curr)
+                if param
+                else completions
+            )
 
         if param:
             if completions is None:
-                return # StopIteration
+                return  # StopIteration
             if completions is not None and completions:
                 for completion in completions:
-                    yield ((completion[0], 'plain', '')
-                           if len(completion) == 1
-                           else (completion[0], 'plain', completion[1])
-                           if len(completion) == 2
-                           else completion)
-                return # StopIteration, dont go further
+                    yield (
+                        (completion[0], "plain", "")
+                        if len(completion) == 1
+                        else (
+                            completion[0],
+                            "plain",
+                            completion[1],  # type: ignore
+                        )
+                        if len(completion) == 2
+                        else completion
+                    )
+                return  # StopIteration, dont go further
 
         # no param or completions == ''
         for param in self._all_params(True):
-            if param.type == 'ns':
+            if param.type == "ns":
                 continue
             if param in completed and not param.complete_relapse:
                 continue
 
             for prefixed_name, desc in param.complete_name(self.comp_curr):
-                yield (prefixed_name, 'plain', desc)
+                yield (prefixed_name, "plain", desc)
 
         if all_required_completed:
             # see if we have any commands
             for command_name, command in self.commands.items():
                 if command_name.startswith(self.comp_curr):
-                    yield (command_name, "plain",
-                           "Command: " + command.desc[0].splitlines()[0])
+                    yield (
+                        command_name,
+                        "plain",
+                        "Command: " + command.desc[0].splitlines()[0],
+                    )
 
 
 class CompleterParam:
     """Class for a parameter dealing with completion"""
+
     complete_relapse: bool = False
 
     def complete_value(
-            self,
-            current: str,
-            prefix: str = ''
-    ) -> Optional[Union[str, Iterator[Tuple[str]], Iterator[Tuple[str, str]],
-                        Iterator[Tuple[str, str, str]]]]:
+        self, current: str, prefix: str = ""
+    ) -> Union[
+        str,
+        Iterator[Tuple[str]],
+        Iterator[Tuple[str, str]],
+        Iterator[Tuple[str, str, str]],
+    ]:
         """Give the completion candidates
 
         Args:
