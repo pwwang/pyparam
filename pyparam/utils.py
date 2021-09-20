@@ -10,7 +10,7 @@ import logging
 from argparse import Namespace as APNamespace
 from functools import lru_cache
 from pathlib import Path
-from typing import Any, Callable, List, Tuple, Union
+from typing import Any, Callable, Dict, List, Tuple, Type, Union
 
 from rich.console import Console
 from rich.logging import RichHandler as _RichHandler
@@ -67,6 +67,15 @@ class Namespace(APNamespace):
         for key, value in other.items():
             self[key] = value
         return self
+
+    def _to_dict(self, dict_wrapper: Type = None) -> Dict:
+        """Convert the namespace to a dict object"""
+        out = {}
+        for key in vars(self):
+            out[key] = self[key]
+        if not dict_wrapper:
+            return out
+        return dict_wrapper(out)
 
 
 class Codeblock:
