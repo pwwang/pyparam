@@ -1,3 +1,6 @@
+## 0.4.10
+- ✨Add _to_dict for parsed Namespace object
+
 ## 0.4.8
 - Add kwargs to `to` and `copy` for Param
 
