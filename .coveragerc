@@ -1,2 +1,5 @@
 [run]
 omit = pyparam/__main__.py
+
+[report]
+exclude_lines = if TYPE_CHECKING:

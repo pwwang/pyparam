@@ -167,7 +167,7 @@ class HelpSectionOption(HelpSection):
                 width=defaults.HELP_OPTION_WIDTH,
                 initial_indent=" " * defaults.HELP_SECTION_INDENT,
                 subsequent_indent=" "
-                * (defaults.HELP_SECTION_INDENT + len(opt.split(",")[0]) + 2),
+                * (defaults.HELP_SECTION_INDENT + 4),
                 break_long_words=False,
                 break_on_hyphens=False,
             ):

@@ -343,7 +343,8 @@ class Params(Completer):
             for name in param.names:
                 # check if parameter has been added
                 if not force and (
-                    name in self.params or name in self.commands
+                    (name in self.params and self.params[name] is not param)
+                    or name in self.commands
                 ):
                     raise PyParamNameError(
                         f"Argument {name!r} has already been added."
