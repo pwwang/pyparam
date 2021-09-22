@@ -1,3 +1,6 @@
+## 0.4.11
+- 🐛Fix the same param not allowed to add
+
 ## 0.4.10
 - ✨Add _to_dict for parsed Namespace object
 
