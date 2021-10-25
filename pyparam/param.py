@@ -843,7 +843,14 @@ class ParamJson(Param):
 
     def _value(self) -> Any:
         val: Any = super()._value()
-        return None if val is None else json.loads(str(val))
+
+        if val is None:
+            return None
+
+        if isinstance(val, str):
+            return json.loads(val)
+
+        return json.loads(json.dumps(val))
 
 
 class ParamList(Param):

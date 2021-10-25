@@ -258,6 +258,8 @@ def test_parampy():
 def test_paramjson():
     param = ParamJson(['a'], default='[1]', desc=['Description'])
     assert param.value == [1]
+    param = ParamJson(['a'], default=[1], desc=['Description'])
+    assert param.value == [1]
 
 def test_paramlist():
     param = ParamList(['a'], default=[1], desc=['Description'])
