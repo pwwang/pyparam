@@ -1,3 +1,8 @@
+## 0.4.12
+
+- 🩹 Allow ParamJson to have python object values, not only strings
+
+
 ## 0.4.11
 - 🐛Fix the same param not allowed to add
 
