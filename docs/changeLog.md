@@ -1,3 +1,7 @@
+## 0.4.13
+
+- 🩹 Fix non-str object being casted to json
+
 ## 0.4.12
 
 - 🩹 Allow ParamJson to have python object values, not only strings
