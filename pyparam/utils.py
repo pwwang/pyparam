@@ -509,8 +509,13 @@ def cast_to(value: Any, to_type: Union[str, bool]) -> Any:
                 "Expecting one of [true, TRUE, True, 1, false, FALSE, False, 0]"
             )
 
-        if to_type in ("path", "py", "json"):
-            return {"path": Path, "py": ast.literal_eval, "json": json.loads}[
+        if to_type == "json":
+            if isinstance(value, str):
+                return json.loads(value)
+            return json.loads(json.dumps(value))
+
+        if to_type in ("path", "py"):
+            return {"path": Path, "py": ast.literal_eval}[
                 to_type  # type: ignore
             ](str(value))
         if to_type in (None, "auto"):
