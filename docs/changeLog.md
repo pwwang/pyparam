@@ -1,3 +1,8 @@
+## 0.4.14
+
+- 🐛 Allow json params to be defined from file
+- ✨ Add `--full` to show full list of options on help page
+
 ## 0.4.13
 
 - 🩹 Fix non-str object being casted to json
