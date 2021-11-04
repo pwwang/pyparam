@@ -332,6 +332,7 @@ def test_complete_showonly(capsys):
         params2.parse()
     out = capsys.readouterr().out
     assert sorted(out.splitlines()) == sorted([
+        "--full\tplain\tShow full options for this command",
         "-h\tplain\tPrint help information for this command",
         "--help\tplain\tPrint help information for this command",
         "--ns.a\tplain\tNS.A",

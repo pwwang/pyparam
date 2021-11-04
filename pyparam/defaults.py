@@ -44,6 +44,7 @@ PARAMS: Diot = Diot(
     desc=["Not described."],
     help_keys=["h", "help"],
     help_cmds=["help"],
+    fullopt_keys=["full"],
     help_on_void=True,
     prefix="auto",
     theme="default",

@@ -106,6 +106,7 @@ class Param(CompleterParam):
         self.argname_shorten: bool = argname_shorten
         self.hit: bool = False
         self.is_help: bool = False
+        self.is_full: bool = False
         self.ns_param: "ParamNamespace" = None
         self._desc: List[str] = desc or ["No description."]
         self._stack: List[Any] = []

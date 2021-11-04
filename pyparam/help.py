@@ -166,8 +166,7 @@ class HelpSectionOption(HelpSection):
                 opt,
                 width=defaults.HELP_OPTION_WIDTH,
                 initial_indent=" " * defaults.HELP_SECTION_INDENT,
-                subsequent_indent=" "
-                * (defaults.HELP_SECTION_INDENT + 4),
+                subsequent_indent=" " * (defaults.HELP_SECTION_INDENT + 4),
                 break_long_words=False,
                 break_on_hyphens=False,
             ):
@@ -336,9 +335,7 @@ class HelpAssembler:
         self.console.meta.highlighters.opttype = OpttypeHighlighter()
         self.console.meta.highlighters.default = DefaultHighlighter()
 
-    def _assemble_description(
-        self, params: "Params"
-    ) -> HelpSectionPlain:
+    def _assemble_description(self, params: "Params") -> HelpSectionPlain:
         """Assemble the description section"""
         if not params.desc:
             return None
@@ -347,7 +344,7 @@ class HelpAssembler:
             desc.format(prog=params.prog) for desc in params.desc
         )
 
-    def _assemble_usage(self, params: "Params") -> HelpSectionUsage:
+    def _assemble_usage(self, params: "Params", full: bool) -> HelpSectionUsage:
         """Assemble the usage section"""
         if not params.usage:
             # default usage
@@ -357,9 +354,9 @@ class HelpAssembler:
 
             for group in params.param_groups.values():
                 for param in group:
-                    if param.required and param.show:
+                    if param.required and (param.show or full):
                         usage.append(param.usagestr())
-                    elif param.show:
+                    elif param.show or full:
                         has_optional = True
             if has_optional:
                 usage.append("[OPTIONS]")
@@ -374,18 +371,18 @@ class HelpAssembler:
         )
 
     def _assemble_param_groups(  # type: ignore
-        self, params: "Params"
+        self, params: "Params", full: bool
     ) -> Tuple[str, HelpSectionOption]:
         """Assemble the parameter groups"""
 
         for group, param_list in params.param_groups.items():
-            if all(not param.show for param in param_list):
+            if not full and all(not param.show for param in param_list):
                 continue
 
             yield group, HelpSectionOption(
                 ([param.optstr()], param.desc_with_default)
                 for param in param_list
-                if param.show
+                if param.show or full
             )
 
     def _assemble_command_groups(  # type: ignore
@@ -399,7 +396,7 @@ class HelpAssembler:
                 ([command.namestr()], command.desc) for command in cmd_list
             )
 
-    def assemble(self, params: "Params") -> None:
+    def assemble(self, params: "Params", full: bool = False) -> None:
         """Assemble the help page
 
         Args:
@@ -415,10 +412,12 @@ class HelpAssembler:
         if assembled_description:
             assembled.DESCRIPTION = assembled_description
 
-        assembled_usage: HelpSectionPlain = self._assemble_usage(params)
+        assembled_usage: HelpSectionPlain = self._assemble_usage(
+            params, full=full
+        )
         assembled.USAGE = assembled_usage
 
-        for group, section in self._assemble_param_groups(params):
+        for group, section in self._assemble_param_groups(params, full=full):
             assembled[group] = section
 
         for group, section in self._assemble_command_groups(params):

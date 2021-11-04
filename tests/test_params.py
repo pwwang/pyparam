@@ -15,6 +15,7 @@ def setup_function():
 
 def test_init():
     assert isinstance(params, Params)
+    assert params.name() is None
 
 def test_more():
     p = Params('c, cmd')

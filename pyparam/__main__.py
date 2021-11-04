@@ -53,6 +53,12 @@ predefined = params.add_command(
 )
 
 predefined.add_param(
+    "hidden",
+    default=1,
+    show=False,
+    desc="A hidden argument, only shows in help using --full."
+)
+predefined.add_param(
     "i, int",
     required=True,
     type=int,

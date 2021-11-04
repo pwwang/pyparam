@@ -85,6 +85,7 @@ class Params(Completer):
         help_on_void: Union[str, bool] = None,
         help_callback: Callable = None,
         help_modifier: Callable = None,
+        fullopt_keys: Union[str, List[str]] = None,
         prefix: str = "auto",
         arbitrary: Union[str, bool] = False,
         theme: Union[str, "Theme"] = "default",
@@ -101,6 +102,11 @@ class Params(Completer):
             PARAMS_DEFAULT.help_keys
             if help_keys is None
             else always_list(help_keys)
+        )
+        self.fullopt_keys: List[str] = (
+            PARAMS_DEFAULT.fullopt_keys
+            if fullopt_keys is None
+            else always_list(fullopt_keys)
         )
         self.help_cmds: List[str] = (
             PARAMS_DEFAULT.help_cmds
@@ -130,6 +136,8 @@ class Params(Completer):
         self.help_modifier = help_modifier
 
         self.assembler = HelpAssembler(self.prog, theme, help_callback)
+
+        self.has_hidden = False
         super().__init__()
 
     @property
@@ -161,6 +169,8 @@ class Params(Completer):
         Returns:
             The shortest/longest name of the parameter
         """
+        if not self.names:
+            return None
         return list(sorted(self.names, key=len))[0 if "short" in which else -1]
 
     def namestr(self, sep: str = ", ") -> str:
@@ -296,6 +306,9 @@ class Params(Completer):
                 if type is None
                 else type
             )
+            show = PARAM_DEFAULT.show if show is None else show
+            if not show:
+                self.has_hidden = True
 
             param = PARAM_MAPPINGS[maintype](  # type: ignore
                 names=names,
@@ -304,7 +317,7 @@ class Params(Completer):
                 if desc is None
                 else always_list(desc, strip=False, split=False),
                 prefix=self.prefix,
-                show=PARAM_DEFAULT.show if show is None else show,
+                show=show,
                 required=(
                     PARAM_DEFAULT.required if required is None else required
                 ),
@@ -328,6 +341,8 @@ class Params(Completer):
 
         if any(name in self.help_keys for name in param.names):
             param.is_help = True
+        if any(name in self.fullopt_keys for name in param.names):
+            param.is_help = param.is_full = True
 
         if param.namespaces(0):
             # add namespace parameter automatically
@@ -449,13 +464,13 @@ class Params(Completer):
             groups.append(command)
         return command
 
-    def print_help(self, exit_code: int = 1) -> None:
+    def print_help(self, exit_code: int = 1, full: bool = False) -> None:
         """Print the help information and exit
 
         Args:
             exit_code: The exit code or False to not exit
         """
-        self.assembler.assemble(self)
+        self.assembler.assemble(self, full=full)
         self.assembler.printout()
         if exit_code is not False:
             sys.exit(exit_code)
@@ -532,6 +547,13 @@ class Params(Completer):
             desc="Print help information for this command",
             force=True,
         )
+        if self.has_hidden:
+            self.add_param(
+                self.fullopt_keys,
+                type="bool",
+                desc="Show full options for this command",
+                force=True,
+            )
 
         help_cmd: "Params" = None
         if self.commands:
@@ -631,8 +653,15 @@ class Params(Completer):
                 param_value,
             )
             # as long as the help argument hit
-            if param_name in self.help_keys or (param and param.is_help):
-                self.print_help()
+            if (
+                param_name in self.help_keys
+                or param_name in self.fullopt_keys
+                or (param and param.is_help)
+            ):
+                self.print_help(
+                    full=param_name in self.fullopt_keys
+                    or (param and param.is_full)
+                )
 
             if param:
                 if prev_param:
