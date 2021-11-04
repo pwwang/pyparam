@@ -2,4 +2,6 @@
 omit = pyparam/__main__.py
 
 [report]
-exclude_lines = if TYPE_CHECKING:
+exclude_lines =
+    if TYPE_CHECKING:
+    pragma: no cover

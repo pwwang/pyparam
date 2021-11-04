@@ -68,7 +68,7 @@ class Namespace(APNamespace):
             self[key] = value
         return self
 
-    def _to_dict(self, dict_wrapper: Type = None) -> Dict:
+    def _to_dict(self, dict_wrapper: Type = None) -> Dict:  # pragma: no cover
         """Convert the namespace to a dict object"""
         out = {}
         for key in vars(self):
@@ -509,7 +509,7 @@ def cast_to(value: Any, to_type: Union[str, bool]) -> Any:
                 "Expecting one of [true, TRUE, True, 1, false, FALSE, False, 0]"
             )
 
-        if to_type == "json":
+        if to_type == "json":  # pragma: no cover
             if isinstance(value, str):
                 return json.loads(value)
             return json.loads(json.dumps(value))
@@ -520,7 +520,11 @@ def cast_to(value: Any, to_type: Union[str, bool]) -> Any:
             ](str(value))
         if to_type in (None, "auto"):
             return _cast_auto(value)
-    except (TypeError, ValueError, json.JSONDecodeError) as cast_exc:
+    except (
+        TypeError,
+        ValueError,
+        json.JSONDecodeError
+    ) as cast_exc:  # pragma: no cover
         raise PyParamTypeError(
             f"Cannot cast {value} to {to_type}: {cast_exc}"
         ) from cast_exc

@@ -511,7 +511,7 @@ class Param(CompleterParam):
 
         try:
             val = self.callback(self.value, all_values)
-        except TypeError as terr:
+        except TypeError as terr:  # pragma: no cover
             # len() takes exactly one argument (2 given)
             # <lambda>() takes 1 positional argument but 2 were given
             if not re.search(r"takes .+ argument .+ given", str(terr)):
@@ -565,7 +565,7 @@ class ParamFloat(Param):
         val = super()._value()
         try:
             return None if val is None else float(val)
-        except ValueError as verr:
+        except ValueError as verr:  # pragma: no cover
             raise PyParamValueError(str(verr)) from None
 
 
@@ -844,7 +844,7 @@ class ParamJson(Param):
     def _value(self) -> Any:
         val: Any = super()._value()
 
-        if val is None:
+        if val is None:  # pragma: no cover
             return None
 
         if isinstance(val, str):
@@ -1133,7 +1133,7 @@ class ParamNamespace(Param):
 
         try:
             val = self.callback(ns_callback_applied, all_values)
-        except TypeError as terr:
+        except TypeError as terr:  # pragma: no cover
             # len() takes exactly one argument (2 given)
             # <lambda>() takes 1 positional argument but 2 were given
             if not re.search(r"takes .+ argument .+ given", str(terr)):

@@ -14,7 +14,7 @@ from .defaults import PARAMS as PARAMS_DEFAULT
 from .defaults import POSITIONAL
 from .exceptions import PyParamNameError, PyParamTypeError, PyParamValueError
 from .help import HelpAssembler, ProgHighlighter
-from .param import PARAM_MAPPINGS
+from .param import PARAM_MAPPINGS, ParamJson
 from .utils import (
     Namespace,
     always_list,
@@ -483,7 +483,7 @@ class Params(Completer):
                 if not ignore_errors:
                     logger.error("%r: %s", param.namestr(), pve)
                     self.print_help()
-            except Exception:
+            except Exception:  # pragma: no cover
                 if not ignore_errors:
                     raise
             else:
@@ -499,7 +499,7 @@ class Params(Completer):
             try:
                 value: Any = param.apply_callback(ns_no_callback)
             except (PyParamTypeError, PyParamValueError) as pte:
-                if not ignore_errors:
+                if not ignore_errors:  # pragma: no cover
                     logger.error("%r: %s", param.namestr(), pte)
                     self.print_help()
             except Exception:
@@ -581,9 +581,9 @@ class Params(Completer):
             and len(self.commands) > 1  # together with help command
         ):
             command_passed = namespace[namespace.__command__][POSITIONAL]
-            if not command_passed:
+            if not command_passed:  # pragma: no cover
                 self.print_help()
-            elif command_passed not in self.commands:
+            elif command_passed not in self.commands:  # pragma: no cover
                 logger.error("Unknown command: %r", command_passed)
                 self.print_help()
             else:
@@ -1106,6 +1106,27 @@ class Params(Completer):
             # scan for the attributes
             for key, val in dict_obj.items():
                 if key in all_params:
+                    # if val is a dict
+                    if isinstance(val, dict):
+                        # see if key has already defined and is a json parameter
+                        param = self.get_param(key)
+                        if isinstance(param, ParamJson) and (
+                            "default" not in val
+                            or set(val)
+                            - {
+                                "default",
+                                "type",
+                                "desc",
+                                "required",
+                                "group",
+                                "type_frozen",
+                                "argname_shorten",
+                                "choices",
+                            }
+                        ):
+                            all_params[key]["default"] = val
+                            continue
+
                     # if it is a dict, and there is not other attributes
                     # assigned like "arg.desc", that means this dictionary
                     # contains all attributes
@@ -1115,6 +1136,7 @@ class Params(Completer):
                         all_params[key] = val
                     else:
                         all_params[key]["default"] = val
+
                 elif "." in key:
                     # Type: str, str
                     param_name, param_attr = key.split(".", 1)

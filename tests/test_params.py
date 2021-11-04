@@ -191,11 +191,13 @@ def test_from_file_full():
 
 def test_from_file_express():
     here = Path(__file__).parent
-    params.from_file(here/'express.toml')
+    params.add_param("j", type="json")
+    params.from_file(here/'express.toml', force=True)
     params.help_on_void = False
     parsed = params.parse(['cmd'])
     assert parsed['int'] == 1
     assert parsed['float'] == 0.1
+    assert parsed['j'] == {"a": 1}
 
 def test_from_arg_names():
     here = Path(__file__).parent

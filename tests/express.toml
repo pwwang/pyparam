@@ -3,3 +3,5 @@ float = 0.1
 "float.desc" = "A float number"
 [bool]
 default = false
+[j]
+a = 1
