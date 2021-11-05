@@ -5,4 +5,4 @@ from .defaults import POSITIONAL
 from .params import Params
 from .utils import Namespace
 
-__version__ = "0.4.14"
+__version__ = "0.4.15"

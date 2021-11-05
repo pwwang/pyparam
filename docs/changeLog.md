@@ -1,3 +1,7 @@
+## 0.4.15
+
+- 🐛 Allow namespace parameter to be defined in express way from a file
+
 ## 0.4.14
 
 - 🐛 Allow json params to be defined from file
