@@ -1,7 +1,10 @@
 int = 1
 float = 0.1
 "float.desc" = "A float number"
-[bool]
-default = false
+"bool.default" = false
 [j]
 a = 1
+[ns]
+x = 2
+[ns2.j2]
+y = 3

@@ -193,12 +193,22 @@ def test_from_file_full():
 def test_from_file_express():
     here = Path(__file__).parent
     params.add_param("j", type="json")
+    params.add_param("ns2.j2", type="json")
+    params.add_param("ns", type="ns")
     params.from_file(here/'express.toml', force=True)
     params.help_on_void = False
     parsed = params.parse(['cmd'])
     assert parsed['int'] == 1
     assert parsed['float'] == 0.1
     assert parsed['j'] == {"a": 1}
+    assert parsed.ns["x"] == 2
+    assert parsed.ns2["j2"] == {"y": 3}
+
+def test_from_file_express_ns_error():
+    here = Path(__file__).parent
+    params.add_param("int", type="ns")
+    with pytest.raises(ValueError):
+        params.from_file(here/'express.toml', force=True)
 
 def test_from_arg_names():
     here = Path(__file__).parent

@@ -14,7 +14,7 @@ from .defaults import PARAMS as PARAMS_DEFAULT
 from .defaults import POSITIONAL
 from .exceptions import PyParamNameError, PyParamTypeError, PyParamValueError
 from .help import HelpAssembler, ProgHighlighter
-from .param import PARAM_MAPPINGS, ParamJson
+from .param import PARAM_MAPPINGS, ParamNamespace
 from .utils import (
     Namespace,
     always_list,
@@ -26,7 +26,7 @@ from .utils import (
 
 if TYPE_CHECKING:
     from .help import Theme
-    from .param import Param, ParamNamespace, ParamPath
+    from .param import Param, ParamPath
 
 
 class Params(Completer):
@@ -204,7 +204,7 @@ class Params(Completer):
         if not ns_param:
             return None
         ret = ns_param.get_param(name)
-        return None if name not in ret.names else ret
+        return None if ret is None or name not in ret.names else ret
 
     def get_command(self, name: str) -> "Params":
         """Get the command object
@@ -1037,14 +1037,8 @@ class Params(Completer):
             2. no namespace parameters;
         ```toml
         arg = 1 # default value
-        "arg.desc" = "An argument" # description
+        "arg$desc" = "An argument" # description
         # other attributes
-        ```
-        or
-        ```toml
-        [arg]
-        default = 1
-        desc = "An argument"
         ```
 
         - full specification
@@ -1108,6 +1102,43 @@ class Params(Completer):
                 {"params": param_section, "commands": subcmd_section}, show
             )
 
+    def _express_to_full_dict(
+        self,
+        expr_dict: dict,
+        ns_key: str = None,
+    ) -> dict:
+        """Convert express dict to full dict specification"""
+        full_dict = {
+            (
+                (ns_key + "." if ns_key else "")
+                + (key if "." not in key else key.split(".", 1)[0])
+            ): {}
+            for key in expr_dict
+        }
+        for key, val in expr_dict.items():
+            nskey = f"{ns_key}.{key}" if ns_key else key
+            if nskey in full_dict:
+                param = self.get_param(nskey)
+                if isinstance(param, ParamNamespace):
+                    del full_dict[nskey]
+                    if not isinstance(val, dict):
+                        raise ValueError(
+                            f"Value for namespace parameter `{nskey}` "
+                            "must be a dict."
+                        )
+
+                    full_dict.update(
+                        self._express_to_full_dict(val, nskey)
+                    )
+                else:
+                    full_dict[nskey]["default"] = val
+
+            else:
+                param_name, _, param_attr = key.rpartition(".")
+                full_dict[param_name][param_attr] = val
+
+        return full_dict
+
     def from_dict(
         self,
         dict_obj: dict,
@@ -1125,53 +1156,8 @@ class Params(Completer):
         if "params" not in dict_obj and "commands" not in dict_obj:
             # express way
             # scan and create dict for all params
-            all_params: Dict[str, dict] = {}
-            for key, val in dict_obj.items():
-                param_name: str = key
-                if "." in key:
-                    param_name = key.split(".", 1)[0]
-                all_params.setdefault(param_name, {})
-
-            # scan for the attributes
-            for key, val in dict_obj.items():
-                if key in all_params:
-                    # if val is a dict
-                    if isinstance(val, dict):
-                        # see if key has already defined and is a json parameter
-                        param = self.get_param(key)
-                        if isinstance(param, ParamJson) and (
-                            "default" not in val
-                            or set(val)
-                            - {
-                                "default",
-                                "type",
-                                "desc",
-                                "required",
-                                "group",
-                                "type_frozen",
-                                "argname_shorten",
-                                "choices",
-                            }
-                        ):
-                            all_params[key]["default"] = val
-                            continue
-
-                    # if it is a dict, and there is not other attributes
-                    # assigned like "arg.desc", that means this dictionary
-                    # contains all attributes
-                    if isinstance(val, dict) and not any(
-                        ap_key.startswith(f"{key}.") for ap_key in dict_obj
-                    ):
-                        all_params[key] = val
-                    else:
-                        all_params[key]["default"] = val
-
-                elif "." in key:
-                    # Type: str, str
-                    param_name, param_attr = key.split(".", 1)
-                    all_params[param_name][param_attr] = val
-
-            dict_obj = {"params": all_params}
+            dict_obj = self._express_to_full_dict(dict_obj)
+            dict_obj = {"params": dict_obj}
 
         self._from_dict_with_sections(dict_obj, show, force)
 
