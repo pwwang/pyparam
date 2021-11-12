@@ -258,7 +258,7 @@ class Param(CompleterParam):
         for descr in self._desc:
             try:
                 descr = descr.format(**format_data)
-            except KeyError as kerr:
+            except Exception as kerr:
                 raise PyParamException(
                     f"Description of {self.namestr()!r} is formatting "
                     "using kwargs from contructor. \n"
