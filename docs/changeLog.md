@@ -1,3 +1,7 @@
+## 0.4.16
+
+- 🩹 Fix description formatting exception not captured
+
 ## 0.4.15
 
 - 🐛 Allow namespace parameter to be defined in express way from a file
