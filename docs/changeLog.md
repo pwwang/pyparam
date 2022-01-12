@@ -1,3 +1,7 @@
+## 0.4.17
+
+- 👽️ Adopt rich 11+
+
 ## 0.4.16
 
 - 🩹 Fix description formatting exception not captured
