@@ -13,7 +13,8 @@ homepage = "https://github.com/pwwang/pyparam"
 repository = "https://github.com/pwwang/pyparam"
 
 [tool.poetry.dependencies]
-python = "^3.6"
+# literally ^3.6, but ^3.6.2 to match the minimum require from rich 11+
+python = "^3.6.2"
 python-simpleconf = "*"
 rich = "*"
 diot = "*"

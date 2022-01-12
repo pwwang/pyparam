@@ -519,6 +519,8 @@ def cast_to(value: Any, to_type: Union[str, bool]) -> Any:
                 to_type  # type: ignore
             ](str(value))
         if to_type in (None, "auto"):
+            if not isinstance(value, str):
+                return value
             return _cast_auto(value)
     except (
         TypeError,

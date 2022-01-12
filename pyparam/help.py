@@ -9,7 +9,13 @@ from typing import TYPE_CHECKING, Callable, Dict, List, Tuple, Type, Union
 
 from diot import Diot, OrderedDiot
 from rich import box  # , print
-from rich.console import Console, RenderGroup, RenderResult
+from rich.console import Console, RenderResult
+try:
+    from rich.console import RenderGroup  # pragma: no cover
+except ImportError:
+    # rich 11+
+    from rich.console import Group as RenderGroup  # pragma: no cover
+
 from rich.highlighter import RegexHighlighter
 from rich.padding import Padding
 from rich.table import Table
