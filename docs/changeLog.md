@@ -1,3 +1,8 @@
+## 0.5.0
+
+- ⬆️ Upgrade python-simpleconf to v0.5
+- 👷 Remove python3.6 and add python3.10 in CI
+
 ## 0.4.17
 
 - 👽️ Adopt rich 11+
