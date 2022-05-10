@@ -13,17 +13,15 @@ homepage = "https://github.com/pwwang/pyparam"
 repository = "https://github.com/pwwang/pyparam"
 
 [tool.poetry.dependencies]
-# literally ^3.6, but ^3.6.2 to match the minimum require from rich 11+
-python = "^3.6.2"
-python-simpleconf = "*"
-rich = "*"
-diot = "*"
+python = "^3.7"
+python-simpleconf = "^0.5"
+rich = "^12"
+diot = "^0.1"
 
 [tool.poetry.dev-dependencies]
-pytest = "*"
-pytest-cov = "*"
-toml = "0.*"
-pyyaml = "5.*"
+pytest = "^7"
+pytest-cov = "^3"
+python-simpleconf = {extras = ["all"], version = "^0.5"}
 
 [tool.mypy]
 ignore_missing_imports = true

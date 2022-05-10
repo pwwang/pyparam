@@ -6,7 +6,7 @@ from typing import TYPE_CHECKING, Any, Callable, Dict, List, Tuple, Type, Union
 
 import rich
 from diot import Diot, OrderedDiot
-from simpleconf import LOADERS, Config
+from simpleconf import Config
 
 from .completer import Completer
 from .defaults import PARAM as PARAM_DEFAULT
@@ -1024,7 +1024,6 @@ class Params(Completer):
     def from_file(
         self,
         filename: Union[str, PathLike, dict],
-        filetype: str = None,
         show: bool = True,
         force: bool = False,
     ) -> None:
@@ -1062,8 +1061,7 @@ class Params(Completer):
             show: The default show value for parameters in the file
             force: Whether to force adding params/commands
         """
-        config: Config = Config(with_profile=False)
-        config._load(filename, factory=LOADERS.get(filetype))
+        config = Config.load(filename)
         self.from_dict(config, show=show, force=force)
 
     def _from_dict_with_sections(
