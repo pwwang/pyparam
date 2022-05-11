@@ -1,3 +1,7 @@
+## 0.5.1
+
+- 📄 Add license
+
 ## 0.5.0
 
 - ⬆️ Upgrade python-simpleconf to v0.5
