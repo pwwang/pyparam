@@ -10,11 +10,7 @@ from typing import TYPE_CHECKING, Callable, Dict, List, Tuple, Type, Union
 from diot import Diot, OrderedDiot
 from rich import box  # , print
 from rich.console import Console, RenderResult
-try:
-    from rich.console import RenderGroup  # pragma: no cover
-except ImportError:
-    # rich 11+
-    from rich.console import Group as RenderGroup  # pragma: no cover
+from rich.console import Group
 
 from rich.highlighter import RegexHighlighter
 from rich.padding import Padding
@@ -155,7 +151,7 @@ class HelpSectionUsage(HelpSectionPlain):
                 line, console.meta.prog, console.meta.highlighters.prog
             )
 
-            yield RenderGroup(*usages)  # type: ignore
+            yield Group(*usages)  # type: ignore
 
 
 class HelpSectionOption(HelpSection):
@@ -288,7 +284,7 @@ class HelpSectionOption(HelpSection):
         )
         for param_opts, param_descs in self:
             table.add_row(
-                RenderGroup(  # type: ignore
+                Group(  # type: ignore
                     *self._wrap_opts(
                         param_opts,
                         console.meta.highlighters.optname,
@@ -296,7 +292,7 @@ class HelpSectionOption(HelpSection):
                     )
                 ),
                 Text("-", justify="left"),
-                RenderGroup(  # type: ignore
+                Group(  # type: ignore
                     *self._wrap_descs(
                         param_descs or [], console.meta.highlighters.default
                     )
@@ -433,7 +429,9 @@ class HelpAssembler:
             self.callback(assembled)
 
         for title, section in assembled.items():
-            self._assembled.append(Text(end="\n"))  # type: ignore
+            # end is ignored with rich v11+
+            # see https://github.com/Textualize/rich/issues/2274
+            self._assembled.append(Text("\n", end=""))  # type: ignore
             self._assembled.append(
                 Text(  # type: ignore
                     title + ":",
