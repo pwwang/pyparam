@@ -1,3 +1,7 @@
+## 0.5.2
+
+- 🩹 Fix newline lost of section title in help (Textualize/rich#2274)
+
 ## 0.5.1
 
 - 📄 Add license
