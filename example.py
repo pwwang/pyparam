@@ -2,7 +2,7 @@
 from rich import print
 from pyparam import Params
 # program name, otherwise sys.argv[0]
-params = Params(prog='pyparam', desc="An example for {prog}")
+params = Params(prog='pyparam', desc="An example for %(prog)s")
 # adding parameters
 params.add_param('i, int', type=int,
                  desc="An integer argument.")

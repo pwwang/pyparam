@@ -19,7 +19,7 @@ You can also code blocks as we do for parameter descriptions. See [Parameter des
 
 ### Usage
 
-You can specify some example usages for the program. A single string or list of strings acts as the description. You can also use `{prog}` as a placeholder for the program name.
+You can specify some example usages for the program. A single string or list of strings acts as the description. You can also use `%(prog)s` as a placeholder for the program name.
 
 By default, `pyparam` generates default usages for the program. It literally list all the required parameters and merge all optional ones as `[OPTIONS]`.
 

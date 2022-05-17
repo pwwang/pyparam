@@ -5,7 +5,7 @@ from pyparam.help import *
 params = Params(
     prog='prog',
     desc = [
-        'Program: {prog}',
+        'Program: %(prog)s',
         '>>> print(1)'
     ]
 )

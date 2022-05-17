@@ -1,9 +1,11 @@
 # pyparam
+
 [![pypi][1]][2] [![pypi][10]][11] [![codacy quality][4]][6] [![codacy quality][7]][6] [![docs][12]][5] ![github action][3] ![pyver][8]
 
 Powerful parameter processing
 
 ## Features
+
 - Command line argument parser (with subcommand support)
 - Rich type support, including `py`, `json`, `namespace`, etc.
 - Type overwriting for parameters from command line
@@ -14,11 +16,13 @@ Powerful parameter processing
 - Parameter loading from configuration files
 
 ## Installation
+
 ```shell
 pip install -U pyparam
 ```
 
 ## Documentation
+
 [https://pwwang.github.io/pyparam/][5]
 
 ## Basic usage
@@ -29,7 +33,7 @@ pip install -U pyparam
 from rich import print
 from pyparam import Params
 # program name, otherwise sys.argv[0]
-params = Params(prog='pyparam', desc="An example for {prog}")
+params = Params(prog='pyparam', desc="An example for %(prog)s")
 # adding parameters
 params.add_param('i, int', type=int,
                  desc="An integer argument.")
@@ -66,8 +70,9 @@ print(vars(params.parse()))
 ```
 
 Try it out:
+
 ```sh
-$ python example.py
+python example.py
 ```
 
 ![help](./pyparam-help.png)
@@ -86,6 +91,7 @@ $ python example.py \
     --path . \
     --config.ncores 4
 ```
+
 ```python
 {
     'i': 2,
@@ -106,8 +112,9 @@ $ python example.py \
 ```
 
 Try more features with:
+
 ```sh
-$ python -m pyparam
+python -m pyparam
 ```
 
 ## Shell completions
@@ -117,7 +124,6 @@ Here is how the command completion in `fish` works:
 ![pyparam-completions](./pyparam-completions.gif)
 
 Check the [documentation][13], as well as the `__main__.py` to see how the completion works.
-
 
 [1]: https://img.shields.io/pypi/v/pyparam.svg?style=flat-square
 [2]: https://pypi.org/project/pyparam/

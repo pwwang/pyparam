@@ -312,9 +312,9 @@ class Completer:
         For bash, it should be appended to ~/.profile
         For zsh, it should be appended to ~/.zprofile
         For fish, it should be appended to
-            ~/.config/fish/completions/{prog}.fish
+            ~/.config/fish/completions/%(prog)s.fish
             If python is provided, this should go to `python.fish` rather than
-            the `{prog}.fish`
+            the `%(prog)s.fish`
 
         Args:
             shell: The shell to generate the code for.

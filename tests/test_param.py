@@ -119,7 +119,7 @@ def test_subtype():
     assert param.typestr() == 'list:int'
 
 def test_desc_error():
-    a = ParamInt('a', default=1, desc=['{xyz}'])
+    a = ParamInt('a', default=1, desc=['%(xyz)s'])
     with pytest.raises(PyParamException):
         a.desc
 

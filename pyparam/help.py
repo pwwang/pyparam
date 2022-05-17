@@ -343,7 +343,7 @@ class HelpAssembler:
             return None
 
         return HelpSectionPlain(
-            desc.format(prog=params.prog) for desc in params.desc
+            desc % dict(prog=params.prog) for desc in params.desc
         )
 
     def _assemble_usage(self, params: "Params", full: bool) -> HelpSectionUsage:
@@ -351,7 +351,7 @@ class HelpAssembler:
         if not params.usage:
             # default usage
             # gather required Arguments
-            usage: List[str] = ["{prog}"]
+            usage: List[str] = ["%(prog)s"]
             has_optional = False
 
             for group in params.param_groups.values():
@@ -369,7 +369,7 @@ class HelpAssembler:
             params.usage = [" ".join(usage)]
 
         return HelpSectionUsage(
-            usage.format(prog=params.prog) for usage in params.usage
+            usage % dict(prog=params.prog) for usage in params.usage
         )
 
     def _assemble_param_groups(  # type: ignore

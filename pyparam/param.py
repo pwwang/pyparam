@@ -257,14 +257,11 @@ class Param(CompleterParam):
         ret: List[str] = []
         for descr in self._desc:
             try:
-                descr = descr.format(**format_data)
+                descr = descr % format_data
             except Exception as kerr:
                 raise PyParamException(
                     f"Description of {self.namestr()!r} is formatting "
                     "using kwargs from contructor. \n"
-                    "If you have curly braces in it, which is not intended "
-                    "for formatting, please escape it by replacing with "
-                    "`{{` or `}}`:\n"
                     f"- desc: {descr}\n"
                     f"- key : {{... {str(kerr)[1:-1]} ...}}"
                 ) from None

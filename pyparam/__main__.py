@@ -15,7 +15,7 @@ params = Params(
     prog="pyparam",
     desc="""\
 An exhibition showing all supported types of parameters and \
-some features by running {prog}.
+some features by running %(prog)s.
 
 ```python
 # We can also insert code block in the description.
@@ -43,13 +43,13 @@ predefined = params.add_command(
     ],
     desc="Some predefined arguments.",
     usage="""\
-{prog} -i-1 --in . --py 1
-{prog} --int=-1 --in . --py "(1,2,3)" -f0.1 -ccc
-{prog} --int=-1 --in . --py "[1,2,3]" --float 0.1 --count 2
-{prog} --int=-1 --in . --py True -b true --float 0.1
-{prog} -i0 -b1 --choice=large
-{prog} --int=-1 --bool false --float 0.1 --auto \
-"{{\\\"a\\\": 1}}" --py "{{1, 2, 3}}" """,
+%(prog) -i-1 --in . --py 1
+%(prog) --int=-1 --in . --py "(1,2,3)" -f0.1 -ccc
+%(prog) --int=-1 --in . --py "[1,2,3]" --float 0.1 --count 2
+%(prog) --int=-1 --in . --py True -b true --float 0.1
+%(prog) -i0 -b1 --choice=large
+%(prog) --int=-1 --bool false --float 0.1 --auto \
+"{\\\"a\\\": 1}" --py "{1, 2, 3}" """,
 )
 
 predefined.add_param(

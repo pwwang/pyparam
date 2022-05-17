@@ -313,7 +313,7 @@ def test_to_dict():
         prefix='+',
         arbitrary=True,
         theme='synthware',
-        usage='{prog} [options]',
+        usage='%(prog)s [options]',
         group='X Commands'
     )
     cmd.add_param('j')
