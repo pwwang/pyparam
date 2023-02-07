@@ -11,9 +11,9 @@ jobs:
         python-version: [3.7, 3.8, 3.9, "3.10"]
 
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - name: Setup Python # Set Python version
-        uses: actions/setup-python@v2
+        uses: actions/setup-python@v4
         with:
           python-version: ${{ matrix.python-version }}
       - name: Install dependencies
@@ -35,7 +35,7 @@ jobs:
         if: ${{ always() }}
       - name: Run codacy-coverage-reporter
         uses: codacy/codacy-coverage-reporter-action@master
-        if: matrix.python-version == 3.8
+        if: matrix.python-version == 3.9
         with:
           project-token: ${{ secrets.CODACY_PROJECT_TOKEN }}
           coverage-reports: .coverage.xml
@@ -48,9 +48,9 @@ jobs:
       matrix:
         python-version: [3.9]
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - name: Setup Python # Set Python version
-        uses: actions/setup-python@v2
+        uses: actions/setup-python@v4
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
