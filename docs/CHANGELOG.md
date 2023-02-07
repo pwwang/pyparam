@@ -1,3 +1,11 @@
+# Change Log
+
+## 0.5.4
+
+- ⬆️ Upgrade rich to ^13
+- 👷 Use latest actions for CI
+- 📝 Update gh action badges in README.md
+
 ## 0.5.3
 
 - 💥 Use "%" to format description and usage.
