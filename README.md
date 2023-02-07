@@ -127,7 +127,7 @@ Check the [documentation][13], as well as the `__main__.py` to see how the compl
 
 [1]: https://img.shields.io/pypi/v/pyparam.svg?style=flat-square
 [2]: https://pypi.org/project/pyparam/
-[3]: https://img.shields.io/github/workflow/status/pwwang/pyparam/Build%20and%20Deploy?style=flat-square
+[3]: https://img.shields.io/github/actions/workflow/status/pwwang/pyparam/build.yml?style=flat-square
 [4]: https://img.shields.io/codacy/grade/370aa0074595445188b01dc8dba47fe5.svg?style=flat-square
 [5]: https://pwwang.github.io/pyparam/
 [6]: https://app.codacy.com/gh/pwwang/pyparam/dashboard
@@ -136,5 +136,5 @@ Check the [documentation][13], as well as the `__main__.py` to see how the compl
 [9]: https://raw.githubusercontent.com/pwwang/pyparam/master/docs/static/help.png
 [10]: https://img.shields.io/github/tag/pwwang/pyparam.svg?style=flat-square
 [11]: https://github.com/pwwang/pyparam
-[12]: https://img.shields.io/github/workflow/status/pwwang/pyparam/Build%20Docs?label=docs&style=flat-square
+[12]: https://img.shields.io/github/actions/workflow/status/pwwang/pyparam/docs.yml?label=docs&style=flat-square
 [13]: https://pwwang.github.io/pyparam/shellCompletion/
