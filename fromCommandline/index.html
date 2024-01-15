@@ -1,0 +1,970 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+      
+      
+      
+        <link rel="prev" href="../commands/">
+      
+      
+        <link rel="next" href="../fromDict/">
+      
+      
+      <link rel="icon" href="../favicon.png">
+      <meta name="generator" content="mkdocs-1.5.3, mkdocs-material-9.5.3">
+    
+    
+      
+        <title>Parsing from command line - pyparam</title>
+      
+    
+    
+      <link rel="stylesheet" href="../assets/stylesheets/main.50c56a3b.min.css">
+      
+        
+        <link rel="stylesheet" href="../assets/stylesheets/palette.06af60db.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="//use.fontawesome.com/releases/v5.8.1/css/all.css">
+    
+      <link rel="stylesheet" href="//use.fontawesome.com/releases/v5.8.1/css/v4-shims.css">
+    
+      <link rel="stylesheet" href="../css/mkapi-common.css">
+    
+      <link rel="stylesheet" href="../style.css">
+    
+    <script>__md_scope=new URL("..",location),__md_hash=e=>[...e].reduce((e,_)=>(e<<5)-e+_.charCodeAt(0),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+    
+  </head>
+  
+  
+    
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="blue-grey" data-md-color-accent="indigo">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#argument-name-prefix" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href=".." title="pyparam" class="md-header__button md-logo" aria-label="pyparam" data-md-component="logo">
+      
+  <img src="../favicon.png" alt="logo">
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3V6m0 5h18v2H3v-2m0 5h18v2H3v-2Z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            pyparam
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Parsing from command line
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+    
+    
+    
+    
+      <label class="md-header__button md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+      </label>
+      <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12Z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41Z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href=".." title="pyparam" class="md-nav__button md-logo" aria-label="pyparam" data-md-component="logo">
+      
+  <img src="../favicon.png" alt="logo">
+
+    </a>
+    pyparam
+  </label>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href=".." class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Home
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../TypesOfParams/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Defining parameters
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../commands/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Commands
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  <span class="md-ellipsis">
+    Parsing from command line
+  </span>
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  <span class="md-ellipsis">
+    Parsing from command line
+  </span>
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#argument-name-prefix" class="md-nav__link">
+    <span class="md-ellipsis">
+      Argument name prefix
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#argument-with-attached-value" class="md-nav__link">
+    <span class="md-ellipsis">
+      Argument with attached value
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#help-argument" class="md-nav__link">
+    <span class="md-ellipsis">
+      Help argument
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#positional-argument" class="md-nav__link">
+    <span class="md-ellipsis">
+      Positional argument
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#type-overwritting" class="md-nav__link">
+    <span class="md-ellipsis">
+      Type overwritting
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#arbitrary-parsing" class="md-nav__link">
+    <span class="md-ellipsis">
+      Arbitrary parsing
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../fromDict/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Loading from dict/config file
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../helpPage/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Help page
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../useTheValues/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Using the parsed values
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../shellCompletion/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Shell completion
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_9" >
+        
+          
+          <label class="md-nav__link" for="__nav_9" id="__nav_9_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    API
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_9_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_9">
+            <span class="md-nav__icon md-icon"></span>
+            API
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_9_1" >
+        
+          
+          <label class="md-nav__link" for="__nav_9_1" id="__nav_9_1_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    pyparam
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_9_1_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_9_1">
+            <span class="md-nav__icon md-icon"></span>
+            pyparam
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../api/pyparam/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    pyparam
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../api/pyparam.defaults/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    pyparam.defaults
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../api/pyparam.exceptions/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    pyparam.exceptions
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../api/pyparam.param/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    pyparam.param
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../api/pyparam.completer/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    pyparam.completer
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../api/pyparam.utils/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    pyparam.utils
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../api/pyparam.help/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    pyparam.help
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../api/pyparam.params/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    pyparam.params
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../changeLog.md" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Change log
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#argument-name-prefix" class="md-nav__link">
+    <span class="md-ellipsis">
+      Argument name prefix
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#argument-with-attached-value" class="md-nav__link">
+    <span class="md-ellipsis">
+      Argument with attached value
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#help-argument" class="md-nav__link">
+    <span class="md-ellipsis">
+      Help argument
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#positional-argument" class="md-nav__link">
+    <span class="md-ellipsis">
+      Positional argument
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#type-overwritting" class="md-nav__link">
+    <span class="md-ellipsis">
+      Type overwritting
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#arbitrary-parsing" class="md-nav__link">
+    <span class="md-ellipsis">
+      Arbitrary parsing
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  <h1>Parsing from command line</h1>
+
+<p>A most common use of <code>pyparam</code> is to parse the values from command line. Parameters will be matched and values will be consumed until the end of the command line. Values will be finally compiled into a namespace.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>In this documentation, We are using <code>paramter</code> to specifically refer to the parameter that is defined with <code>pyparam</code>. For the items from command line, we call them <code>arguments</code></p>
+</div>
+<h3 id="argument-name-prefix">Argument name prefix</h3>
+<p>By default, the prefix is <code>auto</code>, meaning that for short names (length &lt;= 1), it is <code>-</code>; while for long ones (length &gt; 1), it is <code>--</code>.</p>
+<p>You can specify your own prefix. Then all the names will be sharing the same prefix this way.</p>
+<p>If you have values starting with the prefix, say <code>-1</code> as a value of an int paramter, to avoid that it's parsed as a name of an argument, you may need to attach the value to the name. For example, <code>-i-1</code>, <code>-i=-1</code> or <code>--int=-1</code> (see <a href="#argument-with-attached-value">Argument with attached value</a>).</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>We don't have any constraints on the <code>prefix</code>, but to reduce ambiguity, commonly used ones are recommended (i.e. <code>auto</code>, <code>-</code>, <code>--</code>, etc).</p>
+</div>
+<div class="admonition info">
+<p class="admonition-title">Info</p>
+<p>Void prefix(<code>''</code>) is also supported, meaning that each element of the <code>sys.argv</code> is treated as a potential matched parameter. So the values should be attached to it (see <a href="#argument-with-attached-value">Argument with attached value</a>).</p>
+<p>For example:
+<div class="highlight"><pre><span></span><code><span class="n">params</span> <span class="o">=</span> <span class="n">Params</span><span class="p">(</span><span class="o">...</span><span class="p">,</span> <span class="n">prefix</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">)</span>
+<span class="n">params</span><span class="o">.</span><span class="n">add_param</span><span class="p">(</span><span class="s1">&#39;i&#39;</span><span class="p">)</span>
+<span class="n">parsed</span> <span class="o">=</span> <span class="n">params</span><span class="o">.</span><span class="n">parse</span><span class="p">([</span><span class="s1">&#39;i=1&#39;</span><span class="p">])</span>
+<span class="c1"># parsed.i == 1</span>
+</code></pre></div></p>
+</div>
+<h3 id="argument-with-attached-value">Argument with attached value</h3>
+<p>Users may pass an argument with attached value with it. For example:
+<div class="highlight"><pre><span></span><code>prog<span class="w"> </span>-a1<span class="w"> </span>-b<span class="o">=</span><span class="m">2</span><span class="w"> </span>--count<span class="o">=</span><span class="m">3</span>
+</code></pre></div>
+Each of <code>-a1</code>, <code>-b=2</code>, <code>--count=3</code> is just one element of <code>sys.argv</code>. It is easy to deal with the latter two, since we have <code>=</code> as the delimiter. However, for the first one, we don't have some limitations to parse it as <code>param_name='a', param_value='1'</code>:</p>
+<ol>
+<li>
+<p>No type attached. For example, these cannot be detached: <code>-i:int1</code> and <code>--float:float1.1</code> (but these can: <code>-i:int=1</code> and <code>--float:float=1.1</code>).</p>
+</li>
+<li>
+<p>prefix has to have length &lt;= <code>1</code> or to be <code>auto</code>. For example, if you have:
+   <div class="highlight"><pre><span></span><code><span class="n">params</span> <span class="o">=</span> <span class="n">Params</span><span class="p">(</span><span class="o">...</span><span class="p">,</span> <span class="n">prefix</span><span class="o">=</span><span class="s1">&#39;+&#39;</span><span class="p">)</span>
+</code></pre></div>
+   then <code>+a1</code> is also possible to be parsed as the above.
+   If you have <code>prefx='--'</code> then, attached value without <code>=</code> will never be detached from the name, say: <code>--a1</code>, which will always be parsed as <code>param_name='a1', param_value=None</code>.</p>
+</li>
+<li>
+<p><code>a1</code> is not defined as a parameter and but <code>a</code> is.
+   If you have <code>a1</code> defined as a parameter, then <code>-a1</code> will be anyway parsed as <code>param_name='a1', param_value=None</code>.
+   If neither <code>a1</code> nor <code>a</code> is defined, a warning will be shown saying that <code>-a1</code> is an unknown argument.</p>
+</li>
+<li>
+<p>In arbitrary mode (see <a href="#arbitrary-parsing">Arbitrary parsing</a>), it doesn't require <code>a</code> to be defined if <code>a1</code> is not defined (it will be always <code>param_name='a1', param_value=None</code> if it is). Parameter <code>a</code> will be defined on the fly.</p>
+</li>
+</ol>
+<h3 id="help-argument">Help argument</h3>
+<p>By default, once we hit one of <code>-h</code>, <code>-H</code> and <code>--help</code> from command line, <code>pyparam</code> will stop parsing, and print the help page.</p>
+<p>You can change the help argument names by:
+<div class="highlight"><pre><span></span><code><span class="c1"># only with -h, --help</span>
+<span class="n">params</span> <span class="o">=</span> <span class="n">Params</span><span class="p">(</span><span class="o">...</span><span class="p">,</span> <span class="n">help_keys</span><span class="o">=</span><span class="s1">&#39;h,help&#39;</span><span class="p">)</span>
+<span class="c1"># or</span>
+<span class="n">params</span> <span class="o">=</span> <span class="n">Params</span><span class="p">(</span><span class="o">...</span><span class="p">,</span> <span class="n">help_keys</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;h&#39;</span><span class="p">,</span> <span class="s1">&#39;help&#39;</span><span class="p">])</span>
+</code></pre></div></p>
+<p>When there is not arguments detected, meaning that there is only command name passed on the command line, the help page will print by default. Sometime when you want the program to get through instead of exit and print the help page, especially when all the paramters are optional and your program is able to run with those values. You can enable this by:
+<div class="highlight"><pre><span></span><code><span class="n">params</span> <span class="o">=</span> <span class="n">Params</span><span class="p">(</span><span class="o">...</span><span class="p">,</span> <span class="n">help_on_void</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+</code></pre></div></p>
+<h3 id="positional-argument">Positional argument</h3>
+<p>Positional argument is not enabled by default. You will have to add it by yourself:
+<div class="highlight"><pre><span></span><code><span class="kn">from</span> <span class="nn">pyparam</span> <span class="kn">import</span> <span class="n">Params</span><span class="p">,</span> <span class="n">OPTIONAL</span>
+
+<span class="n">params</span> <span class="o">=</span> <span class="n">Params</span><span class="p">()</span>
+<span class="n">params</span><span class="o">.</span><span class="n">add_param</span><span class="p">(</span><span class="n">POSITIONAL</span><span class="p">)</span>
+<span class="n">parsed</span> <span class="o">=</span> <span class="n">params</span><span class="o">.</span><span class="n">parse</span><span class="p">([</span><span class="s1">&#39;1&#39;</span><span class="p">,</span> <span class="s1">&#39;2&#39;</span><span class="p">,</span> <span class="s1">&#39;3&#39;</span><span class="p">])</span>
+<span class="c1"># parsed[POSITIONAL] == [1, 2, 3]</span>
+</code></pre></div></p>
+<p>Maybe you have already noticed that the default type of the positional argument is <code>list:auto</code>. You can change it by <code>params.add_param(POSITIONAL, type=int)</code>. Then in the above case, the last 2 values (<code>'2'</code> and <code>'3'</code>) will be ignored and <code>parsed[POSITIONAL] == 1</code></p>
+<h3 id="type-overwritting">Type overwritting</h3>
+<p>By default, type overwriting from the command line is disabled, unless your are resetting a list parameter (<code>--list:r 4 5</code>).</p>
+<p>To enable type overwriting from command line, you can do:
+<div class="highlight"><pre><span></span><code><span class="n">params</span><span class="o">.</span><span class="n">add_param</span><span class="p">(</span><span class="s1">&#39;i&#39;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">int</span><span class="p">,</span> <span class="n">type_frozen</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+</code></pre></div>
+Then from command line:
+<div class="highlight"><pre><span></span><code>prog<span class="w"> </span>-i:float<span class="w"> </span><span class="m">1</span>.1
+</code></pre></div>
+is legal and the value of <code>i</code> will be a float number.</p>
+<p>If type overwriting is enabled, the types for the parameters will be italic and in lowercase on help page.</p>
+<h3 id="arbitrary-parsing">Arbitrary parsing</h3>
+<p>Arbitrary mode doesn't need the parameters to be pre-defined. They will be defined on the fly.</p>
+<p>To enable arbitrary mode:
+<div class="highlight"><pre><span></span><code><span class="n">params</span> <span class="o">=</span> <span class="n">Params</span><span class="p">(</span><span class="o">...</span><span class="p">,</span> <span class="n">arbitrary</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="n">parsed</span> <span class="o">=</span> <span class="n">params</span><span class="o">.</span><span class="n">parse</span><span class="p">()</span>
+</code></pre></div></p>
+<p>For example:
+<div class="highlight"><pre><span></span><code>prog<span class="w"> </span>-i<span class="w"> </span><span class="m">1</span><span class="w"> </span>--float<span class="w"> </span><span class="m">2</span>.1<span class="w"> </span>--str:str<span class="w"> </span><span class="m">3</span>
+</code></pre></div>
+will produce a parsed namespace:
+<div class="highlight"><pre><span></span><code><span class="n">Namespace</span><span class="p">(</span><span class="n">i</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="nb">float</span><span class="o">=</span><span class="mf">2.1</span><span class="p">,</span> <span class="nb">str</span><span class="o">=</span><span class="s2">&quot;3&quot;</span><span class="p">)</span>
+</code></pre></div></p>
+<p>You can play with this by running <code>$ python -m pyparam arbi ...</code></p>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    <script id="__config" type="application/json">{"base": "..", "features": [], "search": "../assets/javascripts/workers/search.f886a092.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}}</script>
+    
+    
+      <script src="../assets/javascripts/bundle.d7c377c4.min.js"></script>
+      
+        <script src="../js/mkapi.js"></script>
+      
+    
+  </body>
+</html>

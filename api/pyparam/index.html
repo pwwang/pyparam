@@ -1,0 +1,1410 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+      
+      
+      
+        <link rel="prev" href="../../shellCompletion/">
+      
+      
+        <link rel="next" href="../pyparam.defaults/">
+      
+      
+      <link rel="icon" href="../../favicon.png">
+      <meta name="generator" content="mkdocs-1.5.3, mkdocs-material-9.5.3">
+    
+    
+      
+        <title>pyparam - pyparam</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.50c56a3b.min.css">
+      
+        
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.06af60db.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="//use.fontawesome.com/releases/v5.8.1/css/all.css">
+    
+      <link rel="stylesheet" href="//use.fontawesome.com/releases/v5.8.1/css/v4-shims.css">
+    
+      <link rel="stylesheet" href="../../css/mkapi-common.css">
+    
+      <link rel="stylesheet" href="../../style.css">
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce((e,_)=>(e<<5)-e+_.charCodeAt(0),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+    
+  </head>
+  
+  
+    
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="blue-grey" data-md-color-accent="indigo">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#pyparam" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../.." title="pyparam" class="md-header__button md-logo" aria-label="pyparam" data-md-component="logo">
+      
+  <img src="../../favicon.png" alt="logo">
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3V6m0 5h18v2H3v-2m0 5h18v2H3v-2Z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            pyparam
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              pyparam
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+    
+    
+    
+    
+      <label class="md-header__button md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+      </label>
+      <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12Z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41Z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../.." title="pyparam" class="md-nav__button md-logo" aria-label="pyparam" data-md-component="logo">
+      
+  <img src="../../favicon.png" alt="logo">
+
+    </a>
+    pyparam
+  </label>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../.." class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Home
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../TypesOfParams/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Defining parameters
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../commands/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Commands
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../fromCommandline/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Parsing from command line
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../fromDict/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Loading from dict/config file
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../helpPage/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Help page
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../useTheValues/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Using the parsed values
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../shellCompletion/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Shell completion
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+        
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_9" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_9" id="__nav_9_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    API
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_9_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_9">
+            <span class="md-nav__icon md-icon"></span>
+            API
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+        
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_9_1" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_9_1" id="__nav_9_1_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    pyparam
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_9_1_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_9_1">
+            <span class="md-nav__icon md-icon"></span>
+            pyparam
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  <span class="md-ellipsis">
+    pyparam
+  </span>
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  <span class="md-ellipsis">
+    pyparam
+  </span>
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#pyparam" class="md-nav__link">
+    <span class="md-ellipsis">
+      pyparam
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="pyparam">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#pyparamdefaults" class="md-nav__link">
+    <span class="md-ellipsis">
+      defaults
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#pyparamexceptions" class="md-nav__link">
+    <span class="md-ellipsis">
+      exceptions
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#pyparamparam" class="md-nav__link">
+    <span class="md-ellipsis">
+      param
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#pyparamcompleter" class="md-nav__link">
+    <span class="md-ellipsis">
+      completer
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#pyparamutils" class="md-nav__link">
+    <span class="md-ellipsis">
+      utils
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#pyparamhelp" class="md-nav__link">
+    <span class="md-ellipsis">
+      help
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#pyparamparams" class="md-nav__link">
+    <span class="md-ellipsis">
+      params
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../pyparam.defaults/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    pyparam.defaults
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../pyparam.exceptions/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    pyparam.exceptions
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../pyparam.param/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    pyparam.param
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../pyparam.completer/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    pyparam.completer
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../pyparam.utils/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    pyparam.utils
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../pyparam.help/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    pyparam.help
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../pyparam.params/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    pyparam.params
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../changeLog.md" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Change log
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#pyparam" class="md-nav__link">
+    <span class="md-ellipsis">
+      pyparam
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="pyparam">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#pyparamdefaults" class="md-nav__link">
+    <span class="md-ellipsis">
+      defaults
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#pyparamexceptions" class="md-nav__link">
+    <span class="md-ellipsis">
+      exceptions
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#pyparamparam" class="md-nav__link">
+    <span class="md-ellipsis">
+      param
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#pyparamcompleter" class="md-nav__link">
+    <span class="md-ellipsis">
+      completer
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#pyparamutils" class="md-nav__link">
+    <span class="md-ellipsis">
+      utils
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#pyparamhelp" class="md-nav__link">
+    <span class="md-ellipsis">
+      help
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#pyparamparams" class="md-nav__link">
+    <span class="md-ellipsis">
+      params
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  <h1>pyparam</h1>
+
+<div class="mkapi-node" id="pyparam">
+<div class='mkapi-object-container'>
+  <div class="mkapi-object package plain top">
+    <div class="mkapi-object-kind package top">package</div>
+    <h2 id="pyparam" class="mkapi-object-body package top"><span class="mkapi-object-name">pyparam</span></h2>
+  </div>
+  <div class="mkapi-src-link">
+    <a class="mkapi-src-link" href="../source/pyparam/#pyparam" title="Source for pyparam">&lt;/&gt;</a>
+  </div>
+</div>
+<div class="mkapi-docstring">
+<div class="mkapi-section">
+      <div class="mkapi-section-body"><p>Powerful parameter processing with pyparam</p></div>
+    </div>
+  </div>
+
+</div>
+
+<div class="mkapi-node" id="pyparam.defaults">
+<div class='mkapi-object-container'>
+  <div class="mkapi-object module plain top">
+    <div class="mkapi-object-kind module top">module</div>
+    <h3 id="pyparamdefaults" class="mkapi-object-body module top"><span class="mkapi-object-prefix"><a href="#pyparam">pyparam</a>.</span><span class="mkapi-object-name"><a href="../pyparam.defaults/#pyparam.defaults">defaults</a></span></h3>
+  </div>
+  <div class="mkapi-src-link">
+    <a class="mkapi-src-link" href="../source/pyparam.defaults/#pyparam.defaults" title="Source for pyparam.defaults">&lt;/&gt;</a>
+  </div>
+</div>
+<div class="mkapi-docstring">
+<div class="mkapi-section">
+      <div class="mkapi-section-body"><p>Defaults for pyparam</p>
+<p>Holds some default values for pyparam.
+To change any of the CONSOLE_WIDTH, HELP_SECTION_INDENT or HELP_OPTION_WIDTH:
+<div class="highlight"><pre><span></span><code><span class="kn">from</span> <span class="nn">pyparam</span> <span class="kn">import</span> <span class="n">defaults</span>
+<span class="n">default</span><span class="o">.</span><span class="n">CONSOLE_WIDTH</span> <span class="o">=</span> <span class="mi">100</span>
+</code></pre></div></p></div>
+    </div>
+  <div class="mkapi-section attributes">
+      <div class="mkapi-section-name attributes">
+          <span class="mkapi-section-name-body attributes">Attributes</span> 
+        </div>
+      <div class="mkapi-section-body attributes"><ul class="mkapi-items">
+
+<li><code class="mkapi-item-name">CONSOLE_WIDTH</code>
+<span class="mkapi-item-type">(int)</span>
+<span class="mkapi-item-dash">&mdash;</span> <span class="mkapi-item-description">The total width for the help page.</span></li>
+
+<li><code class="mkapi-item-name">HELP_OPTION_WIDTH</code>
+<span class="mkapi-item-type">(int)</span>
+<span class="mkapi-item-dash">&mdash;</span> <span class="mkapi-item-description">The width that the option name and type take up in
+the help page.</span></li>
+
+<li><code class="mkapi-item-name">HELP_SECTION_INDENT</code>
+<span class="mkapi-item-type">(int)</span>
+<span class="mkapi-item-dash">&mdash;</span> <span class="mkapi-item-description">The indentation for the contents in a section</span></li>
+
+
+
+<li><code class="mkapi-item-name">POSITIONAL</code>
+<span class="mkapi-item-type">(str)</span>
+<span class="mkapi-item-dash">&mdash;</span> <span class="mkapi-item-description">The name of positional parameter</span></li>
+
+<li><code class="mkapi-item-name">TYPE_NAMES</code>
+<span class="mkapi-item-type">(dict(str: str))</span>
+<span class="mkapi-item-dash">&mdash;</span> <span class="mkapi-item-description">The type name mappings to get the type name from aliases
+Do not modify this variable. It is maintained by
+<code>pyparam.param.regiest_param</code></span></li>
+
+
+</ul></div>
+    </div>
+  </div>
+
+</div>
+
+<div class="mkapi-node" id="pyparam.exceptions">
+<div class='mkapi-object-container'>
+  <div class="mkapi-object module plain top">
+    <div class="mkapi-object-kind module top">module</div>
+    <h3 id="pyparamexceptions" class="mkapi-object-body module top"><span class="mkapi-object-prefix"><a href="#pyparam">pyparam</a>.</span><span class="mkapi-object-name"><a href="../pyparam.exceptions/#pyparam.exceptions">exceptions</a></span></h3>
+  </div>
+  <div class="mkapi-src-link">
+    <a class="mkapi-src-link" href="../source/pyparam.exceptions/#pyparam.exceptions" title="Source for pyparam.exceptions">&lt;/&gt;</a>
+  </div>
+</div>
+<div class="mkapi-docstring">
+<div class="mkapi-section">
+      <div class="mkapi-section-body"><p>Exceptions used in pyparam</p></div>
+    </div>
+  <div class="mkapi-section classes">
+      <div class="mkapi-section-name classes">
+          <span class="mkapi-section-name-body classes">Classes</span> 
+        </div>
+      <div class="mkapi-section-body classes"><ul class="mkapi-items">
+<li class="class"><code class="mkapi-item-name"><a href="../pyparam.exceptions#pyparam.exceptions.PyParamException">PyParamException</a></code>
+
+<span class="mkapi-item-dash">&mdash;</span> <span class="mkapi-item-description">Base exception for pyparam<a class="mkapi-src-link" href="../source/pyparam.exceptions/#pyparam.exceptions.PyParamException" title="Source for pyparam.exceptions.PyParamException">&lt;/&gt;</a></span></li>
+
+<li class="class"><code class="mkapi-item-name"><a href="../pyparam.exceptions#pyparam.exceptions.PyParamTypeError">PyParamTypeError</a></code>
+
+<span class="mkapi-item-dash">&mdash;</span> <span class="mkapi-item-description">When parameter type is not supported<a class="mkapi-src-link" href="../source/pyparam.exceptions/#pyparam.exceptions.PyParamTypeError" title="Source for pyparam.exceptions.PyParamTypeError">&lt;/&gt;</a></span></li>
+
+<li class="class"><code class="mkapi-item-name"><a href="../pyparam.exceptions#pyparam.exceptions.PyParamValueError">PyParamValueError</a></code>
+
+<span class="mkapi-item-dash">&mdash;</span> <span class="mkapi-item-description">When parameter value is improper<a class="mkapi-src-link" href="../source/pyparam.exceptions/#pyparam.exceptions.PyParamValueError" title="Source for pyparam.exceptions.PyParamValueError">&lt;/&gt;</a></span></li>
+
+<li class="class"><code class="mkapi-item-name"><a href="../pyparam.exceptions#pyparam.exceptions.PyParamNameError">PyParamNameError</a></code>
+
+<span class="mkapi-item-dash">&mdash;</span> <span class="mkapi-item-description">Any errors related to parameter names<a class="mkapi-src-link" href="../source/pyparam.exceptions/#pyparam.exceptions.PyParamNameError" title="Source for pyparam.exceptions.PyParamNameError">&lt;/&gt;</a></span></li>
+
+
+</ul></div>
+    </div>
+  </div>
+
+</div>
+
+<div class="mkapi-node" id="pyparam.param">
+<div class='mkapi-object-container'>
+  <div class="mkapi-object module plain top">
+    <div class="mkapi-object-kind module top">module</div>
+    <h3 id="pyparamparam" class="mkapi-object-body module top"><span class="mkapi-object-prefix"><a href="#pyparam">pyparam</a>.</span><span class="mkapi-object-name"><a href="../pyparam.param/#pyparam.param">param</a></span></h3>
+  </div>
+  <div class="mkapi-src-link">
+    <a class="mkapi-src-link" href="../source/pyparam.param/#pyparam.param" title="Source for pyparam.param">&lt;/&gt;</a>
+  </div>
+</div>
+<div class="mkapi-docstring">
+<div class="mkapi-section">
+      <div class="mkapi-section-body"><p>Definition of a single parameter</p></div>
+    </div>
+  <div class="mkapi-section attributes">
+      <div class="mkapi-section-name attributes">
+          <span class="mkapi-section-name-body attributes">Attributes</span> 
+        </div>
+      <div class="mkapi-section-body attributes"><ul class="mkapi-items">
+<li><code class="mkapi-item-name">PARAM_MAPPINGS</code>
+<span class="mkapi-item-type">(dict(str: type of <a href="../pyparam.param/#pyparam.param.Param">Param</a>))</span>
+<span class="mkapi-item-dash">&mdash;</span> <span class="mkapi-item-description">The type to Param mappings, used for params to init a
+parameter. Managed by <code>register_param</code></span></li>
+
+
+</ul></div>
+    </div>
+  <div class="mkapi-section classes">
+      <div class="mkapi-section-name classes">
+          <span class="mkapi-section-name-body classes">Classes</span> 
+        </div>
+      <div class="mkapi-section-body classes"><ul class="mkapi-items">
+<li class="class"><code class="mkapi-item-name"><a href="../pyparam.param#pyparam.param.Param">Param</a></code>
+
+<span class="mkapi-item-dash">&mdash;</span> <span class="mkapi-item-description">Base class for parameter<a class="mkapi-src-link" href="../source/pyparam.param/#pyparam.param.Param" title="Source for pyparam.param.Param">&lt;/&gt;</a></span></li>
+
+<li class="class"><code class="mkapi-item-name"><a href="../pyparam.param#pyparam.param.ParamAuto">ParamAuto</a></code>
+
+<span class="mkapi-item-dash">&mdash;</span> <span class="mkapi-item-description">An auto parameter whose value is automatically casted<a class="mkapi-src-link" href="../source/pyparam.param/#pyparam.param.ParamAuto" title="Source for pyparam.param.ParamAuto">&lt;/&gt;</a></span></li>
+
+<li class="class"><code class="mkapi-item-name"><a href="../pyparam.param#pyparam.param.ParamInt">ParamInt</a></code>
+
+<span class="mkapi-item-dash">&mdash;</span> <span class="mkapi-item-description">An int parameter whose value is automatically casted into an int<a class="mkapi-src-link" href="../source/pyparam.param/#pyparam.param.ParamInt" title="Source for pyparam.param.ParamInt">&lt;/&gt;</a></span></li>
+
+<li class="class"><code class="mkapi-item-name"><a href="../pyparam.param#pyparam.param.ParamFloat">ParamFloat</a></code>
+
+<span class="mkapi-item-dash">&mdash;</span> <span class="mkapi-item-description">A float parameter whose value is automatically casted into a float<a class="mkapi-src-link" href="../source/pyparam.param/#pyparam.param.ParamFloat" title="Source for pyparam.param.ParamFloat">&lt;/&gt;</a></span></li>
+
+<li class="class"><code class="mkapi-item-name"><a href="../pyparam.param#pyparam.param.ParamStr">ParamStr</a></code>
+
+<span class="mkapi-item-dash">&mdash;</span> <span class="mkapi-item-description">A str parameter whose value is automatically casted into a str<a class="mkapi-src-link" href="../source/pyparam.param/#pyparam.param.ParamStr" title="Source for pyparam.param.ParamStr">&lt;/&gt;</a></span></li>
+
+<li class="class"><code class="mkapi-item-name"><a href="../pyparam.param#pyparam.param.ParamBool">ParamBool</a></code>
+
+<span class="mkapi-item-dash">&mdash;</span> <span class="mkapi-item-description">A bool parameter whose value is automatically casted into a bool<a class="mkapi-src-link" href="../source/pyparam.param/#pyparam.param.ParamBool" title="Source for pyparam.param.ParamBool">&lt;/&gt;</a></span></li>
+
+<li class="class"><code class="mkapi-item-name"><a href="../pyparam.param#pyparam.param.ParamCount">ParamCount</a></code>
+
+<span class="mkapi-item-dash">&mdash;</span> <span class="mkapi-item-description">A bool parameter whose value is automatically casted into a bool<a class="mkapi-src-link" href="../source/pyparam.param/#pyparam.param.ParamCount" title="Source for pyparam.param.ParamCount">&lt;/&gt;</a></span></li>
+
+<li class="class"><code class="mkapi-item-name"><a href="../pyparam.param#pyparam.param.ParamPath">ParamPath</a></code>
+
+<span class="mkapi-item-dash">&mdash;</span> <span class="mkapi-item-description">A path parameter whose value is automatically casted into a pathlib.Path<a class="mkapi-src-link" href="../source/pyparam.param/#pyparam.param.ParamPath" title="Source for pyparam.param.ParamPath">&lt;/&gt;</a></span></li>
+
+<li class="class"><code class="mkapi-item-name"><a href="../pyparam.param#pyparam.param.ParamDir">ParamDir</a></code>
+
+<span class="mkapi-item-dash">&mdash;</span> <span class="mkapi-item-description">Subclass of ParamPath.<a class="mkapi-src-link" href="../source/pyparam.param/#pyparam.param.ParamDir" title="Source for pyparam.param.ParamDir">&lt;/&gt;</a></span></li>
+
+<li class="class"><code class="mkapi-item-name"><a href="../pyparam.param#pyparam.param.ParamPy">ParamPy</a></code>
+
+<span class="mkapi-item-dash">&mdash;</span> <span class="mkapi-item-description">A parameter whose value will be ast.literal_eval'ed<a class="mkapi-src-link" href="../source/pyparam.param/#pyparam.param.ParamPy" title="Source for pyparam.param.ParamPy">&lt;/&gt;</a></span></li>
+
+<li class="class"><code class="mkapi-item-name"><a href="../pyparam.param#pyparam.param.ParamJson">ParamJson</a></code>
+
+<span class="mkapi-item-dash">&mdash;</span> <span class="mkapi-item-description">A parameter whose value will be parsed as json<a class="mkapi-src-link" href="../source/pyparam.param/#pyparam.param.ParamJson" title="Source for pyparam.param.ParamJson">&lt;/&gt;</a></span></li>
+
+<li class="class"><code class="mkapi-item-name"><a href="../pyparam.param#pyparam.param.ParamList">ParamList</a></code>
+
+<span class="mkapi-item-dash">&mdash;</span> <span class="mkapi-item-description">A parameter whose value is a list<a class="mkapi-src-link" href="../source/pyparam.param/#pyparam.param.ParamList" title="Source for pyparam.param.ParamList">&lt;/&gt;</a></span></li>
+
+<li class="class"><code class="mkapi-item-name"><a href="../pyparam.param#pyparam.param.ParamChoice">ParamChoice</a></code>
+
+<span class="mkapi-item-dash">&mdash;</span> <span class="mkapi-item-description">A bool parameter whose value is automatically casted into a bool<a class="mkapi-src-link" href="../source/pyparam.param/#pyparam.param.ParamChoice" title="Source for pyparam.param.ParamChoice">&lt;/&gt;</a></span></li>
+
+<li class="class"><code class="mkapi-item-name"><a href="../pyparam.param#pyparam.param.ParamNamespace">ParamNamespace</a></code>
+
+<span class="mkapi-item-dash">&mdash;</span> <span class="mkapi-item-description">A pseudo parameter serving as a namespace for parameters under it<a class="mkapi-src-link" href="../source/pyparam.param/#pyparam.param.ParamNamespace" title="Source for pyparam.param.ParamNamespace">&lt;/&gt;</a></span></li>
+
+<li class="class"><code class="mkapi-item-name"><a href="../pyparam.param#pyparam.param.ParamNamespace">ParamNamespace</a></code>
+
+<span class="mkapi-item-dash">&mdash;</span> <span class="mkapi-item-description">A pseudo parameter serving as a namespace for parameters under it<a class="mkapi-src-link" href="../source/pyparam.param/#pyparam.param.ParamNamespace" title="Source for pyparam.param.ParamNamespace">&lt;/&gt;</a></span></li>
+
+
+</ul></div>
+    </div>
+  <div class="mkapi-section functions">
+      <div class="mkapi-section-name functions">
+          <span class="mkapi-section-name-body functions">Functions</span> 
+        </div>
+      <div class="mkapi-section-body functions"><ul class="mkapi-items">
+<li class="function"><code class="mkapi-item-name"><a href="../pyparam.param#pyparam.param.register_param">register_param</a></code><code class="mkapi-object-parenthesis">(</code><code class="mkapi-object-signature">param</code><code class="mkapi-object-parenthesis">)</code>
+
+<span class="mkapi-item-dash">&mdash;</span> <span class="mkapi-item-description">Register a parameter class<a class="mkapi-src-link" href="../source/pyparam.param/#pyparam.param.register_param" title="Source for pyparam.param.register_param">&lt;/&gt;</a></span></li>
+
+
+</ul></div>
+    </div>
+  </div>
+
+</div>
+
+<div class="mkapi-node" id="pyparam.completer">
+<div class='mkapi-object-container'>
+  <div class="mkapi-object module plain top">
+    <div class="mkapi-object-kind module top">module</div>
+    <h3 id="pyparamcompleter" class="mkapi-object-body module top"><span class="mkapi-object-prefix"><a href="#pyparam">pyparam</a>.</span><span class="mkapi-object-name"><a href="../pyparam.completer/#pyparam.completer">completer</a></span></h3>
+  </div>
+  <div class="mkapi-src-link">
+    <a class="mkapi-src-link" href="../source/pyparam.completer/#pyparam.completer" title="Source for pyparam.completer">&lt;/&gt;</a>
+  </div>
+</div>
+<div class="mkapi-docstring">
+<div class="mkapi-section">
+      <div class="mkapi-section-body"><p>Classes for completions</p>
+<p>The idea is inspired from
+https://github.com/pallets/click/pull/1622</p>
+<p>Some of the code is borrowing there, under following LICENSE:</p>
+<p>Copyright 2014 Pallets</p>
+<p>Redistribution and use in source and binary forms, with or without
+modification, are permitted provided that the following conditions are met:</p>
+<p>Redistributions of source code must retain the above copyright notice,
+this list of conditions and the following disclaimer.
+Redistributions in binary form must reproduce the above copyright notice,
+this list of conditions and the following disclaimer in the documentation
+and/or other materials provided with the distribution.
+Neither the name of the copyright holder nor the names of its contributors
+may be used to endorse or promote products derived from this software without
+specific prior written permission.
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO,
+THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR
+PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS
+BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE
+GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
+HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
+LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT
+OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.</p></div>
+    </div>
+  <div class="mkapi-section classes">
+      <div class="mkapi-section-name classes">
+          <span class="mkapi-section-name-body classes">Classes</span> 
+        </div>
+      <div class="mkapi-section-body classes"><ul class="mkapi-items">
+<li class="class"><code class="mkapi-item-name"><a href="../pyparam.completer#pyparam.completer.Completer">Completer</a></code>
+
+<span class="mkapi-item-dash">&mdash;</span> <span class="mkapi-item-description">Main completion handler<a class="mkapi-src-link" href="../source/pyparam.completer/#pyparam.completer.Completer" title="Source for pyparam.completer.Completer">&lt;/&gt;</a></span></li>
+
+<li class="class"><code class="mkapi-item-name"><a href="../pyparam.completer#pyparam.completer.CompleterParam">CompleterParam</a></code>
+
+<span class="mkapi-item-dash">&mdash;</span> <span class="mkapi-item-description">Class for a parameter dealing with completion<a class="mkapi-src-link" href="../source/pyparam.completer/#pyparam.completer.CompleterParam" title="Source for pyparam.completer.CompleterParam">&lt;/&gt;</a></span></li>
+
+
+</ul></div>
+    </div>
+  <div class="mkapi-section functions">
+      <div class="mkapi-section-name functions">
+          <span class="mkapi-section-name-body functions">Functions</span> 
+        </div>
+      <div class="mkapi-section-body functions"><ul class="mkapi-items">
+<li class="function"><code class="mkapi-item-name"><a href="../pyparam.completer#pyparam.completer.split_arg_string">split_arg_string</a></code><code class="mkapi-object-parenthesis">(</code><code class="mkapi-object-signature">string</code><code class="mkapi-object-parenthesis">)</code>
+<span class="mkapi-item-type">(list of str)</span>
+<span class="mkapi-item-dash">&mdash;</span> <span class="mkapi-item-description">Given an argument string this attempts to split it into small parts.<a class="mkapi-src-link" href="../source/pyparam.completer/#pyparam.completer.split_arg_string" title="Source for pyparam.completer.split_arg_string">&lt;/&gt;</a></span></li>
+
+
+</ul></div>
+    </div>
+  </div>
+
+</div>
+
+<div class="mkapi-node" id="pyparam.utils">
+<div class='mkapi-object-container'>
+  <div class="mkapi-object module plain top">
+    <div class="mkapi-object-kind module top">module</div>
+    <h3 id="pyparamutils" class="mkapi-object-body module top"><span class="mkapi-object-prefix"><a href="#pyparam">pyparam</a>.</span><span class="mkapi-object-name"><a href="../pyparam.utils/#pyparam.utils">utils</a></span></h3>
+  </div>
+  <div class="mkapi-src-link">
+    <a class="mkapi-src-link" href="../source/pyparam.utils/#pyparam.utils" title="Source for pyparam.utils">&lt;/&gt;</a>
+  </div>
+</div>
+<div class="mkapi-docstring">
+<div class="mkapi-section">
+      <div class="mkapi-section-body"><p>Utilities for pyparam</p></div>
+    </div>
+  <div class="mkapi-section attributes">
+      <div class="mkapi-section-name attributes">
+          <span class="mkapi-section-name-body attributes">Attributes</span> 
+        </div>
+      <div class="mkapi-section-body attributes"><ul class="mkapi-items">
+<li><code class="mkapi-item-name">logger</code>
+
+<span class="mkapi-item-dash">&mdash;</span> <span class="mkapi-item-description">The logger</span></li>
+
+
+</ul></div>
+    </div>
+  <div class="mkapi-section classes">
+      <div class="mkapi-section-name classes">
+          <span class="mkapi-section-name-body classes">Classes</span> 
+        </div>
+      <div class="mkapi-section-body classes"><ul class="mkapi-items">
+<li class="class"><code class="mkapi-item-name"><a href="../pyparam.utils#pyparam.utils.Namespace">Namespace</a></code>
+
+<span class="mkapi-item-dash">&mdash;</span> <span class="mkapi-item-description">Subclass of <code>argparse.Namespace</code><a class="mkapi-src-link" href="../source/pyparam.utils/#pyparam.utils.Namespace" title="Source for pyparam.utils.Namespace">&lt;/&gt;</a></span></li>
+
+<li class="class"><code class="mkapi-item-name"><a href="../pyparam.utils#pyparam.utils.Codeblock">Codeblock</a></code>
+
+<span class="mkapi-item-dash">&mdash;</span> <span class="mkapi-item-description">A code block, will be rendered as rich.syntax.Syntax<a class="mkapi-src-link" href="../source/pyparam.utils/#pyparam.utils.Codeblock" title="Source for pyparam.utils.Codeblock">&lt;/&gt;</a></span></li>
+
+<li class="class"><code class="mkapi-item-name"><a href="../pyparam.utils#pyparam.utils.RichHandler">RichHandler</a></code>
+
+<span class="mkapi-item-dash">&mdash;</span> <span class="mkapi-item-description">Subclass of rich.logging.RichHandler, showing log levels as a single
+character<a class="mkapi-src-link" href="../source/pyparam.utils/#pyparam.utils.RichHandler" title="Source for pyparam.utils.RichHandler">&lt;/&gt;</a></span></li>
+
+
+</ul></div>
+    </div>
+  <div class="mkapi-section functions">
+      <div class="mkapi-section-name functions">
+          <span class="mkapi-section-name-body functions">Functions</span> 
+        </div>
+      <div class="mkapi-section-body functions"><ul class="mkapi-items">
+<li class="function"><code class="mkapi-item-name"><a href="../pyparam.utils#pyparam.utils.always_list">always_list</a></code><code class="mkapi-object-parenthesis">(</code><code class="mkapi-object-signature">str_or_list</code>, <code class="mkapi-object-signature">strip</code>, <code class="mkapi-object-signature">split</code><code class="mkapi-object-parenthesis">)</code>
+<span class="mkapi-item-type">(list of str)</span>
+<span class="mkapi-item-dash">&mdash;</span> <span class="mkapi-item-description">Convert a string (comma separated) or a list to a list<a class="mkapi-src-link" href="../source/pyparam.utils/#pyparam.utils.always_list" title="Source for pyparam.utils.always_list">&lt;/&gt;</a></span></li>
+
+<li class="function"><code class="mkapi-item-name"><a href="../pyparam.utils#pyparam.utils.cast_to">cast_to</a></code><code class="mkapi-object-parenthesis">(</code><code class="mkapi-object-signature">value</code>, <code class="mkapi-object-signature">to_type</code><code class="mkapi-object-parenthesis">)</code>
+<span class="mkapi-item-type">(any)</span>
+<span class="mkapi-item-dash">&mdash;</span> <span class="mkapi-item-description">Cast a value to a given type<a class="mkapi-src-link" href="../source/pyparam.utils/#pyparam.utils.cast_to" title="Source for pyparam.utils.cast_to">&lt;/&gt;</a></span></li>
+
+<li class="function"><code class="mkapi-item-name"><a href="../pyparam.utils#pyparam.utils.parse_potential_argument">parse_potential_argument</a></code><code class="mkapi-object-parenthesis">(</code><code class="mkapi-object-signature">arg</code>, <code class="mkapi-object-signature">prefix</code>, <code class="mkapi-object-signature">allow_attached</code><code class="mkapi-object-parenthesis">)</code>
+<span class="mkapi-item-type">(str, str, str)</span>
+<span class="mkapi-item-dash">&mdash;</span> <span class="mkapi-item-description">Parse a potential argument with given prefix<a class="mkapi-src-link" href="../source/pyparam.utils/#pyparam.utils.parse_potential_argument" title="Source for pyparam.utils.parse_potential_argument">&lt;/&gt;</a></span></li>
+
+<li class="function"><code class="mkapi-item-name"><a href="../pyparam.utils#pyparam.utils.parse_type">parse_type</a></code><code class="mkapi-object-parenthesis">(</code><code class="mkapi-object-signature">typestr</code><code class="mkapi-object-parenthesis">)</code>
+<span class="mkapi-item-type">(list of str)</span>
+<span class="mkapi-item-dash">&mdash;</span> <span class="mkapi-item-description">Parse the type string<a class="mkapi-src-link" href="../source/pyparam.utils/#pyparam.utils.parse_type" title="Source for pyparam.utils.parse_type">&lt;/&gt;</a></span></li>
+
+<li class="function"><code class="mkapi-item-name"><a href="../pyparam.utils#pyparam.utils.type_from_value">type_from_value</a></code><code class="mkapi-object-parenthesis">(</code><code class="mkapi-object-signature">value</code><code class="mkapi-object-parenthesis">)</code>
+<span class="mkapi-item-type">(str)</span>
+<span class="mkapi-item-dash">&mdash;</span> <span class="mkapi-item-description">Detect parameter type from a value<a class="mkapi-src-link" href="../source/pyparam.utils/#pyparam.utils.type_from_value" title="Source for pyparam.utils.type_from_value">&lt;/&gt;</a></span></li>
+
+
+</ul></div>
+    </div>
+  </div>
+
+</div>
+
+<div class="mkapi-node" id="pyparam.help">
+<div class='mkapi-object-container'>
+  <div class="mkapi-object module plain top">
+    <div class="mkapi-object-kind module top">module</div>
+    <h3 id="pyparamhelp" class="mkapi-object-body module top"><span class="mkapi-object-prefix"><a href="#pyparam">pyparam</a>.</span><span class="mkapi-object-name"><a href="../pyparam.help/#pyparam.help">help</a></span></h3>
+  </div>
+  <div class="mkapi-src-link">
+    <a class="mkapi-src-link" href="../source/pyparam.help/#pyparam.help" title="Source for pyparam.help">&lt;/&gt;</a>
+  </div>
+</div>
+<div class="mkapi-docstring">
+<div class="mkapi-section">
+      <div class="mkapi-section-body"><p>Help assembler for pyparam</p></div>
+    </div>
+  <div class="mkapi-section attributes">
+      <div class="mkapi-section-name attributes">
+          <span class="mkapi-section-name-body attributes">Attributes</span> 
+        </div>
+      <div class="mkapi-section-body attributes"><ul class="mkapi-items">
+<li><code class="mkapi-item-name">THEMES</code>
+<span class="mkapi-item-type">(dict(str: Theme))</span>
+<span class="mkapi-item-dash">&mdash;</span> <span class="mkapi-item-description">The theme for the help page.</span></li>
+
+
+</ul></div>
+    </div>
+  <div class="mkapi-section classes">
+      <div class="mkapi-section-name classes">
+          <span class="mkapi-section-name-body classes">Classes</span> 
+        </div>
+      <div class="mkapi-section-body classes"><ul class="mkapi-items">
+<li class="class"><code class="mkapi-item-name"><a href="../pyparam.help#pyparam.help.ProgHighlighter">ProgHighlighter</a></code>
+
+<span class="mkapi-item-dash">&mdash;</span> <span class="mkapi-item-description">Apply style to anything that looks like a program name.<a class="mkapi-src-link" href="../source/pyparam.help/#pyparam.help.ProgHighlighter" title="Source for pyparam.help.ProgHighlighter">&lt;/&gt;</a></span></li>
+
+<li class="class"><code class="mkapi-item-name"><a href="../pyparam.help#pyparam.help.OptnameHighlighter">OptnameHighlighter</a></code>
+
+<span class="mkapi-item-dash">&mdash;</span> <span class="mkapi-item-description">Apply style to anything that looks like a option name.<a class="mkapi-src-link" href="../source/pyparam.help/#pyparam.help.OptnameHighlighter" title="Source for pyparam.help.OptnameHighlighter">&lt;/&gt;</a></span></li>
+
+<li class="class"><code class="mkapi-item-name"><a href="../pyparam.help#pyparam.help.OpttypeHighlighter">OpttypeHighlighter</a></code>
+
+<span class="mkapi-item-dash">&mdash;</span> <span class="mkapi-item-description">Apply style to anything that looks like a option type.<a class="mkapi-src-link" href="../source/pyparam.help/#pyparam.help.OpttypeHighlighter" title="Source for pyparam.help.OpttypeHighlighter">&lt;/&gt;</a></span></li>
+
+<li class="class"><code class="mkapi-item-name"><a href="../pyparam.help#pyparam.help.DefaultHighlighter">DefaultHighlighter</a></code>
+
+<span class="mkapi-item-dash">&mdash;</span> <span class="mkapi-item-description">Apply style to anything that looks like default value in option desc.<a class="mkapi-src-link" href="../source/pyparam.help/#pyparam.help.DefaultHighlighter" title="Source for pyparam.help.DefaultHighlighter">&lt;/&gt;</a></span></li>
+
+<li class="class"><code class="mkapi-item-name"><a href="../pyparam.help#pyparam.help.HelpSection">HelpSection</a></code>
+
+<span class="mkapi-item-dash">&mdash;</span> <span class="mkapi-item-description">Base class for all help sections.<a class="mkapi-src-link" href="../source/pyparam.help/#pyparam.help.HelpSection" title="Source for pyparam.help.HelpSection">&lt;/&gt;</a></span></li>
+
+<li class="class"><code class="mkapi-item-name"><a href="../pyparam.help#pyparam.help.HelpSectionPlain">HelpSectionPlain</a></code>
+
+<span class="mkapi-item-dash">&mdash;</span> <span class="mkapi-item-description">Plain text section<a class="mkapi-src-link" href="../source/pyparam.help/#pyparam.help.HelpSectionPlain" title="Source for pyparam.help.HelpSectionPlain">&lt;/&gt;</a></span></li>
+
+<li class="class"><code class="mkapi-item-name"><a href="../pyparam.help#pyparam.help.HelpSectionUsage">HelpSectionUsage</a></code>
+
+<span class="mkapi-item-dash">&mdash;</span> <span class="mkapi-item-description">Usage section in help<a class="mkapi-src-link" href="../source/pyparam.help/#pyparam.help.HelpSectionUsage" title="Source for pyparam.help.HelpSectionUsage">&lt;/&gt;</a></span></li>
+
+<li class="class"><code class="mkapi-item-name"><a href="../pyparam.help#pyparam.help.HelpSectionOption">HelpSectionOption</a></code>
+
+<span class="mkapi-item-dash">&mdash;</span> <span class="mkapi-item-description">Options section in help<a class="mkapi-src-link" href="../source/pyparam.help/#pyparam.help.HelpSectionOption" title="Source for pyparam.help.HelpSectionOption">&lt;/&gt;</a></span></li>
+
+<li class="class"><code class="mkapi-item-name"><a href="../pyparam.help#pyparam.help.HelpAssembler">HelpAssembler</a></code>
+
+<span class="mkapi-item-dash">&mdash;</span> <span class="mkapi-item-description">Assemble a help page<a class="mkapi-src-link" href="../source/pyparam.help/#pyparam.help.HelpAssembler" title="Source for pyparam.help.HelpAssembler">&lt;/&gt;</a></span></li>
+
+
+</ul></div>
+    </div>
+  </div>
+
+</div>
+
+<div class="mkapi-node" id="pyparam.params">
+<div class='mkapi-object-container'>
+  <div class="mkapi-object module plain top">
+    <div class="mkapi-object-kind module top">module</div>
+    <h3 id="pyparamparams" class="mkapi-object-body module top"><span class="mkapi-object-prefix"><a href="#pyparam">pyparam</a>.</span><span class="mkapi-object-name"><a href="../pyparam.params/#pyparam.params">params</a></span></h3>
+  </div>
+  <div class="mkapi-src-link">
+    <a class="mkapi-src-link" href="../source/pyparam.params/#pyparam.params" title="Source for pyparam.params">&lt;/&gt;</a>
+  </div>
+</div>
+<div class="mkapi-docstring">
+<div class="mkapi-section">
+      <div class="mkapi-section-body"><p>Definition of Params</p></div>
+    </div>
+  <div class="mkapi-section classes">
+      <div class="mkapi-section-name classes">
+          <span class="mkapi-section-name-body classes">Classes</span> 
+        </div>
+      <div class="mkapi-section-body classes"><ul class="mkapi-items">
+<li class="class"><code class="mkapi-item-name"><a href="../pyparam.params#pyparam.params.Params">Params</a></code>
+
+<span class="mkapi-item-dash">&mdash;</span> <span class="mkapi-item-description">Params, served as root params or subcommands<a class="mkapi-src-link" href="../source/pyparam.params/#pyparam.params.Params" title="Source for pyparam.params.Params">&lt;/&gt;</a></span></li>
+
+
+</ul></div>
+    </div>
+  </div>
+
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    <script id="__config" type="application/json">{"base": "../..", "features": [], "search": "../../assets/javascripts/workers/search.f886a092.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.d7c377c4.min.js"></script>
+      
+        <script src="../../js/mkapi.js"></script>
+      
+    
+  </body>
+</html>

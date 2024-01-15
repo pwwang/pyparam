@@ -1,0 +1,2630 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+      
+      
+      
+        <link rel="prev" href="../pyparam.completer/">
+      
+      
+        <link rel="next" href="../pyparam.help/">
+      
+      
+      <link rel="icon" href="../../favicon.png">
+      <meta name="generator" content="mkdocs-1.5.3, mkdocs-material-9.5.3">
+    
+    
+      
+        <title>pyparam.utils - pyparam</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.50c56a3b.min.css">
+      
+        
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.06af60db.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="//use.fontawesome.com/releases/v5.8.1/css/all.css">
+    
+      <link rel="stylesheet" href="//use.fontawesome.com/releases/v5.8.1/css/v4-shims.css">
+    
+      <link rel="stylesheet" href="../../css/mkapi-common.css">
+    
+      <link rel="stylesheet" href="../../style.css">
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce((e,_)=>(e<<5)-e+_.charCodeAt(0),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+    
+  </head>
+  
+  
+    
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="blue-grey" data-md-color-accent="indigo">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#pyparamutils" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../.." title="pyparam" class="md-header__button md-logo" aria-label="pyparam" data-md-component="logo">
+      
+  <img src="../../favicon.png" alt="logo">
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3V6m0 5h18v2H3v-2m0 5h18v2H3v-2Z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            pyparam
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              pyparam.utils
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+    
+    
+    
+    
+      <label class="md-header__button md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+      </label>
+      <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12Z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41Z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../.." title="pyparam" class="md-nav__button md-logo" aria-label="pyparam" data-md-component="logo">
+      
+  <img src="../../favicon.png" alt="logo">
+
+    </a>
+    pyparam
+  </label>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../.." class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Home
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../TypesOfParams/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Defining parameters
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../commands/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Commands
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../fromCommandline/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Parsing from command line
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../fromDict/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Loading from dict/config file
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../helpPage/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Help page
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../useTheValues/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Using the parsed values
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../shellCompletion/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Shell completion
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+        
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_9" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_9" id="__nav_9_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    API
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_9_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_9">
+            <span class="md-nav__icon md-icon"></span>
+            API
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+        
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_9_1" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_9_1" id="__nav_9_1_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    pyparam
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_9_1_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_9_1">
+            <span class="md-nav__icon md-icon"></span>
+            pyparam
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../pyparam/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    pyparam
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../pyparam.defaults/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    pyparam.defaults
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../pyparam.exceptions/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    pyparam.exceptions
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../pyparam.param/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    pyparam.param
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../pyparam.completer/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    pyparam.completer
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  <span class="md-ellipsis">
+    pyparam.utils
+  </span>
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  <span class="md-ellipsis">
+    pyparam.utils
+  </span>
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#pyparamutils" class="md-nav__link">
+    <span class="md-ellipsis">
+      utils
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="utils">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#pyparamutilsnamespace" class="md-nav__link">
+    <span class="md-ellipsis">
+      Namespace
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#pyparamutilscodeblock" class="md-nav__link">
+    <span class="md-ellipsis">
+      Codeblock
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Codeblock">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#pyparamutilscodeblockscan_texts" class="md-nav__link">
+    <span class="md-ellipsis">
+      scan_texts
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#pyparamutilscodeblockscan" class="md-nav__link">
+    <span class="md-ellipsis">
+      scan
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#pyparamutilscodeblockadd_code" class="md-nav__link">
+    <span class="md-ellipsis">
+      add_code
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#pyparamutilscodeblockis_end" class="md-nav__link">
+    <span class="md-ellipsis">
+      is_end
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#pyparamutilscodeblockrender" class="md-nav__link">
+    <span class="md-ellipsis">
+      render
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#pyparamutilsalways_list" class="md-nav__link">
+    <span class="md-ellipsis">
+      always_list
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#pyparamutilsparse_type" class="md-nav__link">
+    <span class="md-ellipsis">
+      parse_type
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#pyparamutilsparse_potential_argument" class="md-nav__link">
+    <span class="md-ellipsis">
+      parse_potential_argument
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#pyparamutilstype_from_value" class="md-nav__link">
+    <span class="md-ellipsis">
+      type_from_value
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#pyparamutilscast_to" class="md-nav__link">
+    <span class="md-ellipsis">
+      cast_to
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#pyparamutilsrichhandler" class="md-nav__link">
+    <span class="md-ellipsis">
+      RichHandler
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="RichHandler">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#loggingfiltereraddfilter" class="md-nav__link">
+    <span class="md-ellipsis">
+      addFilter
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#loggingfiltererremovefilter" class="md-nav__link">
+    <span class="md-ellipsis">
+      removeFilter
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#loggingfiltererfilter" class="md-nav__link">
+    <span class="md-ellipsis">
+      filter
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#logginghandlercreatelock" class="md-nav__link">
+    <span class="md-ellipsis">
+      createLock
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#logginghandleracquire" class="md-nav__link">
+    <span class="md-ellipsis">
+      acquire
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#logginghandlerrelease" class="md-nav__link">
+    <span class="md-ellipsis">
+      release
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#logginghandlersetlevel" class="md-nav__link">
+    <span class="md-ellipsis">
+      setLevel
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#logginghandlerformat" class="md-nav__link">
+    <span class="md-ellipsis">
+      format
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#logginghandlerhandle" class="md-nav__link">
+    <span class="md-ellipsis">
+      handle
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#logginghandlersetformatter" class="md-nav__link">
+    <span class="md-ellipsis">
+      setFormatter
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#logginghandlerflush" class="md-nav__link">
+    <span class="md-ellipsis">
+      flush
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#logginghandlerclose" class="md-nav__link">
+    <span class="md-ellipsis">
+      close
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#logginghandlerhandleerror" class="md-nav__link">
+    <span class="md-ellipsis">
+      handleError
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#richloggingrichhandleremit" class="md-nav__link">
+    <span class="md-ellipsis">
+      emit
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#richloggingrichhandlerrender_message" class="md-nav__link">
+    <span class="md-ellipsis">
+      render_message
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#richloggingrichhandlerrender" class="md-nav__link">
+    <span class="md-ellipsis">
+      render
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#pyparamutilsrichhandlerget_level_text" class="md-nav__link">
+    <span class="md-ellipsis">
+      get_level_text
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../pyparam.help/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    pyparam.help
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../pyparam.params/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    pyparam.params
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../changeLog.md" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Change log
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#pyparamutils" class="md-nav__link">
+    <span class="md-ellipsis">
+      utils
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="utils">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#pyparamutilsnamespace" class="md-nav__link">
+    <span class="md-ellipsis">
+      Namespace
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#pyparamutilscodeblock" class="md-nav__link">
+    <span class="md-ellipsis">
+      Codeblock
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Codeblock">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#pyparamutilscodeblockscan_texts" class="md-nav__link">
+    <span class="md-ellipsis">
+      scan_texts
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#pyparamutilscodeblockscan" class="md-nav__link">
+    <span class="md-ellipsis">
+      scan
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#pyparamutilscodeblockadd_code" class="md-nav__link">
+    <span class="md-ellipsis">
+      add_code
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#pyparamutilscodeblockis_end" class="md-nav__link">
+    <span class="md-ellipsis">
+      is_end
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#pyparamutilscodeblockrender" class="md-nav__link">
+    <span class="md-ellipsis">
+      render
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#pyparamutilsalways_list" class="md-nav__link">
+    <span class="md-ellipsis">
+      always_list
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#pyparamutilsparse_type" class="md-nav__link">
+    <span class="md-ellipsis">
+      parse_type
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#pyparamutilsparse_potential_argument" class="md-nav__link">
+    <span class="md-ellipsis">
+      parse_potential_argument
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#pyparamutilstype_from_value" class="md-nav__link">
+    <span class="md-ellipsis">
+      type_from_value
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#pyparamutilscast_to" class="md-nav__link">
+    <span class="md-ellipsis">
+      cast_to
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#pyparamutilsrichhandler" class="md-nav__link">
+    <span class="md-ellipsis">
+      RichHandler
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="RichHandler">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#loggingfiltereraddfilter" class="md-nav__link">
+    <span class="md-ellipsis">
+      addFilter
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#loggingfiltererremovefilter" class="md-nav__link">
+    <span class="md-ellipsis">
+      removeFilter
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#loggingfiltererfilter" class="md-nav__link">
+    <span class="md-ellipsis">
+      filter
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#logginghandlercreatelock" class="md-nav__link">
+    <span class="md-ellipsis">
+      createLock
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#logginghandleracquire" class="md-nav__link">
+    <span class="md-ellipsis">
+      acquire
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#logginghandlerrelease" class="md-nav__link">
+    <span class="md-ellipsis">
+      release
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#logginghandlersetlevel" class="md-nav__link">
+    <span class="md-ellipsis">
+      setLevel
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#logginghandlerformat" class="md-nav__link">
+    <span class="md-ellipsis">
+      format
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#logginghandlerhandle" class="md-nav__link">
+    <span class="md-ellipsis">
+      handle
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#logginghandlersetformatter" class="md-nav__link">
+    <span class="md-ellipsis">
+      setFormatter
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#logginghandlerflush" class="md-nav__link">
+    <span class="md-ellipsis">
+      flush
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#logginghandlerclose" class="md-nav__link">
+    <span class="md-ellipsis">
+      close
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#logginghandlerhandleerror" class="md-nav__link">
+    <span class="md-ellipsis">
+      handleError
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#richloggingrichhandleremit" class="md-nav__link">
+    <span class="md-ellipsis">
+      emit
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#richloggingrichhandlerrender_message" class="md-nav__link">
+    <span class="md-ellipsis">
+      render_message
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#richloggingrichhandlerrender" class="md-nav__link">
+    <span class="md-ellipsis">
+      render
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#pyparamutilsrichhandlerget_level_text" class="md-nav__link">
+    <span class="md-ellipsis">
+      get_level_text
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  <h1>pyparam.utils</h1>
+
+<div class="mkapi-node" id="pyparam.utils">
+<div class='mkapi-object-container'>
+  <div class="mkapi-object module plain top">
+    <div class="mkapi-object-kind module top">module</div>
+    <h2 id="pyparamutils" class="mkapi-object-body module top"><span class="mkapi-object-prefix"><a href="../pyparam/#pyparam">pyparam</a>.</span><span class="mkapi-object-name">utils</span></h2>
+  </div>
+  <div class="mkapi-src-link">
+    <a class="mkapi-src-link" href="../source/pyparam.utils/#pyparam.utils" title="Source for pyparam.utils">&lt;/&gt;</a>
+  </div>
+</div>
+<div class="mkapi-docstring">
+<div class="mkapi-section">
+      <div class="mkapi-section-body"><p>Utilities for pyparam</p></div>
+    </div>
+  <div class="mkapi-section attributes">
+      <div class="mkapi-section-name attributes">
+          <span class="mkapi-section-name-body attributes">Attributes</span> 
+        </div>
+      <div class="mkapi-section-body attributes"><ul class="mkapi-items">
+<li><code class="mkapi-item-name">logger</code>
+
+<span class="mkapi-item-dash">&mdash;</span> <span class="mkapi-item-description">The logger</span></li>
+
+
+</ul></div>
+    </div>
+  <div class="mkapi-section classes">
+      <div class="mkapi-section-name classes">
+          <span class="mkapi-section-name-body classes">Classes</span> 
+        </div>
+      <div class="mkapi-section-body classes"><ul class="mkapi-items">
+<li class="class"><code class="mkapi-item-name"><a href="#pyparam.utils.Namespace">Namespace</a></code>
+
+<span class="mkapi-item-dash">&mdash;</span> <span class="mkapi-item-description">Subclass of <code>argparse.Namespace</code><a class="mkapi-src-link" href="../source/pyparam.utils/#pyparam.utils.Namespace" title="Source for pyparam.utils.Namespace">&lt;/&gt;</a></span></li>
+
+<li class="class"><code class="mkapi-item-name"><a href="#pyparam.utils.Codeblock">Codeblock</a></code>
+
+<span class="mkapi-item-dash">&mdash;</span> <span class="mkapi-item-description">A code block, will be rendered as rich.syntax.Syntax<a class="mkapi-src-link" href="../source/pyparam.utils/#pyparam.utils.Codeblock" title="Source for pyparam.utils.Codeblock">&lt;/&gt;</a></span></li>
+
+<li class="class"><code class="mkapi-item-name"><a href="#pyparam.utils.RichHandler">RichHandler</a></code>
+
+<span class="mkapi-item-dash">&mdash;</span> <span class="mkapi-item-description">Subclass of rich.logging.RichHandler, showing log levels as a single
+character<a class="mkapi-src-link" href="../source/pyparam.utils/#pyparam.utils.RichHandler" title="Source for pyparam.utils.RichHandler">&lt;/&gt;</a></span></li>
+
+
+</ul></div>
+    </div>
+  <div class="mkapi-section functions">
+      <div class="mkapi-section-name functions">
+          <span class="mkapi-section-name-body functions">Functions</span> 
+        </div>
+      <div class="mkapi-section-body functions"><ul class="mkapi-items">
+<li class="function"><code class="mkapi-item-name"><a href="#pyparam.utils.always_list">always_list</a></code><code class="mkapi-object-parenthesis">(</code><code class="mkapi-object-signature">str_or_list</code>, <code class="mkapi-object-signature">strip</code>, <code class="mkapi-object-signature">split</code><code class="mkapi-object-parenthesis">)</code>
+<span class="mkapi-item-type">(list of str)</span>
+<span class="mkapi-item-dash">&mdash;</span> <span class="mkapi-item-description">Convert a string (comma separated) or a list to a list<a class="mkapi-src-link" href="../source/pyparam.utils/#pyparam.utils.always_list" title="Source for pyparam.utils.always_list">&lt;/&gt;</a></span></li>
+
+<li class="function"><code class="mkapi-item-name"><a href="#pyparam.utils.cast_to">cast_to</a></code><code class="mkapi-object-parenthesis">(</code><code class="mkapi-object-signature">value</code>, <code class="mkapi-object-signature">to_type</code><code class="mkapi-object-parenthesis">)</code>
+<span class="mkapi-item-type">(any)</span>
+<span class="mkapi-item-dash">&mdash;</span> <span class="mkapi-item-description">Cast a value to a given type<a class="mkapi-src-link" href="../source/pyparam.utils/#pyparam.utils.cast_to" title="Source for pyparam.utils.cast_to">&lt;/&gt;</a></span></li>
+
+<li class="function"><code class="mkapi-item-name"><a href="#pyparam.utils.parse_potential_argument">parse_potential_argument</a></code><code class="mkapi-object-parenthesis">(</code><code class="mkapi-object-signature">arg</code>, <code class="mkapi-object-signature">prefix</code>, <code class="mkapi-object-signature">allow_attached</code><code class="mkapi-object-parenthesis">)</code>
+<span class="mkapi-item-type">(str, str, str)</span>
+<span class="mkapi-item-dash">&mdash;</span> <span class="mkapi-item-description">Parse a potential argument with given prefix<a class="mkapi-src-link" href="../source/pyparam.utils/#pyparam.utils.parse_potential_argument" title="Source for pyparam.utils.parse_potential_argument">&lt;/&gt;</a></span></li>
+
+<li class="function"><code class="mkapi-item-name"><a href="#pyparam.utils.parse_type">parse_type</a></code><code class="mkapi-object-parenthesis">(</code><code class="mkapi-object-signature">typestr</code><code class="mkapi-object-parenthesis">)</code>
+<span class="mkapi-item-type">(list of str)</span>
+<span class="mkapi-item-dash">&mdash;</span> <span class="mkapi-item-description">Parse the type string<a class="mkapi-src-link" href="../source/pyparam.utils/#pyparam.utils.parse_type" title="Source for pyparam.utils.parse_type">&lt;/&gt;</a></span></li>
+
+<li class="function"><code class="mkapi-item-name"><a href="#pyparam.utils.type_from_value">type_from_value</a></code><code class="mkapi-object-parenthesis">(</code><code class="mkapi-object-signature">value</code><code class="mkapi-object-parenthesis">)</code>
+<span class="mkapi-item-type">(str)</span>
+<span class="mkapi-item-dash">&mdash;</span> <span class="mkapi-item-description">Detect parameter type from a value<a class="mkapi-src-link" href="../source/pyparam.utils/#pyparam.utils.type_from_value" title="Source for pyparam.utils.type_from_value">&lt;/&gt;</a></span></li>
+
+
+</ul></div>
+    </div>
+  </div>
+
+</div>
+
+<div class="mkapi-node" id="pyparam.utils.Namespace">
+<div class='mkapi-object-container'>
+  <div class="mkapi-object class code top">
+    <div class="mkapi-object-kind class top">class</div>
+    <h3 id="pyparamutilsnamespace" class="mkapi-object-body class top"><code class="mkapi-object-prefix"><a href="#pyparam.utils">pyparam.utils</a>.</code><code class="mkapi-object-name">Namespace</code><code class="mkapi-object-parenthesis">(</code><code class="mkapi-object-signature">**kwargs</code><code class="mkapi-object-parenthesis">)</code></h3>
+  </div>
+  <div class="mkapi-src-link">
+    <a class="mkapi-src-link" href="../source/pyparam.utils/#pyparam.utils.Namespace" title="Source for pyparam.utils.Namespace">&lt;/&gt;</a>
+  </div>
+</div>
+<div class="mkapi-docstring">
+<div class="mkapi-section bases">
+      <div class="mkapi-section-name bases">
+          <span class="mkapi-section-name-body bases">Bases</span> 
+        </div>
+      <div class="mkapi-section-body bases">
+<span class="mkapi-base">argparse.Namespace</span>
+
+<span class="mkapi-base">argparse._AttributeHolder</span>
+</div>
+    </div>
+  <div class="mkapi-section">
+      <div class="mkapi-section-body"><p>Subclass of <code>argparse.Namespace</code></p>
+<p>We have enabled <code>__getitem__</code>, <code>__setitem__</code>, <code>__len__</code> and <code>__contains__</code>.
+So that you can do:</p>
+<div class="highlight"><pre><span></span><code><span class="n">ns</span> <span class="o">=</span> <span class="n">Namespace</span><span class="p">()</span>
+<span class="n">ns</span><span class="p">[</span><span class="s1">&#39;a&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span>  <span class="c1"># same as ns.a = 1</span>
+<span class="n">ns</span><span class="p">[</span><span class="s1">&#39;a&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="mi">1</span> <span class="c1"># same as ns.a == 1</span>
+<span class="nb">len</span><span class="p">(</span><span class="n">ns</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span>
+<span class="s1">&#39;a&#39;</span> <span class="ow">in</span> <span class="n">ns</span>
+</code></pre></div></div>
+    </div>
+  <div class="mkapi-section attributes">
+      <div class="mkapi-section-name attributes">
+          <span class="mkapi-section-name-body attributes">Attributes</span> 
+        </div>
+      <div class="mkapi-section-body attributes"><ul class="mkapi-items">
+<li><code class="mkapi-item-name">__command__</code>
+
+<span class="mkapi-item-dash">&mdash;</span> <span class="mkapi-item-description">The command name if matched.</span></li>
+
+
+</ul></div>
+    </div>
+  </div>
+
+</div>
+
+<div class="mkapi-node" id="pyparam.utils.Codeblock">
+<div class='mkapi-object-container'>
+  <div class="mkapi-object class code top">
+    <div class="mkapi-object-kind class top">class</div>
+    <h3 id="pyparamutilscodeblock" class="mkapi-object-body class top"><code class="mkapi-object-prefix"><a href="#pyparam.utils">pyparam.utils</a>.</code><code class="mkapi-object-name">Codeblock</code><code class="mkapi-object-parenthesis">(</code><code class="mkapi-object-signature">opentag</code>, <code class="mkapi-object-signature">lang</code>, <code class="mkapi-object-signature">indent</code>, <code class="mkapi-object-signature">codes=None</code><code class="mkapi-object-parenthesis">)</code></h3>
+  </div>
+  <div class="mkapi-src-link">
+    <a class="mkapi-src-link" href="../source/pyparam.utils/#pyparam.utils.Codeblock" title="Source for pyparam.utils.Codeblock">&lt;/&gt;</a>
+  </div>
+</div>
+<div class="mkapi-docstring">
+<div class="mkapi-section">
+      <div class="mkapi-section-body"><p>A code block, will be rendered as rich.syntax.Syntax</p></div>
+    </div>
+  <div class="mkapi-section methods">
+      <div class="mkapi-section-name methods">
+          <span class="mkapi-section-name-body methods">Methods</span> 
+        </div>
+      <div class="mkapi-section-body methods"><ul class="mkapi-items">
+<li class="method"><code class="mkapi-item-name"><a href="#pyparam.utils.Codeblock.add_code">add_code</a></code><code class="mkapi-object-parenthesis">(</code><code class="mkapi-object-signature">code</code><code class="mkapi-object-parenthesis">)</code>
+
+<span class="mkapi-item-dash">&mdash;</span> <span class="mkapi-item-description">Add code to code block<a class="mkapi-src-link" href="../source/pyparam.utils/#pyparam.utils.Codeblock.add_code" title="Source for pyparam.utils.Codeblock.add_code">&lt;/&gt;</a></span></li>
+
+<li class="method"><code class="mkapi-item-name"><a href="#pyparam.utils.Codeblock.is_end">is_end</a></code><code class="mkapi-object-parenthesis">(</code><code class="mkapi-object-signature">line</code><code class="mkapi-object-parenthesis">)</code>
+<span class="mkapi-item-type">(bool)</span>
+<span class="mkapi-item-dash">&mdash;</span> <span class="mkapi-item-description">Tell if the line is the end of the code block<a class="mkapi-src-link" href="../source/pyparam.utils/#pyparam.utils.Codeblock.is_end" title="Source for pyparam.utils.Codeblock.is_end">&lt;/&gt;</a></span></li>
+
+<li class="method"><code class="mkapi-item-name"><a href="#pyparam.utils.Codeblock.render">render</a></code><code class="mkapi-object-parenthesis">(</code><code class="mkapi-object-parenthesis">)</code>
+<span class="mkapi-item-type">(Padding)</span>
+<span class="mkapi-item-dash">&mdash;</span> <span class="mkapi-item-description">Render the code block to a rich.syntax.Syntax<a class="mkapi-src-link" href="../source/pyparam.utils/#pyparam.utils.Codeblock.render" title="Source for pyparam.utils.Codeblock.render">&lt;/&gt;</a></span></li>
+
+<li class="classmethod"><code class="mkapi-item-name"><a href="#pyparam.utils.Codeblock.scan">scan</a></code><code class="mkapi-object-parenthesis">(</code><code class="mkapi-object-signature">maybe_codeblock</code>, <code class="mkapi-object-signature">check_default</code><code class="mkapi-object-parenthesis">)</code>
+<span class="mkapi-item-type">(list of str or <a href="./#pyparam.utils.Codeblock">Codeblock</a>, <a href="./#pyparam.utils.Codeblock">Codeblock</a>)</span>
+<span class="mkapi-item-dash">&mdash;</span> <span class="mkapi-item-description">Scan and try to create codeblock objects from maybe_codeblock<a class="mkapi-src-link" href="../source/pyparam.utils/#pyparam.utils.Codeblock.scan" title="Source for pyparam.utils.Codeblock.scan">&lt;/&gt;</a></span></li>
+
+<li class="classmethod"><code class="mkapi-item-name"><a href="#pyparam.utils.Codeblock.scan_texts">scan_texts</a></code><code class="mkapi-object-parenthesis">(</code><code class="mkapi-object-signature">texts</code>, <code class="mkapi-object-signature">check_default</code><code class="mkapi-object-parenthesis">)</code>
+<span class="mkapi-item-type">(list of str or <a href="./#pyparam.utils.Codeblock">Codeblock</a>)</span>
+<span class="mkapi-item-dash">&mdash;</span> <span class="mkapi-item-description">Scan multiple texts for code blocks<a class="mkapi-src-link" href="../source/pyparam.utils/#pyparam.utils.Codeblock.scan_texts" title="Source for pyparam.utils.Codeblock.scan_texts">&lt;/&gt;</a></span></li>
+
+
+</ul></div>
+    </div>
+  </div>
+
+  <div class="mkapi-members">
+  
+    <div class="mkapi-member">
+      <div class="mkapi-node" id="pyparam.utils.Codeblock.scan_texts">
+<div class='mkapi-object-container'>
+  <div class="mkapi-object classmethod code">
+    <div class="mkapi-object-kind classmethod">classmethod</div>
+    <h4 id="pyparamutilscodeblockscan_texts" class="mkapi-object-body classmethod"><code class="mkapi-object-name">scan_texts</code><code class="mkapi-object-parenthesis">(</code><code class="mkapi-object-signature">texts</code>, <code class="mkapi-object-signature">check_default=False</code><code class="mkapi-object-parenthesis">)</code></h4>
+  </div>
+  <div class="mkapi-src-link">
+    <a class="mkapi-src-link" href="../source/pyparam.utils/#pyparam.utils.Codeblock.scan_texts" title="Source for pyparam.utils.Codeblock.scan_texts">&lt;/&gt;</a>
+  </div>
+</div>
+<div class="mkapi-docstring">
+<div class="mkapi-section">
+      <div class="mkapi-section-body"><p>Scan multiple texts for code blocks</p></div>
+    </div>
+  <div class="mkapi-section parameters">
+      <div class="mkapi-section-name parameters">
+          <span class="mkapi-section-name-body parameters">Parameters</span> 
+        </div>
+      <div class="mkapi-section-body parameters"><ul class="mkapi-items">
+<li><code class="mkapi-item-name">texts</code>
+<span class="mkapi-item-type">(list of str)</span>
+<span class="mkapi-item-dash">&mdash;</span> <span class="mkapi-item-description">a list of texts</span></li>
+
+<li><code class="mkapi-item-name">check_default</code>
+<span class="mkapi-item-type">(bool, optional)</span>
+<span class="mkapi-item-dash">&mdash;</span> <span class="mkapi-item-description">Check if there is default in maybe_codeblock.
+Defaults should not be scanned as code blocks</span></li>
+
+<li><code class="mkapi-item-name">cls</code>
+<span class="mkapi-item-type">(Codeblock class)</span>
+<span class="mkapi-item-dash">&mdash;</span> <span class="mkapi-item-description">The class</span></li>
+
+
+</ul></div>
+    </div>
+  <div class="mkapi-section returns">
+      <div class="mkapi-section-name returns">
+          <span class="mkapi-section-name-body returns">Returns</span> <span class="mkapi-item-type">(list of str or <a href="./#pyparam.utils.Codeblock">Codeblock</a>)</span>
+        </div>
+      <div class="mkapi-section-body returns"><p>mixed text and code blocks</p></div>
+    </div>
+  </div>
+
+</div>
+    </div>
+  
+    <div class="mkapi-member">
+      <div class="mkapi-node" id="pyparam.utils.Codeblock.scan">
+<div class='mkapi-object-container'>
+  <div class="mkapi-object classmethod code">
+    <div class="mkapi-object-kind classmethod">classmethod</div>
+    <h4 id="pyparamutilscodeblockscan" class="mkapi-object-body classmethod"><code class="mkapi-object-name">scan</code><code class="mkapi-object-parenthesis">(</code><code class="mkapi-object-signature">maybe_codeblock</code>, <code class="mkapi-object-signature">check_default=False</code><code class="mkapi-object-parenthesis">)</code></h4>
+  </div>
+  <div class="mkapi-src-link">
+    <a class="mkapi-src-link" href="../source/pyparam.utils/#pyparam.utils.Codeblock.scan" title="Source for pyparam.utils.Codeblock.scan">&lt;/&gt;</a>
+  </div>
+</div>
+<div class="mkapi-docstring">
+<div class="mkapi-section">
+      <div class="mkapi-section-body"><p>Scan and try to create codeblock objects from maybe_codeblock</p></div>
+    </div>
+  <div class="mkapi-section parameters">
+      <div class="mkapi-section-name parameters">
+          <span class="mkapi-section-name-body parameters">Parameters</span> 
+        </div>
+      <div class="mkapi-section-body parameters"><ul class="mkapi-items">
+<li><code class="mkapi-item-name">maybe_codeblock</code>
+<span class="mkapi-item-type">(str)</span>
+<span class="mkapi-item-dash">&mdash;</span> <span class="mkapi-item-description">Maybe a code block start
+It can be a text block, we have to scan if it has code blocks
+inside.</span></li>
+
+<li><code class="mkapi-item-name">check_default</code>
+<span class="mkapi-item-type">(bool, optional)</span>
+<span class="mkapi-item-dash">&mdash;</span> <span class="mkapi-item-description">Check if there is default in maybe_codeblock.
+Defaults should not be scanned as code blocks</span></li>
+
+<li><code class="mkapi-item-name">cls</code>
+<span class="mkapi-item-type">(Codeblock class)</span>
+<span class="mkapi-item-dash">&mdash;</span> <span class="mkapi-item-description">The class</span></li>
+
+
+</ul></div>
+    </div>
+  <div class="mkapi-section returns">
+      <div class="mkapi-section-name returns">
+          <span class="mkapi-section-name-body returns">Returns</span> <span class="mkapi-item-type">(list of str or <a href="./#pyparam.utils.Codeblock">Codeblock</a>, <a href="./#pyparam.utils.Codeblock">Codeblock</a>)</span>
+        </div>
+      <div class="mkapi-section-body returns"><p>mixed text and unclosed code blocks</p></div>
+    </div>
+  </div>
+
+</div>
+    </div>
+  
+    <div class="mkapi-member">
+      <div class="mkapi-node" id="pyparam.utils.Codeblock.add_code">
+<div class='mkapi-object-container'>
+  <div class="mkapi-object method code">
+    <div class="mkapi-object-kind method">method</div>
+    <h4 id="pyparamutilscodeblockadd_code" class="mkapi-object-body method"><code class="mkapi-object-name">add_code</code><code class="mkapi-object-parenthesis">(</code><code class="mkapi-object-signature">code</code><code class="mkapi-object-parenthesis">)</code></h4>
+  </div>
+  <div class="mkapi-src-link">
+    <a class="mkapi-src-link" href="../source/pyparam.utils/#pyparam.utils.Codeblock.add_code" title="Source for pyparam.utils.Codeblock.add_code">&lt;/&gt;</a>
+  </div>
+</div>
+<div class="mkapi-docstring">
+<div class="mkapi-section">
+      <div class="mkapi-section-body"><p>Add code to code block</p></div>
+    </div>
+  <div class="mkapi-section parameters">
+      <div class="mkapi-section-name parameters">
+          <span class="mkapi-section-name-body parameters">Parameters</span> 
+        </div>
+      <div class="mkapi-section-body parameters"><ul class="mkapi-items">
+<li><code class="mkapi-item-name">code</code>
+<span class="mkapi-item-type">(str)</span>
+<span class="mkapi-item-dash">&mdash;</span> <span class="mkapi-item-description">code to add
+It can be multiple lines, each of which will be dedented</span></li>
+
+
+</ul></div>
+    </div>
+  </div>
+
+</div>
+    </div>
+  
+    <div class="mkapi-member">
+      <div class="mkapi-node" id="pyparam.utils.Codeblock.is_end">
+<div class='mkapi-object-container'>
+  <div class="mkapi-object method code">
+    <div class="mkapi-object-kind method">method</div>
+    <h4 id="pyparamutilscodeblockis_end" class="mkapi-object-body method"><code class="mkapi-object-name">is_end</code><code class="mkapi-object-parenthesis">(</code><code class="mkapi-object-signature">line</code><code class="mkapi-object-parenthesis">)</code></h4>
+  </div>
+  <div class="mkapi-src-link">
+    <a class="mkapi-src-link" href="../source/pyparam.utils/#pyparam.utils.Codeblock.is_end" title="Source for pyparam.utils.Codeblock.is_end">&lt;/&gt;</a>
+  </div>
+</div>
+<div class="mkapi-docstring">
+<div class="mkapi-section">
+      <div class="mkapi-section-body"><p>Tell if the line is the end of the code block</p></div>
+    </div>
+  <div class="mkapi-section parameters">
+      <div class="mkapi-section-name parameters">
+          <span class="mkapi-section-name-body parameters">Parameters</span> 
+        </div>
+      <div class="mkapi-section-body parameters"><ul class="mkapi-items">
+<li><code class="mkapi-item-name">line</code>
+<span class="mkapi-item-type">(str)</span>
+<span class="mkapi-item-dash">&mdash;</span> <span class="mkapi-item-description">line to check</span></li>
+
+
+</ul></div>
+    </div>
+  <div class="mkapi-section returns">
+      <div class="mkapi-section-name returns">
+          <span class="mkapi-section-name-body returns">Returns</span> <span class="mkapi-item-type">(bool)</span>
+        </div>
+      <div class="mkapi-section-body returns"><p>True if it is the end otherwise False</p></div>
+    </div>
+  </div>
+
+</div>
+    </div>
+  
+    <div class="mkapi-member">
+      <div class="mkapi-node" id="pyparam.utils.Codeblock.render">
+<div class='mkapi-object-container'>
+  <div class="mkapi-object method code">
+    <div class="mkapi-object-kind method">method</div>
+    <h4 id="pyparamutilscodeblockrender" class="mkapi-object-body method"><code class="mkapi-object-name">render</code><code class="mkapi-object-parenthesis">(</code><code class="mkapi-object-parenthesis">)</code></h4>
+  </div>
+  <div class="mkapi-src-link">
+    <a class="mkapi-src-link" href="../source/pyparam.utils/#pyparam.utils.Codeblock.render" title="Source for pyparam.utils.Codeblock.render">&lt;/&gt;</a>
+  </div>
+</div>
+<div class="mkapi-docstring">
+<div class="mkapi-section">
+      <div class="mkapi-section-body"><p>Render the code block to a rich.syntax.Syntax</p></div>
+    </div>
+  <div class="mkapi-section returns">
+      <div class="mkapi-section-name returns">
+          <span class="mkapi-section-name-body returns">Returns</span> <span class="mkapi-item-type">(Padding)</span>
+        </div>
+      <div class="mkapi-section-body returns"><p>A padding of rich.syntax.Syntax</p></div>
+    </div>
+  </div>
+
+</div>
+    </div>
+  
+  </div>
+
+</div>
+
+<div class="mkapi-node" id="pyparam.utils.always_list">
+<div class='mkapi-object-container'>
+  <div class="mkapi-object function code top">
+    <div class="mkapi-object-kind function top">function</div>
+    <h3 id="pyparamutilsalways_list" class="mkapi-object-body function top"><code class="mkapi-object-prefix"><a href="#pyparam.utils">pyparam.utils</a>.</code><code class="mkapi-object-name">always_list</code><code class="mkapi-object-parenthesis">(</code><code class="mkapi-object-signature">str_or_list</code>, <code class="mkapi-object-signature">strip=True</code>, <code class="mkapi-object-signature">split=&#39;,&#39;</code><code class="mkapi-object-parenthesis">)</code><span class="mkapi-item-type"> &#x2192; list of str</span></h3>
+  </div>
+  <div class="mkapi-src-link">
+    <a class="mkapi-src-link" href="../source/pyparam.utils/#pyparam.utils.always_list" title="Source for pyparam.utils.always_list">&lt;/&gt;</a>
+  </div>
+</div>
+<div class="mkapi-docstring">
+<div class="mkapi-section">
+      <div class="mkapi-section-body"><p>Convert a string (comma separated) or a list to a list</p></div>
+    </div>
+  <div class="mkapi-section parameters">
+      <div class="mkapi-section-name parameters">
+          <span class="mkapi-section-name-body parameters">Parameters</span> 
+        </div>
+      <div class="mkapi-section-body parameters"><ul class="mkapi-items">
+<li><code class="mkapi-item-name">str_or_list</code>
+<span class="mkapi-item-type">(Union(str, list of str))</span>
+<span class="mkapi-item-dash">&mdash;</span> <span class="mkapi-item-description">string or list</span></li>
+
+<li><code class="mkapi-item-name">strip</code>
+<span class="mkapi-item-type">(bool, optional)</span>
+<span class="mkapi-item-dash">&mdash;</span> <span class="mkapi-item-description">whether to strip the elements in result list</span></li>
+
+<li><code class="mkapi-item-name">split</code>
+<span class="mkapi-item-type">(str or bool, optional)</span>
+<span class="mkapi-item-dash">&mdash;</span> <span class="mkapi-item-description">Delimiter for split or False to not split</span></li>
+
+
+</ul></div>
+    </div>
+  <div class="mkapi-section">
+      <div class="mkapi-section-body"><p>Return:
+    list: list of strings</p></div>
+    </div>
+  </div>
+
+</div>
+
+<div class="mkapi-node" id="pyparam.utils.parse_type">
+<div class='mkapi-object-container'>
+  <div class="mkapi-object function code top">
+    <div class="mkapi-object-kind function top">function</div>
+    <h3 id="pyparamutilsparse_type" class="mkapi-object-body function top"><code class="mkapi-object-prefix"><a href="#pyparam.utils">pyparam.utils</a>.</code><code class="mkapi-object-name">parse_type</code><code class="mkapi-object-parenthesis">(</code><code class="mkapi-object-signature">typestr</code><code class="mkapi-object-parenthesis">)</code></h3>
+  </div>
+  <div class="mkapi-src-link">
+    <a class="mkapi-src-link" href="../source/pyparam.utils/#pyparam.utils.parse_type" title="Source for pyparam.utils.parse_type">&lt;/&gt;</a>
+  </div>
+</div>
+<div class="mkapi-docstring">
+<div class="mkapi-section">
+      <div class="mkapi-section-body"><p>Parse the type string</p></div>
+    </div>
+  <div class="mkapi-section examples">
+      <div class="mkapi-section-name examples">
+          <span class="mkapi-section-name-body examples">Examples</span> 
+        </div>
+      <div class="mkapi-section-body examples"><div class="highlight"><pre><span></span><code><span class="o">&gt;&gt;&gt;</span> <span class="n">parse_type</span><span class="p">(</span><span class="kc">None</span><span class="p">)</span>    <span class="c1"># None, None</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">parse_type</span><span class="p">(</span><span class="s2">&quot;array&quot;</span><span class="p">)</span> <span class="c1"># list, None</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">parse_type</span><span class="p">(</span><span class="s2">&quot;a:i&quot;</span><span class="p">)</span>   <span class="c1"># list, int</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">parse_type</span><span class="p">(</span><span class="s2">&quot;j&quot;</span><span class="p">)</span>     <span class="c1"># json, None</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">parse_type</span><span class="p">(</span><span class="s2">&quot;list&quot;</span><span class="p">)</span>  <span class="c1"># list, None</span>
+</code></pre></div></div>
+    </div>
+  <div class="mkapi-section parameters">
+      <div class="mkapi-section-name parameters">
+          <span class="mkapi-section-name-body parameters">Parameters</span> 
+        </div>
+      <div class="mkapi-section-body parameters"><ul class="mkapi-items">
+<li><code class="mkapi-item-name">typestr</code>
+<span class="mkapi-item-type">(str)</span>
+<span class="mkapi-item-dash">&mdash;</span> <span class="mkapi-item-description">string of type to parse</span></li>
+
+
+</ul></div>
+    </div>
+  <div class="mkapi-section returns">
+      <div class="mkapi-section-name returns">
+          <span class="mkapi-section-name-body returns">Returns</span> <span class="mkapi-item-type">(list of str)</span>
+        </div>
+      <div class="mkapi-section-body returns"><p>Main type and subtype</p></div>
+    </div>
+  <div class="mkapi-section raises">
+      <div class="mkapi-section-name raises">
+          <span class="mkapi-section-name-body raises">Raises</span> 
+        </div>
+      <div class="mkapi-section-body raises"><ul class="mkapi-items">
+<li><code class="mkapi-item-name">PyParamTypeError</code>
+
+<span class="mkapi-item-dash">&mdash;</span> <span class="mkapi-item-description">When a type cannot be parsed</span></li>
+
+
+</ul></div>
+    </div>
+  </div>
+
+</div>
+
+<div class="mkapi-node" id="pyparam.utils.parse_potential_argument">
+<div class='mkapi-object-container'>
+  <div class="mkapi-object function code top">
+    <div class="mkapi-object-kind function top">function</div>
+    <h3 id="pyparamutilsparse_potential_argument" class="mkapi-object-body function top"><code class="mkapi-object-prefix"><a href="#pyparam.utils">pyparam.utils</a>.</code><code class="mkapi-object-name">parse_potential_argument</code><code class="mkapi-object-parenthesis">(</code><code class="mkapi-object-signature">arg</code>, <code class="mkapi-object-signature">prefix</code>, <code class="mkapi-object-signature">allow_attached=False</code><code class="mkapi-object-parenthesis">)</code></h3>
+  </div>
+  <div class="mkapi-src-link">
+    <a class="mkapi-src-link" href="../source/pyparam.utils/#pyparam.utils.parse_potential_argument" title="Source for pyparam.utils.parse_potential_argument">&lt;/&gt;</a>
+  </div>
+</div>
+<div class="mkapi-docstring">
+<div class="mkapi-section">
+      <div class="mkapi-section-body"><p>Parse a potential argument with given prefix</p></div>
+    </div>
+  <div class="mkapi-section examples">
+      <div class="mkapi-section-name examples">
+          <span class="mkapi-section-name-body examples">Examples</span> 
+        </div>
+      <div class="mkapi-section-body examples"><div class="highlight"><pre><span></span><code><span class="o">&gt;&gt;&gt;</span> <span class="c1"># prefix == &#39;auto</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">parse_potential_argument</span><span class="p">(</span><span class="s2">&quot;-a&quot;</span><span class="p">)</span>     <span class="c1"># a, None, None</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">parse_potential_argument</span><span class="p">(</span><span class="s2">&quot;--arg&quot;</span><span class="p">)</span>  <span class="c1"># arg, None, None</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">parse_potential_argument</span><span class="p">(</span><span class="s2">&quot;--a&quot;</span><span class="p">)</span>    <span class="c1"># None, None, a</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">parse_potential_argument</span><span class="p">(</span><span class="s2">&quot;-abc&quot;</span><span class="p">)</span>   <span class="c1"># None, None, -abc</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">parse_potential_argument</span><span class="p">(</span><span class="s2">&quot;-abc&quot;</span><span class="p">,</span> <span class="n">allow_attached</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="c1"># -a, None, bc</span>
+</code></pre></div></div>
+    </div>
+  <div class="mkapi-section parameters">
+      <div class="mkapi-section-name parameters">
+          <span class="mkapi-section-name-body parameters">Parameters</span> 
+        </div>
+      <div class="mkapi-section-body parameters"><ul class="mkapi-items">
+<li><code class="mkapi-item-name">arg</code>
+<span class="mkapi-item-type">(str)</span>
+<span class="mkapi-item-dash">&mdash;</span> <span class="mkapi-item-description">a potential argument. Such as:
+-a, --def, -b=1, --abc=value, -b1 (for argument -b with value 1)
+with types:
+-a:int --def:list -b:str=1 --abs:str=value -b:bool
+It is usually one element of the sys.argv</span></li>
+
+<li><code class="mkapi-item-name">prefix</code>
+<span class="mkapi-item-type">(str)</span>
+<span class="mkapi-item-dash">&mdash;</span> <span class="mkapi-item-description">The prefix for the argument names</span></li>
+
+<li><code class="mkapi-item-name">allow_attached</code>
+<span class="mkapi-item-type">(bool, optional)</span>
+<span class="mkapi-item-dash">&mdash;</span> <span class="mkapi-item-description">Whether to detect item like '-b1' for argument
+'-b' with value '1' or the entire one is parsed as argument '-b1'</span></li>
+
+
+</ul></div>
+    </div>
+  <div class="mkapi-section returns">
+      <div class="mkapi-section-name returns">
+          <span class="mkapi-section-name-body returns">Returns</span> <span class="mkapi-item-type">(str, str, str)</span>
+        </div>
+      <div class="mkapi-section-body returns"><p>The argument name, type and value
+    When arg cannot be parsed as an argument, argument name and type
+    will both be None. arg will be returned as argument value.</p></div>
+    </div>
+  </div>
+
+</div>
+
+<div class="mkapi-node" id="pyparam.utils.type_from_value">
+<div class='mkapi-object-container'>
+  <div class="mkapi-object function code top">
+    <div class="mkapi-object-kind function top">function</div>
+    <h3 id="pyparamutilstype_from_value" class="mkapi-object-body function top"><code class="mkapi-object-prefix"><a href="#pyparam.utils">pyparam.utils</a>.</code><code class="mkapi-object-name">type_from_value</code><code class="mkapi-object-parenthesis">(</code><code class="mkapi-object-signature">value</code><code class="mkapi-object-parenthesis">)</code></h3>
+  </div>
+  <div class="mkapi-src-link">
+    <a class="mkapi-src-link" href="../source/pyparam.utils/#pyparam.utils.type_from_value" title="Source for pyparam.utils.type_from_value">&lt;/&gt;</a>
+  </div>
+</div>
+<div class="mkapi-docstring">
+<div class="mkapi-section">
+      <div class="mkapi-section-body"><p>Detect parameter type from a value</p></div>
+    </div>
+  <div class="mkapi-section parameters">
+      <div class="mkapi-section-name parameters">
+          <span class="mkapi-section-name-body parameters">Parameters</span> 
+        </div>
+      <div class="mkapi-section-body parameters"><ul class="mkapi-items">
+<li><code class="mkapi-item-name">value</code>
+<span class="mkapi-item-type">(any)</span>
+<span class="mkapi-item-dash">&mdash;</span> <span class="mkapi-item-description">The value</span></li>
+
+
+</ul></div>
+    </div>
+  <div class="mkapi-section returns">
+      <div class="mkapi-section-name returns">
+          <span class="mkapi-section-name-body returns">Returns</span> <span class="mkapi-item-type">(str)</span>
+        </div>
+      <div class="mkapi-section-body returns"><p>The name of the type</p></div>
+    </div>
+  <div class="mkapi-section raises">
+      <div class="mkapi-section-name raises">
+          <span class="mkapi-section-name-body raises">Raises</span> 
+        </div>
+      <div class="mkapi-section-body raises"><ul class="mkapi-items">
+<li><code class="mkapi-item-name">PyParamTypeError</code>
+
+<span class="mkapi-item-dash">&mdash;</span> <span class="mkapi-item-description">When we have list as subtype.
+For example, when value is <code>[[1]]</code></span></li>
+
+
+</ul></div>
+    </div>
+  </div>
+
+</div>
+
+<div class="mkapi-node" id="pyparam.utils.cast_to">
+<div class='mkapi-object-container'>
+  <div class="mkapi-object function code top">
+    <div class="mkapi-object-kind function top">function</div>
+    <h3 id="pyparamutilscast_to" class="mkapi-object-body function top"><code class="mkapi-object-prefix"><a href="#pyparam.utils">pyparam.utils</a>.</code><code class="mkapi-object-name">cast_to</code><code class="mkapi-object-parenthesis">(</code><code class="mkapi-object-signature">value</code>, <code class="mkapi-object-signature">to_type</code><code class="mkapi-object-parenthesis">)</code></h3>
+  </div>
+  <div class="mkapi-src-link">
+    <a class="mkapi-src-link" href="../source/pyparam.utils/#pyparam.utils.cast_to" title="Source for pyparam.utils.cast_to">&lt;/&gt;</a>
+  </div>
+</div>
+<div class="mkapi-docstring">
+<div class="mkapi-section">
+      <div class="mkapi-section-body"><p>Cast a value to a given type</p></div>
+    </div>
+  <div class="mkapi-section parameters">
+      <div class="mkapi-section-name parameters">
+          <span class="mkapi-section-name-body parameters">Parameters</span> 
+        </div>
+      <div class="mkapi-section-body parameters"><ul class="mkapi-items">
+<li><code class="mkapi-item-name">value</code>
+<span class="mkapi-item-type">(any)</span>
+<span class="mkapi-item-dash">&mdash;</span> <span class="mkapi-item-description">value to cast</span></li>
+
+<li><code class="mkapi-item-name">to_type</code>
+<span class="mkapi-item-type">(str or bool)</span>
+<span class="mkapi-item-dash">&mdash;</span> <span class="mkapi-item-description">type to cast</span></li>
+
+
+</ul></div>
+    </div>
+  <div class="mkapi-section returns">
+      <div class="mkapi-section-name returns">
+          <span class="mkapi-section-name-body returns">Returns</span> <span class="mkapi-item-type">(any)</span>
+        </div>
+      <div class="mkapi-section-body returns"><p>casted value</p></div>
+    </div>
+  <div class="mkapi-section raises">
+      <div class="mkapi-section-name raises">
+          <span class="mkapi-section-name-body raises">Raises</span> 
+        </div>
+      <div class="mkapi-section-body raises"><ul class="mkapi-items">
+<li><code class="mkapi-item-name">PyParamTypeError</code>
+
+<span class="mkapi-item-dash">&mdash;</span> <span class="mkapi-item-description">if value is not able to be casted</span></li>
+
+
+</ul></div>
+    </div>
+  </div>
+
+</div>
+
+<div class="mkapi-node" id="pyparam.utils.RichHandler">
+<div class='mkapi-object-container'>
+  <div class="mkapi-object class code top">
+    <div class="mkapi-object-kind class top">class</div>
+    <h3 id="pyparamutilsrichhandler" class="mkapi-object-body class top"><code class="mkapi-object-prefix"><a href="#pyparam.utils">pyparam.utils</a>.</code><code class="mkapi-object-name">RichHandler</code><code class="mkapi-object-parenthesis">(</code><code class="mkapi-object-signature">level=0</code>, <code class="mkapi-object-signature">console=None</code>, <code class="mkapi-object-signature">show_time=True</code>, <code class="mkapi-object-signature">omit_repeated_times=True</code>, <code class="mkapi-object-signature">show_level=True</code>, <code class="mkapi-object-signature">show_path=True</code>, <code class="mkapi-object-signature">enable_link_path=True</code>, <code class="mkapi-object-signature">highlighter=None</code>, <code class="mkapi-object-signature">markup=False</code>, <code class="mkapi-object-signature">rich_tracebacks=False</code>, <code class="mkapi-object-signature">tracebacks_width=None</code>, <code class="mkapi-object-signature">tracebacks_extra_lines=3</code>, <code class="mkapi-object-signature">tracebacks_theme=None</code>, <code class="mkapi-object-signature">tracebacks_word_wrap=True</code>, <code class="mkapi-object-signature">tracebacks_show_locals=False</code>, <code class="mkapi-object-signature">tracebacks_suppress=()</code>, <code class="mkapi-object-signature">locals_max_length=10</code>, <code class="mkapi-object-signature">locals_max_string=80</code>, <code class="mkapi-object-signature">log_time_format=&#39;[%x %X]&#39;</code>, <code class="mkapi-object-signature">keywords=None</code><code class="mkapi-object-parenthesis">)</code></h3>
+  </div>
+  <div class="mkapi-src-link">
+    <a class="mkapi-src-link" href="../source/pyparam.utils/#pyparam.utils.RichHandler" title="Source for pyparam.utils.RichHandler">&lt;/&gt;</a>
+  </div>
+</div>
+<div class="mkapi-docstring">
+<div class="mkapi-section bases">
+      <div class="mkapi-section-name bases">
+          <span class="mkapi-section-name-body bases">Bases</span> 
+        </div>
+      <div class="mkapi-section-body bases">
+<span class="mkapi-base">rich.logging.RichHandler</span>
+
+<span class="mkapi-base">logging.Handler</span>
+
+<span class="mkapi-base">logging.Filterer</span>
+</div>
+    </div>
+  <div class="mkapi-section">
+      <div class="mkapi-section-body"><p>Subclass of rich.logging.RichHandler, showing log levels as a single
+character</p></div>
+    </div>
+  <div class="mkapi-section parameters">
+      <div class="mkapi-section-name parameters">
+          <span class="mkapi-section-name-body parameters">Parameters</span> 
+        </div>
+      <div class="mkapi-section-body parameters"><ul class="mkapi-items">
+<li><code class="mkapi-item-name">level</code>
+<span class="mkapi-item-type">(int or str, optional)</span>
+<span class="mkapi-item-dash">&mdash;</span> <span class="mkapi-item-description">Log level. Defaults to logging.NOTSET.</span></li>
+
+
+<li><code class="mkapi-item-name">show_time</code>
+<span class="mkapi-item-type">(bool, optional)</span>
+<span class="mkapi-item-dash">&mdash;</span> <span class="mkapi-item-description">Show a column for the time. Defaults to True.</span></li>
+
+<li><code class="mkapi-item-name">omit_repeated_times</code>
+<span class="mkapi-item-type">(bool, optional)</span>
+<span class="mkapi-item-dash">&mdash;</span> <span class="mkapi-item-description">Omit repetition of the same time. Defaults to True.</span></li>
+
+<li><code class="mkapi-item-name">show_level</code>
+<span class="mkapi-item-type">(bool, optional)</span>
+<span class="mkapi-item-dash">&mdash;</span> <span class="mkapi-item-description">Show a column for the level. Defaults to True.</span></li>
+
+<li><code class="mkapi-item-name">show_path</code>
+<span class="mkapi-item-type">(bool, optional)</span>
+<span class="mkapi-item-dash">&mdash;</span> <span class="mkapi-item-description">Show the path to the original log call. Defaults to True.</span></li>
+
+<li><code class="mkapi-item-name">enable_link_path</code>
+<span class="mkapi-item-type">(bool, optional)</span>
+<span class="mkapi-item-dash">&mdash;</span> <span class="mkapi-item-description">Enable terminal link of path column to file. Defaults to True.</span></li>
+
+<li><code class="mkapi-item-name">highlighter</code>
+<span class="mkapi-item-type">(Highlighter, optional)</span>
+<span class="mkapi-item-dash">&mdash;</span> <span class="mkapi-item-description">Highlighter to style log messages, or None to use ReprHighlighter. Defaults to None.</span></li>
+
+<li><code class="mkapi-item-name">markup</code>
+<span class="mkapi-item-type">(bool, optional)</span>
+<span class="mkapi-item-dash">&mdash;</span> <span class="mkapi-item-description">Enable console markup in log messages. Defaults to False.</span></li>
+
+<li><code class="mkapi-item-name">rich_tracebacks</code>
+<span class="mkapi-item-type">(bool, optional)</span>
+<span class="mkapi-item-dash">&mdash;</span> <span class="mkapi-item-description">Enable rich tracebacks with syntax highlighting and formatting. Defaults to False.</span></li>
+
+<li><code class="mkapi-item-name">tracebacks_width</code>
+<span class="mkapi-item-type">(int, optional)</span>
+<span class="mkapi-item-dash">&mdash;</span> <span class="mkapi-item-description">Number of characters used to render tracebacks, or None for full width. Defaults to None.</span></li>
+
+<li><code class="mkapi-item-name">tracebacks_extra_lines</code>
+<span class="mkapi-item-type">(int, optional)</span>
+<span class="mkapi-item-dash">&mdash;</span> <span class="mkapi-item-description">Additional lines of code to render tracebacks, or None for full width. Defaults to None.</span></li>
+
+<li><code class="mkapi-item-name">tracebacks_theme</code>
+<span class="mkapi-item-type">(str, optional)</span>
+<span class="mkapi-item-dash">&mdash;</span> <span class="mkapi-item-description">Override pygments theme used in traceback.</span></li>
+
+<li><code class="mkapi-item-name">tracebacks_word_wrap</code>
+<span class="mkapi-item-type">(bool, optional)</span>
+<span class="mkapi-item-dash">&mdash;</span> <span class="mkapi-item-description">Enable word wrapping of long tracebacks lines. Defaults to True.</span></li>
+
+<li><code class="mkapi-item-name">tracebacks_show_locals</code>
+<span class="mkapi-item-type">(bool, optional)</span>
+<span class="mkapi-item-dash">&mdash;</span> <span class="mkapi-item-description">Enable display of locals in tracebacks. Defaults to False.</span></li>
+
+<li><code class="mkapi-item-name">tracebacks_suppress</code>
+<span class="mkapi-item-type">(iterable of str or module, optional)</span>
+<span class="mkapi-item-dash">&mdash;</span> <span class="mkapi-item-description">Optional sequence of modules or paths to exclude from traceback.</span></li>
+
+<li><code class="mkapi-item-name">locals_max_length</code>
+<span class="mkapi-item-type">(int, optional)</span>
+<span class="mkapi-item-dash">&mdash;</span> <span class="mkapi-item-description">Maximum length of containers before abbreviating, or None for no abbreviation.
+Defaults to 10.</span></li>
+
+<li><code class="mkapi-item-name">locals_max_string</code>
+<span class="mkapi-item-type">(int, optional)</span>
+<span class="mkapi-item-dash">&mdash;</span> <span class="mkapi-item-description">Maximum length of string before truncating, or None to disable. Defaults to 80.</span></li>
+
+<li><code class="mkapi-item-name">log_time_format</code>
+<span class="mkapi-item-type">(Union(str, callable(datetime: text)), optional)</span>
+<span class="mkapi-item-dash">&mdash;</span> <span class="mkapi-item-description">If <code>log_time</code> is enabled, either string for strftime or callable that formats the time. Defaults to "[%x %X] ".</span></li>
+
+<li><code class="mkapi-item-name">keywords</code>
+<span class="mkapi-item-type">(list of str, optional)</span>
+<span class="mkapi-item-dash">&mdash;</span> <span class="mkapi-item-description">List of words to highlight instead of <code>RichHandler.KEYWORDS</code>.</span></li>
+
+
+</ul></div>
+    </div>
+  <div class="mkapi-section methods">
+      <div class="mkapi-section-name methods">
+          <span class="mkapi-section-name-body methods">Methods</span> 
+        </div>
+      <div class="mkapi-section-body methods"><ul class="mkapi-items">
+<li class="method"><code class="mkapi-item-name"><a href="#logging.Handler.acquire">acquire</a></code><code class="mkapi-object-parenthesis">(</code><code class="mkapi-object-parenthesis">)</code>
+
+<span class="mkapi-item-dash">&mdash;</span> <span class="mkapi-item-description">Acquire the I/O thread lock.<a class="mkapi-src-link" href="../source/logging/#logging.Handler.acquire" title="Source for logging.Handler.acquire">&lt;/&gt;</a></span></li>
+
+<li class="method"><code class="mkapi-item-name"><a href="#logging.Filterer.addFilter">addFilter</a></code><code class="mkapi-object-parenthesis">(</code><code class="mkapi-object-signature">filter</code><code class="mkapi-object-parenthesis">)</code>
+
+<span class="mkapi-item-dash">&mdash;</span> <span class="mkapi-item-description">Add the specified filter to this handler.<a class="mkapi-src-link" href="../source/logging/#logging.Filterer.addFilter" title="Source for logging.Filterer.addFilter">&lt;/&gt;</a></span></li>
+
+<li class="method"><code class="mkapi-item-name"><a href="#logging.Handler.close">close</a></code><code class="mkapi-object-parenthesis">(</code><code class="mkapi-object-parenthesis">)</code>
+
+<span class="mkapi-item-dash">&mdash;</span> <span class="mkapi-item-description">Tidy up any resources used by the handler.<a class="mkapi-src-link" href="../source/logging/#logging.Handler.close" title="Source for logging.Handler.close">&lt;/&gt;</a></span></li>
+
+<li class="method"><code class="mkapi-item-name"><a href="#logging.Handler.createLock">createLock</a></code><code class="mkapi-object-parenthesis">(</code><code class="mkapi-object-parenthesis">)</code>
+
+<span class="mkapi-item-dash">&mdash;</span> <span class="mkapi-item-description">Acquire a thread lock for serializing access to the underlying I/O.<a class="mkapi-src-link" href="../source/logging/#logging.Handler.createLock" title="Source for logging.Handler.createLock">&lt;/&gt;</a></span></li>
+
+<li class="method"><code class="mkapi-item-name"><a href="#rich.logging.RichHandler.emit">emit</a></code><code class="mkapi-object-parenthesis">(</code><code class="mkapi-object-signature">record</code><code class="mkapi-object-parenthesis">)</code>
+
+<span class="mkapi-item-dash">&mdash;</span> <span class="mkapi-item-description">Invoked by logging.<a class="mkapi-src-link" href="../source/rich.logging/#rich.logging.RichHandler.emit" title="Source for rich.logging.RichHandler.emit">&lt;/&gt;</a></span></li>
+
+<li class="method"><code class="mkapi-item-name"><a href="#logging.Filterer.filter">filter</a></code><code class="mkapi-object-parenthesis">(</code><code class="mkapi-object-signature">record</code><code class="mkapi-object-parenthesis">)</code>
+
+<span class="mkapi-item-dash">&mdash;</span> <span class="mkapi-item-description">Determine if a record is loggable by consulting all the filters.<a class="mkapi-src-link" href="../source/logging/#logging.Filterer.filter" title="Source for logging.Filterer.filter">&lt;/&gt;</a></span></li>
+
+<li class="method"><code class="mkapi-item-name"><a href="#logging.Handler.flush">flush</a></code><code class="mkapi-object-parenthesis">(</code><code class="mkapi-object-parenthesis">)</code>
+
+<span class="mkapi-item-dash">&mdash;</span> <span class="mkapi-item-description">Ensure all logging output has been flushed.<a class="mkapi-src-link" href="../source/logging/#logging.Handler.flush" title="Source for logging.Handler.flush">&lt;/&gt;</a></span></li>
+
+<li class="method"><code class="mkapi-item-name"><a href="#logging.Handler.format">format</a></code><code class="mkapi-object-parenthesis">(</code><code class="mkapi-object-signature">record</code><code class="mkapi-object-parenthesis">)</code>
+
+<span class="mkapi-item-dash">&mdash;</span> <span class="mkapi-item-description">Format the specified record.<a class="mkapi-src-link" href="../source/logging/#logging.Handler.format" title="Source for logging.Handler.format">&lt;/&gt;</a></span></li>
+
+<li class="method"><code class="mkapi-item-name"><a href="#pyparam.utils.RichHandler.get_level_text">get_level_text</a></code><code class="mkapi-object-parenthesis">(</code><code class="mkapi-object-signature">record</code><code class="mkapi-object-parenthesis">)</code>
+<span class="mkapi-item-type">(Text)</span>
+<span class="mkapi-item-dash">&mdash;</span> <span class="mkapi-item-description">Get the level name from the record.<a class="mkapi-src-link" href="../source/pyparam.utils/#pyparam.utils.RichHandler.get_level_text" title="Source for pyparam.utils.RichHandler.get_level_text">&lt;/&gt;</a></span></li>
+
+<li class="method"><code class="mkapi-item-name"><a href="#logging.Handler.handle">handle</a></code><code class="mkapi-object-parenthesis">(</code><code class="mkapi-object-signature">record</code><code class="mkapi-object-parenthesis">)</code>
+
+<span class="mkapi-item-dash">&mdash;</span> <span class="mkapi-item-description">Conditionally emit the specified logging record.<a class="mkapi-src-link" href="../source/logging/#logging.Handler.handle" title="Source for logging.Handler.handle">&lt;/&gt;</a></span></li>
+
+<li class="method"><code class="mkapi-item-name"><a href="#logging.Handler.handleError">handleError</a></code><code class="mkapi-object-parenthesis">(</code><code class="mkapi-object-signature">record</code><code class="mkapi-object-parenthesis">)</code>
+
+<span class="mkapi-item-dash">&mdash;</span> <span class="mkapi-item-description">Handle errors which occur during an emit() call.<a class="mkapi-src-link" href="../source/logging/#logging.Handler.handleError" title="Source for logging.Handler.handleError">&lt;/&gt;</a></span></li>
+
+<li class="method"><code class="mkapi-item-name"><a href="#logging.Handler.release">release</a></code><code class="mkapi-object-parenthesis">(</code><code class="mkapi-object-parenthesis">)</code>
+
+<span class="mkapi-item-dash">&mdash;</span> <span class="mkapi-item-description">Release the I/O thread lock.<a class="mkapi-src-link" href="../source/logging/#logging.Handler.release" title="Source for logging.Handler.release">&lt;/&gt;</a></span></li>
+
+<li class="method"><code class="mkapi-item-name"><a href="#logging.Filterer.removeFilter">removeFilter</a></code><code class="mkapi-object-parenthesis">(</code><code class="mkapi-object-signature">filter</code><code class="mkapi-object-parenthesis">)</code>
+
+<span class="mkapi-item-dash">&mdash;</span> <span class="mkapi-item-description">Remove the specified filter from this handler.<a class="mkapi-src-link" href="../source/logging/#logging.Filterer.removeFilter" title="Source for logging.Filterer.removeFilter">&lt;/&gt;</a></span></li>
+
+<li class="method"><code class="mkapi-item-name"><a href="#rich.logging.RichHandler.render">render</a></code><code class="mkapi-object-parenthesis">(</code><code class="mkapi-object-signature">record</code>, <code class="mkapi-object-signature">traceback</code>, <code class="mkapi-object-signature">message_renderable</code><code class="mkapi-object-parenthesis">)</code>
+<span class="mkapi-item-type">(ConsoleRenderable)</span>
+<span class="mkapi-item-dash">&mdash;</span> <span class="mkapi-item-description">Render log for display.<a class="mkapi-src-link" href="../source/rich.logging/#rich.logging.RichHandler.render" title="Source for rich.logging.RichHandler.render">&lt;/&gt;</a></span></li>
+
+<li class="method"><code class="mkapi-item-name"><a href="#rich.logging.RichHandler.render_message">render_message</a></code><code class="mkapi-object-parenthesis">(</code><code class="mkapi-object-signature">record</code>, <code class="mkapi-object-signature">message</code><code class="mkapi-object-parenthesis">)</code>
+<span class="mkapi-item-type">(ConsoleRenderable)</span>
+<span class="mkapi-item-dash">&mdash;</span> <span class="mkapi-item-description">Render message text in to Text.<a class="mkapi-src-link" href="../source/rich.logging/#rich.logging.RichHandler.render_message" title="Source for rich.logging.RichHandler.render_message">&lt;/&gt;</a></span></li>
+
+<li class="method"><code class="mkapi-item-name"><a href="#logging.Handler.setFormatter">setFormatter</a></code><code class="mkapi-object-parenthesis">(</code><code class="mkapi-object-signature">fmt</code><code class="mkapi-object-parenthesis">)</code>
+
+<span class="mkapi-item-dash">&mdash;</span> <span class="mkapi-item-description">Set the formatter for this handler.<a class="mkapi-src-link" href="../source/logging/#logging.Handler.setFormatter" title="Source for logging.Handler.setFormatter">&lt;/&gt;</a></span></li>
+
+<li class="method"><code class="mkapi-item-name"><a href="#logging.Handler.setLevel">setLevel</a></code><code class="mkapi-object-parenthesis">(</code><code class="mkapi-object-signature">level</code><code class="mkapi-object-parenthesis">)</code>
+
+<span class="mkapi-item-dash">&mdash;</span> <span class="mkapi-item-description">Set the logging level of this handler.  level must be an int or a str.<a class="mkapi-src-link" href="../source/logging/#logging.Handler.setLevel" title="Source for logging.Handler.setLevel">&lt;/&gt;</a></span></li>
+
+
+</ul></div>
+    </div>
+  </div>
+
+  <div class="mkapi-members">
+  
+    <div class="mkapi-member">
+      <div class="mkapi-node" id="logging.Filterer.addFilter">
+<div class='mkapi-object-container'>
+  <div class="mkapi-object method code">
+    <div class="mkapi-object-kind method">method</div>
+    <h4 id="loggingfiltereraddfilter" class="mkapi-object-body method"><code class="mkapi-object-name">addFilter</code><code class="mkapi-object-parenthesis">(</code><code class="mkapi-object-signature">filter</code><code class="mkapi-object-parenthesis">)</code></h4>
+  </div>
+  <div class="mkapi-src-link">
+    <a class="mkapi-src-link" href="../source/logging/#logging.Filterer.addFilter" title="Source for logging.Filterer.addFilter">&lt;/&gt;</a>
+  </div>
+</div>
+<div class="mkapi-docstring">
+<div class="mkapi-section">
+      <div class="mkapi-section-body"><p>Add the specified filter to this handler.</p></div>
+    </div>
+  </div>
+
+</div>
+    </div>
+  
+    <div class="mkapi-member">
+      <div class="mkapi-node" id="logging.Filterer.removeFilter">
+<div class='mkapi-object-container'>
+  <div class="mkapi-object method code">
+    <div class="mkapi-object-kind method">method</div>
+    <h4 id="loggingfiltererremovefilter" class="mkapi-object-body method"><code class="mkapi-object-name">removeFilter</code><code class="mkapi-object-parenthesis">(</code><code class="mkapi-object-signature">filter</code><code class="mkapi-object-parenthesis">)</code></h4>
+  </div>
+  <div class="mkapi-src-link">
+    <a class="mkapi-src-link" href="../source/logging/#logging.Filterer.removeFilter" title="Source for logging.Filterer.removeFilter">&lt;/&gt;</a>
+  </div>
+</div>
+<div class="mkapi-docstring">
+<div class="mkapi-section">
+      <div class="mkapi-section-body"><p>Remove the specified filter from this handler.</p></div>
+    </div>
+  </div>
+
+</div>
+    </div>
+  
+    <div class="mkapi-member">
+      <div class="mkapi-node" id="logging.Filterer.filter">
+<div class='mkapi-object-container'>
+  <div class="mkapi-object method code">
+    <div class="mkapi-object-kind method">method</div>
+    <h4 id="loggingfiltererfilter" class="mkapi-object-body method"><code class="mkapi-object-name">filter</code><code class="mkapi-object-parenthesis">(</code><code class="mkapi-object-signature">record</code><code class="mkapi-object-parenthesis">)</code></h4>
+  </div>
+  <div class="mkapi-src-link">
+    <a class="mkapi-src-link" href="../source/logging/#logging.Filterer.filter" title="Source for logging.Filterer.filter">&lt;/&gt;</a>
+  </div>
+</div>
+<div class="mkapi-docstring">
+<div class="mkapi-section">
+      <div class="mkapi-section-body"><p>Determine if a record is loggable by consulting all the filters.</p>
+<p>The default is to allow the record to be logged; any filter can veto
+this and the record is then dropped. Returns a zero value if a record
+is to be dropped, else non-zero.</p>
+<p>.. versionchanged:: 3.2</p>
+<p>Allow filters to be just callables.</p></div>
+    </div>
+  </div>
+
+</div>
+    </div>
+  
+    <div class="mkapi-member">
+      <div class="mkapi-node" id="logging.Handler.createLock">
+<div class='mkapi-object-container'>
+  <div class="mkapi-object method code">
+    <div class="mkapi-object-kind method">method</div>
+    <h4 id="logginghandlercreatelock" class="mkapi-object-body method"><code class="mkapi-object-name">createLock</code><code class="mkapi-object-parenthesis">(</code><code class="mkapi-object-parenthesis">)</code></h4>
+  </div>
+  <div class="mkapi-src-link">
+    <a class="mkapi-src-link" href="../source/logging/#logging.Handler.createLock" title="Source for logging.Handler.createLock">&lt;/&gt;</a>
+  </div>
+</div>
+<div class="mkapi-docstring">
+<div class="mkapi-section">
+      <div class="mkapi-section-body"><p>Acquire a thread lock for serializing access to the underlying I/O.</p></div>
+    </div>
+  </div>
+
+</div>
+    </div>
+  
+    <div class="mkapi-member">
+      <div class="mkapi-node" id="logging.Handler.acquire">
+<div class='mkapi-object-container'>
+  <div class="mkapi-object method code">
+    <div class="mkapi-object-kind method">method</div>
+    <h4 id="logginghandleracquire" class="mkapi-object-body method"><code class="mkapi-object-name">acquire</code><code class="mkapi-object-parenthesis">(</code><code class="mkapi-object-parenthesis">)</code></h4>
+  </div>
+  <div class="mkapi-src-link">
+    <a class="mkapi-src-link" href="../source/logging/#logging.Handler.acquire" title="Source for logging.Handler.acquire">&lt;/&gt;</a>
+  </div>
+</div>
+<div class="mkapi-docstring">
+<div class="mkapi-section">
+      <div class="mkapi-section-body"><p>Acquire the I/O thread lock.</p></div>
+    </div>
+  </div>
+
+</div>
+    </div>
+  
+    <div class="mkapi-member">
+      <div class="mkapi-node" id="logging.Handler.release">
+<div class='mkapi-object-container'>
+  <div class="mkapi-object method code">
+    <div class="mkapi-object-kind method">method</div>
+    <h4 id="logginghandlerrelease" class="mkapi-object-body method"><code class="mkapi-object-name">release</code><code class="mkapi-object-parenthesis">(</code><code class="mkapi-object-parenthesis">)</code></h4>
+  </div>
+  <div class="mkapi-src-link">
+    <a class="mkapi-src-link" href="../source/logging/#logging.Handler.release" title="Source for logging.Handler.release">&lt;/&gt;</a>
+  </div>
+</div>
+<div class="mkapi-docstring">
+<div class="mkapi-section">
+      <div class="mkapi-section-body"><p>Release the I/O thread lock.</p></div>
+    </div>
+  </div>
+
+</div>
+    </div>
+  
+    <div class="mkapi-member">
+      <div class="mkapi-node" id="logging.Handler.setLevel">
+<div class='mkapi-object-container'>
+  <div class="mkapi-object method code">
+    <div class="mkapi-object-kind method">method</div>
+    <h4 id="logginghandlersetlevel" class="mkapi-object-body method"><code class="mkapi-object-name">setLevel</code><code class="mkapi-object-parenthesis">(</code><code class="mkapi-object-signature">level</code><code class="mkapi-object-parenthesis">)</code></h4>
+  </div>
+  <div class="mkapi-src-link">
+    <a class="mkapi-src-link" href="../source/logging/#logging.Handler.setLevel" title="Source for logging.Handler.setLevel">&lt;/&gt;</a>
+  </div>
+</div>
+<div class="mkapi-docstring">
+<div class="mkapi-section">
+      <div class="mkapi-section-body"><p>Set the logging level of this handler.  level must be an int or a str.</p></div>
+    </div>
+  </div>
+
+</div>
+    </div>
+  
+    <div class="mkapi-member">
+      <div class="mkapi-node" id="logging.Handler.format">
+<div class='mkapi-object-container'>
+  <div class="mkapi-object method code">
+    <div class="mkapi-object-kind method">method</div>
+    <h4 id="logginghandlerformat" class="mkapi-object-body method"><code class="mkapi-object-name">format</code><code class="mkapi-object-parenthesis">(</code><code class="mkapi-object-signature">record</code><code class="mkapi-object-parenthesis">)</code></h4>
+  </div>
+  <div class="mkapi-src-link">
+    <a class="mkapi-src-link" href="../source/logging/#logging.Handler.format" title="Source for logging.Handler.format">&lt;/&gt;</a>
+  </div>
+</div>
+<div class="mkapi-docstring">
+<div class="mkapi-section">
+      <div class="mkapi-section-body"><p>Format the specified record.</p>
+<p>If a formatter is set, use it. Otherwise, use the default formatter
+for the module.</p></div>
+    </div>
+  </div>
+
+</div>
+    </div>
+  
+    <div class="mkapi-member">
+      <div class="mkapi-node" id="logging.Handler.handle">
+<div class='mkapi-object-container'>
+  <div class="mkapi-object method code">
+    <div class="mkapi-object-kind method">method</div>
+    <h4 id="logginghandlerhandle" class="mkapi-object-body method"><code class="mkapi-object-name">handle</code><code class="mkapi-object-parenthesis">(</code><code class="mkapi-object-signature">record</code><code class="mkapi-object-parenthesis">)</code></h4>
+  </div>
+  <div class="mkapi-src-link">
+    <a class="mkapi-src-link" href="../source/logging/#logging.Handler.handle" title="Source for logging.Handler.handle">&lt;/&gt;</a>
+  </div>
+</div>
+<div class="mkapi-docstring">
+<div class="mkapi-section">
+      <div class="mkapi-section-body"><p>Conditionally emit the specified logging record.</p>
+<p>Emission depends on filters which may have been added to the handler.
+Wrap the actual emission of the record with acquisition/release of
+the I/O thread lock. Returns whether the filter passed the record for
+emission.</p></div>
+    </div>
+  </div>
+
+</div>
+    </div>
+  
+    <div class="mkapi-member">
+      <div class="mkapi-node" id="logging.Handler.setFormatter">
+<div class='mkapi-object-container'>
+  <div class="mkapi-object method code">
+    <div class="mkapi-object-kind method">method</div>
+    <h4 id="logginghandlersetformatter" class="mkapi-object-body method"><code class="mkapi-object-name">setFormatter</code><code class="mkapi-object-parenthesis">(</code><code class="mkapi-object-signature">fmt</code><code class="mkapi-object-parenthesis">)</code></h4>
+  </div>
+  <div class="mkapi-src-link">
+    <a class="mkapi-src-link" href="../source/logging/#logging.Handler.setFormatter" title="Source for logging.Handler.setFormatter">&lt;/&gt;</a>
+  </div>
+</div>
+<div class="mkapi-docstring">
+<div class="mkapi-section">
+      <div class="mkapi-section-body"><p>Set the formatter for this handler.</p></div>
+    </div>
+  </div>
+
+</div>
+    </div>
+  
+    <div class="mkapi-member">
+      <div class="mkapi-node" id="logging.Handler.flush">
+<div class='mkapi-object-container'>
+  <div class="mkapi-object method code">
+    <div class="mkapi-object-kind method">method</div>
+    <h4 id="logginghandlerflush" class="mkapi-object-body method"><code class="mkapi-object-name">flush</code><code class="mkapi-object-parenthesis">(</code><code class="mkapi-object-parenthesis">)</code></h4>
+  </div>
+  <div class="mkapi-src-link">
+    <a class="mkapi-src-link" href="../source/logging/#logging.Handler.flush" title="Source for logging.Handler.flush">&lt;/&gt;</a>
+  </div>
+</div>
+<div class="mkapi-docstring">
+<div class="mkapi-section">
+      <div class="mkapi-section-body"><p>Ensure all logging output has been flushed.</p>
+<p>This version does nothing and is intended to be implemented by
+subclasses.</p></div>
+    </div>
+  </div>
+
+</div>
+    </div>
+  
+    <div class="mkapi-member">
+      <div class="mkapi-node" id="logging.Handler.close">
+<div class='mkapi-object-container'>
+  <div class="mkapi-object method code">
+    <div class="mkapi-object-kind method">method</div>
+    <h4 id="logginghandlerclose" class="mkapi-object-body method"><code class="mkapi-object-name">close</code><code class="mkapi-object-parenthesis">(</code><code class="mkapi-object-parenthesis">)</code></h4>
+  </div>
+  <div class="mkapi-src-link">
+    <a class="mkapi-src-link" href="../source/logging/#logging.Handler.close" title="Source for logging.Handler.close">&lt;/&gt;</a>
+  </div>
+</div>
+<div class="mkapi-docstring">
+<div class="mkapi-section">
+      <div class="mkapi-section-body"><p>Tidy up any resources used by the handler.</p>
+<p>This version removes the handler from an internal map of handlers,
+_handlers, which is used for handler lookup by name. Subclasses
+should ensure that this gets called from overridden close()
+methods.</p></div>
+    </div>
+  </div>
+
+</div>
+    </div>
+  
+    <div class="mkapi-member">
+      <div class="mkapi-node" id="logging.Handler.handleError">
+<div class='mkapi-object-container'>
+  <div class="mkapi-object method code">
+    <div class="mkapi-object-kind method">method</div>
+    <h4 id="logginghandlerhandleerror" class="mkapi-object-body method"><code class="mkapi-object-name">handleError</code><code class="mkapi-object-parenthesis">(</code><code class="mkapi-object-signature">record</code><code class="mkapi-object-parenthesis">)</code></h4>
+  </div>
+  <div class="mkapi-src-link">
+    <a class="mkapi-src-link" href="../source/logging/#logging.Handler.handleError" title="Source for logging.Handler.handleError">&lt;/&gt;</a>
+  </div>
+</div>
+<div class="mkapi-docstring">
+<div class="mkapi-section">
+      <div class="mkapi-section-body"><p>Handle errors which occur during an emit() call.</p>
+<p>This method should be called from handlers when an exception is
+encountered during an emit() call. If raiseExceptions is false,
+exceptions get silently ignored. This is what is mostly wanted
+for a logging system - most users will not care about errors in
+the logging system, they are more interested in application errors.
+You could, however, replace this with a custom handler if you wish.
+The record which was being processed is passed in to this method.</p></div>
+    </div>
+  </div>
+
+</div>
+    </div>
+  
+    <div class="mkapi-member">
+      <div class="mkapi-node" id="rich.logging.RichHandler.emit">
+<div class='mkapi-object-container'>
+  <div class="mkapi-object method code">
+    <div class="mkapi-object-kind method">method</div>
+    <h4 id="richloggingrichhandleremit" class="mkapi-object-body method"><code class="mkapi-object-name">emit</code><code class="mkapi-object-parenthesis">(</code><code class="mkapi-object-signature">record</code><code class="mkapi-object-parenthesis">)</code></h4>
+  </div>
+  <div class="mkapi-src-link">
+    <a class="mkapi-src-link" href="../source/rich.logging/#rich.logging.RichHandler.emit" title="Source for rich.logging.RichHandler.emit">&lt;/&gt;</a>
+  </div>
+</div>
+<div class="mkapi-docstring">
+<div class="mkapi-section">
+      <div class="mkapi-section-body"><p>Invoked by logging.</p></div>
+    </div>
+  </div>
+
+</div>
+    </div>
+  
+    <div class="mkapi-member">
+      <div class="mkapi-node" id="rich.logging.RichHandler.render_message">
+<div class='mkapi-object-container'>
+  <div class="mkapi-object method code">
+    <div class="mkapi-object-kind method">method</div>
+    <h4 id="richloggingrichhandlerrender_message" class="mkapi-object-body method"><code class="mkapi-object-name">render_message</code><code class="mkapi-object-parenthesis">(</code><code class="mkapi-object-signature">record</code>, <code class="mkapi-object-signature">message</code><code class="mkapi-object-parenthesis">)</code></h4>
+  </div>
+  <div class="mkapi-src-link">
+    <a class="mkapi-src-link" href="../source/rich.logging/#rich.logging.RichHandler.render_message" title="Source for rich.logging.RichHandler.render_message">&lt;/&gt;</a>
+  </div>
+</div>
+<div class="mkapi-docstring">
+<div class="mkapi-section">
+      <div class="mkapi-section-body"><p>Render message text in to Text.</p></div>
+    </div>
+  <div class="mkapi-section parameters">
+      <div class="mkapi-section-name parameters">
+          <span class="mkapi-section-name-body parameters">Parameters</span> 
+        </div>
+      <div class="mkapi-section-body parameters"><ul class="mkapi-items">
+<li><code class="mkapi-item-name">record</code>
+<span class="mkapi-item-type">(LogRecord)</span>
+<span class="mkapi-item-dash">&mdash;</span> <span class="mkapi-item-description">logging Record.</span></li>
+
+<li><code class="mkapi-item-name">message</code>
+<span class="mkapi-item-type">(str)</span>
+<span class="mkapi-item-dash">&mdash;</span> <span class="mkapi-item-description">String containing log message.</span></li>
+
+
+</ul></div>
+    </div>
+  <div class="mkapi-section returns">
+      <div class="mkapi-section-name returns">
+          <span class="mkapi-section-name-body returns">Returns</span> <span class="mkapi-item-type">(ConsoleRenderable)</span>
+        </div>
+      <div class="mkapi-section-body returns"><p>Renderable to display log message.</p></div>
+    </div>
+  </div>
+
+</div>
+    </div>
+  
+    <div class="mkapi-member">
+      <div class="mkapi-node" id="rich.logging.RichHandler.render">
+<div class='mkapi-object-container'>
+  <div class="mkapi-object method code">
+    <div class="mkapi-object-kind method">method</div>
+    <h4 id="richloggingrichhandlerrender" class="mkapi-object-body method"><code class="mkapi-object-name">render</code><code class="mkapi-object-parenthesis">(</code><code class="mkapi-object-signature">record</code>, <code class="mkapi-object-signature">traceback</code>, <code class="mkapi-object-signature">message_renderable</code><code class="mkapi-object-parenthesis">)</code></h4>
+  </div>
+  <div class="mkapi-src-link">
+    <a class="mkapi-src-link" href="../source/rich.logging/#rich.logging.RichHandler.render" title="Source for rich.logging.RichHandler.render">&lt;/&gt;</a>
+  </div>
+</div>
+<div class="mkapi-docstring">
+<div class="mkapi-section">
+      <div class="mkapi-section-body"><p>Render log for display.</p></div>
+    </div>
+  <div class="mkapi-section parameters">
+      <div class="mkapi-section-name parameters">
+          <span class="mkapi-section-name-body parameters">Parameters</span> 
+        </div>
+      <div class="mkapi-section-body parameters"><ul class="mkapi-items">
+<li><code class="mkapi-item-name">record</code>
+<span class="mkapi-item-type">(LogRecord)</span>
+<span class="mkapi-item-dash">&mdash;</span> <span class="mkapi-item-description">logging Record.</span></li>
+
+<li><code class="mkapi-item-name">traceback</code>
+<span class="mkapi-item-type">(Optional[Traceback])</span>
+<span class="mkapi-item-dash">&mdash;</span> <span class="mkapi-item-description">Traceback instance or None for no Traceback.</span></li>
+
+<li><code class="mkapi-item-name">message_renderable</code>
+<span class="mkapi-item-type">(ConsoleRenderable)</span>
+<span class="mkapi-item-dash">&mdash;</span> <span class="mkapi-item-description">Renderable (typically Text) containing log message contents.</span></li>
+
+
+</ul></div>
+    </div>
+  <div class="mkapi-section returns">
+      <div class="mkapi-section-name returns">
+          <span class="mkapi-section-name-body returns">Returns</span> <span class="mkapi-item-type">(ConsoleRenderable)</span>
+        </div>
+      <div class="mkapi-section-body returns"><p>Renderable to display log.</p></div>
+    </div>
+  </div>
+
+</div>
+    </div>
+  
+    <div class="mkapi-member">
+      <div class="mkapi-node" id="pyparam.utils.RichHandler.get_level_text">
+<div class='mkapi-object-container'>
+  <div class="mkapi-object method code">
+    <div class="mkapi-object-kind method">method</div>
+    <h4 id="pyparamutilsrichhandlerget_level_text" class="mkapi-object-body method"><code class="mkapi-object-name">get_level_text</code><code class="mkapi-object-parenthesis">(</code><code class="mkapi-object-signature">record</code><code class="mkapi-object-parenthesis">)</code></h4>
+  </div>
+  <div class="mkapi-src-link">
+    <a class="mkapi-src-link" href="../source/pyparam.utils/#pyparam.utils.RichHandler.get_level_text" title="Source for pyparam.utils.RichHandler.get_level_text">&lt;/&gt;</a>
+  </div>
+</div>
+<div class="mkapi-docstring">
+<div class="mkapi-section">
+      <div class="mkapi-section-body"><p>Get the level name from the record.</p></div>
+    </div>
+  <div class="mkapi-section parameters">
+      <div class="mkapi-section-name parameters">
+          <span class="mkapi-section-name-body parameters">Parameters</span> 
+        </div>
+      <div class="mkapi-section-body parameters"><ul class="mkapi-items">
+<li><code class="mkapi-item-name">record</code>
+<span class="mkapi-item-type">(LogRecord)</span>
+<span class="mkapi-item-dash">&mdash;</span> <span class="mkapi-item-description">LogRecord instance.</span></li>
+
+
+</ul></div>
+    </div>
+  <div class="mkapi-section returns">
+      <div class="mkapi-section-name returns">
+          <span class="mkapi-section-name-body returns">Returns</span> <span class="mkapi-item-type">(Text)</span>
+        </div>
+      <div class="mkapi-section-body returns"><p>A tuple of the style and level name.</p></div>
+    </div>
+  </div>
+
+</div>
+    </div>
+  
+  </div>
+
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    <script id="__config" type="application/json">{"base": "../..", "features": [], "search": "../../assets/javascripts/workers/search.f886a092.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.d7c377c4.min.js"></script>
+      
+        <script src="../../js/mkapi.js"></script>
+      
+    
+  </body>
+</html>

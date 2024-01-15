@@ -1,0 +1,1307 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+      
+      
+      
+      
+      
+      <link rel="icon" href="../../../favicon.png">
+      <meta name="generator" content="mkdocs-1.5.3, mkdocs-material-9.5.3">
+    
+    
+      
+        <title>pyparam.utils - pyparam</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../../assets/stylesheets/main.50c56a3b.min.css">
+      
+        
+        <link rel="stylesheet" href="../../../assets/stylesheets/palette.06af60db.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="//use.fontawesome.com/releases/v5.8.1/css/all.css">
+    
+      <link rel="stylesheet" href="//use.fontawesome.com/releases/v5.8.1/css/v4-shims.css">
+    
+      <link rel="stylesheet" href="../../../css/mkapi-common.css">
+    
+      <link rel="stylesheet" href="../../../style.css">
+    
+    <script>__md_scope=new URL("../../..",location),__md_hash=e=>[...e].reduce((e,_)=>(e<<5)-e+_.charCodeAt(0),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+    
+  </head>
+  
+  
+    
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="blue-grey" data-md-color-accent="indigo">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#pyparamutils" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../../.." title="pyparam" class="md-header__button md-logo" aria-label="pyparam" data-md-component="logo">
+      
+  <img src="../../../favicon.png" alt="logo">
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3V6m0 5h18v2H3v-2m0 5h18v2H3v-2Z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            pyparam
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              pyparam.utils
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+    
+    
+    
+    
+      <label class="md-header__button md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+      </label>
+      <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12Z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41Z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../../.." title="pyparam" class="md-nav__button md-logo" aria-label="pyparam" data-md-component="logo">
+      
+  <img src="../../../favicon.png" alt="logo">
+
+    </a>
+    pyparam
+  </label>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../.." class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Home
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../TypesOfParams/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Defining parameters
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../commands/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Commands
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../fromCommandline/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Parsing from command line
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../fromDict/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Loading from dict/config file
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../helpPage/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Help page
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../useTheValues/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Using the parsed values
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../shellCompletion/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Shell completion
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_9" >
+        
+          
+          <label class="md-nav__link" for="__nav_9" id="__nav_9_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    API
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_9_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_9">
+            <span class="md-nav__icon md-icon"></span>
+            API
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_9_1" >
+        
+          
+          <label class="md-nav__link" for="__nav_9_1" id="__nav_9_1_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    pyparam
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_9_1_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_9_1">
+            <span class="md-nav__icon md-icon"></span>
+            pyparam
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../pyparam/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    pyparam
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../pyparam.defaults/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    pyparam.defaults
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../pyparam.exceptions/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    pyparam.exceptions
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../pyparam.param/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    pyparam.param
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../pyparam.completer/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    pyparam.completer
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../pyparam.utils/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    pyparam.utils
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../pyparam.help/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    pyparam.help
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../pyparam.params/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    pyparam.params
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../changeLog.md" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Change log
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#pyparamutils" class="md-nav__link">
+    <span class="md-ellipsis">
+      pyparam.utils
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+<div class="mkapi-node">
+<h1 id="" class="mkapi-object mkapi-object-code plain">
+<span class="mkapi-object-kind mkapi-object-kind-code">SOURCE CODE</span>
+<span class="mkapi-object-prefix">pyparam.</span><span class="mkapi-object-name">utils</span>
+<span id="pyparam.utils"></span><a class="mkapi-docs-link" href="../../pyparam.utils">DOCS</a>
+</h1>
+
+<div class="mkapi-code">
+<div class="codehilite"><pre><span></span><code><span class="sd">&quot;&quot;&quot;Utilities for pyparam</span>
+
+<span class="sd">Attributes:</span>
+<span class="sd">    logger: The logger</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">import</span> <span class="nn">ast</span>
+<span class="kn">import</span> <span class="nn">builtins</span>
+<span class="kn">import</span> <span class="nn">json</span>
+<span class="kn">import</span> <span class="nn">logging</span>
+<span class="kn">from</span> <span class="nn">argparse</span> <span class="kn">import</span> <span class="n">Namespace</span> <span class="k">as</span> <span class="n">APNamespace</span>
+<span class="kn">from</span> <span class="nn">functools</span> <span class="kn">import</span> <span class="n">lru_cache</span>
+<span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Callable</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">,</span> <span class="n">Type</span><span class="p">,</span> <span class="n">Union</span>
+
+<span class="kn">from</span> <span class="nn">rich.console</span> <span class="kn">import</span> <span class="n">Console</span>
+<span class="kn">from</span> <span class="nn">rich.logging</span> <span class="kn">import</span> <span class="n">RichHandler</span> <span class="k">as</span> <span class="n">_RichHandler</span>
+<span class="kn">from</span> <span class="nn">rich.padding</span> <span class="kn">import</span> <span class="n">Padding</span>
+<span class="kn">from</span> <span class="nn">rich.syntax</span> <span class="kn">import</span> <span class="n">Syntax</span>
+<span class="kn">from</span> <span class="nn">rich.text</span> <span class="kn">import</span> <span class="n">Text</span>
+
+<span class="kn">from</span> <span class="nn">.defaults</span> <span class="kn">import</span> <span class="n">TYPE_NAMES</span>
+<span class="kn">from</span> <span class="nn">.exceptions</span> <span class="kn">import</span> <span class="n">PyParamTypeError</span>
+
+
+<span class="k">class</span> <span class="nc">Namespace</span><span class="p">(</span><span class="n">APNamespace</span><span class="p">):</span><span id="pyparam.utils.Namespace"></span><a class="mkapi-docs-link" title="pyparam.utils.Namespace" href="../../pyparam.utils/#pyparam.utils.Namespace">DOCS</a>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Subclass of `argparse.Namespace`</span>
+
+<span class="sd">    We have enabled `__getitem__`, `__setitem__`, `__len__` and `__contains__`.</span>
+<span class="sd">    So that you can do:</span>
+
+<span class="sd">    ```python</span>
+<span class="sd">    ns = Namespace()</span>
+<span class="sd">    ns[&#39;a&#39;] = 1  # same as ns.a = 1</span>
+<span class="sd">    ns[&#39;a&#39;] == 1 # same as ns.a == 1</span>
+<span class="sd">    len(ns) == 1</span>
+<span class="sd">    &#39;a&#39; in ns</span>
+<span class="sd">    ```</span>
+
+<span class="sd">    Attributes:</span>
+<span class="sd">        __command__: The command name if matched.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">__command__</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span>
+
+    <span class="k">def</span> <span class="fm">__getitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
+        <span class="k">return</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="fm">__setitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="nb">setattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="fm">__len__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+        <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="nb">vars</span><span class="p">(</span><span class="bp">self</span><span class="p">))</span>
+
+    <span class="k">def</span> <span class="fm">__contains__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">name</span> <span class="ow">in</span> <span class="nb">vars</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="fm">__or__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
+        <span class="c1"># copy myself</span>
+        <span class="n">myself</span><span class="p">:</span> <span class="n">Namespace</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="p">()</span>
+        <span class="n">myself</span> <span class="o">|=</span> <span class="bp">self</span>
+        <span class="n">myself</span> <span class="o">|=</span> <span class="n">other</span>
+        <span class="k">return</span> <span class="n">myself</span>
+
+    <span class="k">def</span> <span class="fm">__ior__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">other</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
+            <span class="n">other</span> <span class="o">=</span> <span class="nb">vars</span><span class="p">(</span><span class="n">other</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">other</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="bp">self</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">value</span>
+        <span class="k">return</span> <span class="bp">self</span>
+
+    <span class="k">def</span> <span class="nf">_to_dict</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dict_wrapper</span><span class="p">:</span> <span class="n">Type</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">:</span>  <span class="c1"># pragma: no cover</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Convert the namespace to a dict object&quot;&quot;&quot;</span>
+        <span class="n">out</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="nb">vars</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+            <span class="n">out</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="p">[</span><span class="n">key</span><span class="p">]</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">dict_wrapper</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">out</span>
+        <span class="k">return</span> <span class="n">dict_wrapper</span><span class="p">(</span><span class="n">out</span><span class="p">)</span>
+
+
+<span class="k">class</span> <span class="nc">Codeblock</span><span class="p">:</span><span id="pyparam.utils.Codeblock"></span><a class="mkapi-docs-link" title="pyparam.utils.Codeblock" href="../../pyparam.utils/#pyparam.utils.Codeblock">DOCS</a>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;A code block, will be rendered as rich.syntax.Syntax&quot;&quot;&quot;</span>
+
+    <span class="nd">@classmethod</span><span id="pyparam.utils.Codeblock.scan_texts"></span><a class="mkapi-docs-link" title="pyparam.utils.Codeblock.scan_texts" href="../../pyparam.utils/#pyparam.utils.Codeblock.scan_texts">DOCS</a>
+    <span class="k">def</span> <span class="nf">scan_texts</span><span class="p">(</span>
+        <span class="bp">cls</span><span class="p">,</span> <span class="n">texts</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="n">check_default</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="s2">&quot;Codeblock&quot;</span><span class="p">]]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Scan multiple texts for code blocks</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            cls (Codeblock class): The class</span>
+<span class="sd">            texts: a list of texts</span>
+<span class="sd">            check_default: Check if there is default in maybe_codeblock.</span>
+<span class="sd">                Defaults should not be scanned as code blocks</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            mixed text and code blocks</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">ret</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="s2">&quot;Codeblock&quot;</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">ret_extend</span><span class="p">:</span> <span class="n">Callable</span> <span class="o">=</span> <span class="n">ret</span><span class="o">.</span><span class="n">extend</span>
+        <span class="n">codeblock</span><span class="p">:</span> <span class="s2">&quot;Codeblock&quot;</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="c1"># Type: Union[str, Codeblock]</span>
+        <span class="k">for</span> <span class="n">text</span> <span class="ow">in</span> <span class="n">texts</span><span class="p">:</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">codeblock</span><span class="p">:</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="n">text</span><span class="p">:</span>
+                    <span class="n">ret</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">text</span><span class="p">)</span>
+                    <span class="k">continue</span>
+                <span class="n">scanned</span><span class="p">,</span> <span class="n">codeblock</span> <span class="o">=</span> <span class="bp">cls</span><span class="o">.</span><span class="n">scan</span><span class="p">(</span>
+                    <span class="n">text</span><span class="p">,</span> <span class="n">check_default</span><span class="o">=</span><span class="n">check_default</span>
+                <span class="p">)</span>
+                <span class="n">ret_extend</span><span class="p">(</span><span class="n">scanned</span><span class="p">)</span>
+                <span class="k">continue</span>
+            <span class="c1"># if we hit an unclosed codeblock</span>
+            <span class="n">lines</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">text</span><span class="o">.</span><span class="n">splitlines</span><span class="p">()</span>
+            <span class="c1"># Type: int, str</span>
+            <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">line</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">lines</span><span class="p">):</span>
+                <span class="k">if</span> <span class="n">codeblock</span><span class="o">.</span><span class="n">is_end</span><span class="p">(</span><span class="n">line</span><span class="p">):</span>
+                    <span class="n">scanned</span><span class="p">,</span> <span class="n">codeblock</span> <span class="o">=</span> <span class="bp">cls</span><span class="o">.</span><span class="n">scan</span><span class="p">(</span>
+                        <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
+                            <span class="n">lines</span><span class="p">[</span>
+                                <span class="p">(</span><span class="n">i</span> <span class="k">if</span> <span class="n">codeblock</span><span class="o">.</span><span class="n">opentag</span> <span class="o">==</span> <span class="s2">&quot;&gt;&gt;&gt;&quot;</span> <span class="k">else</span> <span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="p">:</span>
+                            <span class="p">]</span>
+                        <span class="p">),</span>
+                        <span class="n">check_default</span><span class="o">=</span><span class="n">check_default</span><span class="p">,</span>
+                    <span class="p">)</span>
+                    <span class="n">ret_extend</span><span class="p">(</span><span class="n">scanned</span><span class="p">)</span>
+                    <span class="k">break</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">codeblock</span><span class="o">.</span><span class="n">add_code</span><span class="p">(</span><span class="n">text</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">ret</span>
+
+    <span class="nd">@classmethod</span><span id="pyparam.utils.Codeblock.scan"></span><a class="mkapi-docs-link" title="pyparam.utils.Codeblock.scan" href="../../pyparam.utils/#pyparam.utils.Codeblock.scan">DOCS</a>
+    <span class="k">def</span> <span class="nf">scan</span><span class="p">(</span>
+        <span class="bp">cls</span><span class="p">,</span> <span class="n">maybe_codeblock</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">check_default</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="s2">&quot;Codeblock&quot;</span><span class="p">]],</span> <span class="s2">&quot;Codeblock&quot;</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Scan and try to create codeblock objects from maybe_codeblock</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            cls (Codeblock class): The class</span>
+<span class="sd">            maybe_codeblock: Maybe a code block start</span>
+<span class="sd">                It can be a text block, we have to scan if it has code blocks</span>
+<span class="sd">                inside.</span>
+<span class="sd">            check_default: Check if there is default in maybe_codeblock.</span>
+<span class="sd">                Defaults should not be scanned as code blocks</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            mixed text and unclosed code blocks</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">sep</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="s2">&quot;Default:&quot;</span>
+            <span class="k">if</span> <span class="s2">&quot;Default:&quot;</span> <span class="ow">in</span> <span class="n">maybe_codeblock</span>
+            <span class="k">else</span> <span class="s2">&quot;DEFAULT:&quot;</span>
+            <span class="k">if</span> <span class="s2">&quot;DEFAULT:&quot;</span> <span class="ow">in</span> <span class="n">maybe_codeblock</span>
+            <span class="k">else</span> <span class="kc">None</span>
+        <span class="p">)</span>
+
+        <span class="n">default_to_append</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="n">default_in_newline</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="k">if</span> <span class="n">check_default</span> <span class="ow">and</span> <span class="n">sep</span><span class="p">:</span>
+            <span class="n">parts</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">maybe_codeblock</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="n">sep</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+            <span class="n">default_to_append</span> <span class="o">=</span> <span class="n">sep</span> <span class="o">+</span> <span class="n">parts</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+            <span class="n">default_in_newline</span> <span class="o">=</span> <span class="n">parts</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="n">lines</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">parts</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">splitlines</span><span class="p">()</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">lines</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">maybe_codeblock</span><span class="o">.</span><span class="n">splitlines</span><span class="p">()</span>
+
+        <span class="n">ret</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="s2">&quot;Codeblock&quot;</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">ret_append</span><span class="p">:</span> <span class="n">Callable</span> <span class="o">=</span> <span class="n">ret</span><span class="o">.</span><span class="n">append</span>
+        <span class="n">codeblock</span><span class="p">:</span> <span class="s2">&quot;Codeblock&quot;</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="c1"># Type: str</span>
+        <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">lines</span><span class="p">:</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">codeblock</span><span class="p">:</span>
+                <span class="n">line_lstripped</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">line</span><span class="o">.</span><span class="n">lstrip</span><span class="p">()</span>
+                <span class="k">if</span> <span class="n">line_lstripped</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;&gt;&gt;&gt;&quot;</span><span class="p">):</span>
+                    <span class="n">codeblock</span><span class="p">:</span> <span class="s2">&quot;Codeblock&quot;</span> <span class="o">=</span> <span class="bp">cls</span><span class="p">(</span>
+                        <span class="s2">&quot;&gt;&gt;&gt;&quot;</span><span class="p">,</span>
+                        <span class="s2">&quot;pycon&quot;</span><span class="p">,</span>
+                        <span class="nb">len</span><span class="p">(</span><span class="n">line</span><span class="p">)</span> <span class="o">-</span> <span class="nb">len</span><span class="p">(</span><span class="n">line_lstripped</span><span class="p">),</span>
+                        <span class="p">[</span><span class="n">line_lstripped</span><span class="p">],</span>
+                    <span class="p">)</span>
+                    <span class="n">ret_append</span><span class="p">(</span><span class="n">codeblock</span><span class="p">)</span>
+                <span class="k">elif</span> <span class="n">line_lstripped</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;```&quot;</span><span class="p">):</span>
+                    <span class="n">codeblock</span><span class="p">:</span> <span class="s2">&quot;Codeblock&quot;</span> <span class="o">=</span> <span class="bp">cls</span><span class="p">(</span>
+                        <span class="n">line_lstripped</span><span class="p">[</span>
+                            <span class="p">:</span> <span class="p">(</span>
+                                <span class="nb">len</span><span class="p">(</span><span class="n">line_lstripped</span><span class="p">)</span>
+                                <span class="o">-</span> <span class="nb">len</span><span class="p">(</span><span class="n">line_lstripped</span><span class="o">.</span><span class="n">lstrip</span><span class="p">(</span><span class="s2">&quot;`&quot;</span><span class="p">))</span>
+                            <span class="p">)</span>
+                        <span class="p">],</span>
+                        <span class="n">line_lstripped</span><span class="o">.</span><span class="n">lstrip</span><span class="p">(</span><span class="s2">&quot;`&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span> <span class="ow">or</span> <span class="s2">&quot;text&quot;</span><span class="p">,</span>
+                        <span class="nb">len</span><span class="p">(</span><span class="n">line</span><span class="p">)</span> <span class="o">-</span> <span class="nb">len</span><span class="p">(</span><span class="n">line_lstripped</span><span class="p">),</span>
+                    <span class="p">)</span>
+                    <span class="n">ret_append</span><span class="p">(</span><span class="n">codeblock</span><span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">ret_append</span><span class="p">(</span><span class="n">line</span><span class="p">)</span>
+            <span class="k">elif</span> <span class="n">codeblock</span><span class="o">.</span><span class="n">is_end</span><span class="p">(</span><span class="n">line</span><span class="p">):</span>
+                <span class="k">if</span> <span class="n">codeblock</span><span class="o">.</span><span class="n">opentag</span> <span class="o">==</span> <span class="s2">&quot;&gt;&gt;&gt;&quot;</span><span class="p">:</span>
+                    <span class="n">ret</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">line</span><span class="p">)</span>
+                <span class="n">codeblock</span> <span class="o">=</span> <span class="kc">None</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">codeblock</span><span class="o">.</span><span class="n">add_code</span><span class="p">(</span><span class="n">line</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">default_to_append</span><span class="p">:</span>
+            <span class="c1"># if codeblock (&gt;&gt;&gt;) is not closed.</span>
+            <span class="c1"># but we have default so it actually closes</span>
+            <span class="k">if</span> <span class="n">codeblock</span> <span class="ow">and</span> <span class="n">codeblock</span><span class="o">.</span><span class="n">opentag</span> <span class="o">==</span> <span class="s2">&quot;&gt;&gt;&gt;&quot;</span><span class="p">:</span>
+                <span class="n">codeblock</span> <span class="o">=</span> <span class="kc">None</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">ret</span> <span class="ow">or</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">ret</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="n">Codeblock</span><span class="p">)</span> <span class="ow">or</span> <span class="n">default_in_newline</span><span class="p">:</span>
+                <span class="n">ret</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">default_to_append</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">ret</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">+=</span> <span class="n">default_to_append</span>
+        <span class="k">return</span> <span class="n">ret</span><span class="p">,</span> <span class="n">codeblock</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">opentag</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">lang</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">indent</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+        <span class="n">codes</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Constructor</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            opentag: The opentag for the code block.</span>
+<span class="sd">                One of &#39;&gt;&gt;&gt;&#39;, &#39;```&lt;lang&gt;&#39;, &#39;````&lt;lang&gt;&#39;, ...</span>
+<span class="sd">            lang: The language name</span>
+<span class="sd">            indent: The indentation level</span>
+<span class="sd">            codes: The lines of code</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">opentag</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">opentag</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">lang</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">lang</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">indent</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">indent</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">codes</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">codes</span> <span class="ow">or</span> <span class="p">[]</span>
+
+    <span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="k">return</span> <span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;&lt;Codeblock (tag=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">opentag</span><span class="si">}</span><span class="s2">, lang=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">lang</span><span class="si">}</span><span class="s2">, &quot;</span>
+            <span class="sa">f</span><span class="s2">&quot;codes=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">codes</span><span class="p">[:</span><span class="mi">1</span><span class="p">]</span><span class="si">}</span><span class="s2"> ...)&quot;</span>
+        <span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">add_code</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">code</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span><span id="pyparam.utils.Codeblock.add_code"></span><a class="mkapi-docs-link" title="pyparam.utils.Codeblock.add_code" href="../../pyparam.utils/#pyparam.utils.Codeblock.add_code">DOCS</a>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Add code to code block</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            code: code to add</span>
+<span class="sd">                It can be multiple lines, each of which will be dedented</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># Type: str</span>
+        <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">code</span><span class="o">.</span><span class="n">splitlines</span><span class="p">():</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">codes</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">line</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">indent</span> <span class="p">:])</span>
+
+    <span class="k">def</span> <span class="nf">is_end</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">line</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span><span id="pyparam.utils.Codeblock.is_end"></span><a class="mkapi-docs-link" title="pyparam.utils.Codeblock.is_end" href="../../pyparam.utils/#pyparam.utils.Codeblock.is_end">DOCS</a>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Tell if the line is the end of the code block</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            line: line to check</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            True if it is the end otherwise False</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">opentag</span> <span class="o">==</span> <span class="s2">&quot;&gt;&gt;&gt;&quot;</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">line</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">indent</span> <span class="p">:]</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;&gt;&gt;&gt;&quot;</span><span class="p">):</span>
+            <span class="k">return</span> <span class="kc">True</span>
+        <span class="k">if</span> <span class="p">(</span>
+            <span class="s2">&quot;`&quot;</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">opentag</span>
+            <span class="ow">and</span> <span class="n">line</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">indent</span> <span class="p">:]</span><span class="o">.</span><span class="n">rstrip</span><span class="p">()</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">opentag</span>
+        <span class="p">):</span>
+            <span class="k">return</span> <span class="kc">True</span>
+        <span class="k">return</span> <span class="kc">False</span>
+
+    <span class="k">def</span> <span class="nf">render</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Padding</span><span class="p">:</span><span id="pyparam.utils.Codeblock.render"></span><a class="mkapi-docs-link" title="pyparam.utils.Codeblock.render" href="../../pyparam.utils/#pyparam.utils.Codeblock.render">DOCS</a>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Render the code block to a rich.syntax.Syntax</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            A padding of rich.syntax.Syntax</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">Padding</span><span class="p">(</span>
+            <span class="n">Syntax</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">codes</span><span class="p">),</span> <span class="bp">self</span><span class="o">.</span><span class="n">lang</span><span class="p">),</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">indent</span><span class="p">)</span>
+        <span class="p">)</span>
+
+
+<span class="k">def</span> <span class="nf">always_list</span><span class="p">(</span><span id="pyparam.utils.always_list"></span><a class="mkapi-docs-link" title="pyparam.utils.always_list" href="../../pyparam.utils/#pyparam.utils.always_list">DOCS</a>
+    <span class="n">str_or_list</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]],</span>
+    <span class="n">strip</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+    <span class="n">split</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;,&quot;</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Convert a string (comma separated) or a list to a list</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        str_or_list: string or list</span>
+<span class="sd">        strip: whether to strip the elements in result list</span>
+<span class="sd">        split: Delimiter for split or False to not split</span>
+
+<span class="sd">    Return:</span>
+<span class="sd">        list: list of strings</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">str_or_list</span><span class="p">,</span> <span class="p">(</span><span class="nb">list</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">)):</span>
+        <span class="k">return</span> <span class="nb">list</span><span class="p">(</span><span class="n">str_or_list</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">split</span><span class="p">:</span>
+        <span class="k">return</span> <span class="p">[</span>
+            <span class="n">elem</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span> <span class="k">if</span> <span class="n">strip</span> <span class="k">else</span> <span class="n">elem</span>
+            <span class="k">for</span> <span class="n">elem</span> <span class="ow">in</span> <span class="n">str_or_list</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="n">split</span><span class="p">)</span>  <span class="c1"># type: ignore</span>
+        <span class="p">]</span>
+    <span class="k">return</span> <span class="p">[</span><span class="n">str_or_list</span><span class="p">]</span>
+
+
+<span class="k">def</span> <span class="nf">parse_type</span><span class="p">(</span><span class="n">typestr</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span><span id="pyparam.utils.parse_type"></span><a class="mkapi-docs-link" title="pyparam.utils.parse_type" href="../../pyparam.utils/#pyparam.utils.parse_type">DOCS</a>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Parse the type string</span>
+
+<span class="sd">    Examples:</span>
+<span class="sd">        &gt;&gt;&gt; parse_type(None)    # None, None</span>
+<span class="sd">        &gt;&gt;&gt; parse_type(&quot;array&quot;) # list, None</span>
+<span class="sd">        &gt;&gt;&gt; parse_type(&quot;a:i&quot;)   # list, int</span>
+<span class="sd">        &gt;&gt;&gt; parse_type(&quot;j&quot;)     # json, None</span>
+<span class="sd">        &gt;&gt;&gt; parse_type(&quot;list&quot;)  # list, None</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        typestr: string of type to parse</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        Main type and subtype</span>
+
+<span class="sd">    Raises:</span>
+<span class="sd">        PyParamTypeError: When a type cannot be parsed</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">typestr</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">return</span> <span class="p">[</span><span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">]</span>
+
+    <span class="n">parts</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">typestr</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;:&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+    <span class="c1"># Type: int, str</span>
+    <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">part</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">parts</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">part</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">TYPE_NAMES</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">PyParamTypeError</span><span class="p">(</span><span class="s2">&quot;Unknown type: </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">typestr</span><span class="p">)</span>
+        <span class="n">parts</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">TYPE_NAMES</span><span class="p">[</span><span class="n">part</span><span class="p">]</span>
+
+    <span class="n">parts</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="kc">None</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">parts</span><span class="p">[:</span><span class="mi">2</span><span class="p">]</span>
+
+
+<span class="nd">@lru_cache</span><span class="p">()</span><span id="pyparam.utils.parse_potential_argument"></span><a class="mkapi-docs-link" title="pyparam.utils.parse_potential_argument" href="../../pyparam.utils/#pyparam.utils.parse_potential_argument">DOCS</a>
+<span class="k">def</span> <span class="nf">parse_potential_argument</span><span class="p">(</span>
+    <span class="n">arg</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">prefix</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">allow_attached</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Parse a potential argument with given prefix</span>
+
+<span class="sd">    Examples:</span>
+<span class="sd">        &gt;&gt;&gt; # prefix == &#39;auto</span>
+<span class="sd">        &gt;&gt;&gt; parse_potential_argument(&quot;-a&quot;)     # a, None, None</span>
+<span class="sd">        &gt;&gt;&gt; parse_potential_argument(&quot;--arg&quot;)  # arg, None, None</span>
+<span class="sd">        &gt;&gt;&gt; parse_potential_argument(&quot;--a&quot;)    # None, None, a</span>
+<span class="sd">        &gt;&gt;&gt; parse_potential_argument(&quot;-abc&quot;)   # None, None, -abc</span>
+<span class="sd">        &gt;&gt;&gt; parse_potential_argument(&quot;-abc&quot;, allow_attached=True)</span>
+<span class="sd">        &gt;&gt;&gt; # -a, None, bc</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        arg: a potential argument. Such as:</span>
+<span class="sd">            -a, --def, -b=1, --abc=value, -b1 (for argument -b with value 1)</span>
+<span class="sd">            with types:</span>
+<span class="sd">            -a:int --def:list -b:str=1 --abs:str=value -b:bool</span>
+<span class="sd">            It is usually one element of the sys.argv</span>
+<span class="sd">        prefix: The prefix for the argument names</span>
+<span class="sd">        allow_attached: Whether to detect item like &#39;-b1&#39; for argument</span>
+<span class="sd">            &#39;-b&#39; with value &#39;1&#39; or the entire one is parsed as argument &#39;-b1&#39;</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        The argument name, type and value</span>
+<span class="sd">            When arg cannot be parsed as an argument, argument name and type</span>
+<span class="sd">            will both be None. arg will be returned as argument value.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">arg</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;-&quot;</span> <span class="k">if</span> <span class="n">prefix</span> <span class="o">==</span> <span class="s2">&quot;auto&quot;</span> <span class="k">else</span> <span class="n">prefix</span><span class="p">):</span>
+        <span class="k">return</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="n">arg</span>
+
+    <span class="c1"># fill a tuple to length of 2 with None</span>
+    <span class="n">fill2_none</span><span class="p">:</span> <span class="n">Callable</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">alist</span><span class="p">:</span> <span class="p">(</span>
+        <span class="p">(</span><span class="n">alist</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="kc">None</span><span class="p">)</span> <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">alist</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span> <span class="ow">or</span> <span class="ow">not</span> <span class="n">alist</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="k">else</span> <span class="n">alist</span><span class="p">[:</span><span class="mi">2</span><span class="p">]</span>
+    <span class="p">)</span>
+
+    <span class="n">item_nametype</span><span class="p">,</span> <span class="n">item_value</span> <span class="o">=</span> <span class="n">fill2_none</span><span class="p">(</span><span class="n">arg</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;=&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span>
+    <span class="n">item_name</span><span class="p">,</span> <span class="n">item_type</span> <span class="o">=</span> <span class="n">fill2_none</span><span class="p">(</span><span class="n">item_nametype</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;:&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span>
+
+    <span class="c1"># detach the value for -b1</span>
+    <span class="k">if</span> <span class="n">allow_attached</span><span class="p">:</span>
+        <span class="n">single_prefix</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;-&quot;</span> <span class="k">if</span> <span class="n">prefix</span> <span class="o">==</span> <span class="s2">&quot;auto&quot;</span> <span class="k">else</span> <span class="n">prefix</span>
+        <span class="n">len_spref</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">single_prefix</span><span class="p">)</span>
+        <span class="k">if</span> <span class="p">(</span>
+            <span class="n">item_type</span> <span class="ow">is</span> <span class="kc">None</span>
+            <span class="ow">and</span> <span class="n">item_value</span> <span class="ow">is</span> <span class="kc">None</span>
+            <span class="ow">and</span> <span class="p">(</span>
+                <span class="n">item_name</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="n">single_prefix</span><span class="p">)</span>
+                <span class="ow">and</span> <span class="n">item_name</span><span class="p">[</span><span class="n">len_spref</span> <span class="p">:</span> <span class="n">len_spref</span> <span class="o">+</span> <span class="mi">1</span><span class="p">]</span> <span class="o">!=</span> <span class="n">single_prefix</span>
+            <span class="p">)</span>
+        <span class="p">):</span>
+            <span class="c1"># Type: str, str</span>
+            <span class="n">item_name</span><span class="p">,</span> <span class="n">item_value</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="n">single_prefix</span> <span class="o">+</span> <span class="n">item_name</span><span class="p">[</span><span class="n">len_spref</span> <span class="p">:</span> <span class="n">len_spref</span> <span class="o">+</span> <span class="mi">1</span><span class="p">],</span>
+                <span class="n">item_name</span><span class="p">[</span><span class="n">len_spref</span> <span class="o">+</span> <span class="mi">1</span> <span class="p">:],</span>
+            <span class="p">)</span>
+
+    <span class="c1"># remove prefix in item_name</span>
+    <span class="k">if</span> <span class="n">prefix</span> <span class="o">==</span> <span class="s2">&quot;auto&quot;</span><span class="p">:</span>
+        <span class="n">item_name_first</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">item_name</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;.&quot;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">prefix</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="s2">&quot;-&quot;</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">item_name_first</span><span class="p">)</span> <span class="o">&lt;=</span> <span class="mi">2</span>
+            <span class="k">else</span> <span class="s2">&quot;--&quot;</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">item_name_first</span><span class="p">)</span> <span class="o">&gt;=</span> <span class="mi">4</span>
+            <span class="k">else</span> <span class="kc">None</span>
+        <span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">prefix</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">item_name</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="n">prefix</span><span class="p">):</span>
+        <span class="n">item_name</span> <span class="o">=</span> <span class="n">item_name</span><span class="p">[</span><span class="nb">len</span><span class="p">(</span><span class="n">prefix</span><span class="p">)</span> <span class="p">:]</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">return</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="n">arg</span>
+
+    <span class="n">item_type</span><span class="p">,</span> <span class="n">item_subtype</span> <span class="o">=</span> <span class="n">parse_type</span><span class="p">(</span><span class="n">item_type</span><span class="p">)</span>
+    <span class="n">item_type</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">item_type</span><span class="si">}</span><span class="s2">:</span><span class="si">{</span><span class="n">item_subtype</span><span class="si">}</span><span class="s2">&quot;</span> <span class="k">if</span> <span class="n">item_subtype</span> <span class="k">else</span> <span class="n">item_type</span>
+
+    <span class="k">return</span> <span class="n">item_name</span><span class="p">,</span> <span class="n">item_type</span><span class="p">,</span> <span class="n">item_value</span>
+
+
+<span class="k">def</span> <span class="nf">type_from_value</span><span class="p">(</span><span class="n">value</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span><span id="pyparam.utils.type_from_value"></span><a class="mkapi-docs-link" title="pyparam.utils.type_from_value" href="../../pyparam.utils/#pyparam.utils.type_from_value">DOCS</a>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Detect parameter type from a value</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        value: The value</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        The name of the type</span>
+
+<span class="sd">    Raises:</span>
+<span class="sd">        PyParamTypeError: When we have list as subtype.</span>
+<span class="sd">            For example, when value is `[[1]]`</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">typename</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="nb">type</span><span class="p">(</span><span class="n">value</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span>
+    <span class="k">if</span> <span class="n">typename</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;int&quot;</span><span class="p">,</span> <span class="s2">&quot;float&quot;</span><span class="p">,</span> <span class="s2">&quot;str&quot;</span><span class="p">,</span> <span class="s2">&quot;bool&quot;</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">typename</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">value</span><span class="p">:</span>
+            <span class="k">return</span> <span class="s2">&quot;list&quot;</span>
+        <span class="n">type0</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">type_from_value</span><span class="p">(</span><span class="n">value</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+        <span class="k">if</span> <span class="s2">&quot;list&quot;</span> <span class="ow">in</span> <span class="n">type0</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">PyParamTypeError</span><span class="p">(</span><span class="s2">&quot;Cannot have &#39;list&#39; as subtype.&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;list:</span><span class="si">{</span><span class="n">type0</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="k">if</span> <span class="nb">all</span><span class="p">(</span><span class="n">type_from_value</span><span class="p">(</span><span class="n">item</span><span class="p">)</span> <span class="o">==</span> <span class="n">type0</span> <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">value</span><span class="p">[</span><span class="mi">1</span><span class="p">:])</span>
+            <span class="k">else</span> <span class="s2">&quot;list&quot;</span>
+        <span class="p">)</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
+        <span class="k">return</span> <span class="s2">&quot;json&quot;</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">Path</span><span class="p">):</span>
+        <span class="k">return</span> <span class="s2">&quot;path&quot;</span>
+    <span class="k">return</span> <span class="s2">&quot;auto&quot;</span>
+
+
+<span class="k">def</span> <span class="nf">_cast_auto</span><span class="p">(</span><span class="n">value</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Cast value automatically</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        value: value to cast</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        value casted</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">value</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;True&quot;</span><span class="p">,</span> <span class="s2">&quot;TRUE&quot;</span><span class="p">,</span> <span class="s2">&quot;true&quot;</span><span class="p">)</span> <span class="ow">or</span> <span class="n">value</span> <span class="ow">is</span> <span class="kc">True</span><span class="p">:</span>
+        <span class="k">return</span> <span class="kc">True</span>
+    <span class="k">if</span> <span class="n">value</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;False&quot;</span><span class="p">,</span> <span class="s2">&quot;FALSE&quot;</span><span class="p">,</span> <span class="s2">&quot;false&quot;</span><span class="p">)</span> <span class="ow">or</span> <span class="n">value</span> <span class="ow">is</span> <span class="kc">False</span><span class="p">:</span>
+        <span class="k">return</span> <span class="kc">False</span>
+
+    <span class="k">try</span><span class="p">:</span>
+        <span class="k">return</span> <span class="nb">int</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+    <span class="k">except</span> <span class="p">(</span><span class="ne">TypeError</span><span class="p">,</span> <span class="ne">ValueError</span><span class="p">):</span>
+        <span class="k">pass</span>
+
+    <span class="k">try</span><span class="p">:</span>
+        <span class="k">return</span> <span class="nb">float</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+    <span class="k">except</span> <span class="p">(</span><span class="ne">TypeError</span><span class="p">,</span> <span class="ne">ValueError</span><span class="p">):</span>
+        <span class="k">pass</span>
+
+    <span class="k">try</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+    <span class="k">except</span> <span class="p">(</span><span class="ne">TypeError</span><span class="p">,</span> <span class="ne">ValueError</span><span class="p">,</span> <span class="n">json</span><span class="o">.</span><span class="n">JSONDecodeError</span><span class="p">):</span>
+        <span class="k">pass</span>
+
+    <span class="k">return</span> <span class="n">value</span>
+
+
+<span class="k">def</span> <span class="nf">cast_to</span><span class="p">(</span><span class="n">value</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span> <span class="n">to_type</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">bool</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span><span id="pyparam.utils.cast_to"></span><a class="mkapi-docs-link" title="pyparam.utils.cast_to" href="../../pyparam.utils/#pyparam.utils.cast_to">DOCS</a>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Cast a value to a given type</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        value: value to cast</span>
+<span class="sd">        to_type: type to cast</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        casted value</span>
+
+<span class="sd">    Raises:</span>
+<span class="sd">        PyParamTypeError: if value is not able to be casted</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">to_type</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;int&quot;</span><span class="p">,</span> <span class="s2">&quot;float&quot;</span><span class="p">,</span> <span class="s2">&quot;str&quot;</span><span class="p">):</span>
+            <span class="k">return</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">builtins</span><span class="p">,</span> <span class="n">to_type</span><span class="p">)(</span><span class="n">value</span><span class="p">)</span>  <span class="c1"># type: ignore</span>
+        <span class="k">if</span> <span class="n">to_type</span> <span class="o">==</span> <span class="s2">&quot;bool&quot;</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">value</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;true&quot;</span><span class="p">,</span> <span class="s2">&quot;TRUE&quot;</span><span class="p">,</span> <span class="s2">&quot;True&quot;</span><span class="p">,</span> <span class="s2">&quot;1&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="kc">True</span><span class="p">):</span>
+                <span class="k">return</span> <span class="kc">True</span>
+            <span class="k">if</span> <span class="n">value</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;false&quot;</span><span class="p">,</span> <span class="s2">&quot;FALSE&quot;</span><span class="p">,</span> <span class="s2">&quot;False&quot;</span><span class="p">,</span> <span class="s2">&quot;0&quot;</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="kc">False</span><span class="p">):</span>
+                <span class="k">return</span> <span class="kc">False</span>
+            <span class="k">raise</span> <span class="n">PyParamTypeError</span><span class="p">(</span>
+                <span class="s2">&quot;Expecting one of [true, TRUE, True, 1, false, FALSE, False, 0]&quot;</span>
+            <span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">to_type</span> <span class="o">==</span> <span class="s2">&quot;json&quot;</span><span class="p">:</span>  <span class="c1"># pragma: no cover</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+                <span class="k">return</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">value</span><span class="p">))</span>
+
+        <span class="k">if</span> <span class="n">to_type</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;path&quot;</span><span class="p">,</span> <span class="s2">&quot;py&quot;</span><span class="p">):</span>
+            <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;path&quot;</span><span class="p">:</span> <span class="n">Path</span><span class="p">,</span> <span class="s2">&quot;py&quot;</span><span class="p">:</span> <span class="n">ast</span><span class="o">.</span><span class="n">literal_eval</span><span class="p">}[</span>
+                <span class="n">to_type</span>  <span class="c1"># type: ignore</span>
+            <span class="p">](</span><span class="nb">str</span><span class="p">(</span><span class="n">value</span><span class="p">))</span>
+        <span class="k">if</span> <span class="n">to_type</span> <span class="ow">in</span> <span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="s2">&quot;auto&quot;</span><span class="p">):</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+                <span class="k">return</span> <span class="n">value</span>
+            <span class="k">return</span> <span class="n">_cast_auto</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+    <span class="k">except</span> <span class="p">(</span>
+        <span class="ne">TypeError</span><span class="p">,</span>
+        <span class="ne">ValueError</span><span class="p">,</span>
+        <span class="n">json</span><span class="o">.</span><span class="n">JSONDecodeError</span>
+    <span class="p">)</span> <span class="k">as</span> <span class="n">cast_exc</span><span class="p">:</span>  <span class="c1"># pragma: no cover</span>
+        <span class="k">raise</span> <span class="n">PyParamTypeError</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;Cannot cast </span><span class="si">{</span><span class="n">value</span><span class="si">}</span><span class="s2"> to </span><span class="si">{</span><span class="n">to_type</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">cast_exc</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="p">)</span> <span class="kn">from</span> <span class="nn">cast_exc</span>
+    <span class="k">raise</span> <span class="n">PyParamTypeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Cannot cast </span><span class="si">{</span><span class="n">value</span><span class="si">}</span><span class="s2"> to </span><span class="si">{</span><span class="n">to_type</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+
+<span class="k">class</span> <span class="nc">RichHandler</span><span class="p">(</span><span class="n">_RichHandler</span><span class="p">):</span><span id="pyparam.utils.RichHandler"></span><a class="mkapi-docs-link" title="pyparam.utils.RichHandler" href="../../pyparam.utils/#pyparam.utils.RichHandler">DOCS</a>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Subclass of rich.logging.RichHandler, showing log levels as a single</span>
+<span class="sd">    character&quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">get_level_text</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">record</span><span class="p">:</span> <span class="n">logging</span><span class="o">.</span><span class="n">LogRecord</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Text</span><span class="p">:</span><span id="pyparam.utils.RichHandler.get_level_text"></span><a class="mkapi-docs-link" title="pyparam.utils.RichHandler.get_level_text" href="../../pyparam.utils/#pyparam.utils.RichHandler.get_level_text">DOCS</a>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get the level name from the record.</span>
+<span class="sd">        Args:</span>
+<span class="sd">            record (LogRecord): LogRecord instance.</span>
+<span class="sd">        Returns:</span>
+<span class="sd">            Text: A tuple of the style and level name.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">level_name</span> <span class="o">=</span> <span class="n">record</span><span class="o">.</span><span class="n">levelname</span>
+        <span class="n">level_text</span> <span class="o">=</span> <span class="n">Text</span><span class="o">.</span><span class="n">styled</span><span class="p">(</span>
+            <span class="n">level_name</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span> <span class="o">+</span> <span class="s2">&quot;:&quot;</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;logging.level.</span><span class="si">{</span><span class="n">level_name</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="p">)</span>
+        <span class="k">return</span> <span class="n">level_text</span>
+
+
+<span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+<span class="n">logger</span><span class="o">.</span><span class="n">addHandler</span><span class="p">(</span>
+    <span class="n">RichHandler</span><span class="p">(</span>
+        <span class="n">logging</span><span class="o">.</span><span class="n">INFO</span><span class="p">,</span> <span class="n">console</span><span class="o">=</span><span class="n">Console</span><span class="p">(),</span> <span class="n">show_time</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">show_path</span><span class="o">=</span><span class="kc">False</span>
+    <span class="p">)</span>
+<span class="p">)</span>
+</code></pre></div>
+</div>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    <script id="__config" type="application/json">{"base": "../../..", "features": [], "search": "../../../assets/javascripts/workers/search.f886a092.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}}</script>
+    
+    
+      <script src="../../../assets/javascripts/bundle.d7c377c4.min.js"></script>
+      
+        <script src="../../../js/mkapi.js"></script>
+      
+    
+  </body>
+</html>

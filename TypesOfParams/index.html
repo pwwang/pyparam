@@ -1,0 +1,1429 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+      
+      
+      
+        <link rel="prev" href="..">
+      
+      
+        <link rel="next" href="../commands/">
+      
+      
+      <link rel="icon" href="../favicon.png">
+      <meta name="generator" content="mkdocs-1.5.3, mkdocs-material-9.5.3">
+    
+    
+      
+        <title>Defining parameters - pyparam</title>
+      
+    
+    
+      <link rel="stylesheet" href="../assets/stylesheets/main.50c56a3b.min.css">
+      
+        
+        <link rel="stylesheet" href="../assets/stylesheets/palette.06af60db.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="//use.fontawesome.com/releases/v5.8.1/css/all.css">
+    
+      <link rel="stylesheet" href="//use.fontawesome.com/releases/v5.8.1/css/v4-shims.css">
+    
+      <link rel="stylesheet" href="../css/mkapi-common.css">
+    
+      <link rel="stylesheet" href="../style.css">
+    
+    <script>__md_scope=new URL("..",location),__md_hash=e=>[...e].reduce((e,_)=>(e<<5)-e+_.charCodeAt(0),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+    
+  </head>
+  
+  
+    
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="blue-grey" data-md-color-accent="indigo">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#parameter-names" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href=".." title="pyparam" class="md-header__button md-logo" aria-label="pyparam" data-md-component="logo">
+      
+  <img src="../favicon.png" alt="logo">
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3V6m0 5h18v2H3v-2m0 5h18v2H3v-2Z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            pyparam
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Defining parameters
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+    
+    
+    
+    
+      <label class="md-header__button md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+      </label>
+      <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12Z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41Z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href=".." title="pyparam" class="md-nav__button md-logo" aria-label="pyparam" data-md-component="logo">
+      
+  <img src="../favicon.png" alt="logo">
+
+    </a>
+    pyparam
+  </label>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href=".." class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Home
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  <span class="md-ellipsis">
+    Defining parameters
+  </span>
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  <span class="md-ellipsis">
+    Defining parameters
+  </span>
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#parameter-names" class="md-nav__link">
+    <span class="md-ellipsis">
+      Parameter names
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#parameter-types" class="md-nav__link">
+    <span class="md-ellipsis">
+      Parameter types
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Parameter types">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#intfloatstr-paramter" class="md-nav__link">
+    <span class="md-ellipsis">
+      int/float/str paramter
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#auto-paramter" class="md-nav__link">
+    <span class="md-ellipsis">
+      auto paramter
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#bool-paramter" class="md-nav__link">
+    <span class="md-ellipsis">
+      bool paramter
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#count-paramter" class="md-nav__link">
+    <span class="md-ellipsis">
+      count paramter
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#path-parameter" class="md-nav__link">
+    <span class="md-ellipsis">
+      path parameter
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#dir-parameter" class="md-nav__link">
+    <span class="md-ellipsis">
+      dir parameter
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#py-paramter" class="md-nav__link">
+    <span class="md-ellipsis">
+      py paramter
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#json-paramter" class="md-nav__link">
+    <span class="md-ellipsis">
+      json paramter
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#choice-paramter" class="md-nav__link">
+    <span class="md-ellipsis">
+      choice paramter
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#list-paramter" class="md-nav__link">
+    <span class="md-ellipsis">
+      list paramter
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#namespace-parameter" class="md-nav__link">
+    <span class="md-ellipsis">
+      namespace parameter
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#parameter-descriptions" class="md-nav__link">
+    <span class="md-ellipsis">
+      Parameter descriptions
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Parameter descriptions">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#add-default-value-in-description" class="md-nav__link">
+    <span class="md-ellipsis">
+      Add default value in description
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#parameter-callbacks" class="md-nav__link">
+    <span class="md-ellipsis">
+      Parameter callbacks
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#parameter-reuse" class="md-nav__link">
+    <span class="md-ellipsis">
+      Parameter reuse
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#help-parameter" class="md-nav__link">
+    <span class="md-ellipsis">
+      Help parameter
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../commands/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Commands
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../fromCommandline/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Parsing from command line
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../fromDict/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Loading from dict/config file
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../helpPage/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Help page
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../useTheValues/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Using the parsed values
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../shellCompletion/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Shell completion
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_9" >
+        
+          
+          <label class="md-nav__link" for="__nav_9" id="__nav_9_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    API
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_9_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_9">
+            <span class="md-nav__icon md-icon"></span>
+            API
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_9_1" >
+        
+          
+          <label class="md-nav__link" for="__nav_9_1" id="__nav_9_1_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    pyparam
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_9_1_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_9_1">
+            <span class="md-nav__icon md-icon"></span>
+            pyparam
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../api/pyparam/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    pyparam
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../api/pyparam.defaults/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    pyparam.defaults
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../api/pyparam.exceptions/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    pyparam.exceptions
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../api/pyparam.param/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    pyparam.param
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../api/pyparam.completer/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    pyparam.completer
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../api/pyparam.utils/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    pyparam.utils
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../api/pyparam.help/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    pyparam.help
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../api/pyparam.params/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    pyparam.params
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../changeLog.md" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Change log
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#parameter-names" class="md-nav__link">
+    <span class="md-ellipsis">
+      Parameter names
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#parameter-types" class="md-nav__link">
+    <span class="md-ellipsis">
+      Parameter types
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Parameter types">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#intfloatstr-paramter" class="md-nav__link">
+    <span class="md-ellipsis">
+      int/float/str paramter
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#auto-paramter" class="md-nav__link">
+    <span class="md-ellipsis">
+      auto paramter
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#bool-paramter" class="md-nav__link">
+    <span class="md-ellipsis">
+      bool paramter
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#count-paramter" class="md-nav__link">
+    <span class="md-ellipsis">
+      count paramter
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#path-parameter" class="md-nav__link">
+    <span class="md-ellipsis">
+      path parameter
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#dir-parameter" class="md-nav__link">
+    <span class="md-ellipsis">
+      dir parameter
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#py-paramter" class="md-nav__link">
+    <span class="md-ellipsis">
+      py paramter
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#json-paramter" class="md-nav__link">
+    <span class="md-ellipsis">
+      json paramter
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#choice-paramter" class="md-nav__link">
+    <span class="md-ellipsis">
+      choice paramter
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#list-paramter" class="md-nav__link">
+    <span class="md-ellipsis">
+      list paramter
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#namespace-parameter" class="md-nav__link">
+    <span class="md-ellipsis">
+      namespace parameter
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#parameter-descriptions" class="md-nav__link">
+    <span class="md-ellipsis">
+      Parameter descriptions
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Parameter descriptions">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#add-default-value-in-description" class="md-nav__link">
+    <span class="md-ellipsis">
+      Add default value in description
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#parameter-callbacks" class="md-nav__link">
+    <span class="md-ellipsis">
+      Parameter callbacks
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#parameter-reuse" class="md-nav__link">
+    <span class="md-ellipsis">
+      Parameter reuse
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#help-parameter" class="md-nav__link">
+    <span class="md-ellipsis">
+      Help parameter
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  <h1>Defining parameters</h1>
+
+<p>A parameter is supposed to be defined/added by <code>params.add_param(...)</code> or <code>command.add_param(...)</code>, where <code>command</code> is the command added by <code>params.add_command(...)</code>.</p>
+<h3 id="parameter-names">Parameter names</h3>
+<p>We are not distinguishing name and its aliases for a parameter. That means basically all names for a parameter are treated equally. The only difference is the order when they are displayed in the help page, where they are sorted by their length.</p>
+<p>Supposingly, when add a parameter, any given name should not be registered before. Meaning that there should not be any parameters or commands with any of the given names added before.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Why a name should not be shared by a parameter and a command?</p>
+<p>That's because the parsed results are stored in a <code>Namespace</code>. You can't tell whether <code>ns.abc</code> is to get the value of the parameter <code>abc</code> or the values of parameters that are under command <code>abc</code>.</p>
+</div>
+<p>However, you can overwrite existing parameters or commands by <code>params.add_param(..., force=True)</code>. By doing this, you should know what you will lose.</p>
+<h3 id="parameter-types">Parameter types</h3>
+<p>You can specify a type explictly by <code>params.add_param(..., type='int')</code>, or if you provide a default value for the parameter, the type will be automatically inferred from the default value:</p>
+<table>
+<thead>
+<tr>
+<th>Example of default value</th>
+<th>Parameter type inferred</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>1</code></td>
+<td>int</td>
+</tr>
+<tr>
+<td><code>1.1</code>, <code>5e-2</code></td>
+<td>float</td>
+</tr>
+<tr>
+<td><code>"foo"</code></td>
+<td>str</td>
+</tr>
+<tr>
+<td><code>True</code>, <code>False</code></td>
+<td>bool</td>
+</tr>
+<tr>
+<td><code>pathlib.Path('.')</code></td>
+<td>path</td>
+</tr>
+<tr>
+<td><code>{"foo": "bar"}</code></td>
+<td>json</td>
+</tr>
+<tr>
+<td><code>[1, 2, 3]</code></td>
+<td>list:int</td>
+</tr>
+<tr>
+<td><code>["foo", "bar", 1]</code></td>
+<td>list</td>
+</tr>
+<tr>
+<td>otherwise</td>
+<td>auto</td>
+</tr>
+</tbody>
+</table>
+<p>For <code>int</code>, <code>float</code>, <code>str</code>, <code>bool</code> and <code>list</code>, you can specify the type using the type itself instead of its name. For example, you can do <code>params.add_param('foo', type=int)</code> instead of <code>params.add_param('foo', type='int')</code>.</p>
+<h4 id="intfloatstr-paramter">int/float/str paramter</h4>
+<p>Alias: <code>i/f/s</code>.
+Default value if not specified: <code>0/0.0/""</code></p>
+<p>Values passed in will be casted into corresponding types.</p>
+<h4 id="auto-paramter">auto paramter</h4>
+<p>Alias: <code>a</code>.
+Default value if not specified: <code>None</code></p>
+<p>Values will be casted automatically according to the values.</p>
+<p>For example:</p>
+<table>
+<thead>
+<tr>
+<th>Value (str)</th>
+<th>Casted value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>"True"</code>, <code>"TRUE"</code>, <code>"true"</code></td>
+<td><code>True</code></td>
+</tr>
+<tr>
+<td><code>"False"</code>, <code>"FALSE"</code>, <code>"false"</code></td>
+<td><code>False</code></td>
+</tr>
+<tr>
+<td><code>"1"</code></td>
+<td><code>1</code></td>
+</tr>
+<tr>
+<td><code>"0.05"</code>, <code>"5e-2"</code></td>
+<td><code>0.05</code></td>
+</tr>
+<tr>
+<td><code>"{\"foo\": \"bar\"}"</code></td>
+<td><code>{"foo": "bar"}</code></td>
+</tr>
+</tbody>
+</table>
+<h4 id="bool-paramter">bool paramter</h4>
+<p>Alias: <code>b/flag</code>
+Default value if not specified: <code>False</code></p>
+<p>Similar as <code>int/float/str</code> parameters. The difference is that, when it is followed by a value that can be casted into a bool value, it consumes it. Otherwise, it doesn't. For example, following will be parsed into the same result:</p>
+<div class="highlight"><pre><span></span><code>$<span class="w"> </span>prog<span class="w"> </span>-b
+$<span class="w"> </span>prog<span class="w"> </span>-b<span class="w"> </span><span class="nb">true</span>
+</code></pre></div>
+<h4 id="count-paramter">count paramter</h4>
+<p>No alias.
+Default value if not specified: <code>0</code></p>
+<p>A count parameter is actually an int parameter, with a short name with length = 1 required (say <code>v</code>). So that we can do <code>-vvv</code> from the command line.</p>
+<p>A count parameter requires default value to be <code>0</code>. In the above case, <code>-vvv</code> will be parsed as value <code>3</code>. Users can also use the normal way to pass the value to a count parameter: <code>-v 3</code>, or if it has a long name: <code>--verbose 3</code>.</p>
+<p>You can also specify a maximum value for the count parameter. For example: <code>params.add_param('v, verbose', type='count', max=3)</code> will raise an error when <code>-vvvv</code> received.</p>
+<h4 id="path-parameter">path parameter</h4>
+<p>Alias: <code>p/file</code>
+Default value if not specified: <code>None</code></p>
+<p>THe value of a path parameter will be automatically converted into a <code>pathlib.Path</code> object.</p>
+<div class="admonition tip">
+<p class="admonition-title">Tip</p>
+<p>It will not check the existence of path by default.</p>
+<p>To do that, you will need to use callback. For example:
+<div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">callback</span><span class="p">(</span><span class="n">path</span><span class="p">):</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">():</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Path does not exist.&quot;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">path</span>
+<span class="n">params</span><span class="o">.</span><span class="n">add_param</span><span class="p">(</span><span class="s1">&#39;input-file&#39;</span><span class="p">,</span>
+                 <span class="nb">type</span><span class="o">=</span><span class="s1">&#39;path&#39;</span><span class="p">,</span>
+                 <span class="n">required</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                 <span class="n">callback</span><span class="o">=</span><span class="n">callback</span><span class="p">)</span>
+</code></pre></div></p>
+<p>See how callback works at <a href="#paramter-callbacks">parameter callbacks</a></p>
+</div>
+<h4 id="dir-parameter">dir parameter</h4>
+<p>No alias.</p>
+<p>It is the same as path paramter in terms of parsing and casting the values. However, it is difference in shell completion. It only shows directories, but path parameter will show all available files.</p>
+<h4 id="py-paramter">py paramter</h4>
+<p>No alias.
+Default value if not specified: <code>None</code></p>
+<p>The value will be evaluated by <code>ast.literal_eval</code>.</p>
+<h4 id="json-paramter">json paramter</h4>
+<p>Alias: <code>j</code>
+Default value if not specified: <code>None</code></p>
+<p>The value will be converted using <code>json.loads</code></p>
+<h4 id="choice-paramter">choice paramter</h4>
+<p>Alias: <code>c</code>
+Default value if not specified: The first element of <code>choices</code></p>
+<p>The value is required to be one of the given values. To provide choices to choose:</p>
+<p><code>params.add_param('choice', choices=["small", "medium", "large"])</code></p>
+<p>Default is <code>small</code> if not provided.</p>
+<h4 id="list-paramter">list paramter</h4>
+<p>Aliases: <code>l</code>, <code>array</code>
+Default value if not specified: <code>[]</code></p>
+<p>A list parameter keeps consuming the value followed by until it hits another argument in command line.
+For example: <code>--array 1 2 3</code> will produce <code>[1, 2, 3]</code> for <code>array</code>, while <code>--array 1 --array 2 --array 3</code> does the same.</p>
+<p>You would like to provide a default value for a list parameter, say <code>[1, 2, 3]</code>. When it receives <code>--array 4</code> from command line, the value will accumulated and become <code>[1, 2, 3, 4]</code>. Sometimes, users may want to start a new array for that parameter, meaning that only <code>[4]</code> is desired by passing <code>--array 4</code>. In such a case, users can do <code>--array:reset 4</code> or <code>--array:r 4</code>. To accumulate more values, they can do <code>--array:r 4 5 6</code> or <code>--array:4 --array 5 --array 6</code>.</p>
+<p>A list parameter can have a subtype for the element of the list to be casted to. A subtype should be any of the above (scalar) types, not including <code>list</code>. By default, the subtype is <code>auto</code>. You can specify one explictly by: <code>params.add_param('array', type='list:str')</code>, then <code>--array 1 2 3</code> will produce <code>['1', '2', '3']</code> instead of <code>[1, 2, 3]</code>.</p>
+<h4 id="namespace-parameter">namespace parameter</h4>
+<p>Name: <code>ns</code>, alias: <code>namespace</code></p>
+<p>A namespace parameter is a special parameter that does not consume or receive any values. It only serves as a namesapce for other paramters.</p>
+<p>A namespace parameter can be defined explictly or implicitly. If you define a parameter like this: <code>params.add_param('config.ncores', ...)</code> then the namespace parameter <code>config</code> is implied. You may also define a namespace parameter explictly:
+<div class="highlight"><pre><span></span><code><span class="n">params</span><span class="o">.</span><span class="n">add_param</span><span class="p">(</span><span class="s1">&#39;config&#39;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="s1">&#39;ns&#39;</span><span class="p">,</span> <span class="n">desc</span><span class="o">=</span><span class="s1">&#39;A collection of configurations&#39;</span><span class="p">)</span>
+</code></pre></div></p>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>A namespace parameter should be defined before the parameters under it.</p>
+</div>
+<p>If a namespace parameter has aliases, the parameters under it will expand their names in the namespace part with all names of this namespace parameter.</p>
+<p>For example:
+<div class="highlight"><pre><span></span><code><span class="n">params</span><span class="o">.</span><span class="n">add_param</span><span class="p">(</span><span class="s1">&#39;c, config&#39;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="s1">&#39;ns&#39;</span><span class="p">)</span>
+<span class="n">param</span> <span class="o">=</span> <span class="n">params</span><span class="o">.</span><span class="n">add_param</span><span class="p">(</span><span class="s1">&#39;c.ncores&#39;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">int</span><span class="p">,</span> <span class="n">desc</span><span class="o">=</span><span class="s1">&#39;Number of cores&#39;</span><span class="p">)</span>
+<span class="c1"># param.names == [&#39;c.ncores&#39;, &#39;config.ncores&#39;]</span>
+</code></pre></div></p>
+<h3 id="parameter-descriptions">Parameter descriptions</h3>
+<p>To add descriptions for a parameter: <code>params.add_param(..., desc=...)</code>. Descriptions can be given as a single string or a list of strings. The difference is that, in the help page, the single string will be automatically wrapped according to the given console width; while each element of the list will be ensured to be put in a new line. If each element is beyond the width, it will be wrapped as well.</p>
+<p>For example, you can't control where it will be wrapped by <code>params.add_param(..., desc='I might be a very very long description')</code>. However, you can break it down and specify it as a list of some short strings: <code>params.add_param(..., desc=['I might be a very ', 'very long description'])</code>. In this way, the description is ensured to be broken between the two <code>very</code>s. If the width is wider than the two strings, they won't be wrapped any more. And they will automatically if the width is narrower.</p>
+<p>You can also use some placeholders in the description, including the keyword argument from <code>params.add_param(...)</code>. For example: <code>params.add_param('choice', default=1, choices=[1, 2, 3], desc='One of {choices}')</code> will give you <code>One of [1, 2, 3]</code>.</p>
+<p>You can insert inline code or code blocks in the description.</p>
+<p>For inline code, they should be quoted by one or more backticks. In most cases, it should be single backtick. However, when you have backtick inside your inline code, you may want to use multiple.</p>
+<p>For code blocks, you can do <code>python console</code> way:</p>
+<p><code>
+&gt;&gt;&gt; print('Hello pyparam!')
+</code></p>
+<p>Or the markdown way:</p>
+<p><code>
+```python<br />
+print('Hello pyparam!')<br />
+```
+</code></p>
+<h4 id="add-default-value-in-description">Add default value in description</h4>
+<p>Default value is automatically added for optional (<code>required=False</code>) and non-namespace (<code>type!='ns'</code>) parameters. It will be added in the format of <code>Default: xxx</code> and appended to the first element of the description list.</p>
+<p>For example:
+<div class="highlight"><pre><span></span><code><span class="n">params</span><span class="o">.</span><span class="n">add_param</span><span class="p">(</span><span class="s1">&#39;i&#39;</span><span class="p">,</span> <span class="n">desc</span><span class="o">=</span><span class="p">[</span>
+    <span class="s1">&#39;This is an int argument.&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;More details about it.&#39;</span>
+<span class="p">])</span>
+</code></pre></div>
+will produce:</p>
+<p><div class="highlight"><pre><span></span><code>This is an int argument. Default: 0
+More details about it.
+</code></pre></div>
+However, a description of a single string will have default value appended to the end.</p>
+<p>You can also add your own default value to description, by <code>Default: xxx</code> or <code>DEFAULT: xxx</code> to any element of the description list, or the single description string. Once detected, the default value specified by <code>params.add_param(..., default=xxx)</code> will not be added again.</p>
+<p>This opens oppotunities for you to place and customize the default value shown in help page by yourself.</p>
+<p>In the above example, if you want to put the default value in a new line rather than append it to the first line:
+<div class="highlight"><pre><span></span><code><span class="n">params</span><span class="o">.</span><span class="n">add_param</span><span class="p">(</span><span class="s1">&#39;i&#39;</span><span class="p">,</span> <span class="n">desc</span><span class="o">=</span><span class="p">[</span>
+    <span class="s1">&#39;This is an int argument.&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;Default: 0&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;More details about it.&#39;</span>
+<span class="p">])</span>
+</code></pre></div></p>
+<div class="admonition tip">
+<p class="admonition-title">Tip</p>
+<p>If you have newlines in the default value, the whole default will be put in a new line. And from the second line on, it will be indented.</p>
+<p>For example:
+<div class="highlight"><pre><span></span><code><span class="n">params</span><span class="o">.</span><span class="n">add_param</span><span class="p">(</span><span class="s1">&#39;s&#39;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="s2">&quot;1</span><span class="se">\n</span><span class="s2">2&quot;</span><span class="p">)</span>
+</code></pre></div>
+will produce
+<div class="highlight"><pre><span></span><code>No description.
+Default: 1
+         2
+</code></pre></div></p>
+<p>This is helpful for you to align the default value when you have complex ones.</p>
+</div>
+<h3 id="parameter-callbacks">Parameter callbacks</h3>
+<p>Parameters, including namespace parameter, can have callbacks to modify their values after parsing. The results from the callbacks can be arbitrary, meaning the value from the result namespace can be in different type as specified.</p>
+<p>Exceptions can be raised from callbacks, and they will be interpreted as errors in the help page. To allow exceptions in lambda functions, instead of raise, you can also return an <code>Exception</code> object if error happens.</p>
+<p>Here are some examples to show how callbacks work:</p>
+<ul>
+<li>
+<p>Check if value of path parameter exists</p>
+<div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">callback</span><span class="p">(</span><span class="n">path</span><span class="p">):</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">():</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Path does not exist.&#39;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">path</span>
+
+<span class="n">params</span><span class="o">.</span><span class="n">add_param</span><span class="p">(</span><span class="s1">&#39;in-file&#39;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="s1">&#39;p&#39;</span><span class="p">,</span> <span class="n">callback</span><span class="o">=</span><span class="n">callback</span><span class="p">)</span>
+<span class="c1"># or alternatively</span>
+<span class="n">params</span><span class="o">.</span><span class="n">add_param</span><span class="p">(</span><span class="s1">&#39;in-file&#39;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="s1">&#39;p&#39;</span><span class="p">,</span>
+                 <span class="n">callback</span><span class="o">=</span><span class="k">lambda</span> <span class="n">path</span><span class="p">:</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Path does not exist.&#39;</span><span class="p">)</span>
+                 <span class="k">if</span> <span class="ow">not</span> <span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">()</span> <span class="k">else</span> <span class="n">path</span><span class="p">)</span>
+
+<span class="n">parsed</span> <span class="o">=</span> <span class="n">params</span><span class="o">.</span><span class="n">parse</span><span class="p">([</span><span class="s1">&#39;--in-file&#39;</span><span class="p">,</span> <span class="s1">&#39;/path/not/exists/&#39;</span><span class="p">])</span>
+
+<span class="c1"># Error:   --in-file: Path does not exist.</span>
+</code></pre></div>
+</li>
+<li>
+<p>Modify count value</p>
+<p>Since the default value is required to be <code>0</code>, you may modified the value as you like:
+<div class="highlight"><pre><span></span><code><span class="n">params</span><span class="o">.</span><span class="n">add_param</span><span class="p">(</span><span class="s1">&#39;v&#39;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="s1">&#39;count&#39;</span><span class="p">)</span>
+
+<span class="n">parsed</span> <span class="o">=</span> <span class="n">params</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span><span class="s1">&#39;-vvv&#39;</span><span class="p">,</span> <span class="n">callback</span><span class="o">=</span><span class="k">lambda</span> <span class="n">val</span><span class="p">:</span> <span class="n">val</span> <span class="o">*</span> <span class="mi">10</span><span class="p">)</span>
+<span class="c1"># parsed = Namespace(v=30)</span>
+</code></pre></div></p>
+</li>
+<li>
+<p>Modify a namespace value</p>
+<p><div class="highlight"><pre><span></span><code><span class="n">params</span><span class="o">.</span><span class="n">add_param</span><span class="p">(</span><span class="s1">&#39;config&#39;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="s1">&#39;ns&#39;</span><span class="p">,</span>
+                 <span class="n">callback</span><span class="o">=</span><span class="k">lambda</span> <span class="n">val</span><span class="p">:</span> <span class="n">val</span><span class="o">.</span><span class="n">ncores</span><span class="o">*</span><span class="n">val</span><span class="o">.</span><span class="n">mem</span><span class="p">)</span>
+<span class="n">params</span><span class="o">.</span><span class="n">add_param</span><span class="p">(</span><span class="s1">&#39;config.ncores&#39;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">int</span><span class="p">)</span>
+<span class="n">params</span><span class="o">.</span><span class="n">add_param</span><span class="p">(</span><span class="s1">&#39;config.mem&#39;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">int</span><span class="p">)</span>
+
+<span class="n">parsed</span> <span class="o">=</span> <span class="n">params</span><span class="o">.</span><span class="n">parse</span><span class="p">([</span><span class="s1">&#39;--config.ncores&#39;</span><span class="p">,</span> <span class="s1">&#39;4&#39;</span><span class="p">,</span> <span class="s1">&#39;--config.mem&#39;</span><span class="p">,</span> <span class="s1">&#39;1024000&#39;</span><span class="p">])</span>
+<span class="c1"># parsed.config == 4 * 1024000</span>
+</code></pre></div>
+See <a href="../useTheValues/">Using the parsed values</a> for more details on how to use the namespace values attached to a namespace parameter.</p>
+</li>
+<li>
+<p>Modify value using other values</p>
+<div class="highlight"><pre><span></span><code><span class="n">params</span><span class="o">.</span><span class="n">add_param</span><span class="p">(</span><span class="s1">&#39;pool&#39;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">list</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;small&#39;</span><span class="p">,</span> <span class="s1">&#39;medium&#39;</span><span class="p">,</span> <span class="s1">&#39;large&#39;</span><span class="p">])</span>
+<span class="n">params</span><span class="o">.</span><span class="n">add_param</span><span class="p">(</span><span class="s1">&#39;choice&#39;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="s1">&#39;c&#39;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">choices</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">],</span>
+                 <span class="n">callback</span><span class="o">=</span><span class="k">lambda</span> <span class="n">val</span><span class="p">,</span> <span class="n">allvals</span><span class="p">:</span> <span class="n">allvals</span><span class="o">.</span><span class="n">pool</span><span class="p">[</span><span class="n">val</span><span class="p">])</span>
+<span class="n">parsed</span> <span class="o">=</span> <span class="n">params</span><span class="o">.</span><span class="n">parse</span><span class="p">([</span><span class="s1">&#39;--choice&#39;</span><span class="p">,</span> <span class="s1">&#39;1&#39;</span><span class="p">])</span>
+<span class="c1"># parsed.choice == &#39;medium&#39;</span>
+</code></pre></div>
+</li>
+</ul>
+<h3 id="parameter-reuse">Parameter reuse</h3>
+<p>Parameters can be reused once created. For example:
+<div class="highlight"><pre><span></span><code><span class="n">cmd1</span> <span class="o">=</span> <span class="n">params</span><span class="o">.</span><span class="n">add_command</span><span class="p">(</span><span class="s1">&#39;cmd1&#39;</span><span class="p">,</span> <span class="n">help_on_void</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="n">cmd2</span> <span class="o">=</span> <span class="n">params</span><span class="o">.</span><span class="n">add_command</span><span class="p">(</span><span class="s1">&#39;cmd2&#39;</span><span class="p">,</span> <span class="n">help_on_void</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="n">cmd3</span> <span class="o">=</span> <span class="n">params</span><span class="o">.</span><span class="n">add_command</span><span class="p">(</span><span class="s1">&#39;cmd3&#39;</span><span class="p">,</span> <span class="n">help_on_void</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="n">param1</span> <span class="o">=</span> <span class="n">cmd1</span><span class="o">.</span><span class="n">add_param</span><span class="p">(</span><span class="s1">&#39;i&#39;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+<span class="n">param2</span> <span class="o">=</span> <span class="n">cmd1</span><span class="o">.</span><span class="n">add_param</span><span class="p">(</span><span class="s1">&#39;l&#39;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">])</span>
+<span class="n">param3</span> <span class="o">=</span> <span class="n">cmd1</span><span class="o">.</span><span class="n">add_param</span><span class="p">(</span><span class="s1">&#39;c&#39;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="s1">&#39;ns&#39;</span><span class="p">)</span>
+<span class="n">param4</span> <span class="o">=</span> <span class="n">cmd1</span><span class="o">.</span><span class="n">add_param</span><span class="p">(</span><span class="s1">&#39;c.a&#39;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="p">[</span><span class="mi">8</span><span class="p">,</span> <span class="mi">9</span><span class="p">])</span>
+<span class="n">cmd2</span><span class="o">.</span><span class="n">add_param</span><span class="p">(</span><span class="n">param1</span><span class="p">)</span>
+<span class="n">cmd2</span><span class="o">.</span><span class="n">add_param</span><span class="p">(</span><span class="n">param2</span><span class="p">)</span>
+<span class="n">cmd2</span><span class="o">.</span><span class="n">add_param</span><span class="p">(</span><span class="n">param3</span><span class="p">)</span>
+<span class="n">cmd3</span><span class="o">.</span><span class="n">add_param</span><span class="p">(</span><span class="n">param4</span><span class="p">)</span>
+</code></pre></div></p>
+<p>The first argument of <code>add_param</code> can be a <code>Param</code> object. In such a case, other arguments will be ignored, except <code>force</code> and <code>group</code>.</p>
+<p>For namespace parameter, if it is reused, all of its decendents will be reused (copied), too. However, for a parameter under a namespace parameter, if it is reused independent, the namespace parameter will not will be copied. Instead, a new namespace will created for it. In the above case, <code>cmd3.params['c']is not param3</code>.</p>
+<p>You may also use the <code>ParamInt</code>, <code>ParamFloat</code> to initialize a parameter, and reuse them later. For example:</p>
+<div class="highlight"><pre><span></span><code><span class="kn">from</span> <span class="nn">pyparam</span> <span class="kn">import</span> <span class="n">Params</span>
+<span class="kn">from</span> <span class="nn">pyparam.param</span> <span class="kn">import</span> <span class="n">ParamInt</span>
+<span class="n">param</span> <span class="o">=</span> <span class="n">ParamInt</span><span class="p">([</span><span class="s1">&#39;i&#39;</span><span class="p">],</span> <span class="n">default</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+
+<span class="n">params</span> <span class="o">=</span> <span class="n">Params</span><span class="p">()</span>
+<span class="n">params</span><span class="o">.</span><span class="n">add_param</span><span class="p">(</span><span class="n">param</span><span class="p">)</span>
+<span class="n">params</span><span class="o">.</span><span class="n">add_command</span><span class="p">(</span><span class="s1">&#39;cmd&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">add_param</span><span class="p">(</span><span class="n">param</span><span class="p">)</span>
+</code></pre></div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>By passing a <code>Param</code> object to <code>add_param</code>, it will be automatically copied. You don't need to do:
+<div class="highlight"><pre><span></span><code><span class="n">params</span><span class="o">.</span><span class="n">add_param</span><span class="p">(</span><span class="n">param</span><span class="o">.</span><span class="n">copy</span><span class="p">())</span>
+</code></pre></div>
+Even though, we have <code>param.copy()</code> API public.</p>
+</div>
+<h3 id="help-parameter">Help parameter</h3>
+<p>Help parameter is defined when a command is defined by passing <code>help_keys</code> to <code>Params(...)</code>. After that, there is no way to modify it. For example, change the group of the help parameter in help page.</p>
+<p>To do that, you need to define a callback and pass it to <code>params.parse</code>.</p>
+<p>See <a href="../commands/#modifying-help-command">Modifying help command</a></p>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    <script id="__config" type="application/json">{"base": "..", "features": [], "search": "../assets/javascripts/workers/search.f886a092.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}}</script>
+    
+    
+      <script src="../assets/javascripts/bundle.d7c377c4.min.js"></script>
+      
+        <script src="../js/mkapi.js"></script>
+      
+    
+  </body>
+</html>

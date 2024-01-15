@@ -1,0 +1,2028 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+      
+      
+      
+      
+      
+      <link rel="icon" href="../../../favicon.png">
+      <meta name="generator" content="mkdocs-1.5.3, mkdocs-material-9.5.3">
+    
+    
+      
+        <title>pyparam.params - pyparam</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../../assets/stylesheets/main.50c56a3b.min.css">
+      
+        
+        <link rel="stylesheet" href="../../../assets/stylesheets/palette.06af60db.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="//use.fontawesome.com/releases/v5.8.1/css/all.css">
+    
+      <link rel="stylesheet" href="//use.fontawesome.com/releases/v5.8.1/css/v4-shims.css">
+    
+      <link rel="stylesheet" href="../../../css/mkapi-common.css">
+    
+      <link rel="stylesheet" href="../../../style.css">
+    
+    <script>__md_scope=new URL("../../..",location),__md_hash=e=>[...e].reduce((e,_)=>(e<<5)-e+_.charCodeAt(0),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+    
+  </head>
+  
+  
+    
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="blue-grey" data-md-color-accent="indigo">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#pyparamparams" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../../.." title="pyparam" class="md-header__button md-logo" aria-label="pyparam" data-md-component="logo">
+      
+  <img src="../../../favicon.png" alt="logo">
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3V6m0 5h18v2H3v-2m0 5h18v2H3v-2Z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            pyparam
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              pyparam.params
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+    
+    
+    
+    
+      <label class="md-header__button md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+      </label>
+      <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12Z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41Z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../../.." title="pyparam" class="md-nav__button md-logo" aria-label="pyparam" data-md-component="logo">
+      
+  <img src="../../../favicon.png" alt="logo">
+
+    </a>
+    pyparam
+  </label>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../.." class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Home
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../TypesOfParams/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Defining parameters
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../commands/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Commands
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../fromCommandline/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Parsing from command line
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../fromDict/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Loading from dict/config file
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../helpPage/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Help page
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../useTheValues/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Using the parsed values
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../shellCompletion/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Shell completion
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_9" >
+        
+          
+          <label class="md-nav__link" for="__nav_9" id="__nav_9_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    API
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_9_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_9">
+            <span class="md-nav__icon md-icon"></span>
+            API
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_9_1" >
+        
+          
+          <label class="md-nav__link" for="__nav_9_1" id="__nav_9_1_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    pyparam
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_9_1_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_9_1">
+            <span class="md-nav__icon md-icon"></span>
+            pyparam
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../pyparam/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    pyparam
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../pyparam.defaults/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    pyparam.defaults
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../pyparam.exceptions/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    pyparam.exceptions
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../pyparam.param/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    pyparam.param
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../pyparam.completer/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    pyparam.completer
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../pyparam.utils/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    pyparam.utils
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../pyparam.help/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    pyparam.help
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../pyparam.params/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    pyparam.params
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../changeLog.md" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Change log
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#pyparamparams" class="md-nav__link">
+    <span class="md-ellipsis">
+      pyparam.params
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+<div class="mkapi-node">
+<h1 id="" class="mkapi-object mkapi-object-code plain">
+<span class="mkapi-object-kind mkapi-object-kind-code">SOURCE CODE</span>
+<span class="mkapi-object-prefix">pyparam.</span><span class="mkapi-object-name">params</span>
+<span id="pyparam.params"></span><a class="mkapi-docs-link" href="../../pyparam.params">DOCS</a>
+</h1>
+
+<div class="mkapi-code">
+<div class="codehilite"><pre><span></span><code><span class="sd">&quot;&quot;&quot;Definition of Params&quot;&quot;&quot;</span>
+<span class="kn">import</span> <span class="nn">sys</span>
+<span class="kn">from</span> <span class="nn">os</span> <span class="kn">import</span> <span class="n">PathLike</span>
+<span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">TYPE_CHECKING</span><span class="p">,</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Callable</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">,</span> <span class="n">Type</span><span class="p">,</span> <span class="n">Union</span>
+
+<span class="kn">import</span> <span class="nn">rich</span>
+<span class="kn">from</span> <span class="nn">diot</span> <span class="kn">import</span> <span class="n">Diot</span><span class="p">,</span> <span class="n">OrderedDiot</span>
+<span class="kn">from</span> <span class="nn">simpleconf</span> <span class="kn">import</span> <span class="n">Config</span>
+
+<span class="kn">from</span> <span class="nn">.completer</span> <span class="kn">import</span> <span class="n">Completer</span>
+<span class="kn">from</span> <span class="nn">.defaults</span> <span class="kn">import</span> <span class="n">PARAM</span> <span class="k">as</span> <span class="n">PARAM_DEFAULT</span>
+<span class="kn">from</span> <span class="nn">.defaults</span> <span class="kn">import</span> <span class="n">PARAMS</span> <span class="k">as</span> <span class="n">PARAMS_DEFAULT</span>
+<span class="kn">from</span> <span class="nn">.defaults</span> <span class="kn">import</span> <span class="n">POSITIONAL</span>
+<span class="kn">from</span> <span class="nn">.exceptions</span> <span class="kn">import</span> <span class="n">PyParamNameError</span><span class="p">,</span> <span class="n">PyParamTypeError</span><span class="p">,</span> <span class="n">PyParamValueError</span>
+<span class="kn">from</span> <span class="nn">.help</span> <span class="kn">import</span> <span class="n">HelpAssembler</span><span class="p">,</span> <span class="n">ProgHighlighter</span>
+<span class="kn">from</span> <span class="nn">.param</span> <span class="kn">import</span> <span class="n">PARAM_MAPPINGS</span><span class="p">,</span> <span class="n">ParamNamespace</span>
+<span class="kn">from</span> <span class="nn">.utils</span> <span class="kn">import</span> <span class="p">(</span>
+    <span class="n">Namespace</span><span class="p">,</span>
+    <span class="n">always_list</span><span class="p">,</span>
+    <span class="n">logger</span><span class="p">,</span>
+    <span class="n">parse_potential_argument</span><span class="p">,</span>
+    <span class="n">parse_type</span><span class="p">,</span>
+    <span class="n">type_from_value</span><span class="p">,</span>
+<span class="p">)</span>
+
+<span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span>
+    <span class="kn">from</span> <span class="nn">.help</span> <span class="kn">import</span> <span class="n">Theme</span>
+    <span class="kn">from</span> <span class="nn">.param</span> <span class="kn">import</span> <span class="n">Param</span><span class="p">,</span> <span class="n">ParamPath</span>
+
+
+<span class="k">class</span> <span class="nc">Params</span><span class="p">(</span><span class="n">Completer</span><span class="p">):</span><span id="pyparam.params.Params"></span><a class="mkapi-docs-link" title="pyparam.params.Params" href="../../pyparam.params/#pyparam.params.Params">DOCS</a>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Params, served as root params or subcommands</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        names: The names of this command if served as a command</span>
+<span class="sd">        desc: The description of the command.</span>
+<span class="sd">            This will be finally compiled into a list if a string is given.</span>
+<span class="sd">            The difference is, when displayed on help page, the string will</span>
+<span class="sd">            be wrapped by textwrap automatically. However, each element in</span>
+<span class="sd">            a given list will not be wrapped.</span>
+<span class="sd">        prog: The program name</span>
+<span class="sd">        help_keys: The names to bring up the help information</span>
+<span class="sd">        help_cmds: The help command names to show help of other</span>
+<span class="sd">            subcommands</span>
+<span class="sd">        help_on_void: Whether to show help when no arguments provided</span>
+<span class="sd">        help_callback: A function to modify the help page</span>
+<span class="sd">        help_modifier: A callback function to modify the help param/command</span>
+<span class="sd">        prefix: The prefix for the arguments</span>
+<span class="sd">            (see attribute `Params.prefix`)</span>
+<span class="sd">        arbitrary: Whether to parse the command line arbitrarily</span>
+<span class="sd">        theme (str|rich.theme.Theme): The theme to render the help page</span>
+<span class="sd">        usage: Some example usages</span>
+
+<span class="sd">    Attributes:</span>
+<span class="sd">        desc: The description of the command.</span>
+<span class="sd">        prog: The program name. Default: `sys.argv[0]`</span>
+<span class="sd">        help_keys: The names to bring up the help information.</span>
+<span class="sd">        help_cmds: The names of help subcommands to bring up</span>
+<span class="sd">            help information of subcommands</span>
+<span class="sd">        help_on_void: Whether show help when there is not arguments</span>
+<span class="sd">            provided</span>
+<span class="sd">        usage: The usages of this program</span>
+<span class="sd">        prefix: The prefix for the arguments on command line</span>
+<span class="sd">            - `auto`: Automatically determine the prefix for each argument.</span>
+<span class="sd">                Basically, `-` for short options, and `--` for long.</span>
+<span class="sd">                Note that `-` for `-vvv` if `v` is a count option</span>
+<span class="sd">        arbitrary: Whether parsing the command line arbitrarily</span>
+<span class="sd">        theme (rich.theme.Theme|str): The theme for the help page</span>
+<span class="sd">        names: The names of the commands if this serves as sub-command</span>
+<span class="sd">        params: The ordered dict of registered parameters</span>
+<span class="sd">        commands: The ordered dict of registered commands</span>
+<span class="sd">        param_groups: The ordered dict of parameter groups</span>
+<span class="sd">        command_groups: The ordered dict of command groups</span>
+<span class="sd">        asssembler: The asssembler to assemble the help page</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">names</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">desc</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">prog</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">help_keys</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">help_cmds</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">help_on_void</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">help_callback</span><span class="p">:</span> <span class="n">Callable</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">help_modifier</span><span class="p">:</span> <span class="n">Callable</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">fullopt_keys</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">prefix</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;auto&quot;</span><span class="p">,</span>
+        <span class="n">arbitrary</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="n">theme</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="s2">&quot;Theme&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;default&quot;</span><span class="p">,</span>
+        <span class="n">usage</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">names</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">always_list</span><span class="p">(</span><span class="n">names</span><span class="p">)</span> <span class="k">if</span> <span class="n">names</span> <span class="k">else</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">desc</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="n">PARAMS_DEFAULT</span><span class="o">.</span><span class="n">desc</span>
+            <span class="k">if</span> <span class="n">desc</span> <span class="ow">is</span> <span class="kc">None</span>
+            <span class="k">else</span> <span class="n">always_list</span><span class="p">(</span><span class="n">desc</span><span class="p">,</span> <span class="n">strip</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">split</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_prog</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span><span class="o">.</span><span class="n">name</span> <span class="k">if</span> <span class="n">prog</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">prog</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">help_keys</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="n">PARAMS_DEFAULT</span><span class="o">.</span><span class="n">help_keys</span>
+            <span class="k">if</span> <span class="n">help_keys</span> <span class="ow">is</span> <span class="kc">None</span>
+            <span class="k">else</span> <span class="n">always_list</span><span class="p">(</span><span class="n">help_keys</span><span class="p">)</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">fullopt_keys</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="n">PARAMS_DEFAULT</span><span class="o">.</span><span class="n">fullopt_keys</span>
+            <span class="k">if</span> <span class="n">fullopt_keys</span> <span class="ow">is</span> <span class="kc">None</span>
+            <span class="k">else</span> <span class="n">always_list</span><span class="p">(</span><span class="n">fullopt_keys</span><span class="p">)</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">help_cmds</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="n">PARAMS_DEFAULT</span><span class="o">.</span><span class="n">help_cmds</span>
+            <span class="k">if</span> <span class="n">help_cmds</span> <span class="ow">is</span> <span class="kc">None</span>
+            <span class="k">else</span> <span class="n">always_list</span><span class="p">(</span><span class="n">help_cmds</span><span class="p">)</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">help_on_void</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="n">PARAMS_DEFAULT</span><span class="o">.</span><span class="n">help_on_void</span>
+            <span class="k">if</span> <span class="n">help_on_void</span> <span class="ow">is</span> <span class="kc">None</span>
+            <span class="k">else</span> <span class="n">help_on_void</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">usage</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="kc">None</span>
+            <span class="k">if</span> <span class="n">usage</span> <span class="ow">is</span> <span class="kc">None</span>
+            <span class="k">else</span> <span class="n">always_list</span><span class="p">(</span><span class="n">usage</span><span class="p">,</span> <span class="n">strip</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">split</span><span class="o">=</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">prefix</span> <span class="o">=</span> <span class="n">prefix</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">arbitrary</span> <span class="o">=</span> <span class="n">arbitrary</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">theme</span> <span class="o">=</span> <span class="n">theme</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">params</span> <span class="o">=</span> <span class="n">OrderedDiot</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">commands</span> <span class="o">=</span> <span class="n">OrderedDiot</span><span class="p">()</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">param_groups</span> <span class="o">=</span> <span class="n">OrderedDiot</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">command_groups</span> <span class="o">=</span> <span class="n">OrderedDiot</span><span class="p">()</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">help_modifier</span> <span class="o">=</span> <span class="n">help_modifier</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">assembler</span> <span class="o">=</span> <span class="n">HelpAssembler</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">prog</span><span class="p">,</span> <span class="n">theme</span><span class="p">,</span> <span class="n">help_callback</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">has_hidden</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+
+    <span class="nd">@property</span><span id="pyparam.params.Params.prog"></span><a class="mkapi-docs-link" title="pyparam.params.Params.prog" href="../../pyparam.params/#pyparam.params.Params.prog">DOCS</a>
+    <span class="k">def</span> <span class="nf">prog</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get the program name&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_prog</span>
+
+    <span class="nd">@prog</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">prog</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Set the program name and update the help assembler</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            value: The new program name</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_prog</span> <span class="o">=</span> <span class="n">value</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assembler</span><span class="o">.</span><span class="n">console</span><span class="o">.</span><span class="n">meta</span><span class="o">.</span><span class="n">prog</span> <span class="o">=</span> <span class="n">value</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assembler</span><span class="o">.</span><span class="n">console</span><span class="o">.</span><span class="n">meta</span><span class="o">.</span><span class="n">highlighters</span><span class="o">.</span><span class="n">prog</span> <span class="o">=</span> <span class="n">ProgHighlighter</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">name</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">which</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;short&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span><span id="pyparam.params.Params.name"></span><a class="mkapi-docs-link" title="pyparam.params.Params.name" href="../../pyparam.params/#pyparam.params.Params.name">DOCS</a>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get the shortest/longest name of the parameter</span>
+
+<span class="sd">        A name is ensured to be returned. It does not mean it is the real</span>
+<span class="sd">        short/long name, but just the shortest/longest name among all the names</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            which: Whether get the shortest or longest name</span>
+<span class="sd">                Could use `short` or `long` for short.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            The shortest/longest name of the parameter</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">names</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">None</span>
+        <span class="k">return</span> <span class="nb">list</span><span class="p">(</span><span class="nb">sorted</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">names</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="nb">len</span><span class="p">))[</span><span class="mi">0</span> <span class="k">if</span> <span class="s2">&quot;short&quot;</span> <span class="ow">in</span> <span class="n">which</span> <span class="k">else</span> <span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+
+    <span class="k">def</span> <span class="nf">namestr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sep</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;, &quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span><span id="pyparam.params.Params.namestr"></span><a class="mkapi-docs-link" title="pyparam.params.Params.namestr" href="../../pyparam.params/#pyparam.params.Params.namestr">DOCS</a>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get all names connected with a separator.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            sep: The separator to connect the names</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            the connected names</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">sep</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="nb">sorted</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">names</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="nb">len</span><span class="p">))</span>
+
+    <span class="k">def</span> <span class="nf">get_param</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;Param&quot;</span><span class="p">:</span><span id="pyparam.params.Params.get_param"></span><a class="mkapi-docs-link" title="pyparam.params.Params.get_param" href="../../pyparam.params/#pyparam.params.Params.get_param">DOCS</a>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get the parameter by name</span>
+
+<span class="sd">        If the parameter is under a namespace, try to get it via the namespace</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            name: The name of the parameter to get (without prefix)</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            The parameter, None if failed</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">name</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">None</span>
+        <span class="k">if</span> <span class="s2">&quot;.&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">name</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
+
+        <span class="n">ns_param</span><span class="p">:</span> <span class="s2">&quot;ParamNamespace&quot;</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">name</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;.&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)[</span><span class="mi">0</span><span class="p">])</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">ns_param</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">None</span>
+        <span class="n">ret</span> <span class="o">=</span> <span class="n">ns_param</span><span class="o">.</span><span class="n">get_param</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
+        <span class="k">return</span> <span class="kc">None</span> <span class="k">if</span> <span class="n">ret</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">name</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">ret</span><span class="o">.</span><span class="n">names</span> <span class="k">else</span> <span class="n">ret</span>
+
+    <span class="k">def</span> <span class="nf">get_command</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;Params&quot;</span><span class="p">:</span><span id="pyparam.params.Params.get_command"></span><a class="mkapi-docs-link" title="pyparam.params.Params.get_command" href="../../pyparam.params/#pyparam.params.Params.get_command">DOCS</a>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get the command object</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            name: The name of the command to get</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            The command object, None if failed.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">commands</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_set_param</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">param</span><span class="p">:</span> <span class="s2">&quot;Param&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Set the parameter</span>
+
+<span class="sd">        When a paraemeter&#39;s type is overwritten, we need to replace it with</span>
+<span class="sd">        the new one in the pool (either self.params or the namespace parameter</span>
+<span class="sd">        that holds it).</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">param</span><span class="o">.</span><span class="n">namespaces</span><span class="p">(</span><span class="mi">0</span><span class="p">):</span>
+            <span class="n">param</span><span class="o">.</span><span class="n">ns_param</span><span class="o">.</span><span class="n">push</span><span class="p">(</span><span class="n">param</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">param</span><span class="o">.</span><span class="n">names</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="p">[</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">param</span>
+
+    <span class="k">def</span> <span class="nf">add_param</span><span class="p">(</span><span id="pyparam.params.Params.add_param"></span><a class="mkapi-docs-link" title="pyparam.params.Params.add_param" href="../../pyparam.params/#pyparam.params.Params.add_param">DOCS</a>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">names</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="s2">&quot;Param&quot;</span><span class="p">],</span>
+        <span class="n">default</span><span class="p">:</span> <span class="n">Any</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="nb">type</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Type</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">desc</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">show</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">required</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">callback</span><span class="p">:</span> <span class="n">Callable</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">group</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">force</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="n">type_frozen</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">argname_shorten</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">complete_callback</span><span class="p">:</span> <span class="n">Callable</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;Param&quot;</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Add an argument</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            names: names of the argument or a parameter defined somewhere else</span>
+<span class="sd">                For example, in case we want to reuse a parameter</span>
+<span class="sd">                ```python</span>
+<span class="sd">                param = cmd1.add_param(&#39;n,name&#39;)</span>
+<span class="sd">                # reuse it:</span>
+<span class="sd">                cmd2.add_param(param)</span>
+<span class="sd">                # other arguments will be ignored, except force</span>
+<span class="sd">                ```</span>
+
+<span class="sd">            default: The default value for the argument</span>
+<span class="sd">            type: The type of the argument</span>
+<span class="sd">                Including single value type and complex one</span>
+<span class="sd">                - Single value types:</span>
+<span class="sd">                    auto, int, str, float, bool, count, py, json, reset</span>
+<span class="sd">                - Complex value types:</span>
+<span class="sd">                    list[&lt;single value type&gt;], ns</span>
+<span class="sd">            desc: The description of the argument</span>
+<span class="sd">                This will be finally compiled into a list if a string is given.</span>
+<span class="sd">                The difference is, when displayed on help page, the string will</span>
+<span class="sd">                be wrapped by textwrap automatically. However, each element in</span>
+<span class="sd">                a given list will not be wrapped.</span>
+<span class="sd">            show: Whether this should be shown on help page.</span>
+<span class="sd">            required: Whether this argument is required from</span>
+<span class="sd">                the command line</span>
+<span class="sd">            callback: Callback to convert parsed values</span>
+<span class="sd">            group: The group this parameter belongs to.</span>
+<span class="sd">                Arguments will be grouped by this on the help page.</span>
+<span class="sd">            force: Whether to force adding parameter if it exists</span>
+<span class="sd">            type_frozen: Whether allow type overwritting from</span>
+<span class="sd">                the commone line</span>
+<span class="sd">            argname_shorten: Whether show shortened name for parameter</span>
+<span class="sd">                under namespace parameter</span>
+<span class="sd">            complete_callback: The callback for complete the values of the</span>
+<span class="sd">                parameter</span>
+<span class="sd">            **kwargs: Additional keyword arguments</span>
+
+<span class="sd">        Raises:</span>
+<span class="sd">            PyParamNameError: When parameter exists and force is false</span>
+
+<span class="sd">        Return:</span>
+<span class="sd">            Param: The added parameter</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">names</span><span class="p">,</span> <span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="nb">list</span><span class="p">)):</span>
+            <span class="n">names</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">always_list</span><span class="p">(</span><span class="n">names</span><span class="p">)</span>
+            <span class="k">if</span> <span class="nb">type</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">POSITIONAL</span> <span class="ow">in</span> <span class="n">names</span> <span class="ow">and</span> <span class="n">default</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                    <span class="nb">type</span> <span class="o">=</span> <span class="s2">&quot;list&quot;</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="nb">type</span> <span class="o">=</span> <span class="n">type_from_value</span><span class="p">(</span><span class="n">default</span><span class="p">)</span>
+
+            <span class="n">maintype</span><span class="p">,</span> <span class="n">subtype</span> <span class="o">=</span> <span class="n">parse_type</span><span class="p">(</span>
+                <span class="nb">type</span><span class="o">.</span><span class="vm">__name__</span>
+                <span class="k">if</span> <span class="nb">callable</span><span class="p">(</span><span class="nb">type</span><span class="p">)</span>
+                <span class="k">else</span> <span class="n">PARAM_DEFAULT</span><span class="o">.</span><span class="n">type</span>
+                <span class="k">if</span> <span class="nb">type</span> <span class="ow">is</span> <span class="kc">None</span>
+                <span class="k">else</span> <span class="nb">type</span>
+            <span class="p">)</span>
+            <span class="n">show</span> <span class="o">=</span> <span class="n">PARAM_DEFAULT</span><span class="o">.</span><span class="n">show</span> <span class="k">if</span> <span class="n">show</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">show</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">show</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">has_hidden</span> <span class="o">=</span> <span class="kc">True</span>
+
+            <span class="n">param</span> <span class="o">=</span> <span class="n">PARAM_MAPPINGS</span><span class="p">[</span><span class="n">maintype</span><span class="p">](</span>  <span class="c1"># type: ignore</span>
+                <span class="n">names</span><span class="o">=</span><span class="n">names</span><span class="p">,</span>
+                <span class="n">default</span><span class="o">=</span><span class="n">PARAM_DEFAULT</span><span class="o">.</span><span class="n">default</span> <span class="k">if</span> <span class="n">default</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">default</span><span class="p">,</span>
+                <span class="n">desc</span><span class="o">=</span><span class="n">PARAM_DEFAULT</span><span class="o">.</span><span class="n">desc</span>
+                <span class="k">if</span> <span class="n">desc</span> <span class="ow">is</span> <span class="kc">None</span>
+                <span class="k">else</span> <span class="n">always_list</span><span class="p">(</span><span class="n">desc</span><span class="p">,</span> <span class="n">strip</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">split</span><span class="o">=</span><span class="kc">False</span><span class="p">),</span>
+                <span class="n">prefix</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">prefix</span><span class="p">,</span>
+                <span class="n">show</span><span class="o">=</span><span class="n">show</span><span class="p">,</span>
+                <span class="n">required</span><span class="o">=</span><span class="p">(</span>
+                    <span class="n">PARAM_DEFAULT</span><span class="o">.</span><span class="n">required</span> <span class="k">if</span> <span class="n">required</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">required</span>
+                <span class="p">),</span>
+                <span class="n">subtype</span><span class="o">=</span><span class="n">subtype</span><span class="p">,</span>
+                <span class="n">type_frozen</span><span class="o">=</span><span class="p">(</span>
+                    <span class="n">PARAM_DEFAULT</span><span class="o">.</span><span class="n">type_frozen</span>
+                    <span class="k">if</span> <span class="n">type_frozen</span> <span class="ow">is</span> <span class="kc">None</span>
+                    <span class="k">else</span> <span class="n">type_frozen</span>
+                <span class="p">),</span>
+                <span class="n">callback</span><span class="o">=</span><span class="n">callback</span><span class="p">,</span>
+                <span class="n">argname_shorten</span><span class="o">=</span><span class="p">(</span>
+                    <span class="n">PARAM_DEFAULT</span><span class="o">.</span><span class="n">argname_shorten</span>
+                    <span class="k">if</span> <span class="n">argname_shorten</span> <span class="ow">is</span> <span class="kc">None</span>
+                    <span class="k">else</span> <span class="n">argname_shorten</span>
+                <span class="p">),</span>
+                <span class="n">complete_callback</span><span class="o">=</span><span class="n">complete_callback</span><span class="p">,</span>
+                <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
+            <span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">param</span> <span class="o">=</span> <span class="n">names</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+
+        <span class="k">if</span> <span class="nb">any</span><span class="p">(</span><span class="n">name</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">help_keys</span> <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">param</span><span class="o">.</span><span class="n">names</span><span class="p">):</span>
+            <span class="n">param</span><span class="o">.</span><span class="n">is_help</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="k">if</span> <span class="nb">any</span><span class="p">(</span><span class="n">name</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">fullopt_keys</span> <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">param</span><span class="o">.</span><span class="n">names</span><span class="p">):</span>
+            <span class="n">param</span><span class="o">.</span><span class="n">is_help</span> <span class="o">=</span> <span class="n">param</span><span class="o">.</span><span class="n">is_full</span> <span class="o">=</span> <span class="kc">True</span>
+
+        <span class="k">if</span> <span class="n">param</span><span class="o">.</span><span class="n">namespaces</span><span class="p">(</span><span class="mi">0</span><span class="p">):</span>
+            <span class="c1"># add namespace parameter automatically</span>
+            <span class="k">if</span> <span class="n">param</span><span class="o">.</span><span class="n">namespaces</span><span class="p">(</span><span class="mi">0</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="p">:</span>  <span class="c1"># type: ignore</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">add_param</span><span class="p">(</span><span class="n">param</span><span class="o">.</span><span class="n">namespaces</span><span class="p">(</span><span class="mi">0</span><span class="p">),</span> <span class="nb">type</span><span class="o">=</span><span class="s2">&quot;ns&quot;</span><span class="p">)</span>  <span class="c1"># type: ignore</span>
+
+            <span class="n">ns_param</span><span class="p">:</span> <span class="s2">&quot;ParamNamespace&quot;</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="p">[</span>
+                <span class="n">param</span><span class="o">.</span><span class="n">namespaces</span><span class="p">(</span><span class="mi">0</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="p">]</span>  <span class="c1"># type: ignore</span>
+            <span class="n">ns_param</span><span class="o">.</span><span class="n">push</span><span class="p">(</span><span class="n">param</span><span class="p">)</span>
+
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">param</span><span class="o">.</span><span class="n">names</span><span class="p">:</span>
+                <span class="c1"># check if parameter has been added</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="n">force</span> <span class="ow">and</span> <span class="p">(</span>
+                    <span class="p">(</span><span class="n">name</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">params</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="p">[</span><span class="n">name</span><span class="p">]</span> <span class="ow">is</span> <span class="ow">not</span> <span class="n">param</span><span class="p">)</span>
+                    <span class="ow">or</span> <span class="n">name</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">commands</span>
+                <span class="p">):</span>
+                    <span class="k">raise</span> <span class="n">PyParamNameError</span><span class="p">(</span>
+                        <span class="sa">f</span><span class="s2">&quot;Argument </span><span class="si">{</span><span class="n">name</span><span class="si">!r}</span><span class="s2"> has already been added.&quot;</span>
+                    <span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="p">[</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">param</span>
+
+        <span class="n">group</span> <span class="o">=</span> <span class="n">group</span> <span class="ow">or</span> <span class="n">param</span><span class="o">.</span><span class="n">default_group</span>
+        <span class="c1"># leave the parameters here under namespace to have flexibility</span>
+        <span class="c1"># assigning different groups</span>
+        <span class="n">groups</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="s2">&quot;Param&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">param_groups</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="n">group</span><span class="p">,</span> <span class="p">[])</span>
+
+        <span class="c1"># any parameter with param.names hasn&#39;t been added</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">any</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">param</span><span class="o">.</span><span class="n">names</span><span class="p">)</span> <span class="o">&amp;</span> <span class="nb">set</span><span class="p">(</span><span class="n">prm</span><span class="o">.</span><span class="n">names</span><span class="p">)</span> <span class="k">for</span> <span class="n">prm</span> <span class="ow">in</span> <span class="n">groups</span><span class="p">):</span>
+            <span class="n">groups</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">param</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">param</span>
+
+    <span class="k">def</span> <span class="nf">add_command</span><span class="p">(</span><span id="pyparam.params.Params.add_command"></span><a class="mkapi-docs-link" title="pyparam.params.Params.add_command" href="../../pyparam.params/#pyparam.params.Params.add_command">DOCS</a>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">names</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="s2">&quot;Params&quot;</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]],</span>
+        <span class="n">desc</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="s2">&quot;No description&quot;</span><span class="p">,</span>
+        <span class="n">help_keys</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="s2">&quot;__inherit__&quot;</span><span class="p">,</span>
+        <span class="n">help_cmds</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="s2">&quot;__inherit__&quot;</span><span class="p">,</span>
+        <span class="n">help_on_void</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;__inherit__&quot;</span><span class="p">,</span>
+        <span class="n">help_callback</span><span class="p">:</span> <span class="n">Callable</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">help_modifier</span><span class="p">:</span> <span class="n">Callable</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">prefix</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;__inherit__&quot;</span><span class="p">,</span>
+        <span class="n">arbitrary</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;__inherit__&quot;</span><span class="p">,</span>
+        <span class="n">theme</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">rich</span><span class="o">.</span><span class="n">theme</span><span class="o">.</span><span class="n">Theme</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;__inherit__&quot;</span><span class="p">,</span>
+        <span class="n">usage</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">group</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">force</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;Params&quot;</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Add a sub-command</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            names: list of names of this command</span>
+<span class="sd">                It can also be a Params object that served as a subcommand</span>
+<span class="sd">            desc: description of this command</span>
+<span class="sd">            help_keys: help key for bring up help for this command</span>
+<span class="sd">            help_cmds: help command for printing help for other</span>
+<span class="sd">                sub-commands of this command</span>
+<span class="sd">            help_on_void: whether printing help when no arguments passed</span>
+<span class="sd">            help_callback: callback to manipulate help page</span>
+<span class="sd">            prefix: prefix for arguments for this command</span>
+<span class="sd">            arbitray: whether do arbitray Parsing</span>
+<span class="sd">            theme: The theme of help page for this command</span>
+<span class="sd">            usage: Usage for this command</span>
+<span class="sd">            group: Group of this command</span>
+<span class="sd">            force: Force adding when command exists already.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            The added command</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">command</span><span class="p">:</span> <span class="s2">&quot;Params&quot;</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">names</span><span class="p">,</span> <span class="n">Params</span><span class="p">):</span>
+            <span class="n">command</span> <span class="o">=</span> <span class="n">names</span>
+            <span class="n">command</span><span class="o">.</span><span class="n">prog</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">prog</span><span class="si">}{</span><span class="s1">&#39; [OPTIONS]&#39;</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="s1">&#39;&#39;</span><span class="si">}</span><span class="s2"> &quot;</span>
+                <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">command</span><span class="o">.</span><span class="n">name</span><span class="p">(</span><span class="s1">&#39;long&#39;</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">names</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">always_list</span><span class="p">(</span><span class="n">names</span><span class="p">)</span>
+            <span class="n">command</span><span class="p">:</span> <span class="s2">&quot;Params&quot;</span> <span class="o">=</span> <span class="n">Params</span><span class="p">(</span>
+                <span class="n">desc</span><span class="o">=</span><span class="n">desc</span><span class="p">,</span>
+                <span class="n">prog</span><span class="o">=</span><span class="p">(</span>
+                    <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">prog</span><span class="si">}{</span><span class="s1">&#39; [OPTIONS]&#39;</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="s1">&#39;&#39;</span><span class="si">}</span><span class="s2"> &quot;</span>
+                    <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="nb">sorted</span><span class="p">(</span><span class="n">names</span><span class="p">,</span><span class="w"> </span><span class="n">key</span><span class="o">=</span><span class="nb">len</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span>
+                <span class="p">),</span>
+                <span class="n">help_keys</span><span class="o">=</span><span class="p">(</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">help_keys</span> <span class="k">if</span> <span class="n">help_keys</span> <span class="o">==</span> <span class="s2">&quot;__inherit__&quot;</span> <span class="k">else</span> <span class="n">help_keys</span>
+                <span class="p">),</span>
+                <span class="n">help_cmds</span><span class="o">=</span><span class="p">(</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">help_cmds</span> <span class="k">if</span> <span class="n">help_cmds</span> <span class="o">==</span> <span class="s2">&quot;__inherit__&quot;</span> <span class="k">else</span> <span class="n">help_cmds</span>
+                <span class="p">),</span>
+                <span class="n">help_on_void</span><span class="o">=</span><span class="p">(</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">help_on_void</span>
+                    <span class="k">if</span> <span class="n">help_on_void</span> <span class="o">==</span> <span class="s2">&quot;__inherit__&quot;</span>
+                    <span class="k">else</span> <span class="n">help_on_void</span>
+                <span class="p">),</span>
+                <span class="n">help_callback</span><span class="o">=</span><span class="n">help_callback</span><span class="p">,</span>
+                <span class="n">help_modifier</span><span class="o">=</span><span class="n">help_modifier</span><span class="p">,</span>
+                <span class="n">prefix</span><span class="o">=</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">prefix</span> <span class="k">if</span> <span class="n">prefix</span> <span class="o">==</span> <span class="s2">&quot;__inherit__&quot;</span> <span class="k">else</span> <span class="n">prefix</span><span class="p">),</span>
+                <span class="n">arbitrary</span><span class="o">=</span><span class="p">(</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">arbitrary</span> <span class="k">if</span> <span class="n">arbitrary</span> <span class="o">==</span> <span class="s2">&quot;__inherit__&quot;</span> <span class="k">else</span> <span class="n">arbitrary</span>
+                <span class="p">),</span>
+                <span class="n">theme</span><span class="o">=</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">theme</span> <span class="k">if</span> <span class="n">theme</span> <span class="o">==</span> <span class="s2">&quot;__inherit__&quot;</span> <span class="k">else</span> <span class="n">theme</span><span class="p">),</span>
+                <span class="n">usage</span><span class="o">=</span><span class="n">usage</span><span class="p">,</span>
+                <span class="n">names</span><span class="o">=</span><span class="n">names</span><span class="p">,</span>
+            <span class="p">)</span>
+        <span class="k">for</span> <span class="n">cmd</span> <span class="ow">in</span> <span class="n">command</span><span class="o">.</span><span class="n">names</span><span class="p">:</span>
+            <span class="c1"># check if command has been added</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">force</span> <span class="ow">and</span> <span class="p">(</span><span class="n">cmd</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">params</span> <span class="ow">or</span> <span class="n">cmd</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">commands</span><span class="p">):</span>
+                <span class="k">raise</span> <span class="n">PyParamNameError</span><span class="p">(</span>
+                    <span class="sa">f</span><span class="s2">&quot;Command </span><span class="si">{</span><span class="n">cmd</span><span class="si">!r}</span><span class="s2"> has already been added.&quot;</span>
+                <span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">commands</span><span class="p">[</span><span class="n">cmd</span><span class="p">]</span> <span class="o">=</span> <span class="n">command</span>
+
+        <span class="n">group</span> <span class="o">=</span> <span class="n">group</span> <span class="ow">or</span> <span class="s2">&quot;COMMANDS&quot;</span>
+        <span class="n">groups</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="s2">&quot;Params&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">command_groups</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="n">group</span><span class="p">,</span> <span class="p">[])</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">any</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">command</span><span class="o">.</span><span class="n">names</span><span class="p">)</span> <span class="o">&amp;</span> <span class="nb">set</span><span class="p">(</span><span class="n">cmd</span><span class="o">.</span><span class="n">names</span><span class="p">)</span> <span class="k">for</span> <span class="n">cmd</span> <span class="ow">in</span> <span class="n">groups</span><span class="p">):</span>
+            <span class="n">groups</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">command</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">command</span>
+
+    <span class="k">def</span> <span class="nf">print_help</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">exit_code</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span> <span class="n">full</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span><span id="pyparam.params.Params.print_help"></span><a class="mkapi-docs-link" title="pyparam.params.Params.print_help" href="../../pyparam.params/#pyparam.params.Params.print_help">DOCS</a>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Print the help information and exit</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            exit_code: The exit code or False to not exit</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assembler</span><span class="o">.</span><span class="n">assemble</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">full</span><span class="o">=</span><span class="n">full</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assembler</span><span class="o">.</span><span class="n">printout</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">exit_code</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">False</span><span class="p">:</span>
+            <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">(</span><span class="n">exit_code</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">values</span><span class="p">(</span><span id="pyparam.params.Params.values"></span><a class="mkapi-docs-link" title="pyparam.params.Params.values" href="../../pyparam.params/#pyparam.params.Params.values">DOCS</a>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">namespace</span><span class="p">:</span> <span class="n">Namespace</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">ignore_errors</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Namespace</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get a namespace of all parameter name =&gt; value pairs or attach them</span>
+<span class="sd">        to the given namespace</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            namespace: The namespace for the values to attach to.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            the namespace with values of all parameter</span>
+<span class="sd">                name-value pairs</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">ns_no_callback</span><span class="p">:</span> <span class="n">Namespace</span> <span class="o">=</span> <span class="n">Namespace</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">param_name</span><span class="p">,</span> <span class="n">param</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="k">if</span> <span class="n">param</span><span class="o">.</span><span class="n">is_help</span> <span class="ow">or</span> <span class="n">param_name</span> <span class="ow">in</span> <span class="n">ns_no_callback</span><span class="p">:</span>
+                <span class="k">continue</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">value</span><span class="p">:</span> <span class="n">Any</span> <span class="o">=</span> <span class="n">param</span><span class="o">.</span><span class="n">value</span>
+            <span class="k">except</span> <span class="p">(</span><span class="n">PyParamTypeError</span><span class="p">,</span> <span class="n">PyParamValueError</span><span class="p">)</span> <span class="k">as</span> <span class="n">pve</span><span class="p">:</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="n">ignore_errors</span><span class="p">:</span>
+                    <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%r</span><span class="s2">: </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">param</span><span class="o">.</span><span class="n">namestr</span><span class="p">(),</span> <span class="n">pve</span><span class="p">)</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">print_help</span><span class="p">()</span>
+            <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>  <span class="c1"># pragma: no cover</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="n">ignore_errors</span><span class="p">:</span>
+                    <span class="k">raise</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">param</span><span class="o">.</span><span class="n">names</span><span class="p">:</span>
+                    <span class="n">ns_no_callback</span><span class="p">[</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">value</span>
+
+        <span class="k">if</span> <span class="n">namespace</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">namespace</span> <span class="o">=</span> <span class="n">Namespace</span><span class="p">()</span>
+
+        <span class="k">for</span> <span class="n">param_name</span><span class="p">,</span> <span class="n">param</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="k">if</span> <span class="n">param</span><span class="o">.</span><span class="n">is_help</span> <span class="ow">or</span> <span class="n">param_name</span> <span class="ow">in</span> <span class="n">namespace</span><span class="p">:</span>
+                <span class="k">continue</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">value</span><span class="p">:</span> <span class="n">Any</span> <span class="o">=</span> <span class="n">param</span><span class="o">.</span><span class="n">apply_callback</span><span class="p">(</span><span class="n">ns_no_callback</span><span class="p">)</span>
+            <span class="k">except</span> <span class="p">(</span><span class="n">PyParamTypeError</span><span class="p">,</span> <span class="n">PyParamValueError</span><span class="p">)</span> <span class="k">as</span> <span class="n">pte</span><span class="p">:</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="n">ignore_errors</span><span class="p">:</span>  <span class="c1"># pragma: no cover</span>
+                    <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%r</span><span class="s2">: </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">param</span><span class="o">.</span><span class="n">namestr</span><span class="p">(),</span> <span class="n">pte</span><span class="p">)</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">print_help</span><span class="p">()</span>
+            <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="n">ignore_errors</span><span class="p">:</span>
+                    <span class="k">raise</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">param</span><span class="o">.</span><span class="n">names</span><span class="p">:</span>
+                    <span class="nb">setattr</span><span class="p">(</span><span class="n">namespace</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">namespace</span>
+
+    <span class="k">def</span> <span class="nf">parse</span><span class="p">(</span><span id="pyparam.params.Params.parse"></span><a class="mkapi-docs-link" title="pyparam.params.Params.parse" href="../../pyparam.params/#pyparam.params.Params.parse">DOCS</a>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">args</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">ignore_errors</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Namespace</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Parse the arguments from the command line</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            args: The arguments to parse</span>
+<span class="sd">            ignore_errors: Whether to ignore errors.</span>
+<span class="sd">                This is helpful to check a specific option or command,</span>
+<span class="sd">                but ignore errors, such as required options not provided.</span>
+
+<span class="sd">        Return:</span>
+<span class="sd">            Namespace: The namespace of parsed arguments</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># add help options here so that user can disable or</span>
+        <span class="c1"># change it before parsing</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">add_param</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">help_keys</span><span class="p">,</span>
+            <span class="nb">type</span><span class="o">=</span><span class="s2">&quot;bool&quot;</span><span class="p">,</span>
+            <span class="n">desc</span><span class="o">=</span><span class="s2">&quot;Print help information for this command&quot;</span><span class="p">,</span>
+            <span class="n">force</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">has_hidden</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">add_param</span><span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">fullopt_keys</span><span class="p">,</span>
+                <span class="nb">type</span><span class="o">=</span><span class="s2">&quot;bool&quot;</span><span class="p">,</span>
+                <span class="n">desc</span><span class="o">=</span><span class="s2">&quot;Show full options for this command&quot;</span><span class="p">,</span>
+                <span class="n">force</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+            <span class="p">)</span>
+
+        <span class="n">help_cmd</span><span class="p">:</span> <span class="s2">&quot;Params&quot;</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">commands</span><span class="p">:</span>
+            <span class="n">help_cmd</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">add_command</span><span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">help_cmds</span><span class="p">,</span> <span class="n">desc</span><span class="o">=</span><span class="s2">&quot;Print help of sub-commands&quot;</span><span class="p">,</span> <span class="n">force</span><span class="o">=</span><span class="kc">True</span>
+            <span class="p">)</span>
+            <span class="n">help_cmd</span><span class="o">.</span><span class="n">add_param</span><span class="p">(</span>
+                <span class="n">POSITIONAL</span><span class="p">,</span>
+                <span class="nb">type</span><span class="o">=</span><span class="s2">&quot;choice&quot;</span><span class="p">,</span>
+                <span class="n">default</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span>
+                <span class="n">desc</span><span class="o">=</span><span class="p">(</span>
+                    <span class="s2">&quot;Command name to print help for. &quot;</span>
+                    <span class="s2">&quot;Available commands are: </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                        <span class="s2">&quot;, &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
+                            <span class="n">cmd</span>
+                            <span class="k">for</span> <span class="n">cmd</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">commands</span>
+                            <span class="k">if</span> <span class="n">cmd</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">help_cmds</span>
+                        <span class="p">)</span>
+                    <span class="p">)</span>
+                <span class="p">),</span>
+                <span class="n">choices</span><span class="o">=</span><span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">commands</span><span class="p">),</span>
+            <span class="p">)</span>
+
+        <span class="k">if</span> <span class="nb">callable</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">help_modifier</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">help_modifier</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">get_param</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">help_keys</span><span class="p">[</span><span class="mi">0</span><span class="p">]),</span> <span class="n">help_cmd</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">args</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="c1"># enable completion only when we are trying to parse sys.argv</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">comp_shell</span><span class="p">:</span>
+                <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">complete</span><span class="p">()))</span>
+                <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+            <span class="n">args</span> <span class="o">=</span> <span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">args</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">help_on_void</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">print_help</span><span class="p">()</span>
+
+        <span class="n">namespace</span><span class="p">:</span> <span class="n">Namespace</span> <span class="o">=</span> <span class="n">Namespace</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_parse</span><span class="p">(</span><span class="n">args</span><span class="p">,</span> <span class="n">namespace</span><span class="p">,</span> <span class="n">ignore_errors</span><span class="p">)</span>
+
+        <span class="c1"># # Allow command to be not provided.</span>
+        <span class="c1"># if self.commands and not namespace.__command__:</span>
+        <span class="c1">#     logger.error(&#39;No command given.&#39;)</span>
+        <span class="c1">#     self.print_help()</span>
+        <span class="c1"># run help subcommand</span>
+        <span class="k">if</span> <span class="p">(</span>
+            <span class="n">namespace</span><span class="o">.</span><span class="n">__command__</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">help_cmds</span>
+            <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">commands</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span>  <span class="c1"># together with help command</span>
+        <span class="p">):</span>
+            <span class="n">command_passed</span> <span class="o">=</span> <span class="n">namespace</span><span class="p">[</span><span class="n">namespace</span><span class="o">.</span><span class="n">__command__</span><span class="p">][</span><span class="n">POSITIONAL</span><span class="p">]</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">command_passed</span><span class="p">:</span>  <span class="c1"># pragma: no cover</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">print_help</span><span class="p">()</span>
+            <span class="k">elif</span> <span class="n">command_passed</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">commands</span><span class="p">:</span>  <span class="c1"># pragma: no cover</span>
+                <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">&quot;Unknown command: </span><span class="si">%r</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">command_passed</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">print_help</span><span class="p">()</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">commands</span><span class="p">[</span><span class="n">command_passed</span><span class="p">]</span><span class="o">.</span><span class="n">print_help</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">namespace</span>
+
+    <span class="k">def</span> <span class="nf">_parse</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">args</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span>
+        <span class="n">namespace</span><span class="p">:</span> <span class="n">Namespace</span><span class="p">,</span>
+        <span class="n">ignore_errors</span><span class="p">:</span> <span class="nb">bool</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Parse the arguments from the command line</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            args: The arguments to parse</span>
+<span class="sd">            namespace: The namespace for parsed arguments to</span>
+<span class="sd">                attach to.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Parsing </span><span class="si">%r</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">args</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">args</span><span class="p">:</span>  <span class="c1"># help_on_void = False</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">values</span><span class="p">(</span><span class="n">namespace</span><span class="p">,</span> <span class="n">ignore_errors</span><span class="p">)</span>
+            <span class="k">return</span>
+
+        <span class="n">prev_param</span><span class="p">:</span> <span class="s2">&quot;Param&quot;</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">arg</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">args</span><span class="p">):</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;- Parsing item </span><span class="si">%r</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">arg</span><span class="p">)</span>
+            <span class="c1"># Match the arg with defined parameters</span>
+            <span class="c1"># If arbitrary, non-existing parameters will be created on the fly</span>
+            <span class="c1"># This means</span>
+            <span class="c1"># 1. if param_name is None</span>
+            <span class="c1">#    arg is not a parameter-like format (ie. -a, --arg)</span>
+            <span class="c1">#    then param_value == arg</span>
+            <span class="c1"># 2. if param_name is not None, arg is parameter-like</span>
+            <span class="c1">#    With arbitrary = True, parameter will be created on the fly</span>
+            <span class="c1"># 3. if arg is like --arg=1, then param_value 1 is pushed to param.</span>
+            <span class="n">param</span><span class="p">,</span> <span class="n">param_name</span><span class="p">,</span> <span class="n">param_type</span><span class="p">,</span> <span class="n">param_value</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_match_param</span><span class="p">(</span><span class="n">arg</span><span class="p">)</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;  Previous: </span><span class="si">%r</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">prev_param</span><span class="p">)</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span>
+                <span class="s2">&quot;  Matched: </span><span class="si">%r</span><span class="s2">, name=</span><span class="si">%s</span><span class="s2">, type=</span><span class="si">%s</span><span class="s2">, value=</span><span class="si">%r</span><span class="s2">&quot;</span><span class="p">,</span>
+                <span class="n">param</span><span class="p">,</span>
+                <span class="n">param_name</span><span class="p">,</span>
+                <span class="n">param_type</span><span class="p">,</span>
+                <span class="n">param_value</span><span class="p">,</span>
+            <span class="p">)</span>
+            <span class="c1"># as long as the help argument hit</span>
+            <span class="k">if</span> <span class="p">(</span>
+                <span class="n">param_name</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">help_keys</span>
+                <span class="ow">or</span> <span class="n">param_name</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">fullopt_keys</span>
+                <span class="ow">or</span> <span class="p">(</span><span class="n">param</span> <span class="ow">and</span> <span class="n">param</span><span class="o">.</span><span class="n">is_help</span><span class="p">)</span>
+            <span class="p">):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">print_help</span><span class="p">(</span>
+                    <span class="n">full</span><span class="o">=</span><span class="n">param_name</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">fullopt_keys</span>
+                    <span class="ow">or</span> <span class="p">(</span><span class="n">param</span> <span class="ow">and</span> <span class="n">param</span><span class="o">.</span><span class="n">is_full</span><span class="p">)</span>
+                <span class="p">)</span>
+
+            <span class="k">if</span> <span class="n">param</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">prev_param</span><span class="p">:</span>
+                    <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;  Closing previous argument&quot;</span><span class="p">)</span>
+                    <span class="n">prev_param</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+                <span class="n">prev_param</span> <span class="o">=</span> <span class="n">param</span>
+
+            <span class="k">elif</span> <span class="n">prev_param</span><span class="p">:</span>  <span class="c1"># No param</span>
+                <span class="k">if</span> <span class="n">param_name</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="ow">not</span> <span class="n">ignore_errors</span><span class="p">:</span>
+                        <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">&quot;Unknown argument: </span><span class="si">%r</span><span class="s2">, skipped&quot;</span><span class="p">,</span> <span class="n">arg</span><span class="p">)</span>
+                <span class="k">elif</span> <span class="ow">not</span> <span class="n">prev_param</span><span class="o">.</span><span class="n">consume</span><span class="p">(</span><span class="n">param_value</span><span class="p">):</span>
+                    <span class="c1"># If value cannot be consumed, let&#39;s see if it</span>
+                    <span class="c1"># 1. hits a command</span>
+                    <span class="c1"># 2. hits the start of positional arguments</span>
+                    <span class="n">prev_param</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+                    <span class="n">prev_param</span><span class="p">,</span> <span class="n">matched</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_match_command_or_positional</span><span class="p">(</span>
+                        <span class="n">prev_param</span><span class="p">,</span>
+                        <span class="n">param_value</span><span class="p">,</span>
+                        <span class="n">args</span><span class="p">[(</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="p">:],</span>
+                        <span class="n">namespace</span><span class="p">,</span>
+                        <span class="n">ignore_errors</span><span class="p">,</span>
+                    <span class="p">)</span>
+                    <span class="k">if</span> <span class="n">matched</span> <span class="o">==</span> <span class="s2">&quot;command&quot;</span><span class="p">:</span>
+                        <span class="k">break</span>
+                    <span class="k">if</span> <span class="n">matched</span> <span class="o">==</span> <span class="s2">&quot;positional&quot;</span><span class="p">:</span>
+                        <span class="k">continue</span>
+                    <span class="k">if</span> <span class="n">param_value</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">ignore_errors</span><span class="p">:</span>
+                        <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
+                            <span class="s2">&quot;Unknown value: </span><span class="si">%r</span><span class="s2">, skipped&quot;</span><span class="p">,</span> <span class="n">param_value</span>
+                        <span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span>
+                        <span class="s2">&quot;  Param </span><span class="si">%r</span><span class="s2"> consumes </span><span class="si">%r</span><span class="s2">&quot;</span><span class="p">,</span>
+                        <span class="n">prev_param</span><span class="o">.</span><span class="n">namestr</span><span class="p">(),</span>
+                        <span class="n">param_value</span><span class="p">,</span>
+                    <span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>  <span class="c1"># neither</span>
+                <span class="n">prev_param</span><span class="p">,</span> <span class="n">matched</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_match_command_or_positional</span><span class="p">(</span>
+                    <span class="n">prev_param</span><span class="p">,</span>
+                    <span class="n">param_value</span><span class="p">,</span>
+                    <span class="n">args</span><span class="p">[(</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="p">:],</span>
+                    <span class="n">namespace</span><span class="p">,</span>
+                    <span class="n">ignore_errors</span><span class="p">,</span>
+                <span class="p">)</span>
+                <span class="k">if</span> <span class="n">matched</span> <span class="o">==</span> <span class="s2">&quot;command&quot;</span><span class="p">:</span>
+                    <span class="k">break</span>
+                <span class="k">if</span> <span class="n">matched</span> <span class="o">==</span> <span class="s2">&quot;positional&quot;</span><span class="p">:</span>
+                    <span class="k">continue</span>
+                <span class="k">if</span> <span class="n">param_value</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">ignore_errors</span><span class="p">:</span>
+                    <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">&quot;Unknown value: </span><span class="si">%r</span><span class="s2">, skipped&quot;</span><span class="p">,</span> <span class="n">param_value</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">prev_param</span><span class="p">:</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;  Closing final argument: </span><span class="si">%r</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">prev_param</span><span class="o">.</span><span class="n">namestr</span><span class="p">())</span>
+            <span class="n">prev_param</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">values</span><span class="p">(</span><span class="n">namespace</span><span class="p">,</span> <span class="n">ignore_errors</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_match_command_or_positional</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">prev_param</span><span class="p">:</span> <span class="s2">&quot;Param&quot;</span><span class="p">,</span>
+        <span class="n">arg</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">rest_args</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span>
+        <span class="n">namespace</span><span class="p">:</span> <span class="n">Namespace</span><span class="p">,</span>
+        <span class="n">ignore_errors</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="s2">&quot;Param&quot;</span><span class="p">,</span> <span class="nb">str</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Check if arg hits a command or a positional argument start</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            prev_param: The previous parameter</span>
+<span class="sd">            arg: The current argument item</span>
+<span class="sd">            rest_args: The remaining argument items</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            tuple (Param, str):</span>
+<span class="sd">                - A parameter if we create a new one here</span>
+<span class="sd">                    (ie, a positional parameter)</span>
+<span class="sd">                - &#39;command&#39; when arg hits a command or &#39;positional&#39; when it</span>
+<span class="sd">                    hits the start of a positional argument. Otherwise, None.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">prev_param</span> <span class="ow">and</span> <span class="n">prev_param</span><span class="o">.</span><span class="n">is_positional</span><span class="p">:</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;  Hit positional argument&quot;</span><span class="p">)</span>
+            <span class="n">prev_param</span><span class="o">.</span><span class="n">push</span><span class="p">(</span><span class="n">arg</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">prev_param</span><span class="p">,</span> <span class="s2">&quot;positional&quot;</span>
+
+        <span class="k">if</span> <span class="n">arg</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">commands</span><span class="p">:</span>
+            <span class="c1"># any of the rest args matches is argument-like then</span>
+            <span class="c1"># this should not hit the start of positional argument</span>
+            <span class="k">for</span> <span class="n">rest_arg</span> <span class="ow">in</span> <span class="n">rest_args</span><span class="p">:</span>
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">prefix</span> <span class="o">!=</span> <span class="s2">&quot;auto&quot;</span> <span class="ow">and</span> <span class="n">rest_arg</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">prefix</span><span class="p">):</span>
+                    <span class="k">break</span>
+
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">prefix</span> <span class="o">==</span> <span class="s2">&quot;auto&quot;</span> <span class="ow">and</span> <span class="n">rest_arg</span><span class="p">[:</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;-&quot;</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">rest_arg</span><span class="p">)</span> <span class="o">&lt;=</span> <span class="mi">2</span> <span class="ow">or</span> <span class="p">(</span>
+                        <span class="n">rest_arg</span><span class="p">[:</span><span class="mi">2</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;--&quot;</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">rest_arg</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">3</span>
+                    <span class="p">):</span>
+                        <span class="k">break</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;  Hit start of positional argument&quot;</span><span class="p">)</span>
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">arbitrary</span> <span class="ow">and</span> <span class="n">POSITIONAL</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">add_param</span><span class="p">(</span><span class="n">POSITIONAL</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">POSITIONAL</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="p">[</span><span class="n">POSITIONAL</span><span class="p">]</span><span class="o">.</span><span class="n">hit</span> <span class="o">=</span> <span class="kc">True</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="p">[</span><span class="n">POSITIONAL</span><span class="p">]</span><span class="o">.</span><span class="n">push</span><span class="p">(</span><span class="n">arg</span><span class="p">)</span>
+                    <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="p">[</span><span class="n">POSITIONAL</span><span class="p">],</span> <span class="s2">&quot;positional&quot;</span>
+
+        <span class="k">if</span> <span class="n">prev_param</span><span class="p">:</span>
+            <span class="n">prev_param</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">arbitrary</span> <span class="ow">and</span> <span class="n">arg</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">commands</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">add_command</span><span class="p">(</span><span class="n">arg</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">arg</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">commands</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span>
+
+        <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;* Hit command: </span><span class="si">%r</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">arg</span><span class="p">)</span>
+        <span class="n">command</span><span class="p">:</span> <span class="s2">&quot;Params&quot;</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">commands</span><span class="p">[</span><span class="n">arg</span><span class="p">]</span>
+        <span class="n">namespace</span><span class="o">.</span><span class="n">__command__</span> <span class="o">=</span> <span class="n">arg</span>
+        <span class="n">parsed</span><span class="p">:</span> <span class="n">Namespace</span> <span class="o">=</span> <span class="n">command</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span><span class="n">rest_args</span><span class="p">,</span> <span class="n">ignore_errors</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">command</span><span class="o">.</span><span class="n">names</span><span class="p">:</span>
+            <span class="n">namespace</span><span class="p">[</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">parsed</span>
+
+        <span class="k">return</span> <span class="kc">None</span><span class="p">,</span> <span class="s2">&quot;command&quot;</span>
+
+    <span class="k">def</span> <span class="nf">_match_param</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">arg</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="s2">&quot;Param&quot;</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Check if arg matches any predefined parameters. With</span>
+<span class="sd">        arbitrary = True, parameters will be defined on the fly.</span>
+
+<span class="sd">        And then do all the preparation for the matched parameter, including</span>
+<span class="sd">        overwrite the type and push the attached value, such as &#39;--arg=1&#39;</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            arg: arg to check</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            The matched parameter, parameter name,</span>
+<span class="sd">                type and unpushed value if matched.</span>
+<span class="sd">                Otherwise, None, param_name, param_type and arg itself.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">param_name</span><span class="p">,</span> <span class="n">param_type</span><span class="p">,</span> <span class="n">param_value</span> <span class="o">=</span> <span class="n">parse_potential_argument</span><span class="p">(</span>
+            <span class="n">arg</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">prefix</span>
+        <span class="p">)</span>
+        <span class="c1"># parse -arg as -a rg only applicable with prefix auto and -</span>
+        <span class="c1"># When we didn&#39;t match any argument-like</span>
+        <span class="c1"># with allow_attached=False</span>
+        <span class="c1"># Or we matched but it is not defined</span>
+        <span class="n">name_with_attached</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">param_type</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">prefix</span> <span class="o">==</span> <span class="s2">&quot;auto&quot;</span><span class="p">:</span>
+            <span class="c1"># then -a1 will be put in param_value, as if `a1` is a name,</span>
+            <span class="c1"># it should be --a1</span>
+            <span class="n">name_with_attached</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="n">param_value</span>
+                <span class="k">if</span> <span class="p">(</span>
+                    <span class="n">param_name</span> <span class="ow">is</span> <span class="kc">None</span>
+                    <span class="ow">and</span> <span class="n">param_value</span>
+                    <span class="ow">and</span> <span class="n">param_value</span><span class="p">[:</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;-&quot;</span>
+                    <span class="ow">and</span> <span class="n">param_value</span><span class="p">[</span><span class="mi">1</span><span class="p">:</span><span class="mi">2</span><span class="p">]</span> <span class="o">!=</span> <span class="s2">&quot;-&quot;</span>
+                <span class="p">)</span>
+                <span class="k">else</span> <span class="kc">None</span>
+            <span class="p">)</span>
+
+        <span class="k">elif</span> <span class="ow">not</span> <span class="n">param_type</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">prefix</span><span class="p">)</span> <span class="o">&lt;=</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="c1"># say prefix = &#39;+&#39;</span>
+            <span class="c1"># then `a1` for `+a1` will be put as param_name, since</span>
+            <span class="c1"># there is no restriction on name length</span>
+            <span class="n">name_with_attached</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">prefix</span> <span class="o">+</span> <span class="n">param_name</span>
+                <span class="k">if</span> <span class="n">param_name</span> <span class="ow">and</span> <span class="n">param_name</span><span class="p">[:</span><span class="mi">1</span><span class="p">]</span> <span class="o">!=</span> <span class="bp">self</span><span class="o">.</span><span class="n">prefix</span>
+                <span class="k">else</span> <span class="kc">None</span>
+            <span class="p">)</span>
+
+        <span class="c1"># we cannot find a parameter with param_name</span>
+        <span class="c1"># check if there is any value attached</span>
+        <span class="k">if</span> <span class="n">name_with_attached</span> <span class="ow">and</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_param</span><span class="p">(</span><span class="n">param_name</span><span class="p">):</span>
+            <span class="n">param_name2</span><span class="p">,</span> <span class="n">param_type2</span><span class="p">,</span> <span class="n">param_value2</span> <span class="o">=</span> <span class="n">parse_potential_argument</span><span class="p">(</span>
+                <span class="n">name_with_attached</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">prefix</span><span class="p">,</span> <span class="n">allow_attached</span><span class="o">=</span><span class="kc">True</span>
+            <span class="p">)</span>
+            <span class="c1"># Use them only if we found a param_name2 and</span>
+            <span class="c1"># arbitrary: not previous param_name found</span>
+            <span class="c1"># otherwise: parameter with param_name2 exists</span>
+            <span class="k">if</span> <span class="n">param_name2</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="p">(</span>
+                <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">arbitrary</span> <span class="ow">and</span> <span class="n">param_name</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">)</span>
+                <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_param</span><span class="p">(</span><span class="n">param_name2</span><span class="p">)</span>
+            <span class="p">):</span>
+                <span class="n">param_name</span><span class="p">,</span> <span class="n">param_type</span><span class="p">,</span> <span class="n">param_value</span> <span class="o">=</span> <span class="p">(</span>
+                    <span class="n">param_name2</span><span class="p">,</span>
+                    <span class="n">param_type2</span><span class="p">,</span>
+                    <span class="n">param_value2</span><span class="p">,</span>
+                <span class="p">)</span>
+
+        <span class="c1"># create the parameter for arbitrary</span>
+        <span class="k">if</span> <span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">arbitrary</span>
+            <span class="ow">and</span> <span class="n">param_name</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
+            <span class="ow">and</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_param</span><span class="p">(</span><span class="n">param_name</span><span class="p">)</span>
+        <span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">add_param</span><span class="p">(</span><span class="n">param_name</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="n">param_type</span><span class="p">)</span>
+
+        <span class="n">param</span><span class="p">:</span> <span class="s2">&quot;Param&quot;</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_param</span><span class="p">(</span><span class="n">param_name</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">param</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">None</span><span class="p">,</span> <span class="n">param_name</span><span class="p">,</span> <span class="n">param_type</span><span class="p">,</span> <span class="n">param_value</span>
+
+        <span class="n">param_maybe_overwritten</span><span class="p">:</span> <span class="s2">&quot;Param&quot;</span> <span class="o">=</span> <span class="n">param</span><span class="o">.</span><span class="n">overwrite_type</span><span class="p">(</span><span class="n">param_type</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">param_maybe_overwritten</span> <span class="ow">is</span> <span class="ow">not</span> <span class="n">param</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_set_param</span><span class="p">(</span><span class="n">param_maybe_overwritten</span><span class="p">)</span>
+            <span class="n">param</span> <span class="o">=</span> <span class="n">param_maybe_overwritten</span>
+
+        <span class="n">param</span><span class="o">.</span><span class="n">hit</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="k">if</span> <span class="n">param_value</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">param</span><span class="o">.</span><span class="n">push</span><span class="p">(</span><span class="n">param_value</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">param</span><span class="p">,</span> <span class="n">param_name</span><span class="p">,</span> <span class="n">param_type</span><span class="p">,</span> <span class="n">param_value</span>
+
+    <span class="k">def</span> <span class="nf">_all_params</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">show_only</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="s2">&quot;Param&quot;</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;All parameters under this command</span>
+
+<span class="sd">        self.params don&#39;t have all of them, since namespaced ones are under</span>
+<span class="sd">        namespace paramters</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">ret</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="s2">&quot;Param&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">ret_append</span><span class="p">:</span> <span class="n">Callable</span> <span class="o">=</span> <span class="n">ret</span><span class="o">.</span><span class="n">append</span>
+        <span class="k">for</span> <span class="n">param</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
+            <span class="k">if</span> <span class="n">param</span><span class="o">.</span><span class="n">type</span> <span class="o">==</span> <span class="s2">&quot;ns&quot;</span><span class="p">:</span>
+                <span class="k">if</span> <span class="p">(</span><span class="ow">not</span> <span class="n">show_only</span> <span class="ow">or</span> <span class="n">param</span><span class="o">.</span><span class="n">show</span><span class="p">)</span> <span class="ow">and</span> <span class="n">param</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">ret</span><span class="p">:</span>
+                    <span class="n">ret</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">param</span><span class="p">)</span>
+                <span class="n">ret</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">param</span><span class="o">.</span><span class="n">decendents</span><span class="p">(</span><span class="n">show_only</span><span class="p">))</span>
+
+            <span class="k">elif</span> <span class="n">show_only</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">param</span><span class="o">.</span><span class="n">show</span><span class="p">:</span>
+                <span class="k">continue</span>
+            <span class="k">elif</span> <span class="n">param</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">ret</span><span class="p">:</span>
+                <span class="n">ret_append</span><span class="p">(</span><span class="n">param</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">ret</span>
+
+    <span class="k">def</span> <span class="nf">_to_dict_params</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Diot</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Load all parameters into a dictionary&quot;&quot;&quot;</span>
+        <span class="n">ret</span> <span class="o">=</span> <span class="n">Diot</span><span class="p">()</span>
+        <span class="n">param_groups</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">for</span> <span class="n">group</span><span class="p">,</span> <span class="n">param_list</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">param_groups</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="k">for</span> <span class="n">param</span> <span class="ow">in</span> <span class="n">param_list</span><span class="p">:</span>
+                <span class="n">param_groups</span><span class="p">[</span><span class="n">param</span><span class="o">.</span><span class="n">names</span><span class="p">[</span><span class="mi">0</span><span class="p">]]</span> <span class="o">=</span> <span class="n">group</span>
+
+        <span class="k">for</span> <span class="n">param</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_all_params</span><span class="p">():</span>
+            <span class="n">param_name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="s2">&quot;POSITIONAL&quot;</span>
+                <span class="k">if</span> <span class="n">param</span><span class="o">.</span><span class="n">names</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="n">POSITIONAL</span>
+                <span class="k">else</span> <span class="n">param</span><span class="o">.</span><span class="n">names</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="p">)</span>
+            <span class="n">ret</span><span class="p">[</span><span class="n">param_name</span><span class="p">]</span> <span class="o">=</span> <span class="n">Diot</span><span class="p">()</span>
+            <span class="n">param_dict</span><span class="p">:</span> <span class="n">Diot</span> <span class="o">=</span> <span class="n">ret</span><span class="p">[</span><span class="n">param_name</span><span class="p">]</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">param</span><span class="o">.</span><span class="n">names</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+                <span class="n">param_dict</span><span class="o">.</span><span class="n">aliases</span> <span class="o">=</span> <span class="p">[</span>
+                    <span class="s2">&quot;POSITIONAL&quot;</span> <span class="k">if</span> <span class="n">name</span> <span class="o">==</span> <span class="n">POSITIONAL</span> <span class="k">else</span> <span class="n">name</span>
+                    <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">param</span><span class="o">.</span><span class="n">names</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span>
+                <span class="p">]</span>
+            <span class="k">if</span> <span class="n">param</span><span class="o">.</span><span class="n">default</span> <span class="o">!=</span> <span class="n">PARAM_DEFAULT</span><span class="o">.</span><span class="n">default</span><span class="p">:</span>
+                <span class="n">param_dict</span><span class="o">.</span><span class="n">default</span> <span class="o">=</span> <span class="n">param</span><span class="o">.</span><span class="n">default</span>
+            <span class="k">if</span> <span class="n">param</span><span class="o">.</span><span class="n">typestr</span><span class="p">()</span> <span class="o">!=</span> <span class="n">PARAM_DEFAULT</span><span class="o">.</span><span class="n">type</span><span class="p">:</span>
+                <span class="n">param_dict</span><span class="o">.</span><span class="n">type</span> <span class="o">=</span> <span class="n">param</span><span class="o">.</span><span class="n">typestr</span><span class="p">()</span>
+            <span class="k">if</span> <span class="n">param</span><span class="o">.</span><span class="n">desc</span> <span class="o">!=</span> <span class="n">PARAM_DEFAULT</span><span class="o">.</span><span class="n">desc</span><span class="p">:</span>
+                <span class="n">param_dict</span><span class="o">.</span><span class="n">desc</span> <span class="o">=</span> <span class="n">param</span><span class="o">.</span><span class="n">desc</span>
+            <span class="k">if</span> <span class="n">param</span><span class="o">.</span><span class="n">show</span> <span class="o">!=</span> <span class="n">PARAM_DEFAULT</span><span class="o">.</span><span class="n">show</span><span class="p">:</span>
+                <span class="n">param_dict</span><span class="o">.</span><span class="n">show</span> <span class="o">=</span> <span class="n">param</span><span class="o">.</span><span class="n">show</span>
+            <span class="k">if</span> <span class="n">param</span><span class="o">.</span><span class="n">required</span> <span class="o">!=</span> <span class="n">PARAM_DEFAULT</span><span class="o">.</span><span class="n">required</span><span class="p">:</span>
+                <span class="n">param_dict</span><span class="o">.</span><span class="n">required</span> <span class="o">=</span> <span class="n">param</span><span class="o">.</span><span class="n">required</span>
+            <span class="k">if</span> <span class="n">param</span><span class="o">.</span><span class="n">type_frozen</span> <span class="o">!=</span> <span class="n">PARAM_DEFAULT</span><span class="o">.</span><span class="n">type_frozen</span><span class="p">:</span>
+                <span class="n">param_dict</span><span class="o">.</span><span class="n">type_frozen</span> <span class="o">=</span> <span class="n">param</span><span class="o">.</span><span class="n">type_frozen</span>
+            <span class="k">if</span> <span class="n">param</span><span class="o">.</span><span class="n">argname_shorten</span> <span class="o">!=</span> <span class="n">PARAM_DEFAULT</span><span class="o">.</span><span class="n">argname_shorten</span><span class="p">:</span>
+                <span class="n">param_dict</span><span class="o">.</span><span class="n">argname_shorten</span> <span class="o">=</span> <span class="n">param</span><span class="o">.</span><span class="n">argname_shorten</span>
+            <span class="n">param_dict</span><span class="o">.</span><span class="n">group</span> <span class="o">=</span> <span class="n">group</span> <span class="o">=</span> <span class="n">param_groups</span><span class="p">[</span><span class="n">param</span><span class="o">.</span><span class="n">names</span><span class="p">[</span><span class="mi">0</span><span class="p">]]</span>
+            <span class="n">param_dict</span> <span class="o">|=</span> <span class="n">param</span><span class="o">.</span><span class="n">_kwargs</span>
+
+        <span class="k">return</span> <span class="n">ret</span>
+
+    <span class="k">def</span> <span class="nf">_to_dict_commands</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Diot</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Load all commands into a dictionary&quot;&quot;&quot;</span>
+        <span class="n">ret</span> <span class="o">=</span> <span class="n">Diot</span><span class="p">()</span>
+        <span class="n">command_groups</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">for</span> <span class="n">group</span><span class="p">,</span> <span class="n">command_list</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">command_groups</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="k">for</span> <span class="n">command</span> <span class="ow">in</span> <span class="n">command_list</span><span class="p">:</span>
+                <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">command</span><span class="o">.</span><span class="n">names</span><span class="p">:</span>
+                    <span class="n">command_groups</span><span class="p">[</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">group</span>
+
+        <span class="k">for</span> <span class="n">command_name</span><span class="p">,</span> <span class="n">command</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">commands</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="k">if</span> <span class="nb">any</span><span class="p">(</span><span class="n">name</span> <span class="ow">in</span> <span class="n">ret</span> <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">command</span><span class="o">.</span><span class="n">names</span><span class="p">):</span>
+                <span class="k">continue</span>
+            <span class="n">ret</span><span class="p">[</span><span class="n">command_name</span><span class="p">]</span> <span class="o">=</span> <span class="n">Diot</span><span class="p">()</span>
+            <span class="n">cmd_dict</span><span class="p">:</span> <span class="n">Diot</span> <span class="o">=</span> <span class="n">ret</span><span class="p">[</span><span class="n">command_name</span><span class="p">]</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">command</span><span class="o">.</span><span class="n">names</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+                <span class="n">cmd_dict</span><span class="o">.</span><span class="n">aliases</span> <span class="o">=</span> <span class="p">[</span>
+                    <span class="n">name</span> <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">command</span><span class="o">.</span><span class="n">names</span> <span class="k">if</span> <span class="n">name</span> <span class="o">!=</span> <span class="n">command_name</span>
+                <span class="p">]</span>
+            <span class="k">if</span> <span class="n">command</span><span class="o">.</span><span class="n">desc</span> <span class="o">!=</span> <span class="n">PARAMS_DEFAULT</span><span class="o">.</span><span class="n">desc</span><span class="p">:</span>
+                <span class="n">cmd_dict</span><span class="o">.</span><span class="n">desc</span> <span class="o">=</span> <span class="n">command</span><span class="o">.</span><span class="n">desc</span>
+            <span class="k">if</span> <span class="n">command</span><span class="o">.</span><span class="n">help_keys</span> <span class="o">!=</span> <span class="n">PARAMS_DEFAULT</span><span class="o">.</span><span class="n">help_keys</span><span class="p">:</span>
+                <span class="n">cmd_dict</span><span class="o">.</span><span class="n">help_keys</span> <span class="o">=</span> <span class="n">command</span><span class="o">.</span><span class="n">help_keys</span>
+            <span class="k">if</span> <span class="n">command</span><span class="o">.</span><span class="n">help_cmds</span> <span class="o">!=</span> <span class="n">PARAMS_DEFAULT</span><span class="o">.</span><span class="n">help_cmds</span><span class="p">:</span>
+                <span class="n">cmd_dict</span><span class="o">.</span><span class="n">help_cmds</span> <span class="o">=</span> <span class="n">command</span><span class="o">.</span><span class="n">help_cmds</span>
+            <span class="k">if</span> <span class="n">command</span><span class="o">.</span><span class="n">help_on_void</span> <span class="o">!=</span> <span class="n">PARAMS_DEFAULT</span><span class="o">.</span><span class="n">help_on_void</span><span class="p">:</span>
+                <span class="n">cmd_dict</span><span class="o">.</span><span class="n">help_on_void</span> <span class="o">=</span> <span class="n">command</span><span class="o">.</span><span class="n">help_on_void</span>
+            <span class="k">if</span> <span class="n">command</span><span class="o">.</span><span class="n">prefix</span> <span class="o">!=</span> <span class="n">PARAMS_DEFAULT</span><span class="o">.</span><span class="n">prefix</span><span class="p">:</span>
+                <span class="n">cmd_dict</span><span class="o">.</span><span class="n">prefix</span> <span class="o">=</span> <span class="n">command</span><span class="o">.</span><span class="n">prefix</span>
+            <span class="k">if</span> <span class="n">command</span><span class="o">.</span><span class="n">arbitrary</span> <span class="o">!=</span> <span class="n">PARAMS_DEFAULT</span><span class="o">.</span><span class="n">arbitrary</span><span class="p">:</span>
+                <span class="n">cmd_dict</span><span class="o">.</span><span class="n">arbitrary</span> <span class="o">=</span> <span class="n">command</span><span class="o">.</span><span class="n">arbitrary</span>
+            <span class="k">if</span> <span class="n">command</span><span class="o">.</span><span class="n">theme</span> <span class="o">!=</span> <span class="n">PARAMS_DEFAULT</span><span class="o">.</span><span class="n">theme</span><span class="p">:</span>
+                <span class="n">cmd_dict</span><span class="o">.</span><span class="n">theme</span> <span class="o">=</span> <span class="n">command</span><span class="o">.</span><span class="n">theme</span>
+            <span class="k">if</span> <span class="n">command</span><span class="o">.</span><span class="n">usage</span> <span class="o">!=</span> <span class="n">PARAMS_DEFAULT</span><span class="o">.</span><span class="n">usage</span><span class="p">:</span>
+                <span class="n">cmd_dict</span><span class="o">.</span><span class="n">usage</span> <span class="o">=</span> <span class="n">command</span><span class="o">.</span><span class="n">usage</span>
+            <span class="n">cmd_dict</span><span class="o">.</span><span class="n">group</span> <span class="o">=</span> <span class="n">command_groups</span><span class="p">[</span><span class="n">command_name</span><span class="p">]</span>
+            <span class="n">cmd_dict</span> <span class="o">|=</span> <span class="n">command</span><span class="o">.</span><span class="n">to_dict</span><span class="p">()</span>
+
+        <span class="k">return</span> <span class="n">ret</span>
+
+    <span class="k">def</span> <span class="nf">to_dict</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Diot</span><span class="p">:</span><span id="pyparam.params.Params.to_dict"></span><a class="mkapi-docs-link" title="pyparam.params.Params.to_dict" href="../../pyparam.params/#pyparam.params.Params.to_dict">DOCS</a>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Save the parameters/commands to file.</span>
+
+<span class="sd">        This is helpful if the parameters/commands take time to load. Once can</span>
+<span class="sd">        cache this to a file, and load it from it using `from_file`.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            The complied Diot of parameters and commands</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># load all parameters and commands</span>
+        <span class="k">return</span> <span class="n">Diot</span><span class="p">(</span>
+            <span class="n">params</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_to_dict_params</span><span class="p">(),</span> <span class="n">commands</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_to_dict_commands</span><span class="p">()</span>
+        <span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">to_file</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Path</span><span class="p">],</span> <span class="n">cfgtype</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span><span id="pyparam.params.Params.to_file"></span><a class="mkapi-docs-link" title="pyparam.params.Params.to_file" href="../../pyparam.params/#pyparam.params.Params.to_file">DOCS</a>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Save the parameters/commands to file.</span>
+
+<span class="sd">        This is helpful if the parameters/commands take time to load. Once can</span>
+<span class="sd">        cache this to a file, and load it from it using `from_file`.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            path: The path to the file</span>
+<span class="sd">            cfgtype: The type of the file</span>
+<span class="sd">                If not given, will inferred from the suffix of the path</span>
+<span class="sd">                Supports one of yaml, toml and json</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">loaded</span><span class="p">:</span> <span class="n">Diot</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">to_dict</span><span class="p">()</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">Path</span><span class="p">):</span>
+            <span class="n">path</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">cfgtype</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">path</span><span class="o">.</span><span class="n">suffix</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;.yml&quot;</span><span class="p">,</span> <span class="s2">&quot;.yaml&quot;</span><span class="p">):</span>
+                <span class="n">cfgtype</span> <span class="o">=</span> <span class="s2">&quot;yaml&quot;</span>
+            <span class="k">elif</span> <span class="n">path</span><span class="o">.</span><span class="n">suffix</span> <span class="o">==</span> <span class="s2">&quot;.toml&quot;</span><span class="p">:</span>
+                <span class="n">cfgtype</span> <span class="o">=</span> <span class="s2">&quot;toml&quot;</span>
+            <span class="k">elif</span> <span class="n">path</span><span class="o">.</span><span class="n">suffix</span> <span class="o">==</span> <span class="s2">&quot;.json&quot;</span><span class="p">:</span>
+                <span class="n">cfgtype</span> <span class="o">=</span> <span class="s2">&quot;json&quot;</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">cfgtype</span> <span class="o">=</span> <span class="n">path</span><span class="o">.</span><span class="n">suffix</span>
+        <span class="k">if</span> <span class="n">cfgtype</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;yaml&quot;</span><span class="p">,</span> <span class="s2">&quot;json&quot;</span><span class="p">,</span> <span class="s2">&quot;toml&quot;</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;File type not supported: </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">cfgtype</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">cfgtype</span> <span class="o">==</span> <span class="s2">&quot;yaml&quot;</span><span class="p">:</span>
+            <span class="n">loaded</span><span class="o">.</span><span class="n">to_yaml</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">cfgtype</span> <span class="o">==</span> <span class="s2">&quot;json&quot;</span><span class="p">:</span>
+            <span class="n">loaded</span><span class="o">.</span><span class="n">to_json</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">loaded</span><span class="o">.</span><span class="n">to_toml</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">from_file</span><span class="p">(</span><span id="pyparam.params.Params.from_file"></span><a class="mkapi-docs-link" title="pyparam.params.Params.from_file" href="../../pyparam.params/#pyparam.params.Params.from_file">DOCS</a>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">filename</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">PathLike</span><span class="p">,</span> <span class="nb">dict</span><span class="p">],</span>
+        <span class="n">show</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+        <span class="n">force</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Load parameters from file</span>
+
+<span class="sd">        We support 2 types for format to load the parameters.</span>
+
+<span class="sd">        - express way, which has some limitations:</span>
+<span class="sd">            1. no command definition;</span>
+<span class="sd">            2. no namespace parameters;</span>
+<span class="sd">        ```toml</span>
+<span class="sd">        arg = 1 # default value</span>
+<span class="sd">        &quot;arg$desc&quot; = &quot;An argument&quot; # description</span>
+<span class="sd">        # other attributes</span>
+<span class="sd">        ```</span>
+
+<span class="sd">        - full specification</span>
+<span class="sd">        ```toml</span>
+<span class="sd">        [params.arg]</span>
+<span class="sd">        default = 1</span>
+<span class="sd">        desc = &quot;An argument&quot;</span>
+<span class="sd">        [commands.command]</span>
+<span class="sd">        desc = &quot;A subcommand&quot;</span>
+
+<span class="sd">          [commands.command.params.arg]</span>
+<span class="sd">          default = 2</span>
+<span class="sd">          desc = &quot;An argument for command&quot;</span>
+<span class="sd">        ```</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            filename: path to the file</span>
+<span class="sd">            filetype: The type of the file. If None, will infer from the</span>
+<span class="sd">                filename. Supported types: ini, cfg, conf, config, yml, yaml,</span>
+<span class="sd">                json, env, osenv, toml</span>
+<span class="sd">            show: The default show value for parameters in the file</span>
+<span class="sd">            force: Whether to force adding params/commands</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">config</span> <span class="o">=</span> <span class="n">Config</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">from_dict</span><span class="p">(</span><span class="n">config</span><span class="p">,</span> <span class="n">show</span><span class="o">=</span><span class="n">show</span><span class="p">,</span> <span class="n">force</span><span class="o">=</span><span class="n">force</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_from_dict_with_sections</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">dict_obj</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">dict</span><span class="p">]],</span>
+        <span class="n">show</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+        <span class="n">force</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Load from the dict with &#39;params&#39; and/or &#39;commands&#39; sections&quot;&quot;&quot;</span>
+
+        <span class="n">param_section</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">dict</span><span class="p">]</span> <span class="o">=</span> <span class="n">dict_obj</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;params&quot;</span><span class="p">,</span> <span class="p">{})</span>
+        <span class="c1"># Type: str, dict</span>
+        <span class="k">for</span> <span class="n">param_name</span><span class="p">,</span> <span class="n">param_attrs</span> <span class="ow">in</span> <span class="n">param_section</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="n">param_attrs</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="s2">&quot;show&quot;</span><span class="p">,</span> <span class="n">show</span><span class="p">)</span>
+            <span class="n">names</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">always_list</span><span class="p">(</span><span class="n">param_attrs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;aliases&quot;</span><span class="p">,</span> <span class="p">[]))</span>
+            <span class="n">names</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">param_name</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">add_param</span><span class="p">(</span>
+                <span class="p">[</span>
+                    <span class="n">POSITIONAL</span> <span class="k">if</span> <span class="n">name</span> <span class="o">==</span> <span class="s2">&quot;POSITIONAL&quot;</span> <span class="k">else</span> <span class="n">name</span>
+                    <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">names</span>
+                <span class="p">],</span>
+                <span class="o">**</span><span class="n">param_attrs</span><span class="p">,</span>
+                <span class="n">force</span><span class="o">=</span><span class="n">force</span><span class="p">,</span>
+            <span class="p">)</span>
+
+        <span class="n">command_section</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">dict</span><span class="p">]</span> <span class="o">=</span> <span class="n">dict_obj</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;commands&quot;</span><span class="p">,</span> <span class="p">{})</span>
+        <span class="k">for</span> <span class="n">command_name</span><span class="p">,</span> <span class="n">command_attrs</span> <span class="ow">in</span> <span class="n">command_section</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="n">names</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">always_list</span><span class="p">(</span><span class="n">command_attrs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;aliases&quot;</span><span class="p">,</span> <span class="p">[]))</span>
+            <span class="n">names</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">command_name</span><span class="p">)</span>
+            <span class="n">param_section</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">dict</span><span class="p">]</span> <span class="o">=</span> <span class="n">command_attrs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;params&quot;</span><span class="p">,</span> <span class="p">{})</span>
+            <span class="n">subcmd_section</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">dict</span><span class="p">]</span> <span class="o">=</span> <span class="n">command_attrs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;commands&quot;</span><span class="p">,</span> <span class="p">{})</span>
+            <span class="n">command</span><span class="p">:</span> <span class="s2">&quot;Params&quot;</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">add_command</span><span class="p">(</span>
+                <span class="n">names</span><span class="p">,</span> <span class="o">**</span><span class="n">command_attrs</span><span class="p">,</span> <span class="n">force</span><span class="o">=</span><span class="n">force</span>
+            <span class="p">)</span>
+            <span class="n">command</span><span class="o">.</span><span class="n">from_dict</span><span class="p">(</span>
+                <span class="p">{</span><span class="s2">&quot;params&quot;</span><span class="p">:</span> <span class="n">param_section</span><span class="p">,</span> <span class="s2">&quot;commands&quot;</span><span class="p">:</span> <span class="n">subcmd_section</span><span class="p">},</span> <span class="n">show</span>
+            <span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_express_to_full_dict</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">expr_dict</span><span class="p">:</span> <span class="nb">dict</span><span class="p">,</span>
+        <span class="n">ns_key</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Convert express dict to full dict specification&quot;&quot;&quot;</span>
+        <span class="n">full_dict</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="p">(</span>
+                <span class="p">(</span><span class="n">ns_key</span> <span class="o">+</span> <span class="s2">&quot;.&quot;</span> <span class="k">if</span> <span class="n">ns_key</span> <span class="k">else</span> <span class="s2">&quot;&quot;</span><span class="p">)</span>
+                <span class="o">+</span> <span class="p">(</span><span class="n">key</span> <span class="k">if</span> <span class="s2">&quot;.&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">key</span> <span class="k">else</span> <span class="n">key</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;.&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)[</span><span class="mi">0</span><span class="p">])</span>
+            <span class="p">):</span> <span class="p">{}</span>
+            <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">expr_dict</span>
+        <span class="p">}</span>
+        <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">val</span> <span class="ow">in</span> <span class="n">expr_dict</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="n">nskey</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">ns_key</span><span class="si">}</span><span class="s2">.</span><span class="si">{</span><span class="n">key</span><span class="si">}</span><span class="s2">&quot;</span> <span class="k">if</span> <span class="n">ns_key</span> <span class="k">else</span> <span class="n">key</span>
+            <span class="k">if</span> <span class="n">nskey</span> <span class="ow">in</span> <span class="n">full_dict</span><span class="p">:</span>
+                <span class="n">param</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_param</span><span class="p">(</span><span class="n">nskey</span><span class="p">)</span>
+                <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">param</span><span class="p">,</span> <span class="n">ParamNamespace</span><span class="p">):</span>
+                    <span class="k">del</span> <span class="n">full_dict</span><span class="p">[</span><span class="n">nskey</span><span class="p">]</span>
+                    <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">val</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
+                        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                            <span class="sa">f</span><span class="s2">&quot;Value for namespace parameter `</span><span class="si">{</span><span class="n">nskey</span><span class="si">}</span><span class="s2">` &quot;</span>
+                            <span class="s2">&quot;must be a dict.&quot;</span>
+                        <span class="p">)</span>
+
+                    <span class="n">full_dict</span><span class="o">.</span><span class="n">update</span><span class="p">(</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">_express_to_full_dict</span><span class="p">(</span><span class="n">val</span><span class="p">,</span> <span class="n">nskey</span><span class="p">)</span>
+                    <span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">full_dict</span><span class="p">[</span><span class="n">nskey</span><span class="p">][</span><span class="s2">&quot;default&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">val</span>
+
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">param_name</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">param_attr</span> <span class="o">=</span> <span class="n">key</span><span class="o">.</span><span class="n">rpartition</span><span class="p">(</span><span class="s2">&quot;.&quot;</span><span class="p">)</span>
+                <span class="n">full_dict</span><span class="p">[</span><span class="n">param_name</span><span class="p">][</span><span class="n">param_attr</span><span class="p">]</span> <span class="o">=</span> <span class="n">val</span>
+
+        <span class="k">return</span> <span class="n">full_dict</span>
+
+    <span class="k">def</span> <span class="nf">from_dict</span><span class="p">(</span><span id="pyparam.params.Params.from_dict"></span><a class="mkapi-docs-link" title="pyparam.params.Params.from_dict" href="../../pyparam.params/#pyparam.params.Params.from_dict">DOCS</a>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">dict_obj</span><span class="p">:</span> <span class="nb">dict</span><span class="p">,</span>
+        <span class="n">show</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+        <span class="n">force</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+    <span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Load parameters from python dict</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            dict_obj: A python dictionary to load parameters from</span>
+<span class="sd">            show: The default show value for the parameters in the</span>
+<span class="sd">                dictionary</span>
+<span class="sd">            force: Whether to force adding params/commands</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="s2">&quot;params&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">dict_obj</span> <span class="ow">and</span> <span class="s2">&quot;commands&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">dict_obj</span><span class="p">:</span>
+            <span class="c1"># express way</span>
+            <span class="c1"># scan and create dict for all params</span>
+            <span class="n">dict_obj</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_express_to_full_dict</span><span class="p">(</span><span class="n">dict_obj</span><span class="p">)</span>
+            <span class="n">dict_obj</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;params&quot;</span><span class="p">:</span> <span class="n">dict_obj</span><span class="p">}</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_from_dict_with_sections</span><span class="p">(</span><span class="n">dict_obj</span><span class="p">,</span> <span class="n">show</span><span class="p">,</span> <span class="n">force</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">from_arg</span><span class="p">(</span><span id="pyparam.params.Params.from_arg"></span><a class="mkapi-docs-link" title="pyparam.params.Params.from_arg" href="../../pyparam.params/#pyparam.params.Params.from_arg">DOCS</a>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">names</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="s2">&quot;ParamPath&quot;</span><span class="p">],</span>
+        <span class="n">desc</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="s2">&quot;The configuration file.&quot;</span><span class="p">,</span>
+        <span class="n">group</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">default</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Path</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">show</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+        <span class="n">force</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="n">args</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Load parameters from the file specified by naargument</span>
+<span class="sd">        from command line</span>
+
+<span class="sd">        This will load the parameters from the file given by the argument,</span>
+<span class="sd">        ignoring other arguments from the command line. One can overwrite</span>
+<span class="sd">        some of them afterwards, and do the parsing finally.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            names: The names of the parameter or</span>
+<span class="sd">                the parameter itself. If it is the parameter, other</span>
+<span class="sd">                arguments are ignored</span>
+<span class="sd">            desc: The description of the parameter</span>
+<span class="sd">            group: The group of the parameter</span>
+<span class="sd">            default: The default value of the file path</span>
+<span class="sd">            show: Whether those parameters should show up in the help page</span>
+<span class="sd">            force: Whether to force adding the parameters/commands</span>
+<span class="sd">            args: The list of items to parse, otherwise</span>
+<span class="sd">                parse sys.argv[1:]</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">names</span><span class="p">,</span> <span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="nb">list</span><span class="p">)):</span>
+            <span class="n">param</span><span class="p">:</span> <span class="s2">&quot;Param&quot;</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">add_param</span><span class="p">(</span>
+                <span class="n">names</span><span class="p">,</span> <span class="n">desc</span><span class="o">=</span><span class="n">desc</span><span class="p">,</span> <span class="n">group</span><span class="o">=</span><span class="n">group</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="s2">&quot;path&quot;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="n">default</span>
+            <span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">param</span><span class="p">:</span> <span class="s2">&quot;Param&quot;</span> <span class="o">=</span> <span class="n">names</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_set_param</span><span class="p">(</span><span class="n">names</span><span class="p">)</span>
+
+        <span class="n">prefixed_names</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="n">param</span><span class="o">.</span><span class="n">_prefix_name</span><span class="p">(</span><span class="n">name</span><span class="p">)</span> <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">param</span><span class="o">.</span><span class="n">names</span>
+        <span class="p">]</span>
+        <span class="n">args</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span> <span class="k">if</span> <span class="n">args</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">args</span>
+        <span class="n">args_with_the_arg</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">arg</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">args</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">arg</span> <span class="ow">in</span> <span class="n">prefixed_names</span><span class="p">:</span>
+                <span class="n">args_with_the_arg</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">arg</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="nb">len</span><span class="p">(</span><span class="n">args</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">:</span>
+                    <span class="n">args_with_the_arg</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">args</span><span class="p">[</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">])</span>
+                <span class="k">break</span>
+        <span class="n">filepath</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Path</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="n">args_with_the_arg</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">args_with_the_arg</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span> <span class="k">else</span> <span class="n">param</span><span class="o">.</span><span class="n">value</span>
+        <span class="p">)</span>
+        <span class="k">if</span> <span class="n">filepath</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">from_file</span><span class="p">(</span><span class="n">filepath</span><span class="p">,</span> <span class="n">show</span><span class="o">=</span><span class="n">show</span><span class="p">,</span> <span class="n">force</span><span class="o">=</span><span class="n">force</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="s2">&quot;&lt;Params(</span><span class="si">%s</span><span class="s2">) @ </span><span class="si">%s</span><span class="s2">&gt;&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="s2">&quot;,&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">names</span><span class="p">),</span> <span class="nb">id</span><span class="p">(</span><span class="bp">self</span><span class="p">))</span>
+
+    <span class="k">def</span> <span class="nf">copy</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">deep</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;Params&quot;</span><span class="p">:</span><span id="pyparam.params.Params.copy"></span><a class="mkapi-docs-link" title="pyparam.params.Params.copy" href="../../pyparam.params/#pyparam.params.Params.copy">DOCS</a>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Copy a Params object</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            deep: Whether to copy the parameters and commands deeply</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            The copied params object</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">copied</span><span class="p">:</span> <span class="s2">&quot;Params&quot;</span> <span class="o">=</span> <span class="n">Params</span><span class="p">(</span>
+            <span class="n">names</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">names</span><span class="p">[:],</span>
+            <span class="n">desc</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">desc</span><span class="p">[:],</span>
+            <span class="n">prog</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">prog</span><span class="p">,</span>
+            <span class="n">help_keys</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">help_keys</span><span class="p">[:],</span>
+            <span class="n">help_cmds</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">help_cmds</span><span class="p">[:],</span>
+            <span class="n">help_on_void</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">help_on_void</span><span class="p">,</span>
+            <span class="n">help_callback</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+            <span class="n">help_modifier</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">help_modifier</span><span class="p">,</span>
+            <span class="n">prefix</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">prefix</span><span class="p">,</span>
+            <span class="n">arbitrary</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">arbitrary</span><span class="p">,</span>
+            <span class="n">theme</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">theme</span><span class="p">,</span>
+            <span class="n">usage</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">usage</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">usage</span><span class="p">[:],</span>
+        <span class="p">)</span>
+        <span class="n">copied</span><span class="o">.</span><span class="n">assembler</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">assembler</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">deep</span><span class="p">:</span>
+            <span class="n">copied</span><span class="o">.</span><span class="n">params</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+            <span class="n">copied</span><span class="o">.</span><span class="n">commands</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">commands</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+
+            <span class="n">copied</span><span class="o">.</span><span class="n">param_groups</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">param_groups</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+            <span class="n">copied</span><span class="o">.</span><span class="n">command_groups</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">command_groups</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">copied</span><span class="o">.</span><span class="n">params</span> <span class="o">=</span> <span class="n">OrderedDiot</span><span class="p">()</span>
+            <span class="n">copied</span><span class="o">.</span><span class="n">commands</span> <span class="o">=</span> <span class="n">OrderedDiot</span><span class="p">()</span>
+
+            <span class="n">copied</span><span class="o">.</span><span class="n">param_groups</span> <span class="o">=</span> <span class="n">OrderedDiot</span><span class="p">()</span>
+            <span class="n">copied</span><span class="o">.</span><span class="n">command_groups</span> <span class="o">=</span> <span class="n">OrderedDiot</span><span class="p">()</span>
+
+            <span class="k">for</span> <span class="n">param</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
+                <span class="k">if</span> <span class="nb">any</span><span class="p">(</span><span class="n">name</span> <span class="ow">in</span> <span class="n">copied</span><span class="o">.</span><span class="n">params</span> <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">param</span><span class="o">.</span><span class="n">names</span><span class="p">):</span>
+                    <span class="k">continue</span>
+                <span class="n">param_copy</span> <span class="o">=</span> <span class="n">param</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+                <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">param</span><span class="o">.</span><span class="n">names</span><span class="p">:</span>
+                    <span class="n">copied</span><span class="o">.</span><span class="n">params</span><span class="p">[</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">param_copy</span>
+
+            <span class="k">for</span> <span class="n">command</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">commands</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
+                <span class="k">if</span> <span class="nb">any</span><span class="p">(</span><span class="n">name</span> <span class="ow">in</span> <span class="n">copied</span><span class="o">.</span><span class="n">commands</span> <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">command</span><span class="o">.</span><span class="n">names</span><span class="p">):</span>
+                    <span class="k">continue</span>
+                <span class="n">command_copy</span> <span class="o">=</span> <span class="n">command</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">deep</span><span class="o">=</span><span class="n">deep</span><span class="p">)</span>
+                <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">command</span><span class="o">.</span><span class="n">names</span><span class="p">:</span>
+                    <span class="n">copied</span><span class="o">.</span><span class="n">commands</span><span class="p">[</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">command_copy</span>
+
+            <span class="k">for</span> <span class="n">group</span><span class="p">,</span> <span class="n">param_list</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">param_groups</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">param_groups</span><span class="p">[</span><span class="n">group</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span>
+                    <span class="n">copied</span><span class="o">.</span><span class="n">get_param</span><span class="p">(</span><span class="n">param</span><span class="o">.</span><span class="n">names</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="k">for</span> <span class="n">param</span> <span class="ow">in</span> <span class="n">param_list</span>
+                <span class="p">]</span>
+            <span class="k">for</span> <span class="n">group</span><span class="p">,</span> <span class="n">cmd_list</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">command_groups</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">command_groups</span><span class="p">[</span><span class="n">group</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span>
+                    <span class="n">copied</span><span class="o">.</span><span class="n">commands</span><span class="p">[</span><span class="n">cmd</span><span class="o">.</span><span class="n">names</span><span class="p">[</span><span class="mi">0</span><span class="p">]]</span> <span class="k">for</span> <span class="n">cmd</span> <span class="ow">in</span> <span class="n">cmd_list</span>
+                <span class="p">]</span>
+
+        <span class="k">return</span> <span class="n">copied</span>
+</code></pre></div>
+</div>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    <script id="__config" type="application/json">{"base": "../../..", "features": [], "search": "../../../assets/javascripts/workers/search.f886a092.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}}</script>
+    
+    
+      <script src="../../../assets/javascripts/bundle.d7c377c4.min.js"></script>
+      
+        <script src="../../../js/mkapi.js"></script>
+      
+    
+  </body>
+</html>

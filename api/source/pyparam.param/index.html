@@ -1,0 +1,1928 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+      
+      
+      
+      
+      
+      <link rel="icon" href="../../../favicon.png">
+      <meta name="generator" content="mkdocs-1.5.3, mkdocs-material-9.5.3">
+    
+    
+      
+        <title>pyparam.param - pyparam</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../../assets/stylesheets/main.50c56a3b.min.css">
+      
+        
+        <link rel="stylesheet" href="../../../assets/stylesheets/palette.06af60db.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="//use.fontawesome.com/releases/v5.8.1/css/all.css">
+    
+      <link rel="stylesheet" href="//use.fontawesome.com/releases/v5.8.1/css/v4-shims.css">
+    
+      <link rel="stylesheet" href="../../../css/mkapi-common.css">
+    
+      <link rel="stylesheet" href="../../../style.css">
+    
+    <script>__md_scope=new URL("../../..",location),__md_hash=e=>[...e].reduce((e,_)=>(e<<5)-e+_.charCodeAt(0),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+    
+  </head>
+  
+  
+    
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="blue-grey" data-md-color-accent="indigo">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#pyparamparam" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../../.." title="pyparam" class="md-header__button md-logo" aria-label="pyparam" data-md-component="logo">
+      
+  <img src="../../../favicon.png" alt="logo">
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3V6m0 5h18v2H3v-2m0 5h18v2H3v-2Z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            pyparam
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              pyparam.param
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+    
+    
+    
+    
+      <label class="md-header__button md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+      </label>
+      <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12Z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41Z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../../.." title="pyparam" class="md-nav__button md-logo" aria-label="pyparam" data-md-component="logo">
+      
+  <img src="../../../favicon.png" alt="logo">
+
+    </a>
+    pyparam
+  </label>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../.." class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Home
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../TypesOfParams/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Defining parameters
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../commands/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Commands
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../fromCommandline/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Parsing from command line
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../fromDict/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Loading from dict/config file
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../helpPage/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Help page
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../useTheValues/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Using the parsed values
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../shellCompletion/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Shell completion
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_9" >
+        
+          
+          <label class="md-nav__link" for="__nav_9" id="__nav_9_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    API
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_9_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_9">
+            <span class="md-nav__icon md-icon"></span>
+            API
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_9_1" >
+        
+          
+          <label class="md-nav__link" for="__nav_9_1" id="__nav_9_1_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    pyparam
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_9_1_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_9_1">
+            <span class="md-nav__icon md-icon"></span>
+            pyparam
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../pyparam/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    pyparam
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../pyparam.defaults/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    pyparam.defaults
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../pyparam.exceptions/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    pyparam.exceptions
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../pyparam.param/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    pyparam.param
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../pyparam.completer/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    pyparam.completer
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../pyparam.utils/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    pyparam.utils
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../pyparam.help/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    pyparam.help
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../pyparam.params/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    pyparam.params
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../changeLog.md" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Change log
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#pyparamparam" class="md-nav__link">
+    <span class="md-ellipsis">
+      pyparam.param
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+<div class="mkapi-node">
+<h1 id="" class="mkapi-object mkapi-object-code plain">
+<span class="mkapi-object-kind mkapi-object-kind-code">SOURCE CODE</span>
+<span class="mkapi-object-prefix">pyparam.</span><span class="mkapi-object-name">param</span>
+<span id="pyparam.param"></span><a class="mkapi-docs-link" href="../../pyparam.param">DOCS</a>
+</h1>
+
+<div class="mkapi-code">
+<div class="codehilite"><pre><span></span><code><span class="sd">&quot;&quot;&quot;Definition of a single parameter</span>
+
+<span class="sd">Attributes:</span>
+<span class="sd">    PARAM_MAPPINGS: The type to Param mappings, used for params to init a</span>
+<span class="sd">        parameter. Managed by `register_param`</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">import</span> <span class="nn">ast</span>
+<span class="kn">import</span> <span class="nn">json</span>
+<span class="kn">import</span> <span class="nn">re</span>
+<span class="kn">from</span> <span class="nn">itertools</span> <span class="kn">import</span> <span class="n">product</span>
+<span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Callable</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">Iterator</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Set</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">,</span> <span class="n">Type</span><span class="p">,</span> <span class="n">Union</span>
+
+<span class="kn">from</span> <span class="nn">diot</span> <span class="kn">import</span> <span class="n">OrderedDiot</span>
+
+<span class="kn">from</span> <span class="nn">.completer</span> <span class="kn">import</span> <span class="n">CompleterParam</span>
+<span class="kn">from</span> <span class="nn">.defaults</span> <span class="kn">import</span> <span class="n">ARGUMENT_REQUIRED</span><span class="p">,</span> <span class="n">POSITIONAL</span>
+<span class="kn">from</span> <span class="nn">.exceptions</span> <span class="kn">import</span> <span class="p">(</span>
+    <span class="n">PyParamException</span><span class="p">,</span>
+    <span class="n">PyParamNameError</span><span class="p">,</span>
+    <span class="n">PyParamTypeError</span><span class="p">,</span>
+    <span class="n">PyParamValueError</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="kn">from</span> <span class="nn">.utils</span> <span class="kn">import</span> <span class="n">TYPE_NAMES</span><span class="p">,</span> <span class="n">Namespace</span><span class="p">,</span> <span class="n">cast_to</span><span class="p">,</span> <span class="n">logger</span><span class="p">,</span> <span class="n">parse_type</span>
+
+<span class="n">PARAM_MAPPINGS</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Type</span><span class="p">[</span><span class="s2">&quot;Param&quot;</span><span class="p">]]</span> <span class="o">=</span> <span class="p">{}</span>
+
+
+<span class="k">class</span> <span class="nc">Param</span><span class="p">(</span><span class="n">CompleterParam</span><span class="p">):</span><span id="pyparam.param.Param"></span><a class="mkapi-docs-link" title="pyparam.param.Param" href="../../pyparam.param/#pyparam.param.Param">DOCS</a>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Base class for parameter</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        names: The names of the parameter</span>
+<span class="sd">        default: The default value</span>
+<span class="sd">        desc: The description of the parameter</span>
+<span class="sd">        prefix: The prefix of the parameter on the command line</span>
+<span class="sd">        show: Whether this parameter should show on help page</span>
+<span class="sd">        required: Whether this parameter is required</span>
+<span class="sd">        subtype: The subtype of the parameter if</span>
+<span class="sd">            this is a complex type</span>
+<span class="sd">        type_frozen: Whether the type is frozen</span>
+<span class="sd">            (not allowing overwritting from command line)</span>
+<span class="sd">        callback: The callback to modify the final value</span>
+<span class="sd">        argname_shorten: Whether show shortened name for parameters</span>
+<span class="sd">            under namespace parameters</span>
+<span class="sd">        complete_callback: The callback for complete the values of the</span>
+<span class="sd">            parameter</span>
+<span class="sd">        **kwargs: Additional keyword arguments</span>
+
+<span class="sd">    Attributes:</span>
+<span class="sd">        names: The names of the parameter</span>
+<span class="sd">        default: The default value</span>
+<span class="sd">        prefix: The prefix of the parameter on the command line</span>
+<span class="sd">        show: Whether this parameter should show on help page</span>
+<span class="sd">        required: Whether this parameter is required</span>
+<span class="sd">        subtype: The subtype of the parameter if this is a complex type</span>
+<span class="sd">        type_frozen: Whether the type is frozen</span>
+<span class="sd">            (not allowing overwritting from command line)</span>
+<span class="sd">        callback: The callback to modify the final value</span>
+<span class="sd">        argname_shorten: Whether show shortened name for the parameters</span>
+<span class="sd">            under namespace parameters</span>
+<span class="sd">        hit: Whether the parameter is just hit</span>
+<span class="sd">        ns_param: The namespace parameter where this parameter</span>
+<span class="sd">            is under</span>
+<span class="sd">        complete_callback: The callback for complete the values of the</span>
+<span class="sd">            parameter</span>
+<span class="sd">        is_help: Whether this is a help parameter</span>
+<span class="sd">        _desc: The raw description of the parameter</span>
+<span class="sd">        _stack: The stack to push the values</span>
+<span class="sd">        _value_cached: The cached value calculated from the stack</span>
+<span class="sd">        _kwargs: other kwargs</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="nb">type</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">type_aliases</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+
+    <span class="nd">@classmethod</span><span id="pyparam.param.Param.on_register"></span><a class="mkapi-docs-link" title="pyparam.param.Param.on_register" href="../../pyparam.param/#pyparam.param.Param.on_register">DOCS</a>
+    <span class="k">def</span> <span class="nf">on_register</span><span class="p">(</span><span class="bp">cls</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Opens opportunity to do something when a parameter is registered&quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">names</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]],</span>
+        <span class="n">default</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span>
+        <span class="n">desc</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span>
+        <span class="n">prefix</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;auto&quot;</span><span class="p">,</span>
+        <span class="n">show</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+        <span class="n">required</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="n">subtype</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">type_frozen</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+        <span class="n">callback</span><span class="p">:</span> <span class="n">Callable</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">complete_callback</span><span class="p">:</span> <span class="n">Callable</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">argname_shorten</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+        <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">],</span>
+    <span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Constructor&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">names</span> <span class="o">=</span> <span class="n">names</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">default</span> <span class="o">=</span> <span class="n">default</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">prefix</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">prefix</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">show</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="n">show</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">required</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="n">required</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">subtype</span> <span class="o">=</span> <span class="n">subtype</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">type_frozen</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="n">type_frozen</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">callback</span><span class="p">:</span> <span class="n">Callable</span> <span class="o">=</span> <span class="n">callback</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">complete_callback</span><span class="p">:</span> <span class="n">Callable</span> <span class="o">=</span> <span class="n">complete_callback</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">argname_shorten</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="n">argname_shorten</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">hit</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">is_help</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">is_full</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ns_param</span><span class="p">:</span> <span class="s2">&quot;ParamNamespace&quot;</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_desc</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">desc</span> <span class="ow">or</span> <span class="p">[</span><span class="s2">&quot;No description.&quot;</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_stack</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Any</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_value_cached</span><span class="p">:</span> <span class="n">Any</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_kwargs</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">=</span> <span class="n">kwargs</span>
+
+        <span class="c1"># check if I am under a namespace</span>
+        <span class="c1"># Type: List[List[str]], List[str]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_namespaces</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">terminals</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_extract_namespaces</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="nf">_extract_namespaces</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]],</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Extract the namespace and terminal names&quot;&quot;&quot;</span>
+        <span class="n">nparts</span><span class="p">:</span> <span class="n">Set</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
+        <span class="n">namespaces</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Set</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">terminals</span><span class="p">:</span> <span class="n">Set</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">names</span><span class="p">:</span>
+            <span class="n">parts</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">name</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;.&quot;</span><span class="p">)</span>
+            <span class="n">nparts</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">parts</span><span class="p">))</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">nparts</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="n">PyParamNameError</span><span class="p">(</span>
+                    <span class="s2">&quot;Parameter names must have the same number of namespaces.&quot;</span>
+                <span class="p">)</span>
+            <span class="n">namespaces</span> <span class="o">=</span> <span class="n">namespaces</span> <span class="ow">or</span> <span class="p">[{</span><span class="n">part</span><span class="p">}</span> <span class="k">for</span> <span class="n">part</span> <span class="ow">in</span> <span class="n">parts</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]]</span>
+            <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">part</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">parts</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]):</span>
+                <span class="n">namespaces</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">part</span><span class="p">)</span>
+            <span class="n">terminals</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">parts</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
+        <span class="k">return</span> <span class="p">[</span><span class="nb">list</span><span class="p">(</span><span class="n">ns</span><span class="p">)</span> <span class="k">for</span> <span class="n">ns</span> <span class="ow">in</span> <span class="n">namespaces</span><span class="p">],</span> <span class="nb">list</span><span class="p">(</span><span class="n">terminals</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_prefix_name</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Add prefix to a name</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            name: Name to add prefix to</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            Name with prefix added</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">name_to_check</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">name</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;.&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">prefix</span> <span class="o">==</span> <span class="s2">&quot;auto&quot;</span><span class="p">:</span>
+            <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;-</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">&quot;</span> <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">name_to_check</span><span class="p">)</span> <span class="o">&lt;=</span> <span class="mi">1</span> <span class="k">else</span> <span class="sa">f</span><span class="s2">&quot;--</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">prefix</span><span class="si">}{</span><span class="n">name</span><span class="si">}</span><span class="s2">&quot;</span>
+
+    <span class="k">def</span> <span class="nf">namespaces</span><span class="p">(</span><span id="pyparam.param.Param.namespaces"></span><a class="mkapi-docs-link" title="pyparam.param.Param.namespaces" href="../../pyparam.param/#pyparam.param.Param.namespaces">DOCS</a>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">index</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;len&quot;</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="nb">int</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get the namespaces at the given index or number of namespaces</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            index: The index or a length indicator</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            The length of the namespaces or the namespaces at index.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">index</span> <span class="o">==</span> <span class="s2">&quot;len&quot;</span><span class="p">:</span>
+            <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_namespaces</span><span class="p">)</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_namespaces</span><span class="p">[</span><span class="n">index</span><span class="p">]</span>  <span class="c1"># type: ignore</span>
+        <span class="k">except</span> <span class="ne">IndexError</span><span class="p">:</span>
+            <span class="k">return</span> <span class="p">[]</span>
+
+    <span class="k">def</span> <span class="nf">full_names</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span><span id="pyparam.param.Param.full_names"></span><a class="mkapi-docs-link" title="pyparam.param.Param.full_names" href="../../pyparam.param/#pyparam.param.Param.full_names">DOCS</a>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;make the names with full combinations of namespaces and terminals</span>
+
+<span class="sd">        Since one can define a parameter like `n.arg` but namespace `n` can</span>
+<span class="sd">        have aliases (i.e. `ns`). This makes sure the names of `n.arg` expands</span>
+<span class="sd">        to `n.arg` and `ns.arg`</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            The names with full combinations of namespaces and terminals</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">names</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="s2">&quot;.&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">prod</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">prod</span> <span class="ow">in</span> <span class="n">product</span><span class="p">(</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">_namespaces</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">terminals</span><span class="p">)</span>
+        <span class="p">]</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">names</span>
+
+    <span class="nd">@property</span><span id="pyparam.param.Param.is_positional"></span><a class="mkapi-docs-link" title="pyparam.param.Param.is_positional" href="../../pyparam.param/#pyparam.param.Param.is_positional">DOCS</a>
+    <span class="k">def</span> <span class="nf">is_positional</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Tell if this parameter is positional</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            True if it is, otherwise False.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">POSITIONAL</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">names</span>
+
+    <span class="k">def</span> <span class="nf">close</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span><span id="pyparam.param.Param.close"></span><a class="mkapi-docs-link" title="pyparam.param.Param.close" href="../../pyparam.param/#pyparam.param.Param.close">DOCS</a>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Close up the parameter while scanning the command line</span>
+
+<span class="sd">        We are mostly doing nothing, only if, say, param is bool and</span>
+<span class="sd">        it was just hit, we should push a true value to it.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">hit</span><span class="p">:</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">&quot;No value provided for argument </span><span class="si">%r</span><span class="s2">&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">namestr</span><span class="p">())</span>
+
+    <span class="k">def</span> <span class="nf">overwrite_type</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">param_type</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;Param&quot;</span><span class="p">:</span><span id="pyparam.param.Param.overwrite_type"></span><a class="mkapi-docs-link" title="pyparam.param.Param.overwrite_type" href="../../pyparam.param/#pyparam.param.Param.overwrite_type">DOCS</a>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Try to overwrite the type</span>
+
+<span class="sd">        Only when param_type is not None and it&#39;s different from mine</span>
+<span class="sd">        A new param will be returned if different</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            param_type: The type to overwrite</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            Self when type not changed otherwise a new parameter with</span>
+<span class="sd">                the given type</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">param_type</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">param_type</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">typestr</span><span class="p">():</span>
+            <span class="k">return</span> <span class="bp">self</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">type_frozen</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">PyParamTypeError</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;Type of argument </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">namestr</span><span class="p">()</span><span class="si">!r}</span><span class="s2"> &quot;</span> <span class="s2">&quot;is not overwritable&quot;</span>
+            <span class="p">)</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
+            <span class="s2">&quot;Type changed from </span><span class="si">%r</span><span class="s2"> to </span><span class="si">%r</span><span class="s2"> for argument </span><span class="si">%r</span><span class="s2">&quot;</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">typestr</span><span class="p">(),</span>
+            <span class="n">param_type</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">namestr</span><span class="p">(),</span>
+        <span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">param_type</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">consume</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span><span id="pyparam.param.Param.consume"></span><a class="mkapi-docs-link" title="pyparam.param.Param.consume" href="../../pyparam.param/#pyparam.param.Param.consume">DOCS</a>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Consume a value</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            Value: value to consume</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            True if value was consumed, otherwise False</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">hit</span> <span class="ow">or</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_stack</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">push</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+            <span class="k">return</span> <span class="kc">True</span>
+        <span class="k">return</span> <span class="kc">False</span>
+
+    <span class="nd">@property</span><span id="pyparam.param.Param.desc"></span><a class="mkapi-docs-link" title="pyparam.param.Param.desc" href="../../pyparam.param/#pyparam.param.Param.desc">DOCS</a>
+    <span class="k">def</span> <span class="nf">desc</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;The formatted description using attributes and _kwargs&quot;&quot;&quot;</span>
+        <span class="n">format_data</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="n">key</span><span class="p">:</span> <span class="n">val</span>
+            <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">val</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__dict__</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
+            <span class="k">if</span> <span class="p">(</span>
+                <span class="ow">not</span> <span class="n">key</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;_&quot;</span><span class="p">)</span> <span class="ow">and</span> <span class="n">key</span> <span class="o">!=</span> <span class="s2">&quot;desc&quot;</span> <span class="ow">and</span> <span class="ow">not</span> <span class="nb">callable</span><span class="p">(</span><span class="n">val</span><span class="p">)</span>
+            <span class="p">)</span>
+        <span class="p">}</span>
+        <span class="n">format_data</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_kwargs</span><span class="p">)</span>
+        <span class="n">ret</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">descr</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_desc</span><span class="p">:</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">descr</span> <span class="o">=</span> <span class="n">descr</span> <span class="o">%</span> <span class="n">format_data</span>
+            <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">kerr</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="n">PyParamException</span><span class="p">(</span>
+                    <span class="sa">f</span><span class="s2">&quot;Description of </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">namestr</span><span class="p">()</span><span class="si">!r}</span><span class="s2"> is formatting &quot;</span>
+                    <span class="s2">&quot;using kwargs from contructor. </span><span class="se">\n</span><span class="s2">&quot;</span>
+                    <span class="sa">f</span><span class="s2">&quot;- desc: </span><span class="si">{</span><span class="n">descr</span><span class="si">}</span><span class="se">\n</span><span class="s2">&quot;</span>
+                    <span class="sa">f</span><span class="s2">&quot;- key : </span><span class="se">{{</span><span class="s2">... </span><span class="si">{</span><span class="nb">str</span><span class="p">(</span><span class="n">kerr</span><span class="p">)[</span><span class="mi">1</span><span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="si">}</span><span class="s2"> ...</span><span class="se">}}</span><span class="s2">&quot;</span>
+                <span class="p">)</span> <span class="kn">from</span> <span class="kc">None</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">ret</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">descr</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">ret</span>
+
+    <span class="k">def</span> <span class="nf">name</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">which</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">with_prefix</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span><span id="pyparam.param.Param.name"></span><a class="mkapi-docs-link" title="pyparam.param.Param.name" href="../../pyparam.param/#pyparam.param.Param.name">DOCS</a>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get the shortest/longest name of the parameter</span>
+
+<span class="sd">        A name is ensured to be returned. It does not mean it is the real</span>
+<span class="sd">        short/long name, but just the shortest/longest name among all the names</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            which: Whether get the shortest or longest name</span>
+<span class="sd">                Could use `short` or `long` for short.</span>
+<span class="sd">            with_prefix: Whether to include the prefix or not</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            The shortest/longest name of the parameter</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">sorted</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">names</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="nb">len</span><span class="p">))[</span>
+            <span class="mi">0</span> <span class="k">if</span> <span class="s2">&quot;short&quot;</span> <span class="ow">in</span> <span class="n">which</span> <span class="k">else</span> <span class="o">-</span><span class="mi">1</span>
+        <span class="p">]</span>
+        <span class="k">return</span> <span class="n">name</span> <span class="k">if</span> <span class="ow">not</span> <span class="n">with_prefix</span> <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">_prefix_name</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">namestr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sep</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;, &quot;</span><span class="p">,</span> <span class="n">with_prefix</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span><span id="pyparam.param.Param.namestr"></span><a class="mkapi-docs-link" title="pyparam.param.Param.namestr" href="../../pyparam.param/#pyparam.param.Param.namestr">DOCS</a>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get all names connected with a separator.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            sep: The separator to connect the names</span>
+<span class="sd">            with_prefix: Whether to include the prefix or not</span>
+<span class="sd">        Returns:</span>
+<span class="sd">            the connected names</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">names</span><span class="p">:</span> <span class="nb">list</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="s2">&quot;POSITIONAL&quot;</span>
+            <span class="k">if</span> <span class="n">name</span> <span class="o">==</span> <span class="n">POSITIONAL</span>
+            <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">_prefix_name</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">with_prefix</span>
+            <span class="k">else</span> <span class="n">name</span>
+            <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="nb">sorted</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">names</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="nb">len</span><span class="p">)</span>
+        <span class="p">]</span>
+        <span class="k">return</span> <span class="n">sep</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">names</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">typestr</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span><span id="pyparam.param.Param.typestr"></span><a class="mkapi-docs-link" title="pyparam.param.Param.typestr" href="../../pyparam.param/#pyparam.param.Param.typestr">DOCS</a>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get the string representation of the type</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            the string representation of the type</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">type</span> <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">subtype</span> <span class="k">else</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">type</span><span class="si">}</span><span class="s2">:</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">subtype</span><span class="si">}</span><span class="s2">&quot;</span>
+
+    <span class="k">def</span> <span class="nf">usagestr</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span><span id="pyparam.param.Param.usagestr"></span><a class="mkapi-docs-link" title="pyparam.param.Param.usagestr" href="../../pyparam.param/#pyparam.param.Param.usagestr">DOCS</a>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get the string representation of the parameter in the default usage</span>
+<span class="sd">        constructor</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            the string representation of the parameter in the default usage</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># * makes sure it&#39;s not wrapped</span>
+        <span class="n">ret</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">(</span><span class="s2">&quot;long&quot;</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;*&quot;</span>
+        <span class="n">ret</span> <span class="o">+=</span> <span class="bp">self</span><span class="o">.</span><span class="n">typestr</span><span class="p">()</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">type_frozen</span> <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">typestr</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">ret</span>
+
+    <span class="k">def</span> <span class="nf">optstr</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span><span id="pyparam.param.Param.optstr"></span><a class="mkapi-docs-link" title="pyparam.param.Param.optstr" href="../../pyparam.param/#pyparam.param.Param.optstr">DOCS</a>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get the string representation of the parameter names and types</span>
+<span class="sd">        in the optname section in help page</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            the string representation of the parameter names and types</span>
+<span class="sd">                in the optname section in help page</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">typestr</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">typestr</span><span class="p">()</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">type_frozen</span> <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">typestr</span><span class="p">()</span>
+        <span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">ns_param</span> <span class="ow">or</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">argname_shorten</span><span class="p">:</span>
+            <span class="c1"># * makes sure it&#39;s not wrapped</span>
+            <span class="k">return</span> <span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">namestr</span><span class="p">()</span>
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_help</span>
+                <span class="k">else</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">namestr</span><span class="p">()</span><span class="si">}</span><span class="s2">*&lt;</span><span class="si">{</span><span class="n">typestr</span><span class="si">}</span><span class="s2">&gt;&quot;</span>
+            <span class="p">)</span>
+
+        <span class="n">ret</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">term</span> <span class="ow">in</span> <span class="nb">sorted</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">terminals</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="nb">len</span><span class="p">):</span>
+            <span class="n">ret</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;~&lt;ns&gt;.</span><span class="si">{</span><span class="n">term</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="s2">&quot;, &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">ret</span><span class="p">)</span> <span class="o">+</span> <span class="sa">f</span><span class="s2">&quot;*&lt;</span><span class="si">{</span><span class="n">typestr</span><span class="si">}</span><span class="s2">&gt;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">to</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">to_type</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;Param&quot;</span><span class="p">:</span><span id="pyparam.param.Param.to"></span><a class="mkapi-docs-link" title="pyparam.param.Param.to" href="../../pyparam.param/#pyparam.param.Param.to">DOCS</a>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Generate a different type of parameter using current settings</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            to_type: the type of parameter to generate</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            the generated parameter with different type</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">main_type</span><span class="p">,</span> <span class="n">sub_type</span> <span class="o">=</span> <span class="n">parse_type</span><span class="p">(</span><span class="n">to_type</span><span class="p">)</span>
+        <span class="n">klass</span><span class="p">:</span> <span class="n">Callable</span> <span class="o">=</span> <span class="n">PARAM_MAPPINGS</span><span class="p">[</span><span class="n">main_type</span><span class="p">]</span>
+        <span class="n">param</span><span class="p">:</span> <span class="s2">&quot;Param&quot;</span> <span class="o">=</span> <span class="n">klass</span><span class="p">(</span>
+            <span class="n">names</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">names</span><span class="p">,</span>
+            <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+            <span class="n">desc</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">desc</span><span class="p">,</span>
+            <span class="n">prefix</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">prefix</span><span class="p">,</span>
+            <span class="n">show</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">show</span><span class="p">,</span>
+            <span class="n">required</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">required</span><span class="p">,</span>
+            <span class="n">subtype</span><span class="o">=</span><span class="n">sub_type</span><span class="p">,</span>
+            <span class="n">callback</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">callback</span><span class="p">,</span>
+            <span class="n">complete_callback</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">complete_callback</span><span class="p">,</span>
+            <span class="n">argname_shorten</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">argname_shorten</span><span class="p">,</span>
+            <span class="o">**</span><span class="bp">self</span><span class="o">.</span><span class="n">_kwargs</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="n">param</span><span class="o">.</span><span class="n">ns_param</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">ns_param</span>
+        <span class="k">return</span> <span class="n">param</span>
+
+    <span class="k">def</span> <span class="nf">copy</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;Param&quot;</span><span class="p">:</span><span id="pyparam.param.Param.copy"></span><a class="mkapi-docs-link" title="pyparam.param.Param.copy" href="../../pyparam.param/#pyparam.param.Param.copy">DOCS</a>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Copy a parameter so that it can be reused.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            The copy of the parameter</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="p">(</span>
+            <span class="n">names</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">names</span><span class="p">,</span>
+            <span class="n">default</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">default</span><span class="p">,</span>
+            <span class="n">desc</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">desc</span><span class="p">,</span>
+            <span class="n">prefix</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">prefix</span><span class="p">,</span>
+            <span class="n">show</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">show</span><span class="p">,</span>
+            <span class="n">required</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">required</span><span class="p">,</span>
+            <span class="n">subtype</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">subtype</span><span class="p">,</span>
+            <span class="n">callback</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">callback</span><span class="p">,</span>
+            <span class="n">type_frozen</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">type_frozen</span><span class="p">,</span>
+            <span class="n">complete_callback</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">complete_callback</span><span class="p">,</span>
+            <span class="n">argname_shorten</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">argname_shorten</span><span class="p">,</span>
+            <span class="o">**</span><span class="bp">self</span><span class="o">.</span><span class="n">_kwargs</span><span class="p">,</span>
+        <span class="p">)</span>
+
+    <span class="nd">@property</span><span id="pyparam.param.Param.default_group"></span><a class="mkapi-docs-link" title="pyparam.param.Param.default_group" href="../../pyparam.param/#pyparam.param.Param.default_group">DOCS</a>
+    <span class="k">def</span> <span class="nf">default_group</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get the default group of the parameter</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            the default group name</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">ret</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;REQUIRED OPTIONS&quot;</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">required</span> <span class="k">else</span> <span class="s2">&quot;OPTIONAL OPTIONS&quot;</span>
+        <span class="k">return</span> <span class="p">(</span>
+            <span class="n">ret</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">ns_param</span>
+            <span class="k">else</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">ret</span><span class="si">}</span><span class="s2"> UNDER </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">ns_param</span><span class="o">.</span><span class="n">name</span><span class="p">(</span><span class="s1">&#39;long&#39;</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="p">)</span>
+
+    <span class="nd">@property</span><span id="pyparam.param.Param.desc_with_default"></span><a class="mkapi-docs-link" title="pyparam.param.Param.desc_with_default" href="../../pyparam.param/#pyparam.param.Param.desc_with_default">DOCS</a>
+    <span class="k">def</span> <span class="nf">desc_with_default</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;If default is not specified in desc, just to add with the default</span>
+<span class="sd">        value</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            list of descriptions with default value added</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_help</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">desc</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">required</span> <span class="ow">or</span> <span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">desc</span>
+            <span class="ow">and</span> <span class="nb">any</span><span class="p">(</span>
+                <span class="s2">&quot;Default:&quot;</span> <span class="ow">in</span> <span class="n">desc</span> <span class="ow">or</span> <span class="s2">&quot;DEFAULT:&quot;</span> <span class="ow">in</span> <span class="n">desc</span> <span class="k">for</span> <span class="n">desc</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">desc</span>
+            <span class="p">)</span>
+        <span class="p">):</span>
+            <span class="k">return</span> <span class="kc">None</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">desc</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">desc</span><span class="p">[:]</span>
+
+        <span class="n">desc</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">desc</span><span class="p">[:]</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">desc</span> <span class="k">else</span> <span class="p">[</span><span class="s2">&quot;&quot;</span><span class="p">]</span>
+        <span class="k">if</span> <span class="n">desc</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">desc</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="o">-</span><span class="mi">1</span><span class="p">:]</span><span class="o">.</span><span class="n">isspace</span><span class="p">():</span>
+            <span class="n">desc</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+=</span> <span class="s2">&quot; &quot;</span>
+
+        <span class="n">default_str</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">default</span><span class="p">)</span> <span class="ow">or</span> <span class="s2">&quot;&#39;&#39;&quot;</span>
+        <span class="n">desc</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot;Default: </span><span class="si">{</span><span class="n">default_str</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="k">return</span> <span class="n">desc</span>
+
+    <span class="k">def</span> <span class="nf">push</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">item</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span><span id="pyparam.param.Param.push"></span><a class="mkapi-docs-link" title="pyparam.param.Param.push" href="../../pyparam.param/#pyparam.param.Param.push">DOCS</a>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Push a value into the stack for calculating</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            The item to be pushed</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">hit</span> <span class="ow">is</span> <span class="kc">True</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">_stack</span><span class="p">:</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
+                <span class="s2">&quot;Previous value of argument </span><span class="si">%r</span><span class="s2"> is overwritten with </span><span class="si">%r</span><span class="s2">.&quot;</span><span class="p">,</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">namestr</span><span class="p">(),</span>
+                <span class="n">item</span><span class="p">,</span>
+            <span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_stack</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">hit</span> <span class="ow">or</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_stack</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_stack</span><span class="o">.</span><span class="n">append</span><span class="p">([])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_stack</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">item</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">hit</span> <span class="o">=</span> <span class="kc">False</span>
+
+    <span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="k">return</span> <span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;&lt;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">(</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">namestr</span><span class="p">()</span><span class="si">}</span><span class="s2"> :: &quot;</span>
+            <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">typestr</span><span class="p">()</span><span class="si">}</span><span class="s2">) @ </span><span class="si">{</span><span class="nb">id</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span><span class="si">}</span><span class="s2">&gt;&quot;</span>
+        <span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_value</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get the organized value of this parameter</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            The parsed value of thie parameter</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_stack</span><span class="p">:</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">required</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="n">PyParamValueError</span><span class="p">(</span><span class="s2">&quot;Argument is required.&quot;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">default</span>
+        <span class="n">ret</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_stack</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_stack</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">return</span> <span class="n">ret</span>
+
+    <span class="nd">@property</span><span id="pyparam.param.Param.value"></span><a class="mkapi-docs-link" title="pyparam.param.Param.value" href="../../pyparam.param/#pyparam.param.Param.value">DOCS</a>
+    <span class="k">def</span> <span class="nf">value</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return the cached value if possible, otherwise calcuate one</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            The cached value of this parameter or the newly calculated</span>
+<span class="sd">                from stack</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_value_cached</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_value_cached</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_value_cached</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_value</span><span class="p">()</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_value_cached</span>
+
+    <span class="k">def</span> <span class="nf">apply_callback</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">all_values</span><span class="p">:</span> <span class="n">Namespace</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span><span id="pyparam.param.Param.apply_callback"></span><a class="mkapi-docs-link" title="pyparam.param.Param.apply_callback" href="../../pyparam.param/#pyparam.param.Param.apply_callback">DOCS</a>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Apply the callback function to the value</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            all_values: The namespace of values of all parameters</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            The value after the callback applied</span>
+
+<span class="sd">        Raises:</span>
+<span class="sd">            PyParamTypeError: When exceptions raised or returned from callback</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">callable</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">callback</span><span class="p">):</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">value</span>
+
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">val</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">callback</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">value</span><span class="p">,</span> <span class="n">all_values</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">TypeError</span> <span class="k">as</span> <span class="n">terr</span><span class="p">:</span>  <span class="c1"># pragma: no cover</span>
+            <span class="c1"># len() takes exactly one argument (2 given)</span>
+            <span class="c1"># &lt;lambda&gt;() takes 1 positional argument but 2 were given</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">re</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;takes .+ argument .+ given&quot;</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">terr</span><span class="p">)):</span>
+                <span class="k">raise</span>
+            <span class="n">val</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">callback</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">value</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">val</span><span class="p">,</span> <span class="ne">Exception</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="n">PyParamTypeError</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">val</span><span class="p">))</span>
+        <span class="k">return</span> <span class="n">val</span>
+
+
+<span class="k">class</span> <span class="nc">ParamAuto</span><span class="p">(</span><span class="n">Param</span><span class="p">):</span><span id="pyparam.param.ParamAuto"></span><a class="mkapi-docs-link" title="pyparam.param.ParamAuto" href="../../pyparam.param/#pyparam.param.ParamAuto">DOCS</a>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;An auto parameter whose value is automatically casted&quot;&quot;&quot;</span>
+
+    <span class="nb">type</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;auto&quot;</span>
+
+    <span class="k">def</span> <span class="nf">_value</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Cast value automatically&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">cast_to</span><span class="p">(</span><span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">_value</span><span class="p">(),</span> <span class="s2">&quot;auto&quot;</span><span class="p">)</span>
+
+
+<span class="k">class</span> <span class="nc">ParamInt</span><span class="p">(</span><span class="n">Param</span><span class="p">):</span><span id="pyparam.param.ParamInt"></span><a class="mkapi-docs-link" title="pyparam.param.ParamInt" href="../../pyparam.param/#pyparam.param.ParamInt">DOCS</a>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;An int parameter whose value is automatically casted into an int&quot;&quot;&quot;</span>
+
+    <span class="nb">type</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;int&quot;</span>
+    <span class="n">type_aliases</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;i&quot;</span><span class="p">]</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="c1"># self.default = self.default or 0</span>
+
+    <span class="k">def</span> <span class="nf">_value</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+        <span class="n">val</span> <span class="o">=</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">_value</span><span class="p">()</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">None</span> <span class="k">if</span> <span class="n">val</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="nb">int</span><span class="p">(</span><span class="n">val</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">ValueError</span> <span class="k">as</span> <span class="n">verr</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">PyParamValueError</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">verr</span><span class="p">))</span> <span class="kn">from</span> <span class="kc">None</span>
+
+
+<span class="k">class</span> <span class="nc">ParamFloat</span><span class="p">(</span><span class="n">Param</span><span class="p">):</span><span id="pyparam.param.ParamFloat"></span><a class="mkapi-docs-link" title="pyparam.param.ParamFloat" href="../../pyparam.param/#pyparam.param.ParamFloat">DOCS</a>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;A float parameter whose value is automatically casted into a float&quot;&quot;&quot;</span>
+
+    <span class="nb">type</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;float&quot;</span>
+    <span class="n">type_aliases</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;f&quot;</span><span class="p">]</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="c1"># self.default = self.default or 0.0</span>
+
+    <span class="k">def</span> <span class="nf">_value</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+        <span class="n">val</span> <span class="o">=</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">_value</span><span class="p">()</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">None</span> <span class="k">if</span> <span class="n">val</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="nb">float</span><span class="p">(</span><span class="n">val</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">ValueError</span> <span class="k">as</span> <span class="n">verr</span><span class="p">:</span>  <span class="c1"># pragma: no cover</span>
+            <span class="k">raise</span> <span class="n">PyParamValueError</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">verr</span><span class="p">))</span> <span class="kn">from</span> <span class="kc">None</span>
+
+
+<span class="k">class</span> <span class="nc">ParamStr</span><span class="p">(</span><span class="n">Param</span><span class="p">):</span><span id="pyparam.param.ParamStr"></span><a class="mkapi-docs-link" title="pyparam.param.ParamStr" href="../../pyparam.param/#pyparam.param.ParamStr">DOCS</a>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;A str parameter whose value is automatically casted into a str&quot;&quot;&quot;</span>
+
+    <span class="nb">type</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;str&quot;</span>
+    <span class="n">type_aliases</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;s&quot;</span><span class="p">]</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="c1"># self.default = self.default or &#39;&#39;</span>
+
+
+<span class="k">class</span> <span class="nc">ParamBool</span><span class="p">(</span><span class="n">Param</span><span class="p">):</span><span id="pyparam.param.ParamBool"></span><a class="mkapi-docs-link" title="pyparam.param.ParamBool" href="../../pyparam.param/#pyparam.param.ParamBool">DOCS</a>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;A bool parameter whose value is automatically casted into a bool&quot;&quot;&quot;</span>
+
+    <span class="nb">type</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;bool&quot;</span>
+    <span class="n">type_aliases</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;b&quot;</span><span class="p">,</span> <span class="s2">&quot;flag&quot;</span><span class="p">]</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="c1"># self.default = self.default or False</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">default</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">default</span> <span class="o">=</span> <span class="n">cast_to</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">default</span><span class="p">),</span> <span class="s2">&quot;bool&quot;</span><span class="p">)</span>
+            <span class="k">except</span> <span class="p">(</span><span class="n">PyParamValueError</span><span class="p">,</span> <span class="n">PyParamTypeError</span><span class="p">):</span>
+                <span class="k">raise</span> <span class="n">PyParamValueError</span><span class="p">(</span>
+                    <span class="s2">&quot;Default value of a count argument must be a bool value or &quot;</span>
+                    <span class="s2">&quot;a value that can be casted to a bool value.&quot;</span>
+                <span class="p">)</span> <span class="kn">from</span> <span class="kc">None</span>
+
+    <span class="k">def</span> <span class="nf">usagestr</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span><span id="pyparam.param.ParamBool.usagestr"></span><a class="mkapi-docs-link" title="pyparam.param.ParamBool.usagestr" href="../../pyparam.param/#pyparam.param.ParamBool.usagestr">DOCS</a>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get the string representation of the parameter in the default usage</span>
+<span class="sd">        constructor</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            the string representation of the parameter in the default usage</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">(</span><span class="s2">&quot;long&quot;</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">optstr</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span><span id="pyparam.param.ParamBool.optstr"></span><a class="mkapi-docs-link" title="pyparam.param.ParamBool.optstr" href="../../pyparam.param/#pyparam.param.ParamBool.optstr">DOCS</a>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get the string representation of the parameter names and types</span>
+<span class="sd">        in the optname section in help page</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            the string representation of the parameter names and types</span>
+<span class="sd">                in the optname section in help page</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_help</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">namestr</span><span class="p">()</span>
+        <span class="n">typestr</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">typestr</span><span class="p">()</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">type_frozen</span> <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">typestr</span><span class="p">()</span>
+        <span class="p">)</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">ns_param</span> <span class="ow">or</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">argname_shorten</span><span class="p">:</span>
+            <span class="c1"># * makes sure it&#39;s not wrapped&#39;</span>
+            <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">namestr</span><span class="p">()</span><span class="si">}</span><span class="s2">*[</span><span class="si">{</span><span class="n">typestr</span><span class="si">}</span><span class="s2">]&quot;</span>
+
+        <span class="n">ret</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">term</span> <span class="ow">in</span> <span class="nb">sorted</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">terminals</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="nb">len</span><span class="p">):</span>
+            <span class="n">ret</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;~&lt;ns&gt;.</span><span class="si">{</span><span class="n">term</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="s2">&quot;, &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">ret</span><span class="p">)</span> <span class="o">+</span> <span class="sa">f</span><span class="s2">&quot;*[</span><span class="si">{</span><span class="n">typestr</span><span class="si">}</span><span class="s2">]&quot;</span>
+
+    <span class="k">def</span> <span class="nf">close</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span><span id="pyparam.param.ParamBool.close"></span><a class="mkapi-docs-link" title="pyparam.param.ParamBool.close" href="../../pyparam.param/#pyparam.param.ParamBool.close">DOCS</a>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">hit</span> <span class="ow">is</span> <span class="kc">True</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">push</span><span class="p">(</span><span class="s2">&quot;true&quot;</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">consume</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span><span id="pyparam.param.ParamBool.consume"></span><a class="mkapi-docs-link" title="pyparam.param.ParamBool.consume" href="../../pyparam.param/#pyparam.param.ParamBool.consume">DOCS</a>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Should I consume given value?&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">hit</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">False</span>
+
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">cast_to</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="s2">&quot;bool&quot;</span><span class="p">)</span>
+        <span class="k">except</span> <span class="p">(</span><span class="n">PyParamValueError</span><span class="p">,</span> <span class="n">PyParamTypeError</span><span class="p">):</span>
+            <span class="k">return</span> <span class="kc">False</span>  <span class="c1"># cannot cast, don&#39;t consume</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">push</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+            <span class="k">return</span> <span class="kc">True</span>
+
+    <span class="k">def</span> <span class="nf">_value</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_stack</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">default</span>
+
+        <span class="n">val</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_stack</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">ret</span> <span class="o">=</span> <span class="kc">None</span> <span class="k">if</span> <span class="n">val</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">cast_to</span><span class="p">(</span><span class="n">val</span><span class="p">,</span> <span class="s2">&quot;bool&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_stack</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">return</span> <span class="n">ret</span>
+
+    <span class="k">def</span> <span class="nf">complete_value</span><span class="p">(</span><span id="pyparam.param.ParamBool.complete_value"></span><a class="mkapi-docs-link" title="pyparam.param.ParamBool.complete_value" href="../../pyparam.param/#pyparam.param.ParamBool.complete_value">DOCS</a>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">current</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">prefix</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span>
+        <span class="nb">str</span><span class="p">,</span>
+        <span class="n">Iterator</span><span class="p">[</span><span class="n">Tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">]],</span>
+        <span class="n">Iterator</span><span class="p">[</span><span class="n">Tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]],</span>
+        <span class="n">Iterator</span><span class="p">[</span><span class="n">Tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]],</span>
+    <span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get the completion candidates for the current parameter&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_help</span><span class="p">:</span>
+            <span class="k">return</span> <span class="s2">&quot;&quot;</span>
+        <span class="k">if</span> <span class="nb">callable</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">complete_callback</span><span class="p">):</span>
+            <span class="k">return</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">complete_value</span><span class="p">(</span><span class="n">current</span><span class="p">,</span> <span class="n">prefix</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">current</span><span class="p">:</span>
+            <span class="n">trues</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;True&quot;</span><span class="p">,</span> <span class="s2">&quot;true&quot;</span><span class="p">,</span> <span class="s2">&quot;TRUE&quot;</span><span class="p">,</span> <span class="s2">&quot;1&quot;</span><span class="p">)</span>
+            <span class="n">falses</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;False&quot;</span><span class="p">,</span> <span class="s2">&quot;false&quot;</span><span class="p">,</span> <span class="s2">&quot;FALSE&quot;</span><span class="p">,</span> <span class="s2">&quot;0&quot;</span><span class="p">)</span>
+            <span class="n">ret</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="k">for</span> <span class="n">cand</span> <span class="ow">in</span> <span class="n">trues</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">cand</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="n">current</span><span class="p">):</span>
+                    <span class="n">ret</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">prefix</span><span class="si">}{</span><span class="n">cand</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="s2">&quot;plain&quot;</span><span class="p">,</span> <span class="s2">&quot;Value True&quot;</span><span class="p">))</span>
+
+            <span class="k">for</span> <span class="n">cand</span> <span class="ow">in</span> <span class="n">falses</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">cand</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="n">current</span><span class="p">):</span>
+                    <span class="n">ret</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">prefix</span><span class="si">}{</span><span class="n">cand</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="s2">&quot;plain&quot;</span><span class="p">,</span> <span class="s2">&quot;Value False&quot;</span><span class="p">))</span>
+            <span class="k">return</span> <span class="n">ret</span>
+        <span class="k">return</span> <span class="s2">&quot;&quot;</span>
+
+
+<span class="k">class</span> <span class="nc">ParamCount</span><span class="p">(</span><span class="n">Param</span><span class="p">):</span><span id="pyparam.param.ParamCount"></span><a class="mkapi-docs-link" title="pyparam.param.ParamCount" href="../../pyparam.param/#pyparam.param.ParamCount">DOCS</a>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;A bool parameter whose value is automatically casted into a bool&quot;&quot;&quot;</span>
+
+    <span class="nb">type</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;count&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">default</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">default</span> <span class="ow">or</span> <span class="mi">0</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">default</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">default</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">PyParamValueError</span><span class="p">(</span>
+                <span class="s2">&quot;Default value of a count argument must be 0&quot;</span>
+            <span class="p">)</span>
+
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">(</span><span class="s2">&quot;short&quot;</span><span class="p">,</span> <span class="n">with_prefix</span><span class="o">=</span><span class="kc">False</span><span class="p">))</span> <span class="o">!=</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">PyParamValueError</span><span class="p">(</span><span class="s2">&quot;Count argument must have a short name.&quot;</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_kwargs</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="s2">&quot;max&quot;</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>  <span class="c1"># 0: no max</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_kwargs</span><span class="p">[</span><span class="s2">&quot;max&quot;</span><span class="p">],</span> <span class="nb">int</span><span class="p">)</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">_kwargs</span><span class="p">[</span><span class="s2">&quot;max&quot;</span><span class="p">]</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">PyParamValueError</span><span class="p">(</span>
+                <span class="s2">&quot;Argument &#39;max&#39; for count argument must be a positive integer&quot;</span>
+            <span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">close</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span><span id="pyparam.param.ParamCount.close"></span><a class="mkapi-docs-link" title="pyparam.param.ParamCount.close" href="../../pyparam.param/#pyparam.param.ParamCount.close">DOCS</a>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">hit</span> <span class="ow">is</span> <span class="kc">True</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">push</span><span class="p">(</span><span class="s2">&quot;1&quot;</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">consume</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span><span id="pyparam.param.ParamCount.consume"></span><a class="mkapi-docs-link" title="pyparam.param.ParamCount.consume" href="../../pyparam.param/#pyparam.param.ParamCount.consume">DOCS</a>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Should I consume given parameter?&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">hit</span> <span class="ow">and</span> <span class="n">value</span><span class="o">.</span><span class="n">isdigit</span><span class="p">():</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">push</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+            <span class="k">return</span> <span class="kc">True</span>
+        <span class="k">return</span> <span class="kc">False</span>
+
+    <span class="k">def</span> <span class="nf">_value</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+        <span class="n">val</span> <span class="o">=</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">_value</span><span class="p">()</span>
+
+        <span class="n">retval</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="k">if</span> <span class="nb">str</span><span class="p">(</span><span class="n">val</span><span class="p">)</span><span class="o">.</span><span class="n">isdigit</span><span class="p">():</span>
+            <span class="n">retval</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">val</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">names</span><span class="p">:</span>
+                <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">name</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">1</span><span class="p">:</span>
+                    <span class="k">continue</span>
+                <span class="k">if</span> <span class="n">name</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="n">val</span><span class="p">)</span> <span class="o">==</span> <span class="n">val</span><span class="p">:</span>
+                    <span class="c1"># -vvv =&gt; name: v, value: vv</span>
+                    <span class="c1"># len(vv) = 2, but value should be 3</span>
+                    <span class="n">retval</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">val</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span>
+                    <span class="k">break</span>
+        <span class="k">if</span> <span class="n">retval</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">PyParamValueError</span><span class="p">(</span>
+                <span class="s2">&quot;Expect repeated short names or &quot;</span>
+                <span class="s2">&quot;an integer as count argument value.&quot;</span>
+            <span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_kwargs</span><span class="p">[</span><span class="s2">&quot;max&quot;</span><span class="p">]</span> <span class="ow">and</span> <span class="n">retval</span> <span class="o">&gt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">_kwargs</span><span class="p">[</span><span class="s2">&quot;max&quot;</span><span class="p">]:</span>
+            <span class="k">raise</span> <span class="n">PyParamValueError</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">retval</span><span class="si">}</span><span class="s2"> is greater than &quot;</span>
+                <span class="sa">f</span><span class="s2">&quot;the max of </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_kwargs</span><span class="p">[</span><span class="s1">&#39;max&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">.&quot;</span>
+            <span class="p">)</span>
+        <span class="k">return</span> <span class="n">retval</span>
+
+    <span class="k">def</span> <span class="nf">complete_name</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">current</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Iterator</span><span class="p">[</span><span class="n">Tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]]:</span><span id="pyparam.param.ParamCount.complete_name"></span><a class="mkapi-docs-link" title="pyparam.param.ParamCount.complete_name" href="../../pyparam.param/#pyparam.param.ParamCount.complete_name">DOCS</a>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Complete names for a count parameter</span>
+
+<span class="sd">        Since we have -v, -vv, -vvv allowed for a count parameter, we need</span>
+<span class="sd">        to put them in the completions, too.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># check if current is trying to do so</span>
+        <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">names</span><span class="p">:</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">name</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">1</span><span class="p">:</span>
+                <span class="k">continue</span>
+            <span class="c1"># current is not like -vvv</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_prefix_name</span><span class="p">(</span><span class="n">name</span><span class="p">)</span> <span class="o">+</span> <span class="nb">len</span><span class="p">(</span><span class="n">current</span><span class="p">[</span><span class="mi">2</span><span class="p">:])</span> <span class="o">*</span> <span class="n">name</span> <span class="o">!=</span> <span class="n">current</span><span class="p">:</span>
+                <span class="k">continue</span>
+            <span class="c1"># check the max</span>
+            <span class="n">value</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">current</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_kwargs</span><span class="p">[</span><span class="s2">&quot;max&quot;</span><span class="p">]</span> <span class="ow">and</span> <span class="n">value</span> <span class="o">&gt;=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_kwargs</span><span class="p">[</span><span class="s2">&quot;max&quot;</span><span class="p">]:</span>
+                <span class="c1"># already max&#39;ed, no further completion</span>
+                <span class="k">continue</span>
+
+            <span class="n">ncompletes</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="nb">min</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_kwargs</span><span class="p">[</span><span class="s2">&quot;max&quot;</span><span class="p">]</span> <span class="o">-</span> <span class="n">value</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_kwargs</span><span class="p">[</span><span class="s2">&quot;max&quot;</span><span class="p">]</span>
+                <span class="k">else</span> <span class="mi">2</span>
+            <span class="p">)</span>
+            <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">ncompletes</span><span class="p">):</span>
+                <span class="k">yield</span> <span class="n">current</span> <span class="o">+</span> <span class="n">name</span> <span class="o">*</span> <span class="p">(</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">),</span> <span class="bp">self</span><span class="o">.</span><span class="n">desc</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">splitlines</span><span class="p">()[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="k">break</span>
+
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">yield from</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">complete_name</span><span class="p">(</span><span class="n">current</span><span class="p">)</span>
+
+
+<span class="k">class</span> <span class="nc">ParamPath</span><span class="p">(</span><span class="n">Param</span><span class="p">):</span><span id="pyparam.param.ParamPath"></span><a class="mkapi-docs-link" title="pyparam.param.ParamPath" href="../../pyparam.param/#pyparam.param.ParamPath">DOCS</a>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;A path parameter whose value is automatically casted into a pathlib.Path</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="nb">type</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;path&quot;</span>
+    <span class="n">type_aliases</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;p&quot;</span><span class="p">,</span> <span class="s2">&quot;file&quot;</span><span class="p">]</span>
+
+    <span class="k">def</span> <span class="nf">_value</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Path</span><span class="p">:</span>
+        <span class="n">val</span><span class="p">:</span> <span class="n">Path</span> <span class="o">=</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">_value</span><span class="p">()</span>
+        <span class="k">return</span> <span class="kc">None</span> <span class="k">if</span> <span class="n">val</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">Path</span><span class="p">(</span><span class="n">val</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">complete_value</span><span class="p">(</span><span id="pyparam.param.ParamPath.complete_value"></span><a class="mkapi-docs-link" title="pyparam.param.ParamPath.complete_value" href="../../pyparam.param/#pyparam.param.ParamPath.complete_value">DOCS</a>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">current</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">prefix</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Iterator</span><span class="p">[</span><span class="n">Tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="o">...</span><span class="p">]]]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Generate file paths with given current prefix</span>
+<span class="sd">        as completion candidates</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            current: The current word or prefix under cursor</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="nb">callable</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">complete_callback</span><span class="p">):</span>
+            <span class="k">return</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">complete_value</span><span class="p">(</span><span class="n">current</span><span class="p">,</span> <span class="n">prefix</span><span class="p">)</span>
+        <span class="k">return</span> <span class="p">[(</span><span class="n">current</span><span class="p">,</span> <span class="s2">&quot;file&quot;</span><span class="p">,</span> <span class="n">prefix</span><span class="p">)]</span>
+
+
+<span class="k">class</span> <span class="nc">ParamDir</span><span class="p">(</span><span class="n">ParamPath</span><span class="p">):</span><span id="pyparam.param.ParamDir"></span><a class="mkapi-docs-link" title="pyparam.param.ParamDir" href="../../pyparam.param/#pyparam.param.ParamDir">DOCS</a>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Subclass of ParamPath.</span>
+
+<span class="sd">    It does not make any difference with pyparam. However, it works differently</span>
+<span class="sd">    for completions. The completion items for this param will only give</span>
+<span class="sd">    directories instead of all paths</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="nb">type</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;dir&quot;</span>
+    <span class="n">type_aliases</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+
+    <span class="k">def</span> <span class="nf">complete_value</span><span class="p">(</span><span id="pyparam.param.ParamDir.complete_value"></span><a class="mkapi-docs-link" title="pyparam.param.ParamDir.complete_value" href="../../pyparam.param/#pyparam.param.ParamDir.complete_value">DOCS</a>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">current</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">prefix</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Iterator</span><span class="p">[</span><span class="n">Tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="o">...</span><span class="p">]]]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Generate dir paths with given current prefix as completion candidates</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            current: The current word or prefix under cursor</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="nb">callable</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">complete_callback</span><span class="p">):</span>
+            <span class="k">return</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">complete_value</span><span class="p">(</span><span class="n">current</span><span class="p">,</span> <span class="n">prefix</span><span class="p">)</span>
+        <span class="k">return</span> <span class="p">[(</span><span class="n">current</span><span class="p">,</span> <span class="s2">&quot;dir&quot;</span><span class="p">,</span> <span class="n">prefix</span><span class="p">)]</span>
+
+
+<span class="k">class</span> <span class="nc">ParamPy</span><span class="p">(</span><span class="n">Param</span><span class="p">):</span><span id="pyparam.param.ParamPy"></span><a class="mkapi-docs-link" title="pyparam.param.ParamPy" href="../../pyparam.param/#pyparam.param.ParamPy">DOCS</a>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;A parameter whose value will be ast.literal_eval&#39;ed&quot;&quot;&quot;</span>
+
+    <span class="nb">type</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;py&quot;</span>
+
+    <span class="k">def</span> <span class="nf">_value</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">ast</span><span class="o">.</span><span class="n">literal_eval</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">_value</span><span class="p">()))</span>
+
+
+<span class="k">class</span> <span class="nc">ParamJson</span><span class="p">(</span><span class="n">Param</span><span class="p">):</span><span id="pyparam.param.ParamJson"></span><a class="mkapi-docs-link" title="pyparam.param.ParamJson" href="../../pyparam.param/#pyparam.param.ParamJson">DOCS</a>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;A parameter whose value will be parsed as json&quot;&quot;&quot;</span>
+
+    <span class="nb">type</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;json&quot;</span>
+    <span class="n">type_aliases</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;j&quot;</span><span class="p">]</span>
+
+    <span class="k">def</span> <span class="nf">_value</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
+        <span class="n">val</span><span class="p">:</span> <span class="n">Any</span> <span class="o">=</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">_value</span><span class="p">()</span>
+
+        <span class="k">if</span> <span class="n">val</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>  <span class="c1"># pragma: no cover</span>
+            <span class="k">return</span> <span class="kc">None</span>
+
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">val</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+            <span class="k">return</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">val</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">val</span><span class="p">))</span>
+
+
+<span class="k">class</span> <span class="nc">ParamList</span><span class="p">(</span><span class="n">Param</span><span class="p">):</span><span id="pyparam.param.ParamList"></span><a class="mkapi-docs-link" title="pyparam.param.ParamList" href="../../pyparam.param/#pyparam.param.ParamList">DOCS</a>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;A parameter whose value is a list&quot;&quot;&quot;</span>
+
+    <span class="nb">type</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;list&quot;</span>
+    <span class="n">type_aliases</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;l&quot;</span><span class="p">,</span> <span class="s2">&quot;a&quot;</span><span class="p">,</span> <span class="s2">&quot;array&quot;</span><span class="p">]</span>
+    <span class="n">complete_relapse</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span>
+
+    <span class="nd">@classmethod</span><span id="pyparam.param.ParamList.on_register"></span><a class="mkapi-docs-link" title="pyparam.param.ParamList.on_register" href="../../pyparam.param/#pyparam.param.ParamList.on_register">DOCS</a>
+    <span class="k">def</span> <span class="nf">on_register</span><span class="p">(</span><span class="bp">cls</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Also register reset type&quot;&quot;&quot;</span>
+        <span class="n">name</span> <span class="o">=</span> <span class="s2">&quot;reset&quot;</span>
+        <span class="n">aliases</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;r&quot;</span><span class="p">]</span>
+        <span class="n">all_names</span> <span class="o">=</span> <span class="p">[</span><span class="n">name</span><span class="p">]</span> <span class="o">+</span> <span class="n">aliases</span>
+
+        <span class="k">for</span> <span class="n">nam</span> <span class="ow">in</span> <span class="n">all_names</span><span class="p">:</span>
+            <span class="n">TYPE_NAMES</span><span class="p">[</span><span class="n">nam</span><span class="p">]</span> <span class="o">=</span> <span class="n">name</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">default</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">default</span> <span class="ow">or</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_stack</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">default</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">overwrite_type</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">param_type</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;Param&quot;</span><span class="p">:</span><span id="pyparam.param.ParamList.overwrite_type"></span><a class="mkapi-docs-link" title="pyparam.param.ParamList.overwrite_type" href="../../pyparam.param/#pyparam.param.ParamList.overwrite_type">DOCS</a>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Deal with when param_type is reset&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">param_type</span> <span class="o">==</span> <span class="s2">&quot;reset&quot;</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_stack</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="k">return</span> <span class="bp">self</span>
+        <span class="k">return</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">overwrite_type</span><span class="p">(</span><span class="n">param_type</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">consume</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span><span id="pyparam.param.ParamList.consume"></span><a class="mkapi-docs-link" title="pyparam.param.ParamList.consume" href="../../pyparam.param/#pyparam.param.ParamList.consume">DOCS</a>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Should I consume given parameter?&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">push</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+        <span class="k">return</span> <span class="kc">True</span>
+
+    <span class="k">def</span> <span class="nf">push</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">item</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span><span id="pyparam.param.ParamList.push"></span><a class="mkapi-docs-link" title="pyparam.param.ParamList.push" href="../../pyparam.param/#pyparam.param.ParamList.push">DOCS</a>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Push a value into the stack for calculating&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">hit</span> <span class="ow">or</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_stack</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_stack</span><span class="o">.</span><span class="n">append</span><span class="p">([])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_stack</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">item</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">hit</span> <span class="o">=</span> <span class="kc">False</span>
+
+    <span class="k">def</span> <span class="nf">_value</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">Any</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get the value a list parameter&quot;&quot;&quot;</span>
+        <span class="n">ret</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="n">cast_to</span><span class="p">(</span><span class="n">val</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">subtype</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">sublist</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_stack</span>
+            <span class="k">for</span> <span class="n">val</span> <span class="ow">in</span> <span class="n">sublist</span>
+        <span class="p">]</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">required</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">ret</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">PyParamValueError</span><span class="p">(</span><span class="n">ARGUMENT_REQUIRED</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_stack</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">return</span> <span class="n">ret</span>
+
+
+<span class="k">class</span> <span class="nc">ParamChoice</span><span class="p">(</span><span class="n">Param</span><span class="p">):</span><span id="pyparam.param.ParamChoice"></span><a class="mkapi-docs-link" title="pyparam.param.ParamChoice" href="../../pyparam.param/#pyparam.param.ParamChoice">DOCS</a>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;A bool parameter whose value is automatically casted into a bool&quot;&quot;&quot;</span>
+
+    <span class="nb">type</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;choice&quot;</span>
+    <span class="n">type_aliases</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;c&quot;</span><span class="p">]</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="s2">&quot;choices&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_kwargs</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">PyParamValueError</span><span class="p">(</span>
+                <span class="s2">&quot;Argument &#39;choices&#39; is required &quot;</span> <span class="s2">&quot;for ParamChoice.&quot;</span>
+            <span class="p">)</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_kwargs</span><span class="p">[</span><span class="s2">&quot;choices&quot;</span><span class="p">],</span> <span class="p">(</span><span class="nb">list</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">)):</span>
+            <span class="k">raise</span> <span class="n">PyParamValueError</span><span class="p">(</span>
+                <span class="s2">&quot;Argument &#39;choices&#39; must be &quot;</span> <span class="s2">&quot;a list or a tuple.&quot;</span>
+            <span class="p">)</span>
+
+        <span class="c1"># if not self.required and self.default is None:</span>
+        <span class="c1">#     self.default = self._kwargs[&#39;choices&#39;][0]</span>
+
+    <span class="k">def</span> <span class="nf">_value</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
+        <span class="n">val</span> <span class="o">=</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">_value</span><span class="p">()</span>
+
+        <span class="k">if</span> <span class="n">val</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">val</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_kwargs</span><span class="p">[</span><span class="s2">&quot;choices&quot;</span><span class="p">]:</span>
+            <span class="k">raise</span> <span class="n">PyParamValueError</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">val</span><span class="si">}</span><span class="s2"> is not one of </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_kwargs</span><span class="p">[</span><span class="s1">&#39;choices&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_stack</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">return</span> <span class="n">val</span>
+
+    <span class="k">def</span> <span class="nf">complete_value</span><span class="p">(</span><span id="pyparam.param.ParamChoice.complete_value"></span><a class="mkapi-docs-link" title="pyparam.param.ParamChoice.complete_value" href="../../pyparam.param/#pyparam.param.ParamChoice.complete_value">DOCS</a>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">current</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">prefix</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Iterator</span><span class="p">[</span><span class="n">Tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="o">...</span><span class="p">]]]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Generate choices with given current prefix as completion candidates</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            current: The current word or prefix under cursor</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="nb">callable</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">complete_callback</span><span class="p">):</span>
+            <span class="k">return</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">complete_value</span><span class="p">(</span><span class="n">current</span><span class="p">,</span> <span class="n">prefix</span><span class="p">)</span>
+
+        <span class="n">ret</span><span class="p">:</span> <span class="n">Iterator</span><span class="p">[</span><span class="n">Tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">choice</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_kwargs</span><span class="p">[</span><span class="s2">&quot;choices&quot;</span><span class="p">]:</span>
+            <span class="k">if</span> <span class="n">choice</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="n">current</span><span class="p">):</span>
+                <span class="n">ret</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">prefix</span><span class="si">}{</span><span class="n">choice</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,))</span>
+        <span class="k">return</span> <span class="n">ret</span>
+
+
+<span class="k">class</span> <span class="nc">ParamNamespace</span><span class="p">(</span><span class="n">Param</span><span class="p">):</span><span id="pyparam.param.ParamNamespace"></span><a class="mkapi-docs-link" title="pyparam.param.ParamNamespace" href="../../pyparam.param/#pyparam.param.ParamNamespace">DOCS</a>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;A pseudo parameter serving as a namespace for parameters under it</span>
+
+<span class="sd">    So that it is possible to do:</span>
+<span class="sd">    ```shell</span>
+<span class="sd">    prog --namespace.arg1 1 --namespace.arg2 2</span>
+<span class="sd">    ```</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="nb">type</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;ns&quot;</span>
+    <span class="n">type_aliases</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;namespace&quot;</span><span class="p">]</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;desc&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;desc&quot;</span><span class="p">)</span> <span class="ow">or</span> <span class="p">[</span>
+            <span class="s2">&quot;Works as a namespace for other arguments.&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;Never pass a value directly to it.&quot;</span><span class="p">,</span>
+        <span class="p">]</span>
+        <span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;default&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_stack</span> <span class="o">=</span> <span class="n">OrderedDiot</span><span class="p">()</span>  <span class="c1"># for my decendents</span>
+
+    <span class="nd">@property</span><span id="pyparam.param.ParamNamespace.default_group"></span><a class="mkapi-docs-link" title="pyparam.param.ParamNamespace.default_group" href="../../pyparam.param/#pyparam.param.ParamNamespace.default_group">DOCS</a>
+    <span class="k">def</span> <span class="nf">default_group</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get the default group of the parameter&quot;&quot;&quot;</span>
+        <span class="n">ret</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="s2">&quot;REQUIRED&quot;</span>
+            <span class="k">if</span> <span class="nb">any</span><span class="p">(</span><span class="n">param</span><span class="o">.</span><span class="n">required</span> <span class="k">for</span> <span class="n">param</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_stack</span><span class="o">.</span><span class="n">values</span><span class="p">())</span>
+            <span class="k">else</span> <span class="s2">&quot;OPTIONAL&quot;</span>
+        <span class="p">)</span>
+        <span class="k">return</span> <span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">ret</span><span class="si">}</span><span class="s2"> OPTIONS&quot;</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">ns_param</span>
+            <span class="k">else</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">ret</span><span class="si">}</span><span class="s1"> OPTIONS UNDER </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">ns_param</span><span class="o">.</span><span class="n">name</span><span class="p">(</span><span class="s2">&quot;long&quot;</span><span class="p">)</span><span class="si">}</span><span class="s1">&#39;</span>
+        <span class="p">)</span>
+
+    <span class="nd">@property</span><span id="pyparam.param.ParamNamespace.desc_with_default"></span><a class="mkapi-docs-link" title="pyparam.param.ParamNamespace.desc_with_default" href="../../pyparam.param/#pyparam.param.ParamNamespace.desc_with_default">DOCS</a>
+    <span class="k">def</span> <span class="nf">desc_with_default</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Namespace parameters do not have a default value&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">desc</span><span class="p">[:]</span>
+
+    <span class="k">def</span> <span class="nf">decendents</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">show_only</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="s2">&quot;Param&quot;</span><span class="p">]:</span><span id="pyparam.param.ParamNamespace.decendents"></span><a class="mkapi-docs-link" title="pyparam.param.ParamNamespace.decendents" href="../../pyparam.param/#pyparam.param.ParamNamespace.decendents">DOCS</a>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get all decendents of this namespace parameter</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            show_only: Load params with show=True only?</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            The decendents of this namespace parameter</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">ret</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="s2">&quot;Param&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">ret_append</span><span class="p">:</span> <span class="n">Callable</span> <span class="o">=</span> <span class="n">ret</span><span class="o">.</span><span class="n">append</span>
+        <span class="k">for</span> <span class="n">param</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_stack</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
+            <span class="c1"># don&#39;t skip entire ns parameter</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">param</span><span class="p">,</span> <span class="n">ParamNamespace</span><span class="p">):</span>
+                <span class="k">if</span> <span class="p">(</span><span class="ow">not</span> <span class="n">show_only</span> <span class="ow">or</span> <span class="n">param</span><span class="o">.</span><span class="n">show</span><span class="p">)</span> <span class="ow">and</span> <span class="n">param</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">ret</span><span class="p">:</span>
+                    <span class="n">ret</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">param</span><span class="p">)</span>
+                <span class="n">ret</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">param</span><span class="o">.</span><span class="n">decendents</span><span class="p">(</span><span class="n">show_only</span><span class="p">))</span>
+                <span class="k">continue</span>
+            <span class="k">if</span> <span class="n">show_only</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">param</span><span class="o">.</span><span class="n">show</span><span class="p">:</span>
+                <span class="k">continue</span>
+            <span class="k">if</span> <span class="n">param</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">ret</span><span class="p">:</span>
+                <span class="n">ret_append</span><span class="p">(</span><span class="n">param</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">ret</span>
+
+    <span class="k">def</span> <span class="nf">consume</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span><span id="pyparam.param.ParamNamespace.consume"></span><a class="mkapi-docs-link" title="pyparam.param.ParamNamespace.consume" href="../../pyparam.param/#pyparam.param.ParamNamespace.consume">DOCS</a>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Should I consume given parameter?&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="kc">False</span>
+
+    <span class="k">def</span> <span class="nf">get_param</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">depth</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;Param&quot;</span><span class="p">:</span><span id="pyparam.param.ParamNamespace.get_param"></span><a class="mkapi-docs-link" title="pyparam.param.ParamNamespace.get_param" href="../../pyparam.param/#pyparam.param.ParamNamespace.get_param">DOCS</a>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get the paraemeter by given name</span>
+
+<span class="sd">        This parameter is like &#39;-a&#39;, and the name can be &#39;a.b.c.d&#39;</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            name: The name of the parameter to get</span>
+<span class="sd">            depth: The depth</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            The parameter we get with the given name</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">parts</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">name</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;.&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">depth</span> <span class="o">&lt;</span> <span class="nb">len</span><span class="p">(</span><span class="n">parts</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="n">part</span> <span class="o">=</span> <span class="n">parts</span><span class="p">[</span><span class="n">depth</span> <span class="o">+</span> <span class="mi">1</span><span class="p">]</span>
+            <span class="k">if</span> <span class="n">part</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_stack</span><span class="p">:</span>
+                <span class="k">return</span> <span class="kc">None</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_stack</span><span class="p">[</span><span class="n">part</span><span class="p">],</span>  <span class="c1"># type: ignore</span>
+                <span class="n">ParamNamespace</span><span class="p">,</span>
+            <span class="p">):</span>
+                <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_stack</span><span class="p">[</span><span class="n">part</span><span class="p">]</span>  <span class="c1"># type: ignore</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_stack</span><span class="p">[</span><span class="n">part</span><span class="p">]</span><span class="o">.</span><span class="n">get_param</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">depth</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>  <span class="c1"># type: ignore</span>
+        <span class="k">if</span> <span class="n">name</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">names</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span>
+        <span class="k">return</span> <span class="kc">None</span>
+
+    <span class="k">def</span> <span class="nf">push</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">item</span><span class="p">:</span> <span class="s2">&quot;Param&quot;</span><span class="p">,</span> <span class="n">depth</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span><span id="pyparam.param.ParamNamespace.push"></span><a class="mkapi-docs-link" title="pyparam.param.ParamNamespace.push" href="../../pyparam.param/#pyparam.param.ParamNamespace.push">DOCS</a>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Push the parameter under this namespace.</span>
+
+<span class="sd">        We are not pushing any values to this namespace, but pushing</span>
+<span class="sd">        parameters that are under it.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># check if item&#39;s namespaces at depth contain only names of this</span>
+        <span class="c1"># ns parameter</span>
+        <span class="k">if</span> <span class="nb">set</span><span class="p">(</span><span class="n">item</span><span class="o">.</span><span class="n">namespaces</span><span class="p">(</span><span class="n">depth</span><span class="p">))</span> <span class="o">-</span> <span class="nb">set</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">terminals</span><span class="p">):</span>  <span class="c1"># type: ignore</span>
+            <span class="k">raise</span> <span class="n">PyParamValueError</span><span class="p">(</span>
+                <span class="s2">&quot;Parameter names should only contain namespace names &quot;</span>
+                <span class="s2">&quot;that belong to the same namespace parameter.&quot;</span>
+            <span class="p">)</span>
+
+        <span class="c1"># set the names with all possible combination</span>
+        <span class="n">item</span><span class="o">.</span><span class="n">_namespaces</span><span class="p">[</span><span class="n">depth</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">terminals</span>  <span class="c1"># [:]</span>
+        <span class="n">item</span><span class="o">.</span><span class="n">full_names</span><span class="p">()</span>
+
+        <span class="c1"># check if we have nested namespaces</span>
+        <span class="k">if</span> <span class="mi">0</span> <span class="o">&lt;=</span> <span class="n">depth</span> <span class="o">&lt;</span> <span class="n">item</span><span class="o">.</span><span class="n">namespaces</span><span class="p">(</span><span class="s2">&quot;len&quot;</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">:</span>  <span class="c1"># type: ignore</span>
+            <span class="c1"># see if sub-ns exists</span>
+            <span class="n">subns_name</span> <span class="o">=</span> <span class="n">item</span><span class="o">.</span><span class="n">namespaces</span><span class="p">(</span><span class="n">depth</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>  <span class="c1"># type: ignore</span>
+            <span class="k">if</span> <span class="n">subns_name</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_stack</span><span class="p">:</span>
+                <span class="n">subns</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_stack</span><span class="p">[</span><span class="n">subns_name</span><span class="p">]</span>  <span class="c1"># type: ignore</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">subns</span> <span class="o">=</span> <span class="n">ParamNamespace</span><span class="p">(</span>
+                    <span class="p">[</span>
+                        <span class="s2">&quot;.&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">prod</span><span class="p">)</span>
+                        <span class="k">for</span> <span class="n">prod</span> <span class="ow">in</span> <span class="n">product</span><span class="p">(</span>
+                            <span class="o">*</span><span class="p">(</span>
+                                <span class="n">item</span><span class="o">.</span><span class="n">namespaces</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>  <span class="c1"># type: ignore</span>
+                                <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">depth</span> <span class="o">+</span> <span class="mi">2</span><span class="p">)</span>
+                            <span class="p">)</span>
+                        <span class="p">)</span>
+                    <span class="p">]</span>
+                <span class="p">)</span>
+                <span class="n">subns</span><span class="o">.</span><span class="n">ns_param</span> <span class="o">=</span> <span class="bp">self</span>
+
+                <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">subns</span><span class="o">.</span><span class="n">terminals</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_stack</span><span class="p">[</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">subns</span>
+            <span class="n">subns</span><span class="o">.</span><span class="n">push</span><span class="p">(</span><span class="n">item</span><span class="p">,</span> <span class="n">depth</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">item</span><span class="o">.</span><span class="n">ns_param</span> <span class="o">=</span> <span class="bp">self</span>
+            <span class="k">for</span> <span class="n">term</span> <span class="ow">in</span> <span class="n">item</span><span class="o">.</span><span class="n">terminals</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_stack</span><span class="p">[</span><span class="n">term</span><span class="p">]</span> <span class="o">=</span> <span class="n">item</span>  <span class="c1"># type: ignore</span>
+
+    <span class="k">def</span> <span class="nf">_value</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Namespace</span><span class="p">:</span>
+        <span class="n">val</span> <span class="o">=</span> <span class="n">Namespace</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">param_name</span><span class="p">,</span> <span class="n">param</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_stack</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="k">if</span> <span class="n">param_name</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">val</span><span class="p">:</span>
+                <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">param</span><span class="o">.</span><span class="n">terminals</span><span class="p">:</span>
+                    <span class="n">val</span><span class="p">[</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">param</span><span class="o">.</span><span class="n">value</span>
+        <span class="k">return</span> <span class="n">val</span>
+
+    <span class="k">def</span> <span class="nf">copy</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;Param&quot;</span><span class="p">:</span><span id="pyparam.param.ParamNamespace.copy"></span><a class="mkapi-docs-link" title="pyparam.param.ParamNamespace.copy" href="../../pyparam.param/#pyparam.param.ParamNamespace.copy">DOCS</a>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Copy a parameter so that it can be reused.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            The copy of the parameter</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">copied</span> <span class="o">=</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+        <span class="n">copied</span><span class="o">.</span><span class="n">_stack</span> <span class="o">=</span> <span class="n">OrderedDiot</span><span class="p">(</span>
+            <span class="p">[(</span><span class="n">key</span><span class="p">,</span> <span class="n">param</span><span class="o">.</span><span class="n">copy</span><span class="p">())</span> <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">param</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_stack</span><span class="o">.</span><span class="n">items</span><span class="p">()]</span>
+        <span class="p">)</span>
+        <span class="k">return</span> <span class="n">copied</span>
+
+    <span class="k">def</span> <span class="nf">apply_callback</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">all_values</span><span class="p">:</span> <span class="n">Namespace</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span><span id="pyparam.param.ParamNamespace.apply_callback"></span><a class="mkapi-docs-link" title="pyparam.param.ParamNamespace.apply_callback" href="../../pyparam.param/#pyparam.param.ParamNamespace.apply_callback">DOCS</a>
+        <span class="n">ns_callback_applied</span> <span class="o">=</span> <span class="n">Namespace</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">param_name</span><span class="p">,</span> <span class="n">param</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_stack</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="k">if</span> <span class="n">param_name</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">ns_callback_applied</span><span class="p">:</span>
+                <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">param</span><span class="o">.</span><span class="n">terminals</span><span class="p">:</span>
+                    <span class="n">ns_callback_applied</span><span class="p">[</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">param</span><span class="o">.</span><span class="n">apply_callback</span><span class="p">(</span>
+                        <span class="n">all_values</span>
+                    <span class="p">)</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">callable</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">callback</span><span class="p">):</span>
+            <span class="k">return</span> <span class="n">ns_callback_applied</span>
+
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">val</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">callback</span><span class="p">(</span><span class="n">ns_callback_applied</span><span class="p">,</span> <span class="n">all_values</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">TypeError</span> <span class="k">as</span> <span class="n">terr</span><span class="p">:</span>  <span class="c1"># pragma: no cover</span>
+            <span class="c1"># len() takes exactly one argument (2 given)</span>
+            <span class="c1"># &lt;lambda&gt;() takes 1 positional argument but 2 were given</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">re</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;takes .+ argument .+ given&quot;</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">terr</span><span class="p">)):</span>
+                <span class="k">raise</span>
+            <span class="n">val</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">callback</span><span class="p">(</span><span class="n">ns_callback_applied</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">val</span><span class="p">,</span> <span class="ne">Exception</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="n">PyParamTypeError</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">val</span><span class="p">))</span>
+        <span class="k">return</span> <span class="n">val</span>
+
+
+<span class="k">def</span> <span class="nf">register_param</span><span class="p">(</span><span class="n">param</span><span class="p">:</span> <span class="n">Type</span><span class="p">[</span><span class="n">Param</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span><span id="pyparam.param.register_param"></span><a class="mkapi-docs-link" title="pyparam.param.register_param" href="../../pyparam.param/#pyparam.param.register_param">DOCS</a>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Register a parameter class</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        param: The param to register</span>
+<span class="sd">            A param class should include a type</span>
+<span class="sd">            You can also define type alias for a param type</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">for</span> <span class="n">alias</span> <span class="ow">in</span> <span class="n">param</span><span class="o">.</span><span class="n">type_aliases</span> <span class="o">+</span> <span class="p">[</span><span class="n">param</span><span class="o">.</span><span class="n">type</span><span class="p">]:</span>
+        <span class="k">if</span> <span class="n">alias</span> <span class="ow">in</span> <span class="n">TYPE_NAMES</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">PyParamNameError</span><span class="p">(</span>
+                <span class="s2">&quot;Type name has already been &quot;</span> <span class="sa">f</span><span class="s2">&quot;registered: </span><span class="si">{</span><span class="n">alias</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="p">)</span>
+        <span class="n">TYPE_NAMES</span><span class="p">[</span><span class="n">alias</span><span class="p">]</span> <span class="o">=</span> <span class="n">param</span><span class="o">.</span><span class="n">type</span>
+
+    <span class="n">PARAM_MAPPINGS</span><span class="p">[</span><span class="n">param</span><span class="o">.</span><span class="n">type</span><span class="p">]</span> <span class="o">=</span> <span class="n">param</span>
+    <span class="n">param</span><span class="o">.</span><span class="n">on_register</span><span class="p">()</span>
+
+
+<span class="k">for</span> <span class="n">param_class</span> <span class="ow">in</span> <span class="p">(</span>
+    <span class="n">ParamAuto</span><span class="p">,</span>
+    <span class="n">ParamInt</span><span class="p">,</span>
+    <span class="n">ParamStr</span><span class="p">,</span>
+    <span class="n">ParamFloat</span><span class="p">,</span>
+    <span class="n">ParamBool</span><span class="p">,</span>
+    <span class="n">ParamCount</span><span class="p">,</span>
+    <span class="n">ParamPath</span><span class="p">,</span>
+    <span class="n">ParamDir</span><span class="p">,</span>
+    <span class="n">ParamPy</span><span class="p">,</span>
+    <span class="n">ParamJson</span><span class="p">,</span>
+    <span class="n">ParamList</span><span class="p">,</span>
+    <span class="n">ParamChoice</span><span class="p">,</span>
+    <span class="n">ParamNamespace</span><span class="p">,</span>
+<span class="p">):</span>
+    <span class="n">register_param</span><span class="p">(</span><span class="n">param_class</span><span class="p">)</span>
+</code></pre></div>
+</div>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    <script id="__config" type="application/json">{"base": "../../..", "features": [], "search": "../../../assets/javascripts/workers/search.f886a092.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}}</script>
+    
+    
+      <script src="../../../assets/javascripts/bundle.d7c377c4.min.js"></script>
+      
+        <script src="../../../js/mkapi.js"></script>
+      
+    
+  </body>
+</html>

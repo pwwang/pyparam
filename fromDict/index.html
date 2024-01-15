@@ -1,0 +1,1118 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+      
+      
+      
+        <link rel="prev" href="../fromCommandline/">
+      
+      
+        <link rel="next" href="../helpPage/">
+      
+      
+      <link rel="icon" href="../favicon.png">
+      <meta name="generator" content="mkdocs-1.5.3, mkdocs-material-9.5.3">
+    
+    
+      
+        <title>Loading from dict/config file - pyparam</title>
+      
+    
+    
+      <link rel="stylesheet" href="../assets/stylesheets/main.50c56a3b.min.css">
+      
+        
+        <link rel="stylesheet" href="../assets/stylesheets/palette.06af60db.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="//use.fontawesome.com/releases/v5.8.1/css/all.css">
+    
+      <link rel="stylesheet" href="//use.fontawesome.com/releases/v5.8.1/css/v4-shims.css">
+    
+      <link rel="stylesheet" href="../css/mkapi-common.css">
+    
+      <link rel="stylesheet" href="../style.css">
+    
+    <script>__md_scope=new URL("..",location),__md_hash=e=>[...e].reduce((e,_)=>(e<<5)-e+_.charCodeAt(0),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+    
+  </head>
+  
+  
+    
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="blue-grey" data-md-color-accent="indigo">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#loading-parameters-from-a-dict" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href=".." title="pyparam" class="md-header__button md-logo" aria-label="pyparam" data-md-component="logo">
+      
+  <img src="../favicon.png" alt="logo">
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3V6m0 5h18v2H3v-2m0 5h18v2H3v-2Z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            pyparam
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Loading from dict/config file
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+    
+    
+    
+    
+      <label class="md-header__button md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+      </label>
+      <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12Z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41Z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href=".." title="pyparam" class="md-nav__button md-logo" aria-label="pyparam" data-md-component="logo">
+      
+  <img src="../favicon.png" alt="logo">
+
+    </a>
+    pyparam
+  </label>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href=".." class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Home
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../TypesOfParams/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Defining parameters
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../commands/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Commands
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../fromCommandline/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Parsing from command line
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  <span class="md-ellipsis">
+    Loading from dict/config file
+  </span>
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  <span class="md-ellipsis">
+    Loading from dict/config file
+  </span>
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#loading-parameters-from-a-dict" class="md-nav__link">
+    <span class="md-ellipsis">
+      Loading parameters from a dict
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Loading parameters from a dict">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#express-dict" class="md-nav__link">
+    <span class="md-ellipsis">
+      Express dict
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#full-specification-dict" class="md-nav__link">
+    <span class="md-ellipsis">
+      Full specification dict
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#hiding-parameters-from-help-page" class="md-nav__link">
+    <span class="md-ellipsis">
+      Hiding parameters from help page
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#loading-from-a-configuration-file" class="md-nav__link">
+    <span class="md-ellipsis">
+      Loading from a configuration file
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Loading from a configuration file">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#loading-from-a-configuration-file-specified-by-a-command-line-argument" class="md-nav__link">
+    <span class="md-ellipsis">
+      Loading from a configuration file specified by a command line argument
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#dumping-all-params-to-a-dict-or-file" class="md-nav__link">
+    <span class="md-ellipsis">
+      Dumping all params to a dict or file
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#skipping-command-line-argument-parsing" class="md-nav__link">
+    <span class="md-ellipsis">
+      Skipping command line argument parsing
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../helpPage/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Help page
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../useTheValues/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Using the parsed values
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../shellCompletion/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Shell completion
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_9" >
+        
+          
+          <label class="md-nav__link" for="__nav_9" id="__nav_9_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    API
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_9_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_9">
+            <span class="md-nav__icon md-icon"></span>
+            API
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_9_1" >
+        
+          
+          <label class="md-nav__link" for="__nav_9_1" id="__nav_9_1_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    pyparam
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_9_1_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_9_1">
+            <span class="md-nav__icon md-icon"></span>
+            pyparam
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../api/pyparam/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    pyparam
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../api/pyparam.defaults/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    pyparam.defaults
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../api/pyparam.exceptions/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    pyparam.exceptions
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../api/pyparam.param/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    pyparam.param
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../api/pyparam.completer/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    pyparam.completer
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../api/pyparam.utils/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    pyparam.utils
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../api/pyparam.help/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    pyparam.help
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../api/pyparam.params/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    pyparam.params
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../changeLog.md" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Change log
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#loading-parameters-from-a-dict" class="md-nav__link">
+    <span class="md-ellipsis">
+      Loading parameters from a dict
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Loading parameters from a dict">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#express-dict" class="md-nav__link">
+    <span class="md-ellipsis">
+      Express dict
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#full-specification-dict" class="md-nav__link">
+    <span class="md-ellipsis">
+      Full specification dict
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#hiding-parameters-from-help-page" class="md-nav__link">
+    <span class="md-ellipsis">
+      Hiding parameters from help page
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#loading-from-a-configuration-file" class="md-nav__link">
+    <span class="md-ellipsis">
+      Loading from a configuration file
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Loading from a configuration file">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#loading-from-a-configuration-file-specified-by-a-command-line-argument" class="md-nav__link">
+    <span class="md-ellipsis">
+      Loading from a configuration file specified by a command line argument
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#dumping-all-params-to-a-dict-or-file" class="md-nav__link">
+    <span class="md-ellipsis">
+      Dumping all params to a dict or file
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#skipping-command-line-argument-parsing" class="md-nav__link">
+    <span class="md-ellipsis">
+      Skipping command line argument parsing
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  <h1>Loading from dict/config file</h1>
+
+<h3 id="loading-parameters-from-a-dict">Loading parameters from a dict</h3>
+<p>You can skip all those <code>add_param</code> and <code>add_command</code> calls, and load the parameter/command definition from a python dictionary.</p>
+<p>There are two way to do that:</p>
+<h4 id="express-dict">Express dict</h4>
+<p>The express way is a depth 1 dictionary where all the keys are flattened.
+<div class="highlight"><pre><span></span><code><span class="kn">from</span> <span class="nn">pyparam</span> <span class="kn">import</span> <span class="n">Params</span>
+
+<span class="n">params_def</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s2">&quot;i&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="c1"># default value</span>
+    <span class="s2">&quot;i.aliases&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;int&quot;</span><span class="p">],</span>
+    <span class="s2">&quot;i.type&quot;</span><span class="p">:</span> <span class="s2">&quot;int&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;i.desc&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;An int parameter&quot;</span><span class="p">],</span>
+    <span class="c1"># ...</span>
+    <span class="s2">&quot;f&quot;</span><span class="p">:</span> <span class="mf">1.0</span><span class="p">,</span>
+    <span class="s2">&quot;f.aliases&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;float&quot;</span><span class="p">],</span>
+    <span class="s2">&quot;f.type&quot;</span><span class="p">:</span> <span class="s2">&quot;float&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;f.desc&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;A float parameter&quot;</span><span class="p">]</span>
+<span class="p">}</span>
+
+<span class="n">params</span> <span class="o">=</span> <span class="n">Params</span><span class="p">()</span>
+<span class="n">params</span><span class="o">.</span><span class="n">file_dict</span><span class="p">(</span><span class="n">params_def</span><span class="p">)</span>
+<span class="c1"># This does the same as</span>
+<span class="n">params</span><span class="o">.</span><span class="n">add_param</span><span class="p">(</span><span class="s2">&quot;i,int&quot;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">int</span><span class="p">,</span> <span class="n">desc</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;An int parameter&quot;</span><span class="p">])</span>
+<span class="n">params</span><span class="o">.</span><span class="n">add_param</span><span class="p">(</span><span class="s2">&quot;f,float&quot;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">float</span><span class="p">,</span> <span class="n">desc</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;A float parameter&quot;</span><span class="p">])</span>
+</code></pre></div></p>
+<p>Express dict has some limitations:</p>
+<ol>
+<li>No sub-command specifications are allowed</li>
+<li>No namespace parameters</li>
+</ol>
+<h4 id="full-specification-dict">Full specification dict</h4>
+<p>One can use the full specification dictionary to have sub-command and namespace parameter definitions enabled:</p>
+<div class="highlight"><pre><span></span><code><span class="n">params_def</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s2">&quot;params&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s2">&quot;i&quot;</span><span class="p">:</span> <span class="p">{</span>
+            <span class="s2">&quot;default&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+            <span class="s2">&quot;aliases&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;int&quot;</span><span class="p">],</span>
+            <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;int&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;desc&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;An int parameter&quot;</span><span class="p">]</span>
+        <span class="p">},</span>
+        <span class="s2">&quot;f&quot;</span><span class="p">:</span> <span class="p">{</span>
+            <span class="s2">&quot;default&quot;</span><span class="p">:</span> <span class="mf">1.0</span><span class="p">,</span>
+            <span class="s2">&quot;aliases&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;float&quot;</span><span class="p">],</span>
+            <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;float&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;desc&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;A float parameter&quot;</span><span class="p">]</span>
+        <span class="p">}</span>
+    <span class="p">},</span>
+    <span class="s2">&quot;commands&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s2">&quot;cmd&quot;</span><span class="p">:</span> <span class="p">{</span>
+            <span class="c1"># aliases: [...]</span>
+            <span class="c1"># prefix: ...</span>
+            <span class="s2">&quot;params&quot;</span><span class="p">:</span> <span class="p">{</span>
+                <span class="s2">&quot;c&quot;</span><span class="p">:</span> <span class="p">{</span>
+                    <span class="s2">&quot;default&quot;</span><span class="p">:</span> <span class="s2">&quot;medium&quot;</span><span class="p">,</span>
+                    <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;choice&quot;</span><span class="p">,</span>
+                    <span class="s2">&quot;choices&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;small&quot;</span><span class="p">,</span> <span class="s2">&quot;medium&quot;</span><span class="p">,</span> <span class="s2">&quot;large&quot;</span><span class="p">]</span>
+                <span class="p">},</span>
+                <span class="s2">&quot;config&quot;</span><span class="p">:</span> <span class="p">{</span>
+                    <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;ns&quot;</span><span class="p">,</span>
+                    <span class="s2">&quot;desc&quot;</span><span class="p">:</span> <span class="s2">&quot;A set of configurations&quot;</span>
+                <span class="p">},</span>
+                <span class="s2">&quot;config.ncores&quot;</span><span class="p">:</span> <span class="p">{</span>
+                    <span class="s2">&quot;default&quot;</span><span class="p">:</span> <span class="mi">4</span><span class="p">,</span>
+                    <span class="s2">&quot;desc&quot;</span><span class="p">:</span> <span class="s2">&quot;Number of cores&quot;</span>
+                <span class="p">}</span>
+            <span class="p">}</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+<span class="n">params</span><span class="o">.</span><span class="n">from_dict</span><span class="p">(</span><span class="n">params_def</span><span class="p">)</span>
+<span class="n">parsed</span> <span class="o">=</span> <span class="n">params</span><span class="o">.</span><span class="n">parse</span><span class="p">()</span>
+</code></pre></div>
+<p>This:
+<div class="highlight"><pre><span></span><code>prog<span class="w"> </span>-i<span class="w"> </span><span class="m">1</span><span class="w"> </span>-f<span class="w"> </span><span class="m">2</span>.0<span class="w"> </span>cmd<span class="w"> </span>-c<span class="w"> </span>large<span class="w"> </span>--config.ncores<span class="w"> </span><span class="m">1</span>
+</code></pre></div>
+will produce:
+<div class="highlight"><pre><span></span><code><span class="n">Namesapce</span><span class="p">(</span><span class="n">__command__</span><span class="o">=</span><span class="s1">&#39;cmd&#39;</span><span class="p">,</span>
+          <span class="n">i</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+          <span class="n">f</span><span class="o">=</span><span class="mf">2.0</span><span class="p">,</span>
+          <span class="n">cmd</span><span class="o">=</span><span class="n">Namesapce</span><span class="p">(</span><span class="n">c</span><span class="o">=</span><span class="s1">&#39;large&#39;</span><span class="p">,</span> <span class="n">config</span><span class="o">=</span><span class="n">Namesapce</span><span class="p">(</span><span class="n">ncores</span><span class="o">=</span><span class="mi">1</span><span class="p">)))</span>
+</code></pre></div></p>
+<h4 id="hiding-parameters-from-help-page">Hiding parameters from help page</h4>
+<p>If you don't want a parameter to be shown in help page, especially when it not required, just pass <code>show=False</code> to it. In the dictionary, you can just do:
+<div class="highlight"><pre><span></span><code><span class="n">params_def</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s2">&quot;x&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+    <span class="s2">&quot;x.show&quot;</span><span class="p">:</span> <span class="kc">False</span>
+<span class="p">}</span>
+</code></pre></div>
+Or with full specification:
+<div class="highlight"><pre><span></span><code><span class="n">params_def</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s2">&quot;params&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s2">&quot;x&quot;</span><span class="p">:</span> <span class="p">{</span>
+            <span class="s2">&quot;default&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+            <span class="s2">&quot;show&quot;</span><span class="p">:</span> <span class="kc">False</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div></p>
+<p>Or if you want to hide all the parameters from a dict except those with <code>show=True</code> explictly:
+<div class="highlight"><pre><span></span><code><span class="n">params</span><span class="o">.</span><span class="n">from_dict</span><span class="p">(</span><span class="n">params_def</span><span class="p">,</span> <span class="n">show</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+</code></pre></div></p>
+<h3 id="loading-from-a-configuration-file">Loading from a configuration file</h3>
+<p>Parameters can also be loaded from a configuration file that is supported by <a href="https://github.com/pwwang/simpleconf"><code>python-simpleconf</code></a></p>
+<p>Those configuration files will be first read and turned into python dictionary, and then parameter definitions will be loaded using <code>params.from_dict</code>.</p>
+<p>There is the <code>toml</code> file that are the same as the above dict examples.</p>
+<ul>
+<li>
+<p>Express:</p>
+<div class="highlight"><pre><span></span><code><span class="n">i</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">1</span>
+<span class="s2">&quot;i.aliases&quot;</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;int&quot;</span><span class="p">]</span>
+<span class="s2">&quot;i.type&quot;</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;int&quot;</span>
+<span class="s2">&quot;i.desc&quot;</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;An int parameter&quot;</span><span class="p">]</span>
+<span class="c1"># ...</span>
+<span class="n">f</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">1.0</span>
+<span class="s2">&quot;f.aliases&quot;</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;float&quot;</span><span class="p">]</span>
+<span class="s2">&quot;f.type&quot;</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;float&quot;</span>
+<span class="s2">&quot;f.desc&quot;</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;A float parameter&quot;</span><span class="p">]</span>
+</code></pre></div>
+</li>
+<li>
+<p>Full specification</p>
+<div class="highlight"><pre><span></span><code><span class="k">[params.i]</span>
+<span class="n">default</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">1</span>
+<span class="n">aliases</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;int&quot;</span><span class="p">]</span>
+<span class="n">type</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;int&quot;</span>
+<span class="n">desc</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;An int parameter&quot;</span>
+
+<span class="k">[params.f]</span>
+<span class="n">default</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">1.0</span>
+<span class="n">aliases</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;float&quot;</span><span class="p">]</span>
+<span class="n">type</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;float&quot;</span>
+<span class="n">desc</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;A float parameter&quot;</span><span class="p">]</span>
+
+<span class="k">[commands.cmd.params.c]</span>
+<span class="n">default</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;medium&quot;</span>
+<span class="n">type</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;choice&quot;</span>
+<span class="n">choices</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;small&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;medium&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;large&quot;</span><span class="p">]</span>
+
+<span class="k">[commands.cmd.params.config]</span>
+<span class="n">type</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;ns&quot;</span>
+<span class="n">desc</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;A set of configurations&quot;</span>
+
+<span class="w">  </span><span class="k">[commands.cmd.params.</span><span class="s2">&quot;config.ncores&quot;</span><span class="k">]</span>
+<span class="w">  </span><span class="n">default</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">4</span>
+<span class="w">  </span><span class="n">desc</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;Number of cores&quot;</span>
+</code></pre></div>
+</li>
+</ul>
+<h4 id="loading-from-a-configuration-file-specified-by-a-command-line-argument">Loading from a configuration file specified by a command line argument</h4>
+<p>You may also ask user to specify a configuration file to load parameter/command definitions from.</p>
+<p>Something like:
+<div class="highlight"><pre><span></span><code>prog<span class="w"> </span>--config-file<span class="w"> </span>params_def.toml<span class="w"> </span>-i<span class="w"> </span><span class="m">1</span><span class="w"> </span>-f<span class="w"> </span><span class="m">2</span>.0<span class="w"> </span>...
+</code></pre></div>
+Then the parameter/command definitions will be loaded from <code>params_def.toml</code>.</p>
+<p>To do it:
+<div class="highlight"><pre><span></span><code><span class="n">params</span><span class="o">.</span><span class="n">from_arg</span><span class="p">(</span><span class="s1">&#39;config-file&#39;</span><span class="p">)</span>
+</code></pre></div></p>
+<p>First, <code>pyparam</code> will scan the <code>sys.argv</code> to see if any item matches <code>--config-file</code>. If it does, then the next item (<code>params_def.toml</code>) will be used.</p>
+<p>To show the paramter <code>config-file</code> in the help page, you can also specify some desciptions to it:
+<div class="highlight"><pre><span></span><code><span class="n">params</span><span class="o">.</span><span class="n">from_arg</span><span class="p">(</span><span class="s1">&#39;config-file&#39;</span><span class="p">,</span> <span class="n">desc</span><span class="o">=...</span><span class="p">,</span> <span class="n">group</span><span class="o">=...</span><span class="p">)</span>
+</code></pre></div></p>
+<p>To use full configuration of a parameter, one can also add it as a parameter first:
+<div class="highlight"><pre><span></span><code><span class="n">configfile</span> <span class="o">=</span> <span class="n">params</span><span class="o">.</span><span class="n">add_params</span><span class="p">(</span><span class="s1">&#39;config-file&#39;</span><span class="p">,</span> <span class="o">...</span><span class="p">)</span>
+<span class="c1"># then</span>
+<span class="n">params</span><span class="o">.</span><span class="n">from_arg</span><span class="p">(</span><span class="n">configfile</span><span class="p">)</span>
+</code></pre></div></p>
+<div class="admonition tip">
+<p class="admonition-title">Tip</p>
+<p><code>from_dict</code>, <code>from_file</code> and <code>from_arg</code> have a <code>force</code> argument to force adding parameters/commands, if they exist. Basically later ones will overwrite existing ones.</p>
+</div>
+<h3 id="dumping-all-params-to-a-dict-or-file">Dumping all params to a dict or file</h3>
+<p>You can dump all parameters and commands into a file, which later on can be loaded by <code>params</code>. This is useful when the parameters/commands take time to load.</p>
+<p>You can just do <code>params.to_dict()</code> or <code>params.to_file(...)</code>. You can directly specify the file path, the type will be automatically detected from the extension. Currently supported extensions are <code>.yaml</code>, <code>.yml</code>, <code>.json</code> and <code>.toml</code>. Otherwise you can specify the type by <code>cfgtype</code> argument. Supported <code>cfgtype</code>s are <code>yaml</code>, <code>json</code> and <code>toml</code>.</p>
+<h3 id="skipping-command-line-argument-parsing">Skipping command line argument parsing</h3>
+<p><code>pyparam</code> can also work as a value holder, which does not parse anything from the command line, but just use the predefined values. This requires all the parameters are optional and no command has been defined.</p>
+<p>For example:
+<div class="highlight"><pre><span></span><code><span class="n">params</span><span class="o">.</span><span class="n">add_param</span><span class="p">(</span><span class="s1">&#39;i&#39;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+<span class="n">params</span><span class="o">.</span><span class="n">values</span><span class="p">()</span> <span class="c1"># Namespace(i=0)</span>
+</code></pre></div></p>
+<p>Parameter callbacks are still applicable here.</p>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    <script id="__config" type="application/json">{"base": "..", "features": [], "search": "../assets/javascripts/workers/search.f886a092.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}}</script>
+    
+    
+      <script src="../assets/javascripts/bundle.d7c377c4.min.js"></script>
+      
+        <script src="../js/mkapi.js"></script>
+      
+    
+  </body>
+</html>

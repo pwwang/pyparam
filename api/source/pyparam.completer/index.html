@@ -1,0 +1,1319 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+      
+      
+      
+      
+      
+      <link rel="icon" href="../../../favicon.png">
+      <meta name="generator" content="mkdocs-1.5.3, mkdocs-material-9.5.3">
+    
+    
+      
+        <title>pyparam.completer - pyparam</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../../assets/stylesheets/main.50c56a3b.min.css">
+      
+        
+        <link rel="stylesheet" href="../../../assets/stylesheets/palette.06af60db.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="//use.fontawesome.com/releases/v5.8.1/css/all.css">
+    
+      <link rel="stylesheet" href="//use.fontawesome.com/releases/v5.8.1/css/v4-shims.css">
+    
+      <link rel="stylesheet" href="../../../css/mkapi-common.css">
+    
+      <link rel="stylesheet" href="../../../style.css">
+    
+    <script>__md_scope=new URL("../../..",location),__md_hash=e=>[...e].reduce((e,_)=>(e<<5)-e+_.charCodeAt(0),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+    
+  </head>
+  
+  
+    
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="blue-grey" data-md-color-accent="indigo">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#pyparamcompleter" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../../.." title="pyparam" class="md-header__button md-logo" aria-label="pyparam" data-md-component="logo">
+      
+  <img src="../../../favicon.png" alt="logo">
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3V6m0 5h18v2H3v-2m0 5h18v2H3v-2Z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            pyparam
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              pyparam.completer
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+    
+    
+    
+    
+      <label class="md-header__button md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+      </label>
+      <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12Z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41Z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../../.." title="pyparam" class="md-nav__button md-logo" aria-label="pyparam" data-md-component="logo">
+      
+  <img src="../../../favicon.png" alt="logo">
+
+    </a>
+    pyparam
+  </label>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../.." class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Home
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../TypesOfParams/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Defining parameters
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../commands/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Commands
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../fromCommandline/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Parsing from command line
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../fromDict/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Loading from dict/config file
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../helpPage/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Help page
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../useTheValues/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Using the parsed values
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../shellCompletion/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Shell completion
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_9" >
+        
+          
+          <label class="md-nav__link" for="__nav_9" id="__nav_9_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    API
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_9_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_9">
+            <span class="md-nav__icon md-icon"></span>
+            API
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_9_1" >
+        
+          
+          <label class="md-nav__link" for="__nav_9_1" id="__nav_9_1_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    pyparam
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_9_1_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_9_1">
+            <span class="md-nav__icon md-icon"></span>
+            pyparam
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../pyparam/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    pyparam
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../pyparam.defaults/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    pyparam.defaults
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../pyparam.exceptions/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    pyparam.exceptions
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../pyparam.param/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    pyparam.param
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../pyparam.completer/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    pyparam.completer
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../pyparam.utils/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    pyparam.utils
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../pyparam.help/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    pyparam.help
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../pyparam.params/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    pyparam.params
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../changeLog.md" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Change log
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#pyparamcompleter" class="md-nav__link">
+    <span class="md-ellipsis">
+      pyparam.completer
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+<div class="mkapi-node">
+<h1 id="" class="mkapi-object mkapi-object-code plain">
+<span class="mkapi-object-kind mkapi-object-kind-code">SOURCE CODE</span>
+<span class="mkapi-object-prefix">pyparam.</span><span class="mkapi-object-name">completer</span>
+<span id="pyparam.completer"></span><a class="mkapi-docs-link" href="../../pyparam.completer">DOCS</a>
+</h1>
+
+<div class="mkapi-code">
+<div class="codehilite"><pre><span></span><code><span class="sd">&quot;&quot;&quot;Classes for completions</span>
+
+<span class="sd">The idea is inspired from</span>
+<span class="sd">https://github.com/pallets/click/pull/1622</span>
+
+<span class="sd">Some of the code is borrowing there, under following LICENSE:</span>
+
+<span class="sd">Copyright 2014 Pallets</span>
+
+<span class="sd">Redistribution and use in source and binary forms, with or without</span>
+<span class="sd">modification, are permitted provided that the following conditions are met:</span>
+
+<span class="sd">Redistributions of source code must retain the above copyright notice,</span>
+<span class="sd">this list of conditions and the following disclaimer.</span>
+<span class="sd">Redistributions in binary form must reproduce the above copyright notice,</span>
+<span class="sd">this list of conditions and the following disclaimer in the documentation</span>
+<span class="sd">and/or other materials provided with the distribution.</span>
+<span class="sd">Neither the name of the copyright holder nor the names of its contributors</span>
+<span class="sd">may be used to endorse or promote products derived from this software without</span>
+<span class="sd">specific prior written permission.</span>
+<span class="sd">THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS &quot;AS IS&quot;</span>
+<span class="sd">AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO,</span>
+<span class="sd">THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR</span>
+<span class="sd">PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS</span>
+<span class="sd">BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR</span>
+<span class="sd">CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE</span>
+<span class="sd">GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)</span>
+<span class="sd">HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT</span>
+<span class="sd">LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT</span>
+<span class="sd">OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">re</span>
+<span class="kn">import</span> <span class="nn">sys</span>
+<span class="kn">from</span> <span class="nn">hashlib</span> <span class="kn">import</span> <span class="n">sha256</span>
+<span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="p">(</span>
+    <span class="n">TYPE_CHECKING</span><span class="p">,</span>
+    <span class="n">Callable</span><span class="p">,</span>
+    <span class="n">Generator</span><span class="p">,</span>
+    <span class="n">Iterator</span><span class="p">,</span>
+    <span class="n">List</span><span class="p">,</span>
+    <span class="n">Tuple</span><span class="p">,</span>
+    <span class="n">Union</span><span class="p">,</span>
+<span class="p">)</span>
+
+<span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span>
+    <span class="kn">from</span> <span class="nn">.param</span> <span class="kn">import</span> <span class="n">Param</span>
+
+<span class="n">COMPLETION_SCRIPT_BASH</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
+<span class="si">%(complete_func)s</span><span class="s2">() {</span>
+<span class="s2">    local IFS=$&#39;</span><span class="se">\\</span><span class="s2">n&#39;</span>
+<span class="s2">    local response</span>
+<span class="s2">    response=$( env COMP_WORDS=&quot;$</span><span class="si">{COMP_WORDS[*]}</span><span class="s2">&quot; </span><span class="se">\\</span>
+<span class="s2">                COMP_CWORD=$COMP_CWORD </span><span class="se">\\</span>
+<span class="s2">                </span><span class="si">%(complete_shell_var)s</span><span class="s2">=bash </span><span class="si">%(complete_script)s</span><span class="s2"> )</span>
+<span class="s2">    for completion in $response; do</span>
+<span class="s2">        IFS=$&#39;</span><span class="se">\\</span><span class="s2">t&#39; read value type &lt;&lt;&lt; &quot;$completion&quot;</span>
+<span class="s2">        if [[ $type == &#39;dir&#39; ]]; then</span>
+<span class="s2">            COMREPLY=()</span>
+<span class="s2">            compopt -o dirnames</span>
+<span class="s2">        elif [[ $type == &#39;file&#39; ]]; then</span>
+<span class="s2">            COMREPLY=()</span>
+<span class="s2">            compopt -o filenames</span>
+<span class="s2">        elif [[ $type == &#39;plain&#39; ]]; then</span>
+<span class="s2">            COMPREPLY+=($value)</span>
+<span class="s2">        fi</span>
+<span class="s2">    done</span>
+<span class="s2">     return 0</span>
+<span class="s2">}</span>
+<span class="s2">complete -o default -F </span><span class="si">%(complete_func)s</span><span class="s2"> </span><span class="si">%(script_name)s</span>
+<span class="s2">&quot;&quot;&quot;</span>
+
+<span class="n">COMPLETION_SCRIPT_ZSH</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">#compdef </span><span class="si">%(script_name)s</span>
+<span class="si">%(complete_func)s</span><span class="s2">() {</span>
+<span class="s2">    local -a completions</span>
+<span class="s2">    local -a completions_with_descriptions</span>
+<span class="s2">    local -a response</span>
+<span class="s2">    (( ! $+commands[</span><span class="si">%(script_name)s</span><span class="s2">] )) &amp;&amp; return 1</span>
+<span class="s2">    response=(&quot;${(@f)$( env COMP_WORDS=</span><span class="se">\&quot;</span><span class="s2">$</span><span class="si">{words[*]}</span><span class="se">\&quot;</span><span class="s2"> </span><span class="se">\\</span>
+<span class="s2">                        COMP_CWORD=$((CURRENT-1)) </span><span class="se">\\</span>
+<span class="s2">                        </span><span class="si">%(complete_shell_var)s</span><span class="s2">=</span><span class="se">\&quot;</span><span class="s2">zsh</span><span class="se">\&quot;</span><span class="s2"> </span><span class="se">\\</span>
+<span class="s2">                        </span><span class="si">%(complete_script)s</span><span class="s2"> )}&quot;)</span>
+<span class="s2">    for key type descr in $</span><span class="si">{response}</span><span class="s2">; do</span>
+<span class="s2">      if [[ &quot;$type&quot; == &quot;plain&quot; ]]; then</span>
+<span class="s2">        if [[ &quot;$descr&quot; == &quot;&quot; ]]; then</span>
+<span class="s2">          completions+=(&quot;$key&quot;)</span>
+<span class="s2">        else</span>
+<span class="s2">          completions_with_descriptions+=(&quot;$key&quot;:&quot;$descr&quot;)</span>
+<span class="s2">        fi</span>
+<span class="s2">      elif [[ &quot;$type&quot; == &quot;dir&quot; ]]; then</span>
+<span class="s2">        _path_files -/</span>
+<span class="s2">      elif [[ &quot;$type&quot; == &quot;file&quot; ]]; then</span>
+<span class="s2">        _path_files -f</span>
+<span class="s2">      fi</span>
+<span class="s2">    done</span>
+<span class="s2">     if [ -n &quot;$completions_with_descriptions&quot; ]; then</span>
+<span class="s2">        _describe -V unsorted completions_with_descriptions -U</span>
+<span class="s2">    fi</span>
+<span class="s2">     if [ -n &quot;$completions&quot; ]; then</span>
+<span class="s2">        compadd -U -V unsorted -a completions</span>
+<span class="s2">    fi</span>
+<span class="s2">    compstate[insert]=&quot;menucomplete&quot;</span>
+<span class="s2">}</span>
+<span class="s2">compdef </span><span class="si">%(complete_func)s</span><span class="s2"> </span><span class="si">%(script_name)s</span>
+<span class="s2">&quot;&quot;&quot;</span>
+
+<span class="n">COMPLETION_SCRIPT_FISH</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">function </span><span class="si">%(complete_func)s</span><span class="s2">_complete;</span>
+<span class="s2">    set -l response;</span>
+<span class="s2">    set -lx COMP_WORDS (commandline -op)</span>
+<span class="s2">    set -lx COMP_CWORD ( </span><span class="se">\\</span>
+<span class="s2">        math (contains -i -- (commandline -t) $COMP_WORDS; or echo 0)-1 </span><span class="se">\\</span>
+<span class="s2">    )</span>
+<span class="s2">    set -lx </span><span class="si">%(complete_shell_var)s</span><span class="s2"> fish</span>
+<span class="s2">    eval </span><span class="si">%(complete_script)s</span><span class="s2"> | while read completion</span>
+<span class="s2">        echo $completion | read -d (echo -e &quot;</span><span class="se">\\</span><span class="s2">t&quot;) -l -a metadata</span>
+<span class="s2">        if [ &quot;$metadata[2]&quot; = &quot;dir&quot; ];</span>
+<span class="s2">            __fish_complete_directories $metadata[1] | sed &quot;s#^#$metadata[3]#&quot;;</span>
+<span class="s2">        else if [ &quot;$metadata[2]&quot; = &quot;file&quot; ];</span>
+<span class="s2">            __fish_complete_path $metadata[1] | sed &quot;s#^#$metadata[3]#&quot;;</span>
+<span class="s2">        else if [ &quot;$metadata[2]&quot; = &quot;plain&quot; ];</span>
+<span class="s2">            echo -n $metadata[1];</span>
+<span class="s2">            echo -ne &quot;</span><span class="se">\\</span><span class="s2">t&quot;;</span>
+<span class="s2">            echo $metadata[3];</span>
+<span class="s2">        end;</span>
+<span class="s2">    end;</span>
+<span class="s2">end;</span>
+
+<span class="s2"># Don&#39;t do complete until &lt;prog&gt; is hit</span>
+<span class="s2">function </span><span class="si">%(complete_func)s</span><span class="s2">_condition;</span>
+<span class="s2">    set -l COMP_WORDS (commandline -op)</span>
+<span class="s2">    set -l comp_script </span><span class="si">%(complete_script)s</span>
+<span class="s2">    set -l len_words (count $COMP_WORDS)</span>
+<span class="s2">    set -l len_script (count $comp_script)</span>
+<span class="s2">    set -l incomplete (commandline -t)</span>
+<span class="s2">    if [ $len_script -eq 1 ];</span>
+<span class="s2">        return 0;</span>
+<span class="s2">    end</span>
+<span class="s2">    # we haven&#39;t hit the script or module</span>
+<span class="s2">    # go ahead do the complete only when</span>
+<span class="s2">    # len_words &gt; len_script</span>
+<span class="s2">    # if len_words == len_script, then requires incomplete == &quot;&quot;</span>
+<span class="s2">    if [ $len_words -lt $len_script ]</span>
+<span class="s2">        return 1</span>
+<span class="s2">    else if [ $len_words -eq $len_script -a -n &quot;$incomplete&quot; ]</span>
+<span class="s2">        return 1</span>
+<span class="s2">    else if [ $len_script -eq 2 ]</span>
+<span class="s2">        [ &quot;$COMP_WORDS[2]&quot; = &quot;$comp_script[2]&quot; ]; and return 0; or return 1</span>
+<span class="s2">    else if [ $len_script -eq 3 ]</span>
+<span class="s2">        [ &quot;$COMP_WORDS[2]&quot; = &quot;-m&quot; -a &quot;$comp_script[3]&quot; = &quot;$COMP_WORDS[3]&quot; ]; </span><span class="se">\\</span>
+<span class="s2">            and return 0; or return 1</span>
+<span class="s2">    end</span>
+<span class="s2">    return 1</span>
+<span class="s2">end;</span>
+
+<span class="s2">complete --no-files --command </span><span class="si">%(script_name)s</span><span class="s2"> </span><span class="se">\\</span>
+<span class="s2">    --condition &quot;</span><span class="si">%(complete_func)s</span><span class="s2">_condition&quot; </span><span class="se">\\</span>
+<span class="s2">    --arguments &quot;(</span><span class="si">%(complete_func)s</span><span class="s2">_complete)&quot;</span>
+<span class="s2">&quot;&quot;&quot;</span>
+
+
+<span class="k">def</span> <span class="nf">split_arg_string</span><span class="p">(</span><span class="n">string</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span><span id="pyparam.completer.split_arg_string"></span><a class="mkapi-docs-link" title="pyparam.completer.split_arg_string" href="../../pyparam.completer/#pyparam.completer.split_arg_string">DOCS</a>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Given an argument string this attempts to split it into small parts.</span>
+
+<span class="sd">    Borrowed from</span>
+<span class="sd">    https://github.com/pallets/click/blob/3984f9efce5a0d15f058e1abe1ea808c6abd243a/src/click/parser.py#L106</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        string: The string to be split</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        List of split pieces</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">ret</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">match</span> <span class="ow">in</span> <span class="n">re</span><span class="o">.</span><span class="n">finditer</span><span class="p">(</span>
+        <span class="sa">r</span><span class="s2">&quot;(&#39;([^&#39;</span><span class="se">\\</span><span class="s2">]*(?:</span><span class="se">\\</span><span class="s2">.[^&#39;</span><span class="se">\\</span><span class="s2">]*)*)&#39;|&quot;</span>
+        <span class="sa">r</span><span class="s2">&quot;</span><span class="se">\&quot;</span><span class="s2">([^</span><span class="se">\&quot;\\</span><span class="s2">]*(?:</span><span class="se">\\</span><span class="s2">.[^</span><span class="se">\&quot;\\</span><span class="s2">]*)*)</span><span class="se">\&quot;</span><span class="s2">|\S+)\s*&quot;</span><span class="p">,</span>
+        <span class="n">string</span><span class="p">,</span>
+        <span class="n">re</span><span class="o">.</span><span class="n">S</span><span class="p">,</span>
+    <span class="p">):</span>
+        <span class="n">arg</span> <span class="o">=</span> <span class="n">match</span><span class="o">.</span><span class="n">group</span><span class="p">()</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">arg</span><span class="p">[:</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="n">arg</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">:]</span> <span class="ow">and</span> <span class="n">arg</span><span class="p">[:</span><span class="mi">1</span><span class="p">]</span> <span class="ow">in</span> <span class="s2">&quot;</span><span class="se">\&quot;</span><span class="s2">&#39;&quot;</span><span class="p">:</span>
+            <span class="n">arg</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="n">arg</span><span class="p">[</span><span class="mi">1</span><span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+                <span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="s2">&quot;ascii&quot;</span><span class="p">,</span> <span class="s2">&quot;backslashreplace&quot;</span><span class="p">)</span>
+                <span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="s2">&quot;unicode-escape&quot;</span><span class="p">)</span>
+            <span class="p">)</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">arg</span> <span class="o">=</span> <span class="nb">type</span><span class="p">(</span><span class="n">string</span><span class="p">)(</span><span class="n">arg</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">UnicodeError</span><span class="p">:</span>  <span class="c1"># pragma: no cover</span>
+            <span class="k">pass</span>
+        <span class="n">ret</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">arg</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">ret</span>
+
+
+<span class="k">class</span> <span class="nc">Completer</span><span class="p">:</span><span id="pyparam.completer.Completer"></span><a class="mkapi-docs-link" title="pyparam.completer.Completer" href="../../pyparam.completer/#pyparam.completer.Completer">DOCS</a>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Main completion handler</span>
+
+<span class="sd">    Attributes:</span>
+<span class="sd">        comp_shell: The shell where the completion will be conducted</span>
+<span class="sd">            One of [&#39;&#39;, &#39;bash&#39;, &#39;fish&#39;, &#39;zsh&#39;]</span>
+<span class="sd">            Obtained from environment</span>
+<span class="sd">        comp_words: The words have been entered before completion</span>
+<span class="sd">        comp_curr: The current word for completion</span>
+<span class="sd">        comp_prev: The previous word matched</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Constructor</span>
+
+<span class="sd">        Read the environment variables</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">complete_prepared</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_prepare_complete</span><span class="p">()</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">comp_shell</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">complete_prepared</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">comp_words</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="n">complete_prepared</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">comp_shell</span> <span class="k">else</span> <span class="kc">None</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">comp_curr</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">complete_prepared</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">comp_shell</span> <span class="k">else</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">comp_prev</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="kc">None</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">comp_shell</span> <span class="ow">or</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">comp_words</span>
+            <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">comp_words</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+        <span class="p">)</span>
+
+    <span class="nd">@property</span><span id="pyparam.completer.Completer.progvar"></span><a class="mkapi-docs-link" title="pyparam.completer.Completer.progvar" href="../../pyparam.completer/#pyparam.completer.Completer.progvar">DOCS</a>
+    <span class="k">def</span> <span class="nf">progvar</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get the program name that can be used as a variable&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">re</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;[^\w_]+&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">prog</span><span class="p">)</span>
+
+    <span class="nd">@property</span><span id="pyparam.completer.Completer.uid"></span><a class="mkapi-docs-link" title="pyparam.completer.Completer.uid" href="../../pyparam.completer/#pyparam.completer.Completer.uid">DOCS</a>
+    <span class="k">def</span> <span class="nf">uid</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get the uid based on the raw program name</span>
+
+<span class="sd">        This is used as the prefix or suffix of some shell function names</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">sha256</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">prog</span><span class="o">.</span><span class="n">encode</span><span class="p">())</span><span class="o">.</span><span class="n">hexdigest</span><span class="p">()[:</span><span class="mi">6</span><span class="p">]</span>
+
+    <span class="k">def</span> <span class="nf">_prepare_complete</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="nb">str</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Prepare for completion, get the env variables&quot;&quot;&quot;</span>
+        <span class="n">env_name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">progvar</span><span class="si">}</span><span class="s2">_COMPLETE_SHELL_</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">uid</span><span class="si">}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span>
+        <span class="n">shell</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">env_name</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">shell</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">shell</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="s2">&quot;&quot;</span>
+
+        <span class="n">comp_words</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">split_arg_string</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">[</span><span class="s2">&quot;COMP_WORDS&quot;</span><span class="p">])</span>
+        <span class="n">comp_cword</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">[</span><span class="s2">&quot;COMP_CWORD&quot;</span><span class="p">]</span> <span class="ow">or</span> <span class="mi">0</span><span class="p">)</span>
+
+        <span class="n">current</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">comp_cword</span> <span class="o">&gt;=</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">current</span> <span class="o">=</span> <span class="n">comp_words</span><span class="p">[</span><span class="n">comp_cword</span><span class="p">]</span>
+            <span class="k">except</span> <span class="ne">IndexError</span><span class="p">:</span>
+                <span class="k">pass</span>
+
+        <span class="n">has_python</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="s2">&quot;python&quot;</span> <span class="ow">in</span> <span class="n">Path</span><span class="p">(</span><span class="n">comp_words</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span><span class="o">.</span><span class="n">stem</span>
+        <span class="k">if</span> <span class="n">has_python</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">comp_words</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+
+        <span class="n">is_module</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="n">has_python</span> <span class="ow">and</span> <span class="n">comp_words</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;-m&quot;</span>
+        <span class="k">if</span> <span class="n">is_module</span> <span class="ow">and</span> <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">comp_words</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mi">3</span> <span class="ow">or</span> <span class="n">comp_words</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">!=</span> <span class="bp">self</span><span class="o">.</span><span class="n">prog</span><span class="p">):</span>
+            <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">has_python</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">is_module</span> <span class="ow">and</span> <span class="n">comp_words</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">!=</span> <span class="bp">self</span><span class="o">.</span><span class="n">prog</span><span class="p">:</span>
+            <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+
+        <span class="n">comp_words</span> <span class="o">=</span> <span class="n">comp_words</span><span class="p">[(</span><span class="mi">3</span> <span class="k">if</span> <span class="n">is_module</span> <span class="k">else</span> <span class="mi">2</span> <span class="k">if</span> <span class="n">has_python</span> <span class="k">else</span> <span class="mi">1</span><span class="p">)</span> <span class="p">:]</span>
+
+        <span class="k">if</span> <span class="n">current</span> <span class="ow">and</span> <span class="n">comp_words</span> <span class="ow">and</span> <span class="n">comp_words</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="n">current</span><span class="p">:</span>
+            <span class="n">comp_words</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">shell</span> <span class="o">==</span> <span class="s2">&quot;bash&quot;</span> <span class="ow">and</span> <span class="n">comp_words</span><span class="p">:</span>
+            <span class="c1"># bash splits &#39;--choice=&#39; to [&#39;--choice&#39;] and &#39;=&#39;, and</span>
+            <span class="c1"># &#39;--choice=l&#39; to [&#39;--choice&#39;, &#39;=&#39;] and &#39;l&#39;</span>
+            <span class="c1"># We can&#39;t distinguish if user really enters &#39;--choice=&#39; or</span>
+            <span class="c1"># &#39;--choice =&#39;, but this is the best way to implement this.</span>
+            <span class="c1"># Also, bash doesn&#39;t replace the current,</span>
+            <span class="c1"># so we just need to get the unfinished part</span>
+            <span class="k">if</span> <span class="n">current</span> <span class="o">==</span> <span class="s2">&quot;=&quot;</span><span class="p">:</span>
+                <span class="n">current</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>  <span class="c1"># force the unfinished part</span>
+            <span class="k">elif</span> <span class="n">current</span> <span class="ow">and</span> <span class="n">comp_words</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;=&quot;</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">comp_words</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+                <span class="c1"># pop out the &#39;=&#39; so to force th unfinished part</span>
+                <span class="n">comp_words</span><span class="o">.</span><span class="n">pop</span><span class="p">()</span>
+
+        <span class="k">return</span> <span class="n">shell</span><span class="p">,</span> <span class="n">comp_words</span><span class="p">,</span> <span class="n">current</span>
+
+    <span class="k">def</span> <span class="nf">_post_complete</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">completions</span><span class="p">:</span> <span class="n">Iterator</span><span class="p">[</span><span class="n">Tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]]</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Generator</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Post processing the completions</span>
+
+<span class="sd">        Filter only completions with given current word/prefix</span>
+<span class="sd">        If non-fish, don&#39;t give the description</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">for</span> <span class="n">comp</span> <span class="ow">in</span> <span class="n">completions</span><span class="p">:</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">comp_shell</span> <span class="o">==</span> <span class="s2">&quot;fish&quot;</span><span class="p">:</span>
+                <span class="k">yield</span> <span class="s2">&quot;</span><span class="se">\t</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">comp</span><span class="p">)</span>
+            <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">comp_shell</span> <span class="o">==</span> <span class="s2">&quot;zsh&quot;</span><span class="p">:</span>
+                <span class="k">yield</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">((</span><span class="n">comp</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="ow">or</span> <span class="s2">&quot; &quot;</span><span class="p">,</span> <span class="n">comp</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">comp</span><span class="p">[</span><span class="mi">2</span><span class="p">]))</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">yield</span> <span class="s2">&quot;</span><span class="se">\t</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">((</span><span class="n">comp</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="ow">or</span> <span class="s2">&quot; &quot;</span><span class="p">,</span> <span class="n">comp</span><span class="p">[</span><span class="mi">1</span><span class="p">]))</span>
+
+    <span class="k">def</span> <span class="nf">shellcode</span><span class="p">(</span><span id="pyparam.completer.Completer.shellcode"></span><a class="mkapi-docs-link" title="pyparam.completer.Completer.shellcode" href="../../pyparam.completer/#pyparam.completer.Completer.shellcode">DOCS</a>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">shell</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">python</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">module</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Generate the shell code to be integrated</span>
+
+<span class="sd">        For bash, it should be appended to ~/.profile</span>
+<span class="sd">        For zsh, it should be appended to ~/.zprofile</span>
+<span class="sd">        For fish, it should be appended to</span>
+<span class="sd">            ~/.config/fish/completions/%(prog)s.fish</span>
+<span class="sd">            If python is provided, this should go to `python.fish` rather than</span>
+<span class="sd">            the `%(prog)s.fish`</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            shell: The shell to generate the code for.</span>
+<span class="sd">            python: The python name or path to invoke completion.</span>
+<span class="sd">            module: Whether do completion for `python -m &lt;prog&gt;`</span>
+
+<span class="sd">        Raises:</span>
+<span class="sd">            ValueError: if shell is not one of bash, zsh and fish</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">if</span> <span class="n">shell</span> <span class="o">==</span> <span class="s2">&quot;zsh&quot;</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_shellcode_zsh</span><span class="p">(</span><span class="n">python</span><span class="o">=</span><span class="n">python</span><span class="p">,</span> <span class="n">module</span><span class="o">=</span><span class="n">module</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">shell</span> <span class="o">==</span> <span class="s2">&quot;fish&quot;</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_shellcode_fish</span><span class="p">(</span><span class="n">python</span><span class="o">=</span><span class="n">python</span><span class="p">,</span> <span class="n">module</span><span class="o">=</span><span class="n">module</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">shell</span> <span class="o">==</span> <span class="s2">&quot;bash&quot;</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_shellcode_bash</span><span class="p">(</span><span class="n">python</span><span class="o">=</span><span class="n">python</span><span class="p">,</span> <span class="n">module</span><span class="o">=</span><span class="n">module</span><span class="p">)</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Shell not supported: </span><span class="si">{</span><span class="n">shell</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_shellcode_bash</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">python</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">module</span><span class="p">:</span> <span class="nb">bool</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Generate the shell code for bash&quot;&quot;&quot;</span>
+        <span class="n">complete_shell_var</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">progvar</span><span class="si">}</span><span class="s2">_COMPLETE_SHELL_</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">uid</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="p">)</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span>
+        <span class="n">complete_script</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="s2">&quot;$1&quot;</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">python</span>
+            <span class="k">else</span> <span class="sa">f</span><span class="s2">&quot;$1 </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">prog</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">module</span>
+            <span class="k">else</span> <span class="sa">f</span><span class="s2">&quot;$1 -m </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">prog</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="p">)</span>
+        <span class="n">complete_func</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;_</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">progvar</span><span class="si">}</span><span class="s2">_completion_</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">uid</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="k">return</span> <span class="n">COMPLETION_SCRIPT_BASH</span> <span class="o">%</span> <span class="nb">dict</span><span class="p">(</span>
+            <span class="n">complete_func</span><span class="o">=</span><span class="n">complete_func</span><span class="p">,</span>
+            <span class="n">complete_shell_var</span><span class="o">=</span><span class="n">complete_shell_var</span><span class="p">,</span>
+            <span class="n">complete_script</span><span class="o">=</span><span class="n">complete_script</span><span class="p">,</span>
+            <span class="n">script_name</span><span class="o">=</span><span class="n">python</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">prog</span><span class="p">,</span>
+        <span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_shellcode_fish</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">python</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">module</span><span class="p">:</span> <span class="nb">bool</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Generate the shell code for fish&quot;&quot;&quot;</span>
+        <span class="n">complete_shell_var</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">progvar</span><span class="si">}</span><span class="s2">_COMPLETE_SHELL_</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">uid</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="p">)</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span>
+        <span class="n">complete_script</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="s2">&quot;$COMP_WORDS[1]&quot;</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">python</span>
+            <span class="k">else</span> <span class="sa">f</span><span class="s2">&quot;$COMP_WORDS[1] </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">prog</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">module</span>
+            <span class="k">else</span> <span class="sa">f</span><span class="s2">&quot;$COMP_WORDS[1] -m </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">prog</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="p">)</span>
+        <span class="n">complete_func</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;__fish_</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">progvar</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">uid</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="k">return</span> <span class="n">COMPLETION_SCRIPT_FISH</span> <span class="o">%</span> <span class="nb">dict</span><span class="p">(</span>
+            <span class="n">complete_func</span><span class="o">=</span><span class="n">complete_func</span><span class="p">,</span>
+            <span class="n">complete_shell_var</span><span class="o">=</span><span class="n">complete_shell_var</span><span class="p">,</span>
+            <span class="n">complete_script</span><span class="o">=</span><span class="n">complete_script</span><span class="p">,</span>
+            <span class="n">script_name</span><span class="o">=</span><span class="n">python</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">prog</span><span class="p">,</span>
+        <span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_shellcode_zsh</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">python</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">module</span><span class="p">:</span> <span class="nb">bool</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Generate the shell code for zsh&quot;&quot;&quot;</span>
+        <span class="n">complete_shell_var</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">progvar</span><span class="si">}</span><span class="s2">_COMPLETE_SHELL_</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">uid</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="p">)</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span>
+        <span class="n">complete_script</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="s2">&quot;$words[1]&quot;</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">python</span>
+            <span class="k">else</span> <span class="sa">f</span><span class="s2">&quot;$words[1] </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">prog</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">module</span>
+            <span class="k">else</span> <span class="sa">f</span><span class="s2">&quot;$words[1] -m </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">prog</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="p">)</span>
+        <span class="n">complete_func</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;_</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">progvar</span><span class="si">}</span><span class="s2">_completion_</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">uid</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="k">return</span> <span class="n">COMPLETION_SCRIPT_ZSH</span> <span class="o">%</span> <span class="nb">dict</span><span class="p">(</span>
+            <span class="n">complete_func</span><span class="o">=</span><span class="n">complete_func</span><span class="p">,</span>
+            <span class="n">complete_shell_var</span><span class="o">=</span><span class="n">complete_shell_var</span><span class="p">,</span>
+            <span class="n">complete_script</span><span class="o">=</span><span class="n">complete_script</span><span class="p">,</span>
+            <span class="n">script_name</span><span class="o">=</span><span class="n">python</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">prog</span><span class="p">,</span>
+        <span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_get_param_by_prefixed</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">prefixed</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;Param&quot;</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get the parameter by the given prefixed name&quot;&quot;&quot;</span>
+        <span class="k">for</span> <span class="n">param</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_all_params</span><span class="p">(</span><span class="kc">True</span><span class="p">):</span>
+            <span class="k">if</span> <span class="nb">any</span><span class="p">(</span>
+                <span class="n">param</span><span class="o">.</span><span class="n">_prefix_name</span><span class="p">(</span><span class="n">name</span><span class="p">)</span> <span class="o">==</span> <span class="n">prefixed</span> <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">param</span><span class="o">.</span><span class="n">names</span>
+            <span class="p">):</span>
+                <span class="k">return</span> <span class="n">param</span>
+        <span class="k">return</span> <span class="kc">None</span>
+
+    <span class="k">def</span> <span class="nf">_parse_completed</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="s2">&quot;Param&quot;</span><span class="p">],</span> <span class="nb">bool</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Parse completed parameters/commands, and give</span>
+<span class="sd">        the rest unmatched words. If command matched, also return the command</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            A tuple of:</span>
+<span class="sd">                - A list of completed parameters.</span>
+<span class="sd">                - A boolean value indicating whether all required parameters</span>
+<span class="sd">                    has been completed</span>
+<span class="sd">                - Command name if a command matched</span>
+<span class="sd">                - Rest of words after the command is matched</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">word</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">comp_words</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">word</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">commands</span><span class="p">:</span>
+                <span class="k">return</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="n">word</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">comp_words</span><span class="p">[</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span> <span class="p">:]</span>
+
+        <span class="n">unmatched_required</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="n">matched</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="s2">&quot;Param&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">matched_append</span><span class="p">:</span> <span class="n">Callable</span> <span class="o">=</span> <span class="n">matched</span><span class="o">.</span><span class="n">append</span>
+        <span class="k">for</span> <span class="n">param</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_all_params</span><span class="p">(</span><span class="kc">True</span><span class="p">):</span>
+            <span class="k">if</span> <span class="nb">any</span><span class="p">(</span>
+                <span class="n">param</span><span class="o">.</span><span class="n">_prefix_name</span><span class="p">(</span><span class="n">name</span><span class="p">)</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">comp_words</span>
+                <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">param</span><span class="o">.</span><span class="n">names</span>
+            <span class="p">):</span>
+                <span class="n">matched_append</span><span class="p">(</span><span class="n">param</span><span class="p">)</span>
+            <span class="k">elif</span> <span class="n">param</span><span class="o">.</span><span class="n">required</span><span class="p">:</span>
+                <span class="n">unmatched_required</span> <span class="o">=</span> <span class="kc">True</span>
+
+        <span class="k">return</span> <span class="n">matched</span><span class="p">,</span> <span class="ow">not</span> <span class="n">unmatched_required</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span>
+
+    <span class="k">def</span> <span class="nf">complete</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Iterator</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span><span id="pyparam.completer.Completer.complete"></span><a class="mkapi-docs-link" title="pyparam.completer.Completer.complete" href="../../pyparam.completer/#pyparam.completer.Completer.complete">DOCS</a>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Yields the completions</span>
+
+<span class="sd">        Yields:</span>
+<span class="sd">            The strings as completion candidates</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">yield from</span> <span class="bp">self</span><span class="o">.</span><span class="n">_post_complete</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_complete</span><span class="p">())</span>
+
+    <span class="k">def</span> <span class="nf">_complete</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Iterator</span><span class="p">[</span><span class="n">Tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Provide the completion candidates</span>
+
+<span class="sd">        The rules are:</span>
+<span class="sd">        1. When there are uncompleted required parameters, don&#39;t give command</span>
+<span class="sd">           candidates</span>
+<span class="sd">        2. Otherwise, give both command and parameter candidates</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="p">(</span>
+            <span class="n">completed</span><span class="p">,</span>
+            <span class="n">all_required_completed</span><span class="p">,</span>
+            <span class="n">command</span><span class="p">,</span>
+            <span class="n">rest</span><span class="p">,</span>
+        <span class="p">)</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_parse_completed</span><span class="p">()</span>
+
+        <span class="k">if</span> <span class="n">command</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">commands</span><span class="p">[</span><span class="n">command</span><span class="p">]</span><span class="o">.</span><span class="n">comp_shell</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">comp_shell</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">commands</span><span class="p">[</span><span class="n">command</span><span class="p">]</span><span class="o">.</span><span class="n">comp_words</span> <span class="o">=</span> <span class="n">rest</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">commands</span><span class="p">[</span><span class="n">command</span><span class="p">]</span><span class="o">.</span><span class="n">comp_curr</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">comp_curr</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">commands</span><span class="p">[</span><span class="n">command</span><span class="p">]</span><span class="o">.</span><span class="n">comp_prev</span> <span class="o">=</span> <span class="n">rest</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="k">if</span> <span class="n">rest</span> <span class="k">else</span> <span class="kc">None</span>
+            <span class="c1"># make sure that help parameters or commands are added</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">commands</span><span class="p">[</span><span class="n">command</span><span class="p">]</span><span class="o">.</span><span class="n">parse</span><span class="p">()</span>
+            <span class="c1"># sys.exit(0)</span>
+
+        <span class="n">completions</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span>
+            <span class="nb">str</span><span class="p">,</span>
+            <span class="n">Iterator</span><span class="p">[</span><span class="n">Tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">]],</span>
+            <span class="n">Iterator</span><span class="p">[</span><span class="n">Tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]],</span>
+            <span class="n">Iterator</span><span class="p">[</span><span class="n">Tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]],</span>
+        <span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+        <span class="n">param</span><span class="p">:</span> <span class="s2">&quot;Param&quot;</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="c1"># see if comp_curr is something like &#39;--arg=x&#39;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">comp_curr</span> <span class="ow">and</span> <span class="s2">&quot;=&quot;</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">comp_curr</span><span class="p">:</span>
+            <span class="n">prefixed</span><span class="p">,</span> <span class="n">val</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">comp_curr</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;=&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+            <span class="n">param</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_param_by_prefixed</span><span class="p">(</span><span class="n">prefixed</span><span class="p">)</span>
+            <span class="n">completions</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="n">param</span><span class="o">.</span><span class="n">complete_value</span><span class="p">(</span><span class="n">current</span><span class="o">=</span><span class="n">val</span><span class="p">,</span> <span class="n">prefix</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">prefixed</span><span class="si">}</span><span class="s2">=&quot;</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">param</span>
+                <span class="k">else</span> <span class="n">completions</span>
+            <span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">param</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_param_by_prefixed</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">comp_prev</span><span class="p">)</span>
+            <span class="n">completions</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="n">param</span><span class="o">.</span><span class="n">complete_value</span><span class="p">(</span><span class="n">current</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">comp_curr</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">param</span>
+                <span class="k">else</span> <span class="n">completions</span>
+            <span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">param</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">completions</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="k">return</span>  <span class="c1"># StopIteration</span>
+            <span class="k">if</span> <span class="n">completions</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">completions</span><span class="p">:</span>
+                <span class="k">for</span> <span class="n">completion</span> <span class="ow">in</span> <span class="n">completions</span><span class="p">:</span>
+                    <span class="k">yield</span> <span class="p">(</span>
+                        <span class="p">(</span><span class="n">completion</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="s2">&quot;plain&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">)</span>
+                        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">completion</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span>
+                        <span class="k">else</span> <span class="p">(</span>
+                            <span class="n">completion</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span>
+                            <span class="s2">&quot;plain&quot;</span><span class="p">,</span>
+                            <span class="n">completion</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span>  <span class="c1"># type: ignore</span>
+                        <span class="p">)</span>
+                        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">completion</span><span class="p">)</span> <span class="o">==</span> <span class="mi">2</span>
+                        <span class="k">else</span> <span class="n">completion</span>
+                    <span class="p">)</span>
+                <span class="k">return</span>  <span class="c1"># StopIteration, dont go further</span>
+
+        <span class="c1"># no param or completions == &#39;&#39;</span>
+        <span class="k">for</span> <span class="n">param</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_all_params</span><span class="p">(</span><span class="kc">True</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">param</span><span class="o">.</span><span class="n">type</span> <span class="o">==</span> <span class="s2">&quot;ns&quot;</span><span class="p">:</span>
+                <span class="k">continue</span>
+            <span class="k">if</span> <span class="n">param</span> <span class="ow">in</span> <span class="n">completed</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">param</span><span class="o">.</span><span class="n">complete_relapse</span><span class="p">:</span>
+                <span class="k">continue</span>
+
+            <span class="k">for</span> <span class="n">prefixed_name</span><span class="p">,</span> <span class="n">desc</span> <span class="ow">in</span> <span class="n">param</span><span class="o">.</span><span class="n">complete_name</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">comp_curr</span><span class="p">):</span>
+                <span class="k">yield</span> <span class="p">(</span><span class="n">prefixed_name</span><span class="p">,</span> <span class="s2">&quot;plain&quot;</span><span class="p">,</span> <span class="n">desc</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">all_required_completed</span><span class="p">:</span>
+            <span class="c1"># see if we have any commands</span>
+            <span class="k">for</span> <span class="n">command_name</span><span class="p">,</span> <span class="n">command</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">commands</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+                <span class="k">if</span> <span class="n">command_name</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">comp_curr</span><span class="p">):</span>
+                    <span class="k">yield</span> <span class="p">(</span>
+                        <span class="n">command_name</span><span class="p">,</span>
+                        <span class="s2">&quot;plain&quot;</span><span class="p">,</span>
+                        <span class="s2">&quot;Command: &quot;</span> <span class="o">+</span> <span class="n">command</span><span class="o">.</span><span class="n">desc</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">splitlines</span><span class="p">()[</span><span class="mi">0</span><span class="p">],</span>
+                    <span class="p">)</span>
+
+
+<span class="k">class</span> <span class="nc">CompleterParam</span><span class="p">:</span><span id="pyparam.completer.CompleterParam"></span><a class="mkapi-docs-link" title="pyparam.completer.CompleterParam" href="../../pyparam.completer/#pyparam.completer.CompleterParam">DOCS</a>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Class for a parameter dealing with completion&quot;&quot;&quot;</span>
+
+    <span class="n">complete_relapse</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
+
+    <span class="k">def</span> <span class="nf">complete_value</span><span class="p">(</span><span id="pyparam.completer.CompleterParam.complete_value"></span><a class="mkapi-docs-link" title="pyparam.completer.CompleterParam.complete_value" href="../../pyparam.completer/#pyparam.completer.CompleterParam.complete_value">DOCS</a>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">current</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">prefix</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Iterator</span><span class="p">[</span><span class="n">Tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="o">...</span><span class="p">]]]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Give the completion candidates</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            current: Current prefix</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            None when there are no candidates, nor should we have next</span>
+<span class="sd">                paramters/commands as candidates (requiring a value).</span>
+<span class="sd">                An empty string if we should put next parameters/commands</span>
+<span class="sd">                as candidates. Otherwise yields</span>
+<span class="sd">                The candidates should be either 1-, 2-, or 3-element tuple.</span>
+<span class="sd">                If 1-element, type plain and no description implied.</span>
+<span class="sd">                If 2-element, type plain and 2nd element should be description.</span>
+<span class="sd">                If 3-element, 2nd element the type, 3rd the description.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="nb">callable</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">complete_callback</span><span class="p">):</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">complete_callback</span><span class="p">(</span><span class="n">current</span><span class="p">,</span> <span class="n">prefix</span><span class="p">)</span>
+        <span class="k">return</span> <span class="kc">None</span>
+
+    <span class="k">def</span> <span class="nf">complete_name</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">current</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Iterator</span><span class="p">[</span><span class="n">Tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]]:</span><span id="pyparam.completer.CompleterParam.complete_name"></span><a class="mkapi-docs-link" title="pyparam.completer.CompleterParam.complete_name" href="../../pyparam.completer/#pyparam.completer.CompleterParam.complete_name">DOCS</a>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Give the completion name candidates</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            current: The current prefix or word under cursor</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            An iterator of a tuple including the prefixed name and description.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">names</span><span class="p">:</span>
+            <span class="n">prefixed</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_prefix_name</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">prefixed</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="n">current</span><span class="p">):</span>
+                <span class="k">yield</span> <span class="p">(</span><span class="n">prefixed</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">desc</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">splitlines</span><span class="p">()[</span><span class="mi">0</span><span class="p">])</span>
+</code></pre></div>
+</div>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    <script id="__config" type="application/json">{"base": "../../..", "features": [], "search": "../../../assets/javascripts/workers/search.f886a092.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}}</script>
+    
+    
+      <script src="../../../assets/javascripts/bundle.d7c377c4.min.js"></script>
+      
+        <script src="../../../js/mkapi.js"></script>
+      
+    
+  </body>
+</html>
