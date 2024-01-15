@@ -5,7 +5,7 @@
 Powerful parameter processing
 
 > [!Warning]
-> This package is deprecated. Please use [argx](https://github.com/pwwang/argx)
+> This package is deprecated. Please use [argx](https://github.com/pwwang/argx) instead.
 
 ## Features
 
