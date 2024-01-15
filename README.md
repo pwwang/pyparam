@@ -4,6 +4,9 @@
 
 Powerful parameter processing
 
+> [Note]
+> This package is deprecated. Please use [argx](https://github.com/pwwang/argx)
+
 ## Features
 
 - Command line argument parser (with subcommand support)
